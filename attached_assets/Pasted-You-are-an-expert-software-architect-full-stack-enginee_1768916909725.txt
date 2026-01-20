@@ -1,0 +1,534 @@
+You are an expert software architect & full-stack engineer.
+I want you to DESIGN AND BUILD from scratch a full SaaS web application called:
+
+Softlix Business OS
+(Arabic/English CRM + ERP mini system + Mobile Connector Apps)
+
+================================================================================
+STACK (MANDATORY)
+================================================================================
+
+Backend:
+- Node.js 20+
+- Express.js + TypeScript
+- DB: PostgreSQL (preferred) OR MySQL (acceptable) — choose PostgreSQL
+- ORM: Prisma
+- Auth:
+  - Session auth for web dashboard (cookie-based)
+  - JWT access tokens for mobile connector apps
+  - Refresh tokens (httpOnly for web)
+- Multi-tenant SaaS:
+  - Tenant = Company (organization)
+  - Tenant isolation enforced in EVERY query and middleware
+- Validation: Zod (or Joi) + middleware
+- API Docs: OpenAPI (swagger)
+- Queue/Jobs:
+  - Use BullMQ + Redis if available, otherwise use DB-based job table + worker
+- Realtime:
+  - Socket.io for in-app live notifications + presence
+- Storage:
+  - Local uploads folder first, pluggable for S3/Cloudflare R2 later
+
+Frontend (Admin Web App):
+- React + Vite + TypeScript
+- Tailwind CSS
+- React Router
+- RTL/LTR support
+- Arabic default + English toggle
+- i18n: react-i18next
+- UI:
+  - Modern admin layout (sidebar + topbar)
+  - Responsive
+  - Reusable components:
+    - Sidebar, Topbar, Breadcrumbs, Modals, Confirm dialogs, Toasts, Tables, Cards
+  - Data layer: TanStack Query (react-query)
+
+Mobile Connector Apps (MANDATORY):
+- React Native + Expo (TypeScript)
+- Modules:
+  1) Notifications Connector: Push notifications + sound + in-app alerts
+  2) Attendance Connector: biometric check-in/out + geofence/QR (no raw fingerprints)
+- Push:
+  - Firebase Cloud Messaging (FCM) for Android
+  - APNs via Expo/FCM setup for iOS
+- Sound notifications:
+  - Use app-level sound on receiving push OR in-app events
+- Offline-first:
+  - Attendance events queue locally and sync when online
+
+================================================================================
+CORE CONCEPTS (MANDATORY)
+================================================================================
+
+1) MULTI-TENANT SAAS
+- Tables MUST include: tenant_id (company_id) wherever applicable
+- Middleware:
+  - requireAuth
+  - requireTenant
+  - requirePermission
+  - requireModuleEnabled(moduleKey)
+
+2) ROLE-BASED ACCESS CONTROL (RBAC)
+Roles:
+- admin, manager, sales, support, accountant, hr, developer
+
+Permissions:
+- permissions table
+- role_permissions table
+- user_roles table (or user.role if simplified)
+- Express middleware: can("manage_quotes"), can("view_accounting"), etc.
+
+3) SUBSCRIPTION SYSTEM (CRITICAL)
+- Company self-signup:
+  - /auth/company-register -> creates tenant + admin user + trial subscription
+- Trial:
+  - default 15 days, configurable per tenant
+- Billing cycles:
+  - monthly, quarterly, semi_annual, yearly
+- Discounts:
+  - percent, fixed, extra_days
+  - coupon codes, expiry, usage limit
+- Module-based plans (VERY IMPORTANT):
+  - tenant subscribes to specific modules only:
+    CRM, Quotes, Accounting, Inventory, Tasks, Tickets, HR, Integrations, Portal
+  - If module not subscribed:
+    - hide UI navigation
+    - block API routes via middleware
+- Remaining time display:
+  - web dashboard shows days/hours left
+  - mobile shows trial/active/expired badge
+- Expired behavior:
+  - read-only mode for non-admin OR full lock except billing page (configurable)
+
+================================================================================
+DATABASE ENTITIES (MANDATORY)
+================================================================================
+
+A) AUTH & TENANCY
+- tenants:
+  id, name, slug, country, city, timezone, locale_default, created_at
+- users:
+  id, tenant_id, name, email, phone, password_hash,
+  status [active,inactive], locale [ar,en], created_at
+- roles:
+  id, key, name_ar, name_en
+- permissions:
+  id, key, name_ar, name_en
+- role_permissions:
+  role_id, permission_id
+- user_roles:
+  user_id, role_id
+
+B) SETTINGS
+- settings:
+  id, tenant_id, key, value_json, group, updated_at
+Important settings keys:
+- default_vat_rate
+- default_currency
+- trial_days_default
+- base_discount_limit_no_approval
+- approval_manager_user_id
+- sendgrid_api_key
+- whatsapp_access_token, whatsapp_phone_number_id
+- payment gateway keys per tenant:
+  stcpay_*, moyassar_*, tap_*
+- branding (logo, colors)
+- attendance:
+  attendance_require_biometric (bool)
+  attendance_geofence_enabled (bool)
+  attendance_allowed_locations (json)
+  attendance_qr_enabled (bool)
+
+C) ACTIVITY LOG (GLOBAL)
+- activity_log:
+  id, tenant_id, user_id nullable, entity_type, entity_id, action, data_json, created_at
+
+D) CRM
+- companies:
+  id, tenant_id, name, email, phone, website, address, city, country,
+  industry, source, status [lead,prospect,client,archived],
+  owner_id, google_place_id nullable, notes, created_at
+- contacts:
+  id, tenant_id, company_id, name, email, phone, position, is_primary, notes
+- opportunities:
+  id, tenant_id, company_id, title, description,
+  amount_estimated, currency, stage, probability, close_date, owner_id
+
+E) QUOTES
+- quotes:
+  id, tenant_id, quote_number unique,
+  quote_date, valid_until,
+  company_id, contact_id nullable, opportunity_id nullable,
+  project_name, project_type, project_duration,
+  status [draft,under_review,approved,rejected,sent,client_viewed,client_accepted,client_rejected,signed],
+  prepared_by, approved_by nullable, approved_at nullable,
+  subtotal, discount_total, features_total, vat_rate, vat_amount, grand_total, currency,
+  template_id nullable, quote_version int,
+  payment_template_id nullable,
+  pdf_file_path nullable,
+  sent_at nullable,
+  client_view_token unique nullable,
+  client_view_expires_at nullable,
+  client_viewed_at nullable,
+  client_decision [pending,accepted,rejected],
+  client_signed_at nullable,
+  client_sign_name, client_sign_position, client_sign_ip, client_sign_note,
+  client_sign_file nullable,
+  notes,
+  approval_required bool,
+  approval_level nullable,
+  approval_status [none,pending,approved,rejected],
+  approval_reason nullable,
+  approval_requested_at nullable, approval_resolved_at nullable,
+  created_at, updated_at
+- quote_line_items:
+  id, tenant_id, quote_id, product_id nullable,
+  description, quantity, unit_price,
+  discount_type [none,percent,amount], discount_value, line_total
+- features:
+  id, tenant_id, name, category, description, active
+- quote_features:
+  id, tenant_id, quote_id, feature_id, included, additional_price
+- quote_approvals:
+  id, tenant_id, quote_id, approver_id, approval_level,
+  status [pending,approved,rejected],
+  required_reason, comments, approved_at, created_at
+- quote_activities (Timeline):
+  id, tenant_id, quote_id, user_id nullable,
+  event_type [created,updated,sent,viewed,approved,rejected,signed,note,comment,task_linked,invoice_created],
+  title, description, meta_json, created_at
+
+F) GOOGLE MAPS IMPORT (MANDATORY)
+- import_buffer:
+  id, tenant_id, source 'google_places',
+  external_id (place_id),
+  name, address, city, country, phone, website, lat, lng,
+  raw_json,
+  status [new,imported,skipped,duplicate],
+  matched_company_id nullable,
+  created_by, created_at
+
+G) TASKS (TRELLO-LIKE)
+- projects:
+  id, tenant_id, name, description, status, owner_id, start_date, due_date, client_company_id nullable
+- task_boards:
+  id, tenant_id, project_id nullable, name
+- task_lists:
+  id, tenant_id, board_id, name, position
+- tasks:
+  id, tenant_id, project_id, list_id,
+  title, description,
+  status [todo,in_progress,review,done,blocked],
+  priority [low,medium,high,urgent],
+  assigned_to, created_by,
+  due_date, estimation_hours nullable, actual_hours nullable,
+  tags_json, position,
+  links: company_id nullable, quote_id nullable, ticket_id nullable,
+  created_at, updated_at
+- task_comments:
+  id, tenant_id, task_id, user_id, comment, created_at
+- task_activities:
+  id, tenant_id, task_id, user_id, event_type, meta_json, created_at
+
+H) HR (EMPLOYEES + KPIs)
+- employees:
+  id, tenant_id, user_id nullable,
+  name, email, phone,
+  job_title, department, manager_employee_id nullable,
+  hire_date, termination_date nullable,
+  salary, employment_type, status,
+  address, city, country, notes
+- employee_skills:
+  id, tenant_id, employee_id, skill_name, level (1..5), years_experience, notes
+- employee_files:
+  id, tenant_id, employee_id, file_path, file_type, description
+- performance_reviews:
+  id, tenant_id, employee_id, reviewer_user_id,
+  period_from, period_to, overall_score (1..5),
+  strengths, improvements, goals, created_at
+- kpis:
+  id, tenant_id, employee_id, name, target_value, actual_value, unit, period, status
+
+I) TICKETS
+- tickets:
+  id, tenant_id, ticket_number unique,
+  title, description,
+  company_id nullable, contact_id nullable,
+  status, priority, type, channel,
+  assigned_to nullable, created_by,
+  due_date nullable,
+  created_at, updated_at
+- ticket_comments:
+  id, tenant_id, ticket_id, user_id nullable (client), body, is_internal_note, created_at
+- ticket_attachments:
+  id, tenant_id, ticket_id, file_path, file_name, file_size
+- ticket_activities:
+  id, tenant_id, ticket_id, user_id, event_type, meta_json, created_at
+
+J) INVENTORY
+- products:
+  id, tenant_id, sku, name, description, category_id, price, cost,
+  is_service bool, tax_rate nullable, status
+- categories:
+  id, tenant_id, name, parent_id nullable
+- warehouses:
+  id, tenant_id, name, location
+- stocks:
+  id, tenant_id, product_id, warehouse_id, quantity_on_hand, quantity_reserved
+- stock_movements:
+  id, tenant_id, product_id, warehouse_id,
+  type [in,out,adjustment], quantity,
+  reference_type, reference_id,
+  created_by, created_at
+
+K) ACCOUNTING + BILLING
+- chart_of_accounts:
+  id, tenant_id, code, name, type, parent_id nullable, is_leaf
+- journal_entries:
+  id, tenant_id, date, description, reference_type, reference_id, created_by, created_at
+- journal_lines:
+  id, tenant_id, journal_entry_id, account_id, debit, credit, description
+- invoices:
+  id, tenant_id, invoice_number unique, invoice_date, due_date,
+  company_id,
+  status, subtotal, discount_total, tax_total, total, currency,
+  quote_id nullable,
+  created_by, pdf_file_path nullable,
+  created_at, updated_at
+- invoice_items:
+  id, tenant_id, invoice_id, product_id nullable, description,
+  quantity, unit_price, tax_rate, line_total
+- payments:
+  id, tenant_id, invoice_id, company_id,
+  amount, currency, method, transaction_id, paylink_url nullable,
+  status, paid_at, created_at
+
+L) SUBSCRIPTIONS (REBUILD PROPERLY)
+- plans:
+  id, name, description, currency,
+  billing_period [monthly,quarterly,semi_annual,yearly],
+  price,
+  active bool
+- plan_modules:
+  id, plan_id, module_key, enabled bool, limits_json
+- subscriptions:
+  id, tenant_id, plan_id nullable,
+  status [trial,active,expired,cancelled,suspended],
+  trial_start, trial_end,
+  current_period_start, current_period_end,
+  billing_period,
+  price, currency,
+  discount_id nullable,
+  next_billing_at nullable,
+  last_invoice_id nullable,
+  modules_json (effective enabled modules snapshot),
+  created_at, updated_at
+- discounts:
+  id, code unique,
+  type [percent,fixed,extra_days],
+  value,
+  max_uses, used_count,
+  expires_at nullable,
+  active bool
+
+================================================================================
+INTEGRATIONS (MANDATORY)
+================================================================================
+
+1) EMAIL via SendGrid
+- Store sendgrid_api_key in settings
+- Service: EmailService.send(to, subject, html)
+- All sends go through queue
+- Log every send attempt to activity_log
+
+2) WhatsApp Cloud API (optional initially but scaffold must exist)
+- Store token, phone_number_id in settings
+- Service: WhatsappService.sendText(toPhone, text)
+
+3) Payment gateways skeleton (keys stored in settings; do not hardcode)
+- STC Pay
+- Moyassar
+- Tap
+- Provide interface PaymentGateway + implementations with mocked endpoints first
+
+4) Google Places Import
+- Use google places API key from settings
+- UI to search + import as leads
+- Deduplicate by google_place_id OR phone OR name+city
+
+================================================================================
+NOTIFICATIONS (VERY IMPORTANT)
+================================================================================
+
+A) In-app notifications
+- notifications table:
+  id, tenant_id, user_id, type, title, body, meta_json, read_at, created_at
+- Realtime updates via Socket.io
+
+B) Mobile push notifications
+- Store device tokens:
+  device_tokens: id, tenant_id, user_id, platform, token, last_seen_at
+- Send push via FCM/Expo push
+- Support sound notifications:
+  - push payload includes sound name
+  - app plays sound when received
+
+C) Voice alerts (app-side)
+- Mobile app uses TTS to read important notifications optionally
+- Settings per user: enable_voice_alerts bool
+
+================================================================================
+ATTENDANCE SYSTEM (BIOMETRIC) — REALISTIC IMPLEMENTATION
+================================================================================
+
+IMPORTANT RULE:
+- DO NOT store fingerprint data or biometric templates.
+- Use biometric auth only to confirm the user identity on device.
+
+Attendance tables:
+- attendance_devices:
+  id, tenant_id, user_id, device_id, platform, device_public_key, created_at
+- attendance_events:
+  id, tenant_id, user_id, type [check_in,check_out,break_start,break_end],
+  timestamp,
+  method [biometric,qr,manual],
+  location_lat nullable, location_lng nullable,
+  ip, device_id,
+  proof_signature (signed payload from device) nullable,
+  created_at
+
+Flows:
+1) Mobile connector app login -> receives JWT
+2) User clicks Check-in
+3) App requires biometric unlock (FaceID/TouchID)
+4) After success, app sends attendance event with:
+   - user_id
+   - timestamp
+   - geolocation (optional)
+   - device_id
+   - method="biometric"
+   - proof_signature: sign(payload) using device key stored during device registration
+5) Server verifies tenant, verifies device, stores event
+6) Dashboard shows attendance summary + anomalies (late, missing check-out, location mismatch)
+
+Optional enhancements:
+- Geofence (allowed locations in settings)
+- QR code check-in (office QR changes daily)
+- Anti-fraud:
+  - detect timezone mismatch
+  - device change alerts
+  - repeated check-ins
+
+================================================================================
+FRONTEND FEATURES (WEB DASHBOARD)
+================================================================================
+
+- RTL/LTR switch
+- Arabic default
+- Modules menu is dynamic based on subscription modules
+- Pages:
+  - Dashboard
+  - CRM: companies/contacts/opportunities
+  - Quotes: wizard + approvals + timeline + portal link
+  - Tasks: Kanban like Trello (drag/drop using dnd-kit)
+  - Tickets: list + details + comments
+  - HR: employees + profile + KPIs
+  - Inventory: products + stock
+  - Accounting: invoices + payments + reports
+  - Settings:
+    - Subscription & plan
+    - Integrations (SendGrid, WhatsApp, Google)
+    - Payment gateways keys
+    - Attendance settings
+  - Billing page:
+    - remaining days/time
+    - upgrade plan
+    - renew/coupon
+
+================================================================================
+CLIENT PORTAL (ADVANCED)
+================================================================================
+
+- /portal magic link or OTP login
+- client can view:
+  - quotes list + quote details
+  - accept/reject
+  - sign using signature pad (canvas)
+  - download PDF
+  - open support tickets
+  - view invoices & pay link
+
+================================================================================
+WORKFLOW: QUOTES APPROVAL (MANDATORY)
+================================================================================
+
+Discount approval logic:
+- If discount <= base_discount_limit_no_approval:
+  approval_required=false; approval_status='none'
+  auto-approve and allow sending
+- If discount > base limit:
+  approval_required=true
+  create quote_approvals row status=pending
+  quote.status=under_review
+  notify manager (approval_manager_user_id setting)
+  create timeline quote_activities entry
+  create reminders job (daily until resolved)
+
+================================================================================
+TIMELINE & LOGGING (CROSS-CUTTING)
+================================================================================
+
+Implement reusable services:
+- TimelineService.logQuote(quoteId, userId, eventType, title, description, meta)
+- TimelineService.logTask(...)
+- TimelineService.logTicket(...)
+- ActivityLogService.log(entityType, entityId, action, data)
+
+Every major action MUST write to activity_log and the module timeline.
+
+================================================================================
+DELIVERABLES (MANDATORY)
+================================================================================
+
+You must output a complete monorepo structure:
+
+/apps
+  /api        (Express + TS + Prisma)
+  /web        (React + Vite + Tailwind)
+  /mobile     (React Native Expo connector)
+  
+/packages
+  /shared     (shared types, zod schemas, constants, i18n keys)
+  /ui         (optional shared UI components)
+
+You must implement:
+1) Prisma schema for ALL tables above
+2) DB migrations
+3) Express routes with controllers/services
+4) Auth + RBAC middlewares
+5) Subscription + module access middleware
+6) Web UI pages and navigation
+7) Mobile connector:
+   - push notifications + sound + optional TTS
+   - attendance check-in/out with biometric confirmation
+8) Google import UI + API
+9) Trello-like tasks UI (drag/drop)
+10) Quote portal with signature pad
+
+IMPORTANT RULES:
+- No hardcoded secrets. Read keys from .env or settings table.
+- Strict tenant isolation.
+- Use clean code, layered services, and predictable folder structure.
+- Provide seed scripts: demo tenant, admin user, sample data.
+
+Now start generating the project step-by-step:
+- First: monorepo scaffold + tooling + env templates
+- Second: Prisma schema + migrations
+- Third: auth/rbac/subscription core
+- Fourth: CRM + Quotes + Timeline
+- Fifth: Tasks Kanban
+- Sixth: HR + Tickets + Inventory + Accounting
+- Seventh: Integrations (SendGrid/WhatsApp/Google/Payments scaffold)
+- Eighth: Mobile connector (push/sound/attendance biometric flow)
+- Ninth: Portal + signature + PDF download
+- Tenth: final QA checklist and run instructions
