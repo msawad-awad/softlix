@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>من نحن | Softlix</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f6f8fc;
+      --surface: rgba(255,255,255,.78);
+      --surface-strong: #ffffff;
+      --text: #0f172a;
+      --muted: #5b6475;
+      --line: rgba(15, 23, 42, .08);
+      --brand: #e59269;
+      --brand-2: #82b735;
+      --brand-dark: #c36c43;
+      --shadow: 0 18px 60px rgba(15, 23, 42, .10);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --max: 1240px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Cairo', system-ui, sans-serif;
+      background:
+        radial-gradient(circle at 10% 10%, rgba(229,146,105,.20), transparent 28%),
+        radial-gradient(circle at 85% 12%, rgba(130,183,53,.18), transparent 24%),
+        linear-gradient(180deg, #ffffff 0%, #f8f9fd 34%, #f4f7fb 100%);
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    .container {
+      width: min(var(--max), calc(100% - 32px));
+      margin-inline: auto;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      background: rgba(255,255,255,.72);
+      border-bottom: 1px solid rgba(15,23,42,.06);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      min-height: 82px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 800;
+      font-size: 1.08rem;
+    }
+
+    .brand-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      box-shadow: 0 12px 30px rgba(229,146,105,.25);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .brand-mark::before,
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      inset: auto;
+      border-radius: 999px;
+      background: rgba(255,255,255,.65);
+    }
+
+    .brand-mark::before {
+      width: 28px;
+      height: 28px;
+      right: -8px;
+      top: -6px;
+    }
+
+    .brand-mark::after {
+      width: 18px;
+      height: 18px;
+      left: 6px;
+      bottom: 4px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 26px;
+      color: #273247;
+      font-weight: 600;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 50px;
+      padding: 0 22px;
+      border-radius: 999px;
+      font-weight: 800;
+      border: 1px solid transparent;
+      transition: .25s ease;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      box-shadow: 0 14px 30px rgba(229,146,105,.28);
+    }
+
+    .btn-primary:hover { transform: translateY(-2px); }
+
+    .btn-secondary {
+      background: rgba(255,255,255,.8);
+      border-color: rgba(15,23,42,.08);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover { background: #fff; }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 64px 0 36px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.72);
+      border: 1px solid rgba(15,23,42,.08);
+      box-shadow: 0 10px 30px rgba(15,23,42,.05);
+      color: #334155;
+      font-weight: 700;
+      font-size: .92rem;
+      margin-bottom: 22px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.4rem, 5vw, 4.9rem);
+      line-height: 1.08;
+      letter-spacing: -.03em;
+      font-weight: 900;
+      max-width: 11ch;
+    }
+
+    .hero p {
+      margin: 22px 0 0;
+      font-size: 1.08rem;
+      color: var(--muted);
+      max-width: 62ch;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 30px;
+    }
+
+    .stat {
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(15,23,42,.06);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 12px 40px rgba(15,23,42,.05);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.9rem;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: .94rem;
+      font-weight: 600;
+    }
+
+    .hero-visual {
+      position: relative;
+      min-height: 640px;
+    }
+
+    .panel-main {
+      position: absolute;
+      inset: 24px 0 0 70px;
+      background: linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,255,255,.78));
+      border: 1px solid rgba(255,255,255,.7);
+      border-radius: 32px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .panel-main::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(135deg, rgba(229,146,105,.12), transparent 38%),
+        radial-gradient(circle at 80% 10%, rgba(130,183,53,.16), transparent 18%),
+        linear-gradient(180deg, rgba(15,23,42,.03), transparent 35%);
+      pointer-events: none;
+    }
+
+    .window-bar {
+      display: flex;
+      gap: 8px;
+      padding: 18px 20px 0;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(15,23,42,.16);
+    }
+
+    .dashboard {
+      padding: 18px 20px 22px;
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 16px;
+      height: calc(100% - 28px);
+    }
+
+    .card,
+    .mini-card,
+    .floating-box,
+    .timeline-card,
+    .value-card,
+    .service-card,
+    .why-card,
+    .cta-box {
+      background: var(--surface);
+      border: 1px solid rgba(15,23,42,.07);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 14px 40px rgba(15,23,42,.06);
+    }
+
+    .dashboard-col {
+      display: grid;
+      gap: 16px;
+      grid-auto-rows: minmax(110px, auto);
+    }
+
+    .card {
+      border-radius: 24px;
+      padding: 18px;
+    }
+
+    .card-title {
+      font-size: .95rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .bars {
+      display: grid;
+      gap: 10px;
+    }
+
+    .bar {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(15,23,42,.06);
+      overflow: hidden;
+    }
+
+    .bar > i {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--brand), var(--brand-2));
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .mini-card {
+      border-radius: 18px;
+      padding: 16px;
+    }
+
+    .mini-card strong {
+      display: block;
+      font-size: 1.4rem;
+      margin-bottom: 6px;
+    }
+
+    .mini-card span {
+      color: var(--muted);
+      font-size: .88rem;
+      font-weight: 600;
+    }
+
+    .floating-box {
+      position: absolute;
+      border-radius: 22px;
+      padding: 18px;
+      z-index: 3;
+    }
+
+    .floating-box.one {
+      left: 0;
+      top: 70px;
+      width: 220px;
+    }
+
+    .floating-box.two {
+      right: 0;
+      bottom: 44px;
+      width: 240px;
+    }
+
+    .floating-box strong {
+      display: block;
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+    }
+
+    .floating-box p {
+      margin: 0;
+      font-size: .92rem;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .section {
+      padding: 44px 0;
+    }
+
+    .section-head {
+      max-width: 780px;
+      margin-bottom: 26px;
+    }
+
+    .section-head h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.8rem, 3vw, 3rem);
+      line-height: 1.15;
+      font-weight: 900;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: .92fr 1.08fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .story-box,
+    .story-side {
+      border-radius: var(--radius-xl);
+      padding: 28px;
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(15,23,42,.06);
+      box-shadow: var(--shadow);
+    }
+
+    .story-box h3,
+    .story-side h3 {
+      margin: 0 0 12px;
+      font-size: 1.45rem;
+      font-weight: 900;
+    }
+
+    .story-box p,
+    .story-side p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .story-side {
+      display: grid;
+      gap: 18px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,255,255,.82)),
+        radial-gradient(circle at top left, rgba(229,146,105,.12), transparent 40%);
+    }
+
+    .bullet-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 4px;
+    }
+
+    .bullet {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      color: #1f2937;
+      font-weight: 600;
+    }
+
+    .bullet i {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      margin-top: 10px;
+      flex: 0 0 auto;
+    }
+
+    .values-grid,
+    .services-grid,
+    .why-grid,
+    .timeline-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .values-grid { grid-template-columns: repeat(3, 1fr); }
+    .services-grid { grid-template-columns: repeat(3, 1fr); }
+    .why-grid { grid-template-columns: repeat(4, 1fr); }
+    .timeline-grid { grid-template-columns: repeat(4, 1fr); }
+
+    .value-card,
+    .service-card,
+    .why-card,
+    .timeline-card {
+      border-radius: 24px;
+      padding: 24px;
+    }
+
+    .icon {
+      width: 54px;
+      height: 54px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 18px;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, rgba(229,146,105,.16), rgba(130,183,53,.18));
+      color: var(--text);
+      font-size: 1.25rem;
+      font-weight: 900;
+    }
+
+    .value-card h3,
+    .service-card h3,
+    .why-card h3,
+    .timeline-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.12rem;
+      font-weight: 900;
+    }
+
+    .value-card p,
+    .service-card p,
+    .why-card p,
+    .timeline-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: .96rem;
+    }
+
+    .timeline-year {
+      display: inline-flex;
+      padding: 8px 14px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+      background: rgba(15,23,42,.05);
+      color: #1e293b;
+      font-size: .88rem;
+      font-weight: 900;
+    }
+
+    .cta {
+      padding: 18px 0 70px;
+    }
+
+    .cta-box {
+      border-radius: 34px;
+      padding: 34px;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(135deg, rgba(229,146,105,.98), rgba(195,108,67,.98));
+      color: #fff;
+      border: none;
+    }
+
+    .cta-box::before,
+    .cta-box::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,.10);
+    }
+
+    .cta-box::before {
+      width: 240px;
+      height: 240px;
+      top: -100px;
+      left: -30px;
+    }
+
+    .cta-box::after {
+      width: 180px;
+      height: 180px;
+      bottom: -70px;
+      right: 60px;
+    }
+
+    .cta-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 22px;
+      align-items: center;
+    }
+
+    .cta-box h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.8rem, 3vw, 3.2rem);
+      line-height: 1.12;
+      font-weight: 900;
+    }
+
+    .cta-box p {
+      margin: 0;
+      color: rgba(255,255,255,.88);
+      max-width: 56ch;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .btn-white {
+      background: #fff;
+      color: var(--text);
+      box-shadow: 0 14px 32px rgba(0,0,0,.12);
+    }
+
+    .btn-outline-white {
+      color: #fff;
+      border-color: rgba(255,255,255,.4);
+      background: rgba(255,255,255,.08);
+    }
+
+    .site-footer {
+      border-top: 1px solid rgba(15,23,42,.08);
+      background: rgba(255,255,255,.65);
+      backdrop-filter: blur(10px);
+    }
+
+    .footer-inner {
+      min-height: 82px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      color: #536072;
+      font-weight: 600;
+      font-size: .95rem;
+    }
+
+    @media (max-width: 1100px) {
+      .hero-grid,
+      .split,
+      .cta-grid,
+      .values-grid,
+      .services-grid,
+      .why-grid,
+      .timeline-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .why-grid { grid-template-columns: repeat(2, 1fr); }
+      .timeline-grid { grid-template-columns: repeat(2, 1fr); }
+      .hero-visual { min-height: 560px; }
+    }
+
+    @media (max-width: 860px) {
+      .nav-links { display: none; }
+      .hero-grid,
+      .split,
+      .cta-grid,
+      .values-grid,
+      .services-grid,
+      .why-grid,
+      .timeline-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-stats { grid-template-columns: 1fr; }
+      .dashboard { grid-template-columns: 1fr; }
+      .panel-main { inset: 24px 0 0 0; }
+      .floating-box.one,
+      .floating-box.two {
+        position: static;
+        width: auto;
+        margin-top: 14px;
+      }
+      .hero-visual { min-height: auto; display: grid; gap: 14px; }
+      .cta-actions { justify-content: flex-start; }
+      .footer-inner { flex-direction: column; justify-content: center; padding: 18px 0; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a href="#" class="brand">
+        <span class="brand-mark"></span>
+        <span>Softlix</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#story">من نحن</a>
+        <a href="#values">قيمنا</a>
+        <a href="#journey">رحلتنا</a>
+        <a href="#services">ماذا نبني</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="#journey">استكشف الشركة</a>
+        <a class="btn btn-primary" href="#cta">ابدأ مشروعك</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <span class="eyebrow">شركة تقنية تبني منصات تقود النمو</span>
+          <h1>نحوّل الأفكار الجريئة إلى منتجات رقمية تُحدث فرقاً حقيقياً</h1>
+          <p>
+            Softlix شركة تقنية متخصصة في تطوير المنصات الرقمية، تطبيقات الجوال، أنظمة ERP وCRM،
+            وحلول التحول الرقمي التي تساعد الشركات على العمل بذكاء والنمو بثقة داخل السوق السعودي وخارجه.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#cta">تحدث مع الفريق</a>
+            <a class="btn btn-secondary" href="#story">اعرف قصتنا</a>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat">
+              <strong>120+</strong>
+              <span>مشروع رقمي وتجاري</span>
+            </div>
+            <div class="stat">
+              <strong>10+</strong>
+              <span>سنوات من الخبرة العملية</span>
+            </div>
+            <div class="stat">
+              <strong>60+</strong>
+              <span>عميل وشراكة أعمال</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="panel-main">
+            <div class="window-bar">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+
+            <div class="dashboard">
+              <div class="dashboard-col">
+                <div class="card">
+                  <div class="card-title">منهجية التنفيذ</div>
+                  <div class="bars">
+                    <div class="bar"><i style="width: 92%"></i></div>
+                    <div class="bar"><i style="width: 78%"></i></div>
+                    <div class="bar"><i style="width: 86%"></i></div>
+                    <div class="bar"><i style="width: 70%"></i></div>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-title">التركيز على القيمة</div>
+                  <div class="grid-2">
+                    <div class="mini-card">
+                      <strong>UX</strong>
+                      <span>تجربة مستخدم عملية</span>
+                    </div>
+                    <div class="mini-card">
+                      <strong>Scale</strong>
+                      <span>أنظمة قابلة للنمو</span>
+                    </div>
+                    <div class="mini-card">
+                      <strong>Speed</strong>
+                      <span>تنفيذ أسرع</span>
+                    </div>
+                    <div class="mini-card">
+                      <strong>ROI</strong>
+                      <span>أثر تجاري أوضح</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="dashboard-col">
+                <div class="card" style="min-height: 180px; display:grid; align-content:start; gap:12px;">
+                  <div class="card-title">الحلول الأساسية</div>
+                  <div class="mini-card"><strong>ERP</strong><span>إدارة وتشغيل الأعمال</span></div>
+                  <div class="mini-card"><strong>Apps</strong><span>تطبيقات iOS وAndroid</span></div>
+                  <div class="mini-card"><strong>Commerce</strong><span>تجارة إلكترونية متقدمة</span></div>
+                </div>
+
+                <div class="card" style="display:grid; gap:12px; align-content:start;">
+                  <div class="card-title">ما يميز Softlix</div>
+                  <p style="margin:0; color:var(--muted)">حلول مبنية على فهم تقني وتجاري معاً، وليست مجرد تنفيذ شكلي للتصميم.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="floating-box one">
+            <strong>نصمم للنمو</strong>
+            <p>كل واجهة، كل تدفق، وكل نظام يتم بناؤه لدعم الأداء والوضوح والتوسع.</p>
+          </div>
+
+          <div class="floating-box two">
+            <strong>من الفكرة إلى الإطلاق</strong>
+            <p>نرافق العميل من الاستراتيجية وحتى المنتج النهائي مع تجربة تنفيذ احترافية.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="story">
+      <div class="container">
+        <div class="section-head">
+          <h2>من نحن</h2>
+          <p>نبني Softlix بعقلية تجمع بين الحداثة التقنية، وضوح الرؤية التجارية، والقدرة على تحويل الاحتياج إلى منتج فعّال.</p>
+        </div>
+
+        <div class="split">
+          <div class="story-box">
+            <h3>شركة تقنية بطموح إقليمي</h3>
+            <p>
+              نؤمن أن التحول الرقمي الحقيقي لا يبدأ من الكود فقط، بل يبدأ من فهم عميق للأعمال.
+              لهذا نعمل على تطوير أنظمة ومنصات تساعد الشركات على تنظيم عملياتها، تحسين تجربة عملائها،
+              وتسريع نموها بأسلوب احترافي قابل للتوسع.
+            </p>
+          </div>
+
+          <div class="story-side">
+            <h3>كيف نفكر داخل Softlix</h3>
+            <div class="bullet-list">
+              <div class="bullet"><i></i><span>نبني حلولاً تعالج مشاكل تشغيلية حقيقية وليست واجهات جميلة فقط.</span></div>
+              <div class="bullet"><i></i><span>نوازن بين التصميم الحديث، سهولة الاستخدام، والهدف التجاري.</span></div>
+              <div class="bullet"><i></i><span>نؤسس المنتجات لتكون قابلة للتطوير والربط والتوسع مستقبلاً.</span></div>
+              <div class="bullet"><i></i><span>نعمل بعقلية شراكة طويلة المدى مع العميل، لا بعقلية تسليم سريع وانتهاء.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="values">
+      <div class="container">
+        <div class="section-head">
+          <h2>القيم التي تحكم عملنا</h2>
+          <p>هذه المبادئ هي التي تجعل شكل Softlix أقرب للشركات التقنية العالمية لا لشركات الخدمات التقليدية.</p>
+        </div>
+
+        <div class="values-grid">
+          <article class="value-card">
+            <div class="icon">01</div>
+            <h3>وضوح الرؤية</h3>
+            <p>نبدأ كل مشروع بفهم الهدف التجاري والنتيجة المطلوبة، ثم نبني الحل على هذا الأساس.</p>
+          </article>
+
+          <article class="value-card">
+            <div class="icon">02</div>
+            <h3>جودة التنفيذ</h3>
+            <p>نهتم بالتفاصيل الدقيقة في الهيكل، الواجهات، الأداء، والتجربة النهائية للمستخدم.</p>
+          </article>
+
+          <article class="value-card">
+            <div class="icon">03</div>
+            <h3>شراكة مستمرة</h3>
+            <p>ننظر إلى العلاقة مع العميل كامتداد لفريقه، وليس كمهمة تنتهي عند الإطلاق.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="journey">
+      <div class="container">
+        <div class="section-head">
+          <h2>رحلة Softlix</h2>
+          <p>من فكرة ناشئة إلى شركة تبني حلولاً رقمية متقدمة للشركات والمؤسسات.</p>
+        </div>
+
+        <div class="timeline-grid">
+          <article class="timeline-card">
+            <span class="timeline-year">2016</span>
+            <h3>البداية</h3>
+            <p>بدأت Softlix كفكرة طموحة في خدمات تقنية المعلومات والبنية التحتية والربط التقني.</p>
+          </article>
+
+          <article class="timeline-card">
+            <span class="timeline-year">2017 – 2019</span>
+            <h3>التحول الرقمي</h3>
+            <p>انتقلنا من الخدمات الوسيطة إلى بناء مواقع الويب، إدارة الحملات، وتطوير الحلول التجارية.</p>
+          </article>
+
+          <article class="timeline-card">
+            <span class="timeline-year">2020 – 2022</span>
+            <h3>تأسيس الفريق</h3>
+            <p>تم بناء الفريق البرمجي والتسويقي، وتوسيع نطاق المشاريع والعلاقات مع شركاء تقنيين أكبر.</p>
+          </article>
+
+          <article class="timeline-card">
+            <span class="timeline-year">اليوم</span>
+            <h3>مرحلة النمو</h3>
+            <p>نطوّر منصات وتطبيقات وأنظمة أعمال حديثة تستهدف شركات تبحث عن حلول قوية وقابلة للتوسع.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="services">
+      <div class="container">
+        <div class="section-head">
+          <h2>ماذا نبني</h2>
+          <p>نركّز على المنتجات والحلول التي تصنع فرقاً واضحاً في التشغيل، التجربة، والنمو.</p>
+        </div>
+
+        <div class="services-grid">
+          <article class="service-card">
+            <div class="icon">A</div>
+            <h3>تطبيقات الجوال</h3>
+            <p>تطبيقات احترافية للأعمال والتجارة والخدمات، بتجربة استخدام عصرية وسريعة.</p>
+          </article>
+
+          <article class="service-card">
+            <div class="icon">B</div>
+            <h3>منصات الويب</h3>
+            <p>منصات قوية للشركات والأسواق الرقمية وبوابات العملاء والإدارات الداخلية.</p>
+          </article>
+
+          <article class="service-card">
+            <div class="icon">C</div>
+            <h3>ERP و CRM</h3>
+            <p>أنظمة لإدارة العمليات، العملاء، الفواتير، الفرق، وسير الأعمال بشكل متكامل.</p>
+          </article>
+
+          <article class="service-card">
+            <div class="icon">D</div>
+            <h3>التجارة الإلكترونية</h3>
+            <p>متاجر ومنظومات بيع رقمية تدعم التوسع والربط والتسويق والتحويلات العالية.</p>
+          </article>
+
+          <article class="service-card">
+            <div class="icon">E</div>
+            <h3>التصميم وتجربة المستخدم</h3>
+            <p>تصميمات حديثة توازن بين الجمال والوضوح وتحسين رحلة المستخدم داخل المنتج.</p>
+          </article>
+
+          <article class="service-card">
+            <div class="icon">F</div>
+            <h3>التحول الرقمي</h3>
+            <p>نساعد الشركات على الانتقال من العمليات التقليدية إلى أنظمة رقمية مترابطة وفعّالة.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-head">
+          <h2>لماذا Softlix</h2>
+          <p>لأننا لا نقدّم مشروعاً جميلاً فقط، بل نبني أصلًا رقميًا يخدم العمل ويستمر بالنمو.</p>
+        </div>
+
+        <div class="why-grid">
+          <article class="why-card">
+            <div class="icon">✓</div>
+            <h3>فهم تجاري وتقني</h3>
+            <p>نفهم المتطلبات التشغيلية بقدر فهمنا للتصميم والبرمجة.</p>
+          </article>
+
+          <article class="why-card">
+            <div class="icon">↗</div>
+            <h3>حلول قابلة للتوسع</h3>
+            <p>نضع المستقبل في الحسبان من أول نسخة وحتى مراحل النمو التالية.</p>
+          </article>
+
+          <article class="why-card">
+            <div class="icon">◎</div>
+            <h3>جودة بصرية عالية</h3>
+            <p>نهتم أن يظهر المنتج النهائي بمستوى الشركات الحديثة والمنتجات العالمية.</p>
+          </article>
+
+          <article class="why-card">
+            <div class="icon">∞</div>
+            <h3>علاقة طويلة المدى</h3>
+            <p>نفضّل العمل مع عملاء يبحثون عن بناء حقيقي لا مجرد تنفيذ مؤقت.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta" id="cta">
+      <div class="container">
+        <div class="cta-box">
+          <div class="cta-grid">
+            <div>
+              <h2>هل لديك فكرة، منصة، أو نظام تريد إطلاقه بشكل احترافي؟</h2>
+              <p>
+                دعنا نبني معك تجربة رقمية بمستوى حديث، وهوية قوية، وبنية تقنية تساعد مشروعك على النمو بثقة.
+              </p>
+            </div>
+
+            <div class="cta-actions">
+              <a href="#" class="btn btn-white">ابدأ مشروعك</a>
+              <a href="#story" class="btn btn-outline-white">استكشف الشركة</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span>© Softlix — Building digital products for modern businesses.</span>
+      <span>منصات رقمية • تطبيقات • ERP • CRM • تجارة إلكترونية</span>
+    </div>
+  </footer>
+</body>
+</html>
