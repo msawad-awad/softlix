@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Switch, Route, useLocation, Redirect } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -25,33 +26,35 @@ import Tickets from "@/pages/tickets";
 import HR from "@/pages/hr";
 import Inventory from "@/pages/inventory";
 
+import PublicHome from "@/pages/public/home";
+import PublicAbout from "@/pages/public/about";
+import PublicServices from "@/pages/public/services";
+import PublicProjects from "@/pages/public/projects";
+import PublicBlog from "@/pages/public/blog";
+import PublicContact from "@/pages/public/contact";
+
+import WebsiteOverview from "@/pages/website/index";
+import WebsiteServices from "@/pages/website/services";
+import WebsiteProjects from "@/pages/website/projects";
+import WebsiteBlog from "@/pages/website/blog";
+import WebsiteLeads from "@/pages/website/leads";
+import WebsiteClients from "@/pages/website/clients";
+import WebsiteRedirects from "@/pages/website/redirects";
+import Marketing from "@/pages/marketing";
+import { useMarketingTracking } from "@/hooks/use-marketing-tracking";
+
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
   const [location] = useLocation();
-
-  if (isLoading) {
-    return <LoadingPage />;
-  }
-
-  if (!isAuthenticated) {
-    return <Redirect to={`/login?redirect=${encodeURIComponent(location)}`} />;
-  }
-
-  return <>{children}</>;
-}
-
-function AuthLayout({ children }: { children: React.ReactNode }) {
+  if (isLoading) return <LoadingPage />;
+  if (!isAuthenticated) return <Redirect to={`/login?redirect=${encodeURIComponent(location)}`} />;
   return <>{children}</>;
 }
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { isRTL } = useLanguage() ?? { isRTL: false };
-
   const content = (
-    <SidebarInset
-      className="flex flex-col flex-1 min-w-0"
-      {...(isRTL ? { dir: "rtl" } : {})}
-    >
+    <SidebarInset className="flex flex-col flex-1 min-w-0" {...(isRTL ? { dir: "rtl" } : {})}>
       <header className="flex h-14 items-center justify-between gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 sticky top-0 z-50">
         <SidebarTrigger data-testid="button-sidebar-toggle" />
         <div className="flex items-center gap-2">
@@ -59,175 +62,96 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
           <ThemeToggle />
         </div>
       </header>
-      <main className="flex-1 overflow-auto p-6">
-        {children}
-      </main>
+      <main className="flex-1 overflow-auto p-6">{children}</main>
     </SidebarInset>
   );
-
   return (
-    // dir="ltr" prevents the CSS direction:rtl on <html> from reversing flex automatically.
-    // We control the sidebar position ourselves via DOM order + side="right" prop.
     <div className="flex min-h-screen w-full" dir="ltr">
-      {isRTL ? (
-        <>
-          {content}
-          <AppSidebar />
-        </>
-      ) : (
-        <>
-          <AppSidebar />
-          {content}
-        </>
-      )}
+      {isRTL ? <>{content}<AppSidebar /></> : <><AppSidebar />{content}</>}
     </div>
   );
 }
 
 function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const style = {
-    "--sidebar-width": "18rem",
-    "--sidebar-width-icon": "3.5rem",
-  };
-
   return (
-    <SidebarProvider style={style as React.CSSProperties}>
+    <SidebarProvider style={{ "--sidebar-width": "18rem", "--sidebar-width-icon": "3.5rem" } as React.CSSProperties}>
       <DashboardLayoutContent>{children}</DashboardLayoutContent>
     </SidebarProvider>
+  );
+}
+
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  return (
+    <ProtectedRoute>
+      <DashboardLayout>{children}</DashboardLayout>
+    </ProtectedRoute>
+  );
+}
+
+function PublicSite() {
+  const [lang, setLang] = useState<"ar" | "en">("ar");
+  const p = { lang, onLangChange: setLang };
+  useMarketingTracking();
+  return (
+    <Switch>
+      <Route path="/about"><PublicAbout {...p} /></Route>
+      <Route path="/services/:slug"><PublicServices {...p} /></Route>
+      <Route path="/services"><PublicServices {...p} /></Route>
+      <Route path="/projects/:slug"><PublicProjects {...p} /></Route>
+      <Route path="/projects"><PublicProjects {...p} /></Route>
+      <Route path="/blog/:slug"><PublicBlog {...p} /></Route>
+      <Route path="/blog"><PublicBlog {...p} /></Route>
+      <Route path="/contact"><PublicContact {...p} /></Route>
+      <Route path="/"><PublicHome {...p} /></Route>
+      <Route component={NotFound} />
+    </Switch>
   );
 }
 
 function Router() {
   return (
     <Switch>
-      <Route path="/">
-        <Redirect to="/dashboard" />
-      </Route>
-      
-      <Route path="/login">
-        <AuthLayout>
-          <Login />
-        </AuthLayout>
-      </Route>
-      
-      <Route path="/register">
-        <AuthLayout>
-          <Register />
-        </AuthLayout>
-      </Route>
-      
-      <Route path="/dashboard">
-        <ProtectedRoute>
-          <DashboardLayout>
-            <Dashboard />
-          </DashboardLayout>
-        </ProtectedRoute>
-      </Route>
-      
-      <Route path="/companies">
-        <ProtectedRoute>
-          <DashboardLayout>
-            <Companies />
-          </DashboardLayout>
-        </ProtectedRoute>
-      </Route>
-      
-      <Route path="/companies/new">
-        <ProtectedRoute>
-          <DashboardLayout>
-            <CompanyForm />
-          </DashboardLayout>
-        </ProtectedRoute>
-      </Route>
-      
-      <Route path="/companies/:id">
-        <ProtectedRoute>
-          <DashboardLayout>
-            <CompanyForm />
-          </DashboardLayout>
-        </ProtectedRoute>
-      </Route>
-      
-      <Route path="/companies/:id/edit">
-        <ProtectedRoute>
-          <DashboardLayout>
-            <CompanyForm />
-          </DashboardLayout>
-        </ProtectedRoute>
-      </Route>
-      
-      <Route path="/contacts">
-        <ProtectedRoute>
-          <DashboardLayout>
-            <Contacts />
-          </DashboardLayout>
-        </ProtectedRoute>
-      </Route>
-      
-      <Route path="/contacts/new">
-        <ProtectedRoute>
-          <DashboardLayout>
-            <ContactForm />
-          </DashboardLayout>
-        </ProtectedRoute>
-      </Route>
-      
-      <Route path="/contacts/:id">
-        <ProtectedRoute>
-          <DashboardLayout>
-            <ContactForm />
-          </DashboardLayout>
-        </ProtectedRoute>
-      </Route>
-      
-      <Route path="/contacts/:id/edit">
-        <ProtectedRoute>
-          <DashboardLayout>
-            <ContactForm />
-          </DashboardLayout>
-        </ProtectedRoute>
-      </Route>
-      
-      <Route path="/settings">
-        <ProtectedRoute>
-          <DashboardLayout>
-            <Settings />
-          </DashboardLayout>
-        </ProtectedRoute>
-      </Route>
+      {/* Auth routes */}
+      <Route path="/login"><Login /></Route>
+      <Route path="/register"><Register /></Route>
 
-      <Route path="/tasks">
-        <ProtectedRoute>
-          <DashboardLayout>
-            <Tasks />
-          </DashboardLayout>
-        </ProtectedRoute>
-      </Route>
+      {/* Admin / CRM dashboard routes */}
+      <Route path="/dashboard"><AdminRoute><Dashboard /></AdminRoute></Route>
+      <Route path="/companies/new"><AdminRoute><CompanyForm /></AdminRoute></Route>
+      <Route path="/companies/:id/edit"><AdminRoute><CompanyForm /></AdminRoute></Route>
+      <Route path="/companies/:id"><AdminRoute><CompanyForm /></AdminRoute></Route>
+      <Route path="/companies"><AdminRoute><Companies /></AdminRoute></Route>
+      <Route path="/contacts/new"><AdminRoute><ContactForm /></AdminRoute></Route>
+      <Route path="/contacts/:id/edit"><AdminRoute><ContactForm /></AdminRoute></Route>
+      <Route path="/contacts/:id"><AdminRoute><ContactForm /></AdminRoute></Route>
+      <Route path="/contacts"><AdminRoute><Contacts /></AdminRoute></Route>
+      <Route path="/settings"><AdminRoute><Settings /></AdminRoute></Route>
+      <Route path="/tasks"><AdminRoute><Tasks /></AdminRoute></Route>
+      <Route path="/tickets"><AdminRoute><Tickets /></AdminRoute></Route>
+      <Route path="/hr"><AdminRoute><HR /></AdminRoute></Route>
+      <Route path="/inventory"><AdminRoute><Inventory /></AdminRoute></Route>
 
-      <Route path="/tickets">
-        <ProtectedRoute>
-          <DashboardLayout>
-            <Tickets />
-          </DashboardLayout>
-        </ProtectedRoute>
-      </Route>
+      {/* CMS website routes */}
+      <Route path="/website/services"><AdminRoute><WebsiteServices /></AdminRoute></Route>
+      <Route path="/website/projects"><AdminRoute><WebsiteProjects /></AdminRoute></Route>
+      <Route path="/website/blog"><AdminRoute><WebsiteBlog /></AdminRoute></Route>
+      <Route path="/website/leads"><AdminRoute><WebsiteLeads /></AdminRoute></Route>
+      <Route path="/website/clients"><AdminRoute><WebsiteClients /></AdminRoute></Route>
+      <Route path="/website/redirects"><AdminRoute><WebsiteRedirects /></AdminRoute></Route>
+      <Route path="/website"><AdminRoute><WebsiteOverview /></AdminRoute></Route>
+      <Route path="/marketing"><AdminRoute><Marketing /></AdminRoute></Route>
 
-      <Route path="/hr">
-        <ProtectedRoute>
-          <DashboardLayout>
-            <HR />
-          </DashboardLayout>
-        </ProtectedRoute>
-      </Route>
+      {/* Public website - catch all remaining paths */}
+      <Route path="/about"><PublicSite /></Route>
+      <Route path="/services/:slug"><PublicSite /></Route>
+      <Route path="/services"><PublicSite /></Route>
+      <Route path="/projects/:slug"><PublicSite /></Route>
+      <Route path="/projects"><PublicSite /></Route>
+      <Route path="/blog/:slug"><PublicSite /></Route>
+      <Route path="/blog"><PublicSite /></Route>
+      <Route path="/contact"><PublicSite /></Route>
+      <Route path="/"><PublicSite /></Route>
 
-      <Route path="/inventory">
-        <ProtectedRoute>
-          <DashboardLayout>
-            <Inventory />
-          </DashboardLayout>
-        </ProtectedRoute>
-      </Route>
-      
       <Route component={NotFound} />
     </Switch>
   );

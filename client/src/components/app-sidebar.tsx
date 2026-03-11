@@ -14,6 +14,13 @@ import {
   LogOut,
   ChevronDown,
   Zap,
+  Globe,
+  Layers,
+  BookOpen,
+  Users2,
+  Link2,
+  Inbox,
+  Megaphone,
 } from "lucide-react";
 import {
   Sidebar,
@@ -106,6 +113,16 @@ export function AppSidebar() {
       icon: Calculator,
       disabled: true,
     },
+  ];
+
+  const websiteItems = [
+    { title: "نظرة عامة", url: "/website", icon: Globe },
+    { title: "الخدمات", url: "/website/services", icon: Layers },
+    { title: "المشاريع", url: "/website/projects", icon: Package },
+    { title: "المدونة", url: "/website/blog", icon: BookOpen },
+    { title: "العملاء", url: "/website/clients", icon: Users2 },
+    { title: "التحويلات", url: "/website/redirects", icon: Link2 },
+    { title: "العملاء المحتملون", url: "/website/leads", icon: Inbox },
   ];
 
   const getInitials = (name: string) => {
@@ -223,6 +240,58 @@ export function AppSidebar() {
               </SidebarGroupContent>
             </CollapsibleContent>
           </Collapsible>
+        </SidebarGroup>
+
+        {/* Website CMS Section */}
+        <SidebarGroup>
+          <Collapsible defaultOpen className="group/collapsible">
+            <SidebarGroupLabel asChild>
+              <CollapsibleTrigger className="flex w-full items-center justify-between">
+                <span>الموقع الإلكتروني</span>
+                <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180" />
+              </CollapsibleTrigger>
+            </SidebarGroupLabel>
+            <CollapsibleContent>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {websiteItems.map((item) => (
+                    <SidebarMenuItem key={item.url}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive(item.url)}
+                        tooltip={item.title}
+                      >
+                        <Link href={item.url} data-testid={`nav-${item.url.slice(1).replace(/\//g, "-")}`}>
+                          <item.icon className={isRTL ? "ml-2" : "mr-2"} />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </CollapsibleContent>
+          </Collapsible>
+        </SidebarGroup>
+
+        {/* Marketing Section */}
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive("/marketing")}
+                  tooltip="التسويق والتتبع"
+                >
+                  <Link href="/marketing" data-testid="nav-marketing">
+                    <Megaphone className={isRTL ? "ml-2" : "mr-2"} />
+                    <span>التسويق والتتبع</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
 

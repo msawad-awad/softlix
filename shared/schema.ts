@@ -185,6 +185,184 @@ export type InsertSession = z.infer<typeof insertSessionSchema>;
 export type Session = typeof sessions.$inferSelect;
 
 // ============================================================================
+// WEBSITE CMS - SERVICES
+// ============================================================================
+export const services = pgTable("services", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  title: text("title").notNull(),
+  titleEn: text("title_en"),
+  slug: text("slug").notNull(),
+  shortDescription: text("short_description"),
+  shortDescriptionEn: text("short_description_en"),
+  fullDescription: text("full_description"),
+  fullDescriptionEn: text("full_description_en"),
+  imageUrl: text("image_url"),
+  iconName: text("icon_name"),
+  seoTitle: text("seo_title"),
+  seoDescription: text("seo_description"),
+  features: jsonb("features").default([]),
+  status: text("status").default("published").notNull(), // published, draft
+  displayOrder: integer("display_order").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertServiceSchema = createInsertSchema(services).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertService = z.infer<typeof insertServiceSchema>;
+export type Service = typeof services.$inferSelect;
+
+// ============================================================================
+// WEBSITE CMS - PROJECTS
+// ============================================================================
+export const projects = pgTable("projects", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  title: text("title").notNull(),
+  titleEn: text("title_en"),
+  slug: text("slug").notNull(),
+  description: text("description"),
+  descriptionEn: text("description_en"),
+  thumbnailUrl: text("thumbnail_url"),
+  images: jsonb("images").default([]),
+  clientName: text("client_name"),
+  projectUrl: text("project_url"),
+  category: text("category"), // mobile-app, web, marketing, etc.
+  technologies: jsonb("technologies").default([]),
+  status: text("status").default("published").notNull(), // published, draft
+  displayOrder: integer("display_order").default(0),
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertProjectSchema = createInsertSchema(projects).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertProject = z.infer<typeof insertProjectSchema>;
+export type Project = typeof projects.$inferSelect;
+
+// ============================================================================
+// WEBSITE CMS - BLOG CATEGORIES
+// ============================================================================
+export const blogCategories = pgTable("blog_categories", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  name: text("name").notNull(),
+  nameEn: text("name_en"),
+  slug: text("slug").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertBlogCategorySchema = createInsertSchema(blogCategories).omit({ id: true, createdAt: true });
+export type InsertBlogCategory = z.infer<typeof insertBlogCategorySchema>;
+export type BlogCategory = typeof blogCategories.$inferSelect;
+
+// ============================================================================
+// WEBSITE CMS - BLOG POSTS
+// ============================================================================
+export const blogPosts = pgTable("blog_posts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  categoryId: varchar("category_id").references(() => blogCategories.id),
+  title: text("title").notNull(),
+  titleEn: text("title_en"),
+  slug: text("slug").notNull(),
+  excerpt: text("excerpt"),
+  excerptEn: text("excerpt_en"),
+  content: text("content"),
+  contentEn: text("content_en"),
+  featuredImageUrl: text("featured_image_url"),
+  seoTitle: text("seo_title"),
+  seoDescription: text("seo_description"),
+  status: text("status").default("draft").notNull(), // published, draft
+  publishedAt: timestamp("published_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertBlogPostSchema = createInsertSchema(blogPosts).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
+export type BlogPost = typeof blogPosts.$inferSelect;
+
+// ============================================================================
+// WEBSITE CMS - SITE CLIENTS (Logo Section)
+// ============================================================================
+export const siteClients = pgTable("site_clients", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  name: text("name").notNull(),
+  logoUrl: text("logo_url"),
+  websiteUrl: text("website_url"),
+  displayOrder: integer("display_order").default(0),
+  status: text("status").default("active").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertSiteClientSchema = createInsertSchema(siteClients).omit({ id: true, createdAt: true });
+export type InsertSiteClient = z.infer<typeof insertSiteClientSchema>;
+export type SiteClient = typeof siteClients.$inferSelect;
+
+// ============================================================================
+// WEBSITE CMS - REDIRECTS
+// ============================================================================
+export const redirects = pgTable("redirects", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  fromUrl: text("from_url").notNull(),
+  toUrl: text("to_url").notNull(),
+  statusCode: integer("status_code").default(301).notNull(), // 301, 302
+  isActive: boolean("is_active").default(true).notNull(),
+  hitCount: integer("hit_count").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertRedirectSchema = createInsertSchema(redirects).omit({ id: true, createdAt: true });
+export type InsertRedirect = z.infer<typeof insertRedirectSchema>;
+export type Redirect = typeof redirects.$inferSelect;
+
+// ============================================================================
+// MARKETING - SETTINGS (GTM, Pixel, Analytics)
+// ============================================================================
+export const marketingSettings = pgTable("marketing_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull().unique(),
+  gtmId: text("gtm_id"),
+  metaPixelId: text("meta_pixel_id"),
+  googleAnalyticsId: text("google_analytics_id"),
+  tiktokPixelId: text("tiktok_pixel_id"),
+  snapchatPixelId: text("snapchat_pixel_id"),
+  linkedinInsightId: text("linkedin_insight_id"),
+  customHeadScript: text("custom_head_script"),
+  customBodyScript: text("custom_body_script"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertMarketingSettingsSchema = createInsertSchema(marketingSettings).omit({ id: true, updatedAt: true });
+export type InsertMarketingSettings = z.infer<typeof insertMarketingSettingsSchema>;
+export type MarketingSettings = typeof marketingSettings.$inferSelect;
+
+// ============================================================================
+// WEBSITE - FORM LEADS
+// ============================================================================
+export const formLeads = pgTable("form_leads", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  formType: text("form_type").default("contact").notNull(), // contact, consultation, quote
+  name: text("name").notNull(),
+  email: text("email"),
+  phone: text("phone"),
+  budget: text("budget"),
+  message: text("message"),
+  pageSource: text("page_source"),
+  ipAddress: text("ip_address"),
+  status: text("status").default("new").notNull(), // new, contacted, converted, closed
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertFormLeadSchema = createInsertSchema(formLeads).omit({ id: true, createdAt: true });
+export type InsertFormLead = z.infer<typeof insertFormLeadSchema>;
+export type FormLead = typeof formLeads.$inferSelect;
+
+// ============================================================================
 // API Response Types
 // ============================================================================
 export type UserWithoutPassword = Omit<User, "passwordHash">;

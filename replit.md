@@ -1,4 +1,4 @@
-# Softlix Business OS - Complete Status
+# Softlix Business OS - Complete Status (with Website CMS)
 
 ## ✅ All Core Requirements - COMPLETED
 
@@ -52,6 +52,18 @@
 - ✅ `/api/companies` - CRUD operations
 - ✅ `/api/contacts` - CRUD operations
 - ✅ All routes protected with authentication middleware
+
+### 8. Website CMS Module - FULLY IMPLEMENTED
+- ✅ **Public Pages**: `/` (Home), `/about`, `/services`, `/services/:slug`, `/projects`, `/projects/:slug`, `/blog`, `/blog/:slug`, `/contact`
+- ✅ **Arabic/English**: All public pages bilingual with lang toggle
+- ✅ **CMS Dashboard**: `/website/*` - manage services, projects, blog, clients, redirects, leads
+- ✅ **Marketing Tracking**: `/marketing` - GTM, Meta Pixel, GA4, TikTok, Snapchat, LinkedIn injection
+- ✅ **Lead Capture**: Contact form at `/contact` saves to DB with status tracking
+- ✅ **SEO**: `/sitemap.xml` and `/robots.txt` auto-generated
+- ✅ **DB Redirects**: Middleware-driven 301/302 redirects from DB table
+- ✅ **Default Redirects**: One-click add all softlixagency.com legacy URLs (e.g. /porjects/ → /projects)
+- ✅ **Client Logos**: Manage client brand logos displayed on site
+- ✅ **Sidebar**: "الموقع الإلكتروني" and "التسويق والتتبع" sections in admin sidebar
 
 ## 📋 Features Shipped
 - Real-time data fetching with TanStack Query v5
