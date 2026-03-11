@@ -504,10 +504,21 @@ export async function registerRoutes(
   // PUBLIC API - No Auth Required (for public website)
   // =========================================================================
 
+  // Helper: resolve tenantId for public routes (falls back to first tenant)
+  async function resolvePublicTenantId(req: any): Promise<string> {
+    const tid = req.query.tenantId as string || "";
+    if (tid) return tid;
+    try {
+      const tenants = await storage.getAllTenants();
+      if (tenants && tenants.length > 0) return tenants[0].id;
+    } catch {}
+    return "";
+  }
+
   // Get published services (public)
   app.get("/api/public/services", async (req, res) => {
     try {
-      const tenantId = req.query.tenantId as string || "";
+      const tenantId = await resolvePublicTenantId(req);
       if (!tenantId) return res.json([]);
       const allServices = await storage.getServices(tenantId);
       res.json(allServices.filter(s => s.status === "published"));
@@ -518,7 +529,7 @@ export async function registerRoutes(
 
   app.get("/api/public/services/:slug", async (req, res) => {
     try {
-      const tenantId = req.query.tenantId as string || "";
+      const tenantId = await resolvePublicTenantId(req);
       if (!tenantId) return res.status(404).json({ message: "Not found" });
       const service = await storage.getServiceBySlug(req.params.slug, tenantId);
       if (!service || service.status !== "published") return res.status(404).json({ message: "Not found" });
@@ -531,7 +542,7 @@ export async function registerRoutes(
   // Get published projects (public)
   app.get("/api/public/projects", async (req, res) => {
     try {
-      const tenantId = req.query.tenantId as string || "";
+      const tenantId = await resolvePublicTenantId(req);
       if (!tenantId) return res.json([]);
       const allProjects = await storage.getProjects(tenantId);
       res.json(allProjects.filter(p => p.status === "published"));
@@ -542,7 +553,7 @@ export async function registerRoutes(
 
   app.get("/api/public/projects/:slug", async (req, res) => {
     try {
-      const tenantId = req.query.tenantId as string || "";
+      const tenantId = await resolvePublicTenantId(req);
       if (!tenantId) return res.status(404).json({ message: "Not found" });
       const project = await storage.getProjectBySlug(req.params.slug, tenantId);
       if (!project || project.status !== "published") return res.status(404).json({ message: "Not found" });
@@ -555,7 +566,7 @@ export async function registerRoutes(
   // Get published blog posts (public)
   app.get("/api/public/blog", async (req, res) => {
     try {
-      const tenantId = req.query.tenantId as string || "";
+      const tenantId = await resolvePublicTenantId(req);
       if (!tenantId) return res.json([]);
       const allPosts = await storage.getBlogPosts(tenantId);
       res.json(allPosts.filter(p => p.status === "published"));
@@ -566,7 +577,7 @@ export async function registerRoutes(
 
   app.get("/api/public/blog/:slug", async (req, res) => {
     try {
-      const tenantId = req.query.tenantId as string || "";
+      const tenantId = await resolvePublicTenantId(req);
       if (!tenantId) return res.status(404).json({ message: "Not found" });
       const post = await storage.getBlogPostBySlug(req.params.slug, tenantId);
       if (!post || post.status !== "published") return res.status(404).json({ message: "Not found" });
@@ -579,7 +590,7 @@ export async function registerRoutes(
   // Get site clients (public)
   app.get("/api/public/clients", async (req, res) => {
     try {
-      const tenantId = req.query.tenantId as string || "";
+      const tenantId = await resolvePublicTenantId(req);
       if (!tenantId) return res.json([]);
       const clients = await storage.getSiteClients(tenantId);
       res.json(clients.filter(c => c.status === "active"));
@@ -944,7 +955,7 @@ export async function registerRoutes(
 
   app.get("/api/public/marketing-settings", async (req, res) => {
     try {
-      const tenantId = (req.query.tenantId as string) || "default";
+      const tenantId = await resolvePublicTenantId(req);
       const settings = await storage.getMarketingSettings(tenantId);
       if (!settings) return res.json({});
       // Only return tracking IDs, not custom scripts for security
