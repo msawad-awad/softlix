@@ -6,6 +6,8 @@ import {
   aboutValues, aboutTimeline, siteStats,
   crmLeadSources, crmLeads, crmDealPipelines, crmDealStages, crmDeals,
   crmActivities, crmTasks, crmProposals, crmProposalItems,
+  integrationSettings, crmAttachments, crmProposalTokens,
+  type IntegrationSettings, type CrmAttachment,
   type Tenant, type InsertTenant,
   type User, type InsertUser,
   type Subscription, type InsertSubscription,
@@ -1174,6 +1176,81 @@ export class DatabaseStorage implements IStorage {
       dealsByStage,
       recentLeads: allLeads.slice(0, 5),
     };
+  }
+
+  // ============================================================
+  // INTEGRATION SETTINGS
+  // ============================================================
+  async getIntegration(tenantId: string, provider: string): Promise<IntegrationSettings | null> {
+    const [row] = await db.select().from(integrationSettings)
+      .where(and(eq(integrationSettings.tenantId, tenantId), eq(integrationSettings.provider, provider)));
+    return row || null;
+  }
+
+  async getAllIntegrations(tenantId: string): Promise<IntegrationSettings[]> {
+    return db.select().from(integrationSettings).where(eq(integrationSettings.tenantId, tenantId));
+  }
+
+  async upsertIntegration(tenantId: string, provider: string, data: { isEnabled: boolean; config: any }): Promise<IntegrationSettings> {
+    const existing = await this.getIntegration(tenantId, provider);
+    if (existing) {
+      const [updated] = await db.update(integrationSettings)
+        .set({ isEnabled: data.isEnabled, config: data.config, updatedAt: new Date() })
+        .where(and(eq(integrationSettings.tenantId, tenantId), eq(integrationSettings.provider, provider)))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db.insert(integrationSettings)
+        .values({ tenantId, provider, isEnabled: data.isEnabled, config: data.config })
+        .returning();
+      return created;
+    }
+  }
+
+  // ============================================================
+  // CRM ATTACHMENTS
+  // ============================================================
+  async getAttachments(tenantId: string, entityType: string, entityId: string): Promise<CrmAttachment[]> {
+    return db.select().from(crmAttachments)
+      .where(and(
+        eq(crmAttachments.tenantId, tenantId),
+        eq(crmAttachments.entityType, entityType),
+        eq(crmAttachments.entityId, entityId)
+      ))
+      .orderBy(crmAttachments.createdAt);
+  }
+
+  async createAttachment(data: any): Promise<CrmAttachment> {
+    const [row] = await db.insert(crmAttachments).values(data).returning();
+    return row;
+  }
+
+  async deleteAttachment(tenantId: string, id: string): Promise<void> {
+    await db.delete(crmAttachments)
+      .where(and(eq(crmAttachments.tenantId, tenantId), eq(crmAttachments.id, id)));
+  }
+
+  // ============================================================
+  // PROPOSAL PUBLIC TOKENS
+  // ============================================================
+  async createProposalToken(proposalId: string, tenantId: string): Promise<string> {
+    const token = Math.random().toString(36).substring(2) + Date.now().toString(36);
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
+    await db.insert(crmProposalTokens).values({ proposalId, tenantId, token, expiresAt });
+    return token;
+  }
+
+  async getProposalByToken(token: string): Promise<any | null> {
+    const [row] = await db.select().from(crmProposalTokens).where(eq(crmProposalTokens.token, token));
+    if (!row) return null;
+    if (row.expiresAt && new Date(row.expiresAt) < new Date()) return null;
+    await db.update(crmProposalTokens)
+      .set({ viewCount: (row.viewCount || 0) + 1 })
+      .where(eq(crmProposalTokens.token, token));
+    const [proposal] = await db.select().from(crmProposals).where(eq(crmProposals.id, row.proposalId));
+    if (!proposal) return null;
+    const items = await db.select().from(crmProposalItems).where(eq(crmProposalItems.proposalId, proposal.id));
+    return { ...proposal, items };
   }
 }
 

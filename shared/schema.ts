@@ -775,6 +775,53 @@ export const crmProposalItems = pgTable("crm_proposal_items", {
   displayOrder: integer("display_order").default(0),
 });
 
+// ============================================================================
+// INTEGRATION SETTINGS - تكاملات النظام
+// ============================================================================
+export const integrationSettings = pgTable("integration_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  provider: text("provider").notNull(), // smtp, gmail_oauth, twilio, unifonic, msTeams, google_calendar, webhook
+  isEnabled: boolean("is_enabled").default(false),
+  config: jsonb("config").default({}), // stored as JSON: { host, port, user, pass, from, apiKey, ... }
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertIntegrationSettingsSchema = createInsertSchema(integrationSettings).omit({ id: true, updatedAt: true });
+export type IntegrationSettings = typeof integrationSettings.$inferSelect;
+
+// ============================================================================
+// CRM ATTACHMENTS - مرفقات CRM
+// ============================================================================
+export const crmAttachments = pgTable("crm_attachments", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  entityType: text("entity_type").notNull(), // lead, deal, proposal, contact, company
+  entityId: varchar("entity_id").notNull(),
+  fileName: text("file_name").notNull(),
+  fileUrl: text("file_url").notNull(),
+  fileSize: integer("file_size"),
+  mimeType: text("mime_type"),
+  uploadedBy: varchar("uploaded_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertCrmAttachmentSchema = createInsertSchema(crmAttachments).omit({ id: true, createdAt: true });
+export type CrmAttachment = typeof crmAttachments.$inferSelect;
+
+// ============================================================================
+// CRM PROPOSAL PUBLIC TOKENS - روابط مشاركة عروض الأسعار
+// ============================================================================
+export const crmProposalTokens = pgTable("crm_proposal_tokens", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  proposalId: varchar("proposal_id").references(() => crmProposals.id).notNull(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  token: text("token").notNull().unique(),
+  expiresAt: timestamp("expires_at"),
+  viewCount: integer("view_count").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const insertCrmProposalItemSchema = createInsertSchema(crmProposalItems).omit({ id: true });
 export type InsertCrmProposalItem = z.infer<typeof insertCrmProposalItemSchema>;
 export type CrmProposalItem = typeof crmProposalItems.$inferSelect;

@@ -333,12 +333,24 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               asChild
-              isActive={isActive("/settings")}
+              isActive={isActive("/settings") && !isActive("/settings/integrations")}
               tooltip={t("nav.settings")}
             >
               <Link href="/settings" data-testid="nav-settings">
                 <Settings className={isRTL ? "ml-2" : "mr-2"} />
                 <span>{t("nav.settings")}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              asChild
+              isActive={isActive("/settings/integrations")}
+              tooltip="التكاملات"
+            >
+              <Link href="/settings/integrations" data-testid="nav-integrations">
+                <Zap className={isRTL ? "ml-2" : "mr-2"} />
+                <span>التكاملات</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>

@@ -57,6 +57,8 @@ import LeadDetail from "@/pages/crm/lead-detail";
 import CrmDeals from "@/pages/crm/deals";
 import CrmActivities from "@/pages/crm/activities";
 import CrmProposals from "@/pages/crm/proposals";
+import { ProposalPreviewById, ProposalPublicView } from "@/pages/crm/proposal-preview";
+import IntegrationsSettings from "@/pages/settings/integrations";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -151,8 +153,15 @@ function Router() {
       <Route path="/crm/leads"><AdminRoute><CrmLeads /></AdminRoute></Route>
       <Route path="/crm/deals"><AdminRoute><CrmDeals /></AdminRoute></Route>
       <Route path="/crm/activities"><AdminRoute><CrmActivities /></AdminRoute></Route>
+      <Route path="/crm/proposals/:id/preview"><AdminRoute><ProposalPreviewById /></AdminRoute></Route>
       <Route path="/crm/proposals"><AdminRoute><CrmProposals /></AdminRoute></Route>
       <Route path="/crm"><AdminRoute><CrmDashboard /></AdminRoute></Route>
+
+      {/* Integrations Settings */}
+      <Route path="/settings/integrations"><AdminRoute><IntegrationsSettings /></AdminRoute></Route>
+
+      {/* Public proposal view (no auth required) */}
+      <Route path="/proposal/:token"><ProposalPublicView /></Route>
 
       {/* CMS website routes */}
       <Route path="/website/branding"><AdminRoute><WebsiteBranding /></AdminRoute></Route>

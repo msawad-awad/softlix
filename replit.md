@@ -1,4 +1,4 @@
-# Softlix Business OS - Complete Status (with Website CMS)
+# Softlix Business OS - Complete Status (with Website CMS + Integrations + Full CRM)
 
 ## ✅ All Core Requirements - COMPLETED
 
@@ -43,6 +43,7 @@
 - ✅ **HR**: Employee directory with departments and status
 - ✅ **Inventory**: Stock management with low-stock alerts
 - ✅ **Settings**: Profile, language, theme, notifications, billing
+- ✅ **Integrations**: SMTP email, SMS (Twilio/Unifonic/Msegat), Google OAuth (Meet/Calendar), Webhook — all configurable from /settings/integrations
 
 ### 6. Database
 - ✅ PostgreSQL with Drizzle ORM

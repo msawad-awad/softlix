@@ -7,6 +7,28 @@ import type { AuthenticatedUser } from "@shared/schema";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { sendEmail, sendSms } from "./email";
+import { google } from "googleapis";
+
+// Secret masking helpers - يخفي كلمات السر عند الإرجاع
+const SECRET_KEYS = ["pass", "password", "secret", "authToken", "apiKey", "accessToken", "appSid"];
+function maskSecrets(config: Record<string, any>): Record<string, any> {
+  if (!config) return {};
+  const masked: Record<string, any> = {};
+  for (const [k, v] of Object.entries(config)) {
+    masked[k] = SECRET_KEYS.some(s => k.toLowerCase().includes(s.toLowerCase())) && v ? "••••••••" : v;
+  }
+  return masked;
+}
+// Merge new config with existing, keeping existing secrets if masked placeholder sent
+function mergeMasked(existing: Record<string, any>, incoming: Record<string, any>): Record<string, any> {
+  const merged = { ...existing };
+  for (const [k, v] of Object.entries(incoming)) {
+    const isMasked = SECRET_KEYS.some(s => k.toLowerCase().includes(s.toLowerCase())) && v === "••••••••";
+    if (!isMasked) merged[k] = v;
+  }
+  return merged;
+}
 
 // Multer setup – store files in public/uploads with unique names
 const uploadsDir = path.resolve(process.cwd(), "public/uploads");
@@ -29,6 +51,18 @@ const upload = multer({
     const ext = path.extname(file.originalname).toLowerCase();
     if (allowed.includes(ext)) cb(null, true);
     else cb(new Error("Only image files are allowed"));
+  },
+});
+
+// Document + image uploader (for CRM attachments)
+const uploadDoc = multer({
+  storage: multerStorage,
+  limits: { fileSize: 20 * 1024 * 1024 }, // 20 MB
+  fileFilter: (_req, file, cb) => {
+    const allowed = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".pdf", ".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".txt", ".zip", ".rar"];
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (allowed.includes(ext)) cb(null, true);
+    else cb(new Error("File type not allowed"));
   },
 });
 
@@ -1602,6 +1636,26 @@ export async function registerRoutes(
     catch (e: any) { res.status(500).json({ error: e.message }); }
   });
 
+  // CRM Quick Communication - Send Email from lead/deal page
+  app.post("/api/crm/send-email", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { to, subject, body } = req.body;
+      if (!to) return res.status(400).json({ message: "بريد المستلم مطلوب" });
+      await sendEmail(req.user!.tenantId, { to, subject: subject || "رسالة من Softlix CRM", html: body || subject || "" });
+      res.json({ ok: true });
+    } catch (e: any) { res.status(500).json({ message: e.message }); }
+  });
+
+  // CRM Quick Communication - Send SMS from lead/deal page
+  app.post("/api/crm/send-sms", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { to, message } = req.body;
+      if (!to || !message) return res.status(400).json({ message: "رقم الجوال والرسالة مطلوبان" });
+      await sendSms(req.user!.tenantId, { to, message });
+      res.json({ ok: true });
+    } catch (e: any) { res.status(500).json({ message: e.message }); }
+  });
+
   // CRM Tasks
   app.get("/api/crm/tasks", requireAuth, async (req, res) => {
     try {
@@ -1711,7 +1765,233 @@ export async function registerRoutes(
     res.send(`User-agent: *\nAllow: /\nDisallow: /dashboard\nDisallow: /login\nDisallow: /api/\nSitemap: ${baseUrl}/sitemap.xml\n`);
   });
 
+  // ============================================================================
+  // INTEGRATION SETTINGS ROUTES
+  // ============================================================================
+  app.get("/api/integrations", requireAuth, async (req: Request, res: Response) => {
+    const integrations = await storage.getAllIntegrations(req.user!.tenantId);
+    // Mask passwords/secrets before returning
+    const masked = integrations.map(i => ({
+      ...i,
+      config: maskSecrets(i.config as any),
+    }));
+    res.json(masked);
+  });
+
+  app.get("/api/integrations/:provider", requireAuth, async (req: Request, res: Response) => {
+    const integration = await storage.getIntegration(req.user!.tenantId, req.params.provider);
+    if (!integration) return res.json({ provider: req.params.provider, isEnabled: false, config: {} });
+    res.json({ ...integration, config: maskSecrets(integration.config as any) });
+  });
+
+  app.put("/api/integrations/:provider", requireAuth, async (req: Request, res: Response) => {
+    const { isEnabled, config } = req.body;
+    const existing = await storage.getIntegration(req.user!.tenantId, req.params.provider);
+    const mergedConfig = mergeMasked(existing?.config as any || {}, config || {});
+    const result = await storage.upsertIntegration(req.user!.tenantId, req.params.provider, { isEnabled: !!isEnabled, config: mergedConfig });
+    res.json({ ...result, config: maskSecrets(result.config as any) });
+  });
+
+  // Test SMTP connection
+  app.post("/api/integrations/smtp/test", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { email } = req.body;
+      await sendEmail(req.user!.tenantId, {
+        to: email || req.user!.email,
+        subject: "اختبار الاتصال - Softlix CRM",
+        html: "<h2>✅ تم الاتصال بنجاح!</h2><p>إعدادات البريد الإلكتروني تعمل بشكل صحيح.</p>",
+      });
+      res.json({ ok: true, message: "تم إرسال بريد الاختبار بنجاح" });
+    } catch (e: any) {
+      res.status(400).json({ ok: false, message: e.message });
+    }
+  });
+
+  // ============================================================================
+  // EMAIL & SMS SENDING ROUTES
+  // ============================================================================
+  app.post("/api/send/email", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { to, subject, html } = req.body;
+      if (!to || !subject) return res.status(400).json({ message: "البريد والموضوع مطلوبان" });
+      await sendEmail(req.user!.tenantId, { to, subject, html: html || subject });
+      res.json({ ok: true });
+    } catch (e: any) {
+      res.status(500).json({ message: e.message });
+    }
+  });
+
+  app.post("/api/send/sms", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { to, message } = req.body;
+      if (!to || !message) return res.status(400).json({ message: "الرقم والرسالة مطلوبان" });
+      await sendSms(req.user!.tenantId, { to, message });
+      res.json({ ok: true });
+    } catch (e: any) {
+      res.status(500).json({ message: e.message });
+    }
+  });
+
+  // Send proposal by email
+  app.post("/api/crm/proposals/:id/send-email", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { to, subject, message } = req.body;
+      const proposal = await storage.getCrmProposal(req.user!.tenantId, req.params.id);
+      if (!proposal) return res.status(404).json({ message: "العرض غير موجود" });
+      const token = await storage.createProposalToken(proposal.id, req.user!.tenantId);
+      const host = `${req.protocol}://${req.get("host")}`;
+      const link = `${host}/proposal/${token}`;
+      const html = `
+        <div dir="rtl" style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2 style="color:#1e40af;">عرض سعر: ${proposal.title}</h2>
+          ${message ? `<p>${message}</p>` : ''}
+          <p>يمكنك مشاهدة وتحميل عرض السعر من خلال الرابط أدناه:</p>
+          <a href="${link}" style="display:inline-block;background:#1e40af;color:white;padding:12px 24px;border-radius:8px;text-decoration:none;margin:16px 0;">
+            عرض عرض السعر
+          </a>
+          <p style="font-size:12px;color:#666;">رقم العرض: ${proposal.proposalNumber} | الإجمالي: ${parseFloat(proposal.total || '0').toLocaleString()} ${proposal.currency}</p>
+        </div>
+      `;
+      await sendEmail(req.user!.tenantId, { to, subject: subject || `عرض سعر: ${proposal.title}`, html });
+      await storage.updateCrmProposal(req.user!.tenantId, req.params.id, { status: "sent", sentAt: new Date() });
+      res.json({ ok: true, link });
+    } catch (e: any) {
+      res.status(500).json({ message: e.message });
+    }
+  });
+
+  // Generate shareable proposal token
+  app.post("/api/crm/proposals/:id/share-token", requireAuth, async (req: Request, res: Response) => {
+    const proposal = await storage.getCrmProposal(req.user!.tenantId, req.params.id);
+    if (!proposal) return res.status(404).json({ message: "العرض غير موجود" });
+    const token = await storage.createProposalToken(proposal.id, req.user!.tenantId);
+    const host = `${req.protocol}://${req.get("host")}`;
+    res.json({ token, link: `${host}/proposal/${token}` });
+  });
+
+  // Public proposal view (no auth required)
+  app.get("/api/public/proposal/:token", async (req: Request, res: Response) => {
+    const proposal = await storage.getProposalByToken(req.params.token);
+    if (!proposal) return res.status(404).json({ message: "العرض غير موجود أو انتهت صلاحيته" });
+    // Update status to viewed if it was sent
+    if (proposal.status === "sent") {
+      await storage.updateCrmProposal(proposal.tenantId, proposal.id, { status: "viewed", viewedAt: new Date() });
+    }
+    res.json(proposal);
+  });
+
+  // ============================================================================
+  // CRM ATTACHMENTS ROUTES
+  // ============================================================================
+  app.get("/api/crm/attachments", requireAuth, async (req: Request, res: Response) => {
+    const { entityType, entityId } = req.query as any;
+    if (!entityType || !entityId) return res.status(400).json({ message: "entityType and entityId required" });
+    const attachments = await storage.getAttachments(req.user!.tenantId, entityType, entityId);
+    res.json(attachments);
+  });
+
+  app.post("/api/crm/attachments", requireAuth, uploadDoc.single("file"), async (req: Request, res: Response) => {
+    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+    const { entityType, entityId } = req.body;
+    if (!entityType || !entityId) return res.status(400).json({ message: "entityType and entityId required" });
+    const protocol = req.protocol;
+    const host = req.get("host");
+    const fileUrl = `${protocol}://${host}/uploads/${req.file.filename}`;
+    const attachment = await storage.createAttachment({
+      tenantId: req.user!.tenantId,
+      entityType,
+      entityId,
+      fileName: req.file.originalname,
+      fileUrl,
+      fileSize: req.file.size,
+      mimeType: req.file.mimetype,
+      uploadedBy: req.user!.id,
+    });
+    res.json(attachment);
+  });
+
+  app.delete("/api/crm/attachments/:id", requireAuth, async (req: Request, res: Response) => {
+    await storage.deleteAttachment(req.user!.tenantId, req.params.id);
+    res.json({ ok: true });
+  });
+
+  // ============================================================================
+  // GOOGLE OAUTH INTEGRATION
+  // ============================================================================
+  function getGoogleOAuth2Client(clientId: string, clientSecret: string, redirectUri: string) {
+    return new google.auth.OAuth2(clientId, clientSecret, redirectUri);
+  }
+
+  app.get("/api/integrations/google/auth-url", requireAuth, async (req: Request, res: Response) => {
+    const integration = await storage.getIntegration(req.user!.tenantId, "google_oauth");
+    const config = integration?.config as any || {};
+    if (!config.clientId || !config.clientSecret) {
+      return res.status(400).json({ message: "Google Client ID وClient Secret مطلوبان في الإعدادات أولاً" });
+    }
+    const redirectUri = `${req.protocol}://${req.get("host")}/api/integrations/google/callback`;
+    const oauth2Client = getGoogleOAuth2Client(config.clientId, config.clientSecret, redirectUri);
+    const url = oauth2Client.generateAuthUrl({
+      access_type: "offline",
+      scope: [
+        "https://www.googleapis.com/auth/calendar.events",
+        "https://www.googleapis.com/auth/gmail.send",
+        "profile",
+        "email",
+      ],
+      state: req.user!.tenantId,
+    });
+    res.json({ url });
+  });
+
+  app.get("/api/integrations/google/callback", async (req: Request, res: Response) => {
+    const { code, state: tenantId } = req.query as any;
+    if (!code || !tenantId) return res.status(400).send("Missing code or state");
+    try {
+      const integration = await storage.getIntegration(tenantId, "google_oauth");
+      const config = integration?.config as any || {};
+      const redirectUri = `${req.protocol}://${req.get("host")}/api/integrations/google/callback`;
+      const oauth2Client = getGoogleOAuth2Client(config.clientId, config.clientSecret, redirectUri);
+      const { tokens } = await oauth2Client.getToken(code);
+      const newConfig = { ...config, accessToken: tokens.access_token, refreshToken: tokens.refresh_token, tokenExpiry: tokens.expiry_date, scope: tokens.scope };
+      await storage.upsertIntegration(tenantId, "google_oauth", { isEnabled: true, config: newConfig });
+      res.send(`<html><body><script>window.close();opener.location.reload();</script><p>تم الربط بنجاح. يمكنك إغلاق هذه النافذة.</p></body></html>`);
+    } catch (e: any) {
+      res.status(500).send(`Error: ${e.message}`);
+    }
+  });
+
+  app.post("/api/integrations/google/create-meet", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const integration = await storage.getIntegration(req.user!.tenantId, "google_oauth");
+      const config = integration?.config as any;
+      if (!config?.refreshToken) return res.status(400).json({ message: "Google غير مرتبط. اربط حسابك أولاً." });
+      const redirectUri = `${req.protocol}://${req.get("host")}/api/integrations/google/callback`;
+      const oauth2Client = getGoogleOAuth2Client(config.clientId, config.clientSecret, redirectUri);
+      oauth2Client.setCredentials({ refresh_token: config.refreshToken, access_token: config.accessToken });
+      const calendar = google.calendar({ version: "v3", auth: oauth2Client });
+      const { title, description, startTime, endTime, attendeeEmails } = req.body;
+      const event = await calendar.events.insert({
+        calendarId: "primary",
+        conferenceDataVersion: 1,
+        requestBody: {
+          summary: title || "اجتماع CRM",
+          description: description || "",
+          start: { dateTime: startTime || new Date().toISOString(), timeZone: "Asia/Riyadh" },
+          end: { dateTime: endTime || new Date(Date.now() + 3600000).toISOString(), timeZone: "Asia/Riyadh" },
+          attendees: attendeeEmails?.map((e: string) => ({ email: e })) || [],
+          conferenceData: { createRequest: { requestId: `meet-${Date.now()}`, conferenceSolutionKey: { type: "hangoutsMeet" } } },
+        },
+      });
+      const meetLink = event.data.conferenceData?.entryPoints?.find((e: any) => e.entryPointType === "video")?.uri;
+      res.json({ ok: true, meetLink, eventLink: event.data.htmlLink, eventId: event.data.id });
+    } catch (e: any) {
+      res.status(500).json({ message: e.message });
+    }
+  });
+
+  // ============================================================================
   // DB-driven redirect middleware (runs before SPA fallback)
+  // ============================================================================
   app.use(async (req, res, next) => {
     const path = req.path;
     if (path.startsWith("/api") || path.startsWith("/assets") || path.includes(".")) {

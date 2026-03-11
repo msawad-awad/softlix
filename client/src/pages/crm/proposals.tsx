@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, FileText, Trash2, Edit, Eye, DollarSign, Calendar } from "lucide-react";
+import { Plus, FileText, Trash2, Edit, Eye, DollarSign, Calendar, Send, Share2, Loader2 } from "lucide-react";
+import AttachmentsPanel from "@/components/crm/attachments-panel";
 
 const STATUS_LABELS: Record<string, string> = {
   draft: "مسودة", pending_approval: "بانتظار الموافقة", approved: "معتمد",
@@ -38,8 +39,13 @@ function calcItem(item: ProposalItem): ProposalItem {
 export default function CrmProposals() {
   const { toast } = useToast();
   const qc = useQueryClient();
+  const [, setLocation] = useLocation();
   const [showForm, setShowForm] = useState(false);
   const [editingProposal, setEditingProposal] = useState<any>(null);
+  const [showEmailDialog, setShowEmailDialog] = useState(false);
+  const [emailProposal, setEmailProposal] = useState<any>(null);
+  const [emailForm, setEmailForm] = useState({ to: "", subject: "", message: "" });
+  const [shareLink, setShareLink] = useState<string | null>(null);
   const [form, setForm] = useState({
     title: "", status: "draft", currency: "SAR",
     discountValue: "0", taxPercent: "15", termsAndNotes: "",
@@ -62,6 +68,28 @@ export default function CrmProposals() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => apiRequest("DELETE", `/api/crm/proposals/${id}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ["/api/crm/proposals"] }); toast({ title: "تم الحذف" }); },
+  });
+
+  const sendEmailMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: any }) => apiRequest("POST", `/api/crm/proposals/${id}/send-email`, data),
+    onSuccess: (data: any) => {
+      qc.invalidateQueries({ queryKey: ["/api/crm/proposals"] });
+      setShowEmailDialog(false);
+      setEmailForm({ to: "", subject: "", message: "" });
+      toast({ title: "تم إرسال العرض بالبريد الإلكتروني" });
+      if (data.link) setShareLink(data.link);
+    },
+    onError: (e: any) => toast({ title: "خطأ في الإرسال", description: e.message, variant: "destructive" }),
+  });
+
+  const shareMutation = useMutation({
+    mutationFn: (id: string) => apiRequest("POST", `/api/crm/proposals/${id}/share-token`, {}),
+    onSuccess: (data: any) => {
+      setShareLink(data.link);
+      navigator.clipboard?.writeText(data.link).catch(() => {});
+      toast({ title: "تم نسخ الرابط", description: "رابط صالح لمدة 30 يوماً" });
+    },
+    onError: (e: any) => toast({ title: "خطأ", description: e.message, variant: "destructive" }),
   });
 
   const resetForm = () => { setForm({ title: "", status: "draft", currency: "SAR", discountValue: "0", taxPercent: "15", termsAndNotes: "" }); setItems([emptyItem()]); };
@@ -167,6 +195,15 @@ export default function CrmProposals() {
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex gap-1 justify-end">
+                      <Button variant="ghost" size="sm" asChild data-testid={`button-preview-proposal-${p.id}`}>
+                        <Link href={`/crm/proposals/${p.id}/preview`}><Eye className="h-4 w-4" /></Link>
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => shareMutation.mutate(p.id)} disabled={shareMutation.isPending} title="نسخ رابط مشاركة">
+                        <Share2 className="h-4 w-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => { setEmailProposal(p); setEmailForm({ to: "", subject: `عرض سعر: ${p.title}`, message: "" }); setShowEmailDialog(true); }} title="إرسال بالبريد" data-testid={`button-email-proposal-${p.id}`}>
+                        <Send className="h-4 w-4 text-blue-500" />
+                      </Button>
                       <Button variant="ghost" size="sm" onClick={() => openEdit(p)} data-testid={`button-edit-proposal-${p.id}`}>
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -303,6 +340,44 @@ export default function CrmProposals() {
             <Button variant="outline" onClick={() => { setShowForm(false); setEditingProposal(null); resetForm(); }}>إلغاء</Button>
             <Button onClick={handleSubmit} disabled={createMutation.isPending || updateMutation.isPending} data-testid="button-save-proposal">
               {createMutation.isPending || updateMutation.isPending ? "جاري الحفظ..." : "حفظ العرض"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Email Send Dialog */}
+      <Dialog open={showEmailDialog} onOpenChange={setShowEmailDialog}>
+        <DialogContent className="max-w-lg" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Send className="h-5 w-5 text-blue-600" />
+              إرسال العرض بالبريد الإلكتروني
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>البريد الإلكتروني للمستلم *</Label>
+              <Input value={emailForm.to} onChange={e => setEmailForm(f => ({ ...f, to: e.target.value }))} placeholder="client@example.com" type="email" data-testid="input-proposal-email-to" />
+            </div>
+            <div>
+              <Label>الموضوع</Label>
+              <Input value={emailForm.subject} onChange={e => setEmailForm(f => ({ ...f, subject: e.target.value }))} data-testid="input-proposal-email-subject" />
+            </div>
+            <div>
+              <Label>رسالة إضافية (اختياري)</Label>
+              <Textarea value={emailForm.message} onChange={e => setEmailForm(f => ({ ...f, message: e.target.value }))} placeholder="نص مخصص يظهر في البريد..." rows={3} data-testid="textarea-proposal-email-message" />
+            </div>
+            {shareLink && (
+              <div className="p-3 rounded-lg bg-green-50 border border-green-100">
+                <p className="text-xs text-green-700 font-medium mb-1">✅ تم إنشاء رابط مشاركة العميل:</p>
+                <p className="text-xs text-green-600 break-all">{shareLink}</p>
+              </div>
+            )}
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setShowEmailDialog(false)}>إلغاء</Button>
+            <Button onClick={() => sendEmailMutation.mutate({ id: emailProposal?.id, data: emailForm })} disabled={!emailForm.to || sendEmailMutation.isPending} data-testid="button-confirm-send-email">
+              {sendEmailMutation.isPending ? <><Loader2 className="h-4 w-4 animate-spin ml-2" />جاري الإرسال...</> : <><Send className="h-4 w-4 ml-2" />إرسال</>}
             </Button>
           </DialogFooter>
         </DialogContent>

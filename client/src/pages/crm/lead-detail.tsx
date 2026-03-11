@@ -12,7 +12,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowRight, Phone, Mail, Building2, MapPin, Calendar, Clock, Plus, MessageSquare, GitMerge, Loader2 } from "lucide-react";
+import { ArrowRight, Phone, Mail, Building2, MapPin, Calendar, Clock, Plus, MessageSquare, GitMerge, Loader2, Video, Send } from "lucide-react";
+import AttachmentsPanel from "@/components/crm/attachments-panel";
 
 const STATUSES = [
   { value: "new", label: "جديد" },
@@ -74,6 +75,12 @@ export default function LeadDetail() {
   const [noteType, setNoteType] = useState("note");
   const [showConvert, setShowConvert] = useState(false);
   const [convertData, setConvertData] = useState({ pipelineId: "", stageId: "" });
+  const [showEmailDialog, setShowEmailDialog] = useState(false);
+  const [showSmsDialog, setShowSmsDialog] = useState(false);
+  const [showMeetDialog, setShowMeetDialog] = useState(false);
+  const [emailForm, setEmailForm] = useState({ to: "", subject: "", body: "" });
+  const [smsForm, setSmsForm] = useState({ to: "", message: "" });
+  const [meetForm, setMeetForm] = useState({ summary: "", startTime: "", endTime: "", attendees: "" });
 
   const { data: lead, isLoading } = useQuery<any>({ queryKey: [`/api/crm/leads/${id}`] });
   const { data: activities = [] } = useQuery<any[]>({
@@ -99,6 +106,28 @@ export default function LeadDetail() {
       setNoteText("");
       toast({ title: "تم إضافة النشاط" });
     },
+  });
+
+  const sendEmailMutation = useMutation({
+    mutationFn: (data: any) => apiRequest("POST", "/api/crm/send-email", data),
+    onSuccess: () => { setShowEmailDialog(false); toast({ title: "✅ تم إرسال البريد الإلكتروني بنجاح" }); },
+    onError: (e: any) => toast({ title: "فشل الإرسال", description: e.message, variant: "destructive" }),
+  });
+
+  const sendSmsMutation = useMutation({
+    mutationFn: (data: any) => apiRequest("POST", "/api/crm/send-sms", data),
+    onSuccess: () => { setShowSmsDialog(false); toast({ title: "✅ تم إرسال الرسالة النصية بنجاح" }); },
+    onError: (e: any) => toast({ title: "فشل الإرسال", description: e.message, variant: "destructive" }),
+  });
+
+  const createMeetMutation = useMutation({
+    mutationFn: (data: any) => apiRequest("POST", "/api/integrations/google/create-meet", data),
+    onSuccess: (data: any) => {
+      setShowMeetDialog(false);
+      toast({ title: "✅ تم إنشاء اجتماع Google Meet", description: data.meetLink });
+      if (data.meetLink) window.open(data.meetLink, "_blank");
+    },
+    onError: (e: any) => toast({ title: "فشل إنشاء الاجتماع", description: e.message, variant: "destructive" }),
   });
 
   const convertMutation = useMutation({
@@ -133,7 +162,23 @@ export default function LeadDetail() {
             <p className="text-sm text-gray-500">{lead.leadNumber}</p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
+          {lead.email && (
+            <Button variant="outline" size="sm" onClick={() => { setEmailForm(f => ({ ...f, to: lead.email, subject: `رسالة إلى ${lead.fullName}` })); setShowEmailDialog(true); }} data-testid="button-send-email-lead">
+              <Send className="h-4 w-4 ml-1" />
+              بريد
+            </Button>
+          )}
+          {lead.mobile && (
+            <Button variant="outline" size="sm" onClick={() => { setSmsForm(f => ({ ...f, to: lead.mobile })); setShowSmsDialog(true); }} data-testid="button-send-sms-lead">
+              <MessageSquare className="h-4 w-4 ml-1" />
+              SMS
+            </Button>
+          )}
+          <Button variant="outline" size="sm" onClick={() => { setMeetForm(f => ({ ...f, summary: `اجتماع مع ${lead.fullName}`, attendees: lead.email || "" })); setShowMeetDialog(true); }} data-testid="button-create-meet-lead">
+            <Video className="h-4 w-4 ml-1" />
+            Meet
+          </Button>
           {lead.status !== "converted" && (
             <Button variant="outline" size="sm" onClick={() => setShowConvert(true)} data-testid="button-convert-lead">
               <GitMerge className="h-4 w-4 ml-2" />
@@ -238,6 +283,31 @@ export default function LeadDetail() {
               </CardContent>
             </Card>
           )}
+
+          {/* Attachments Panel */}
+          <Card className="border-0 shadow-sm">
+            <CardContent className="pt-4">
+              <AttachmentsPanel entityType="lead" entityId={lead.id} title="المرفقات" />
+            </CardContent>
+          </Card>
+
+          {/* Quick Actions */}
+          <div className="flex flex-wrap gap-2">
+            {lead.mobile && (
+              <a href={`https://wa.me/${lead.mobile.replace(/\D/g, "")}`} target="_blank" rel="noreferrer">
+                <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-green-50 text-green-700 border border-green-100 hover:bg-green-100 transition-colors">
+                  <span>💬</span> واتساب
+                </button>
+              </a>
+            )}
+            {lead.email && (
+              <a href={`mailto:${lead.email}`}>
+                <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 transition-colors">
+                  <Mail className="h-3.5 w-3.5" /> بريد
+                </button>
+              </a>
+            )}
+          </div>
         </div>
 
         {/* Right - Timeline + Activity */}
@@ -357,6 +427,101 @@ export default function LeadDetail() {
             <Button variant="outline" onClick={() => setShowConvert(false)}>إلغاء</Button>
             <Button onClick={() => convertMutation.mutate(convertData)} disabled={!convertData.pipelineId || !convertData.stageId || convertMutation.isPending} data-testid="button-confirm-convert">
               {convertMutation.isPending ? <><Loader2 className="h-4 w-4 ml-2 animate-spin" />جاري التحويل...</> : "تحويل"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Send Email Dialog */}
+      <Dialog open={showEmailDialog} onOpenChange={setShowEmailDialog}>
+        <DialogContent className="max-w-lg" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><Send className="h-5 w-5 text-blue-600" />إرسال بريد إلكتروني</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label>إلى *</Label>
+              <Input value={emailForm.to} onChange={e => setEmailForm(f => ({ ...f, to: e.target.value }))} type="email" data-testid="input-lead-email-to" />
+            </div>
+            <div>
+              <Label>الموضوع</Label>
+              <Input value={emailForm.subject} onChange={e => setEmailForm(f => ({ ...f, subject: e.target.value }))} data-testid="input-lead-email-subject" />
+            </div>
+            <div>
+              <Label>نص الرسالة</Label>
+              <Input value={emailForm.body} onChange={e => setEmailForm(f => ({ ...f, body: e.target.value }))} data-testid="input-lead-email-body" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEmailDialog(false)}>إلغاء</Button>
+            <Button onClick={() => sendEmailMutation.mutate(emailForm)} disabled={!emailForm.to || sendEmailMutation.isPending} data-testid="button-confirm-send-lead-email">
+              {sendEmailMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin ml-2" /> : <Send className="h-4 w-4 ml-2" />}
+              إرسال
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Send SMS Dialog */}
+      <Dialog open={showSmsDialog} onOpenChange={setShowSmsDialog}>
+        <DialogContent className="max-w-md" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><MessageSquare className="h-5 w-5 text-green-600" />إرسال رسالة SMS</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label>رقم الجوال *</Label>
+              <Input value={smsForm.to} onChange={e => setSmsForm(f => ({ ...f, to: e.target.value }))} placeholder="+966xxxxxxxxx" data-testid="input-lead-sms-to" />
+            </div>
+            <div>
+              <Label>نص الرسالة *</Label>
+              <Input value={smsForm.message} onChange={e => setSmsForm(f => ({ ...f, message: e.target.value }))} data-testid="input-lead-sms-message" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowSmsDialog(false)}>إلغاء</Button>
+            <Button onClick={() => sendSmsMutation.mutate(smsForm)} disabled={!smsForm.to || !smsForm.message || sendSmsMutation.isPending} data-testid="button-confirm-send-sms">
+              {sendSmsMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin ml-2" /> : <MessageSquare className="h-4 w-4 ml-2" />}
+              إرسال
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Google Meet Dialog */}
+      <Dialog open={showMeetDialog} onOpenChange={setShowMeetDialog}>
+        <DialogContent className="max-w-md" dir="rtl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><Video className="h-5 w-5 text-red-500" />جدولة اجتماع Google Meet</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label>عنوان الاجتماع *</Label>
+              <Input value={meetForm.summary} onChange={e => setMeetForm(f => ({ ...f, summary: e.target.value }))} data-testid="input-meet-summary" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label>وقت البدء</Label>
+                <Input type="datetime-local" value={meetForm.startTime} onChange={e => setMeetForm(f => ({ ...f, startTime: e.target.value }))} data-testid="input-meet-start" />
+              </div>
+              <div>
+                <Label>وقت الانتهاء</Label>
+                <Input type="datetime-local" value={meetForm.endTime} onChange={e => setMeetForm(f => ({ ...f, endTime: e.target.value }))} data-testid="input-meet-end" />
+              </div>
+            </div>
+            <div>
+              <Label>المشاركون (بريد إلكتروني)</Label>
+              <Input value={meetForm.attendees} onChange={e => setMeetForm(f => ({ ...f, attendees: e.target.value }))} placeholder="email@example.com" data-testid="input-meet-attendees" />
+            </div>
+            <div className="rounded-lg bg-blue-50 border border-blue-100 p-3 text-xs text-blue-700">
+              💡 يتطلب ربط Google Calendar من إعدادات التكاملات
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowMeetDialog(false)}>إلغاء</Button>
+            <Button onClick={() => createMeetMutation.mutate({ summary: meetForm.summary, startTime: meetForm.startTime, endTime: meetForm.endTime, attendeeEmails: meetForm.attendees.split(",").map(e => e.trim()).filter(Boolean) })} disabled={!meetForm.summary || createMeetMutation.isPending} data-testid="button-confirm-create-meet">
+              {createMeetMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin ml-2" /> : <Video className="h-4 w-4 ml-2" />}
+              إنشاء الاجتماع
             </Button>
           </DialogFooter>
         </DialogContent>
