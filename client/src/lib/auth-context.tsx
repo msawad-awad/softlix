@@ -48,10 +48,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [fetchUser]);
 
   const login = async (email: string, password: string) => {
-    const response = await apiRequest("POST", "/api/auth/login", { email, password });
-    const data = await response.json();
-    setUser(data);
-    queryClient.invalidateQueries();
+    try {
+      const response = await apiRequest("POST", "/api/auth/login", { email, password });
+      const data = await response.json();
+      setUser(data);
+      queryClient.invalidateQueries();
+    } catch (error) {
+      console.error("Login error:", error);
+      throw error;
+    }
   };
 
   const register = async (data: RegisterData) => {
