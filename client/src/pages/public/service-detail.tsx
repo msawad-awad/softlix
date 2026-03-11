@@ -56,6 +56,18 @@ const SERVICE_THEMES: Record<string, { eyebrowBg: string; eyebrowColor: string; 
     contactIconBg: "rgba(229,146,105,0.16)",
     stepColor: "rgba(229,146,105,0.13)",
   },
+  "web-development": {
+    eyebrowBg: "rgba(14,165,233,0.12)",
+    eyebrowColor: "#0369a1",
+    checkBg: "linear-gradient(135deg,#0ea5e9,#6366f1)",
+    ctaBg: "linear-gradient(135deg,#0f172a,#0ea5e9 58%,#6366f1)",
+    ctaDark: true,
+    shadowColor: "rgba(14,165,233,0.26)",
+    chipBg: "rgba(14,165,233,0.10)",
+    chipColor: "#0369a1",
+    contactIconBg: "rgba(14,165,233,0.14)",
+    stepColor: "rgba(14,165,233,0.10)",
+  },
 };
 const DEFAULT_THEME = {
   eyebrowBg: "#fff1e9",
@@ -72,6 +84,56 @@ const DEFAULT_THEME = {
 
 // Per-service config: metrics, sub-services, benefits, technologies
 const SERVICE_CONFIG: Record<string, any> = {
+  "web-development": {
+    eyebrowAr: "تطوير تطبيقات الويب • Web Development",
+    eyebrowEn: "Web Development • تطوير تطبيقات الويب",
+    heroPointsAr: ["أنظمة أعمال وERP", "متاجر إلكترونية احترافية", "تجربة مستخدم وواجهة قوية", "حلول مخصصة وقابلة للتوسع"],
+    heroPointsEn: ["Business Systems & ERP", "Professional E-commerce Stores", "Powerful UX & UI Design", "Custom & Scalable Solutions"],
+    metrics: [
+      { strong: "ERP", spanAr: "أنظمة أعمال", spanEn: "Business Systems" },
+      { strong: "UX", spanAr: "واجهات وتجربة", spanEn: "UI & Experience" },
+      { strong: "B2B", spanAr: "منصات احترافية", spanEn: "Pro Platforms" },
+      { strong: "API", spanAr: "ربط الأنظمة", spanEn: "System Integration" },
+    ],
+    subServicesAr: [
+      { icon: "🎨", title: "تجربة المستخدم والتصميم", desc: "نصمم واجهات حديثة وسهلة الاستخدام تركز على رحلة المستخدم، وضوح المعلومات، وسلاسة التفاعل بما يرفع جودة المنتج الرقمي.", features: ["تصميم UI/UX احترافي", "واجهات متجاوبة مع جميع الأجهزة", "رحلة مستخدم واضحة وسلسة"] },
+      { icon: "🏢", title: "برمجة الأنظمة ERP", desc: "نطوّر أنظمة أعمال متكاملة لإدارة الموارد، العمليات، المستخدمين، المبيعات، وسير العمل الداخلي ضمن بنية منظمة.", features: ["إدارة الموارد والعمليات", "إدارة المستخدمين والصلاحيات", "تقارير وإحصائيات شاملة"] },
+      { icon: "🛍️", title: "تطوير التجارة الإلكترونية", desc: "نقدّم حلولاً متقدمة لبناء المتاجر والمنصات التجارية مع دعم المنتجات والطلبات والدفع والشحن.", features: ["إدارة المنتجات والطلبات", "بوابات دفع متعددة", "تقارير المبيعات والأداء"] },
+    ],
+    subServicesEn: [
+      { icon: "🎨", title: "UX & UI Design", desc: "We design modern, user-friendly interfaces focused on user journey, information clarity, and smooth interaction.", features: ["Professional UI/UX design", "Responsive across all devices", "Clear and smooth user journey"] },
+      { icon: "🏢", title: "ERP Systems Development", desc: "We develop integrated business systems for managing resources, operations, users, sales, and workflows.", features: ["Resource & operations management", "User & permissions management", "Comprehensive reports & analytics"] },
+      { icon: "🛍️", title: "E-commerce Development", desc: "We provide advanced solutions for building stores and commercial platforms with full product, order, payment, and shipping support.", features: ["Product & order management", "Multiple payment gateways", "Sales & performance reports"] },
+    ],
+    benefitsAr: [
+      { icon: "🧠", title: "تحليل قبل التنفيذ", desc: "نبدأ بفهم المشروع والأهداف التجارية قبل كتابة أي سطر كود لضمان تنفيذ يخدم الأهداف الفعلية." },
+      { icon: "⚡", title: "أداء عالٍ وسرعة", desc: "نستخدم أفضل التقنيات وأساليب التحسين لضمان تجربة سريعة وسلسة للمستخدم النهائي." },
+      { icon: "📐", title: "قابلية التوسع", desc: "نصمم المشاريع من اليوم الأول لتكون قادرة على النمو ودعم المزيد من المستخدمين والمزايا مستقبلاً." },
+      { icon: "🛡️", title: "أمان واستقرار", desc: "نطبّق معايير الأمان الحديثة في كل مرحلة من مراحل التطوير لحماية البيانات وضمان استمرارية العمل." },
+    ],
+    benefitsEn: [
+      { icon: "🧠", title: "Analysis Before Execution", desc: "We start by understanding the project and business goals before writing any code to ensure aligned delivery." },
+      { icon: "⚡", title: "High Performance & Speed", desc: "We use the best technologies and optimization practices to ensure a fast, smooth end-user experience." },
+      { icon: "📐", title: "Scalability", desc: "We design projects from day one to be capable of growing and supporting more users and features in the future." },
+      { icon: "🛡️", title: "Security & Stability", desc: "We apply modern security standards at every development stage to protect data and ensure business continuity." },
+    ],
+    technologiesAr: [] as any[],
+    technologiesEn: [] as any[],
+    techGroupsAr: [
+      { group: "الأساسيات", items: [{ badge: "H", label: "HTML5", sub: "هيكلة الواجهات" }, { badge: "C", label: "CSS3", sub: "تصميم وتنسيق" }, { badge: "JS", label: "JavaScript", sub: "تفاعلات ديناميكية" }, { badge: "TS", label: "TypeScript", sub: "تطوير منظم" }, { badge: "API", label: "REST APIs", sub: "ربط الأنظمة" }] },
+      { group: "إدارة المحتوى", items: [{ badge: "WP", label: "WordPress", sub: "مواقع ومحتوى" }, { badge: "MG", label: "Magento", sub: "تجارة إلكترونية" }, { badge: "SH", label: "Shopify", sub: "متاجر سريعة" }, { badge: "CS", label: "Custom CMS", sub: "لوحات مخصصة" }] },
+      { group: "قواعد البيانات", items: [{ badge: "MY", label: "MySQL", sub: "حلول مستقرة" }, { badge: "PG", label: "PostgreSQL", sub: "أنظمة متقدمة" }, { badge: "MG", label: "MongoDB", sub: "بيانات مرنة" }] },
+      { group: "الفريموركات", items: [{ badge: "L", label: "Laravel", sub: "أنظمة قوية" }, { badge: "N", label: "Node.js", sub: "واجهات وخدمات" }, { badge: "R", label: "React", sub: "واجهات متقدمة" }, { badge: "V", label: "Vue", sub: "تطوير مرن" }, { badge: "NW", label: "Next.js", sub: "أداء وSEO" }] },
+      { group: "الخوادم والبنية التحتية", items: [{ badge: "NG", label: "Nginx", sub: "ويب سيرفر" }, { badge: "CL", label: "Cloud", sub: "نشر واستقرار" }, { badge: "CD", label: "CI/CD", sub: "تطوير مستمر" }] },
+    ],
+    techGroupsEn: [
+      { group: "Fundamentals", items: [{ badge: "H", label: "HTML5", sub: "Interface structure" }, { badge: "C", label: "CSS3", sub: "Design & layout" }, { badge: "JS", label: "JavaScript", sub: "Dynamic interactions" }, { badge: "TS", label: "TypeScript", sub: "Structured development" }, { badge: "API", label: "REST APIs", sub: "System integration" }] },
+      { group: "CMS Platforms", items: [{ badge: "WP", label: "WordPress", sub: "Sites & content" }, { badge: "MG", label: "Magento", sub: "E-commerce" }, { badge: "SH", label: "Shopify", sub: "Quick stores" }, { badge: "CS", label: "Custom CMS", sub: "Custom panels" }] },
+      { group: "Databases", items: [{ badge: "MY", label: "MySQL", sub: "Stable solutions" }, { badge: "PG", label: "PostgreSQL", sub: "Advanced systems" }, { badge: "MG", label: "MongoDB", sub: "Flexible data" }] },
+      { group: "Frameworks", items: [{ badge: "L", label: "Laravel", sub: "Powerful systems" }, { badge: "N", label: "Node.js", sub: "APIs & services" }, { badge: "R", label: "React", sub: "Advanced UIs" }, { badge: "V", label: "Vue", sub: "Flexible dev" }, { badge: "NW", label: "Next.js", sub: "Performance & SEO" }] },
+      { group: "Servers & Infrastructure", items: [{ badge: "NG", label: "Nginx", sub: "Web server" }, { badge: "CL", label: "Cloud", sub: "Deploy & stability" }, { badge: "CD", label: "CI/CD", sub: "Continuous delivery" }] },
+    ],
+  },
   "technical-consulting": {
     eyebrowAr: "الاستشارات الفنية • Technical Consulting",
     eyebrowEn: "Technical Consulting • الاستشارات الفنية",
@@ -336,6 +398,8 @@ export default function ServiceDetail({ lang = "ar", onLangChange }: ServiceDeta
   const isMobile = slug === "mobile-app-development";
   const isMarketing = slug === "digital-marketing";
   const isConsulting = slug === "technical-consulting";
+  const isWebDev = slug === "web-development";
+  const techGroups = isAr ? cfg.techGroupsAr : cfg.techGroupsEn;
   const theme = SERVICE_THEMES[slug] || DEFAULT_THEME;
   const ctaTextColor = theme.ctaDark ? "#fff" : "#0f172a";
   const ctaSubColor = theme.ctaDark ? "rgba(255,255,255,0.85)" : "#6b7280";
@@ -486,6 +550,54 @@ export default function ServiceDetail({ lang = "ar", onLangChange }: ServiceDeta
                     ))}
                   </div>
                 </div>
+              ) : isWebDev ? (
+                /* Web Development Dashboard Visual */
+                <div style={{ position: "relative", zIndex: 2, width: "92%", display: "flex", flexDirection: "column", gap: 18 }}>
+                  <div style={{ borderRadius: 24, background: "linear-gradient(180deg,#fff,#f0f9ff)", border: "1px solid rgba(14,165,233,0.14)", padding: 22, boxShadow: "0 30px 70px rgba(14,165,233,0.12)" }}>
+                    <div style={{ display: "flex", gap: 8, marginBottom: 18 }}>
+                      <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#fda4af", display: "inline-block" }} />
+                      <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#fde68a", display: "inline-block" }} />
+                      <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#86efac", display: "inline-block" }} />
+                    </div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1.2fr 0.8fr", gap: 14 }}>
+                      {/* Left: Progress bars */}
+                      <div style={{ borderRadius: 16, background: "#fff", border: "1px solid rgba(14,165,233,0.10)", padding: 16, display: "grid", gap: 12 }}>
+                        <div style={{ fontSize: 11, fontWeight: 800, color: "#0369a1", marginBottom: 4 }}>{isAr ? "أداء المشروع" : "Project Performance"}</div>
+                        {[90, 72, 84, 63, 77].map((w, i) => (
+                          <div key={i} style={{ height: 10, borderRadius: 999, background: "#e0f2fe", overflow: "hidden", position: "relative" }}>
+                            <div style={{ position: "absolute", inset: 0, width: `${w}%`, borderRadius: "inherit", background: "linear-gradient(90deg,#0ea5e9,#6366f1)" }} />
+                          </div>
+                        ))}
+                      </div>
+                      {/* Right: Metric blocks */}
+                      <div style={{ display: "grid", gap: 10 }}>
+                        {[
+                          { label: isAr ? "مرحلة التطوير" : "Dev Phase", value: isAr ? "MVP" : "MVP" },
+                          { label: isAr ? "جودة الكود" : "Code Quality", value: "A+" },
+                          { label: isAr ? "الأداء" : "Performance", value: "98%" },
+                        ].map((m, i) => (
+                          <div key={i} style={{ borderRadius: 14, background: i === 0 ? "#e0f2fe" : i === 1 ? "#eef2ff" : "#f0fdf4", border: "1px solid rgba(14,165,233,0.10)", padding: "12px 14px" }}>
+                            <div style={{ fontSize: 11, fontWeight: 700, color: "#64748b", marginBottom: 2 }}>{m.label}</div>
+                            <div style={{ fontSize: 20, fontWeight: 900, color: i === 0 ? "#0369a1" : i === 1 ? "#4f46e5" : "#15803d" }}>{m.value}</div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  {/* Stats Row */}
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12 }}>
+                    {[
+                      { strong: "ERP", spanAr: "أنظمة أعمال", spanEn: "Business Systems" },
+                      { strong: "UX", spanAr: "واجهات وتجربة", spanEn: "UI & Experience" },
+                      { strong: "B2B", spanAr: "منصات احترافية", spanEn: "Pro Platforms" },
+                    ].map((s, i) => (
+                      <div key={i} style={{ background: "rgba(255,255,255,0.92)", border: "1px solid rgba(14,165,233,0.12)", borderRadius: 20, padding: "16px 10px", textAlign: "center", boxShadow: "0 12px 32px rgba(14,165,233,0.08)" }}>
+                        <strong style={{ display: "block", fontSize: 22, color: "#0369a1", lineHeight: 1.1 }}>{s.strong}</strong>
+                        <span style={{ color: "#6b7280", fontSize: 12, fontWeight: 700 }}>{isAr ? s.spanAr : s.spanEn}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               ) : isMarketing ? (
                 /* Marketing Dashboard Visual */
                 <div style={{ position: "relative", zIndex: 2, width: "92%", height: 420, borderRadius: 36, background: "linear-gradient(135deg,#ffffff,#faf5ff)", border: "1px solid rgba(226,232,240,0.92)", boxShadow: "0 30px 70px rgba(15,23,42,0.14)", overflow: "hidden" }}>
@@ -568,7 +680,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange }: ServiceDeta
               )}
 
               {/* Floating cards */}
-              {!isConsulting && (
+              {!isConsulting && !isWebDev && (
                 <>
                   <div style={{ position: "absolute", background: "#fff", color: "#0f172a", borderRadius: 20, padding: "14px 16px", boxShadow: "0 20px 50px rgba(15,23,42,0.08)", border: "1px solid #e2e8f0", minWidth: 180, zIndex: 3, ...(isAr ? { right: -10 } : { left: -10 }), top: 30 }}>
                     <strong style={{ display: "block", fontSize: 17, marginBottom: 4 }}>{isMarketing ? (isAr ? "استراتيجية قبل التنفيذ" : "Strategy before execution") : (isAr ? "Flutter / Native" : "Flutter / Native")}</strong>
@@ -717,30 +829,53 @@ export default function ServiceDetail({ lang = "ar", onLangChange }: ServiceDeta
       </section>
 
       {/* ── Technologies ── */}
-      {technologies.length > 0 && (
+      {(technologies.length > 0 || (techGroups && techGroups.length > 0)) && (
         <section style={{ padding: "88px 0", background: "linear-gradient(180deg,#fff,#f8fbff)" }}>
           <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
-            <div style={{ display: "flex", alignItems: "end", justifyContent: "space-between", gap: 24, marginBottom: 32, flexWrap: "wrap" }}>
-              <div>
-                <span style={{ display: "inline-flex", background: "#fff1e9", color: "#9a4f22", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 12 }}>
-                  {isAr ? "التقنيات" : "Technologies"}
-                </span>
-                <h2 style={{ margin: "0 0 10px", fontSize: "clamp(28px,3vw,40px)", lineHeight: 1.2, fontWeight: 800 }}>
-                  {isAr ? "تقنيات نعتمدها في تنفيذ مشاريعنا" : "Technologies We Use in Our Projects"}
-                </h2>
+            <div style={{ textAlign: "center", marginBottom: 36 }}>
+              <span style={{ display: "inline-flex", background: theme.chipBg, color: theme.chipColor, padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 12 }}>
+                {isAr ? "التقنيات" : "Technologies"}
+              </span>
+              <h2 style={{ margin: "0 0 10px", fontSize: "clamp(28px,3vw,40px)", lineHeight: 1.2, fontWeight: 800 }}>
+                {isAr ? "تقنيات نعتمدها في تنفيذ مشاريعنا" : "Technologies We Use in Our Projects"}
+              </h2>
+              <p style={{ margin: "0 auto", maxWidth: 640, color: "#64748b", fontSize: 16 }}>
+                {isAr ? "نختار التقنية المناسبة وفقاً لطبيعة المشروع وحجم التوسع المتوقع." : "We choose the right technology based on project nature and expected scale."}
+              </p>
+            </div>
+
+            {techGroups && techGroups.length > 0 ? (
+              /* Grouped technologies (web-development) */
+              <div style={{ background: "rgba(255,255,255,0.7)", border: "1px solid #e2e8f0", borderRadius: 28, padding: 28, boxShadow: "0 20px 50px rgba(15,23,42,0.07)" }}>
+                {techGroups.map((grp: any, gi: number) => (
+                  <div key={gi} style={{ marginBottom: gi < techGroups.length - 1 ? 28 : 0 }}>
+                    <h3 style={{ margin: "0 0 16px", fontSize: 20, fontWeight: 800, color: theme.eyebrowColor, textAlign: "center" }}>{grp.group}</h3>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 14, justifyContent: "center" }}>
+                      {grp.items.map((t: any, ti: number) => (
+                        <div key={ti} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 18, padding: "14px 18px", textAlign: "center", minWidth: 100, boxShadow: "0 8px 24px rgba(15,23,42,0.06)", display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+                          <div style={{ width: 44, height: 44, borderRadius: 14, background: theme.chipBg, color: theme.chipColor, fontWeight: 900, display: "grid", placeItems: "center", fontSize: 13 }}>{t.badge}</div>
+                          <strong style={{ fontSize: 14, color: "#0f172a" }}>{t.label}</strong>
+                          <span style={{ fontSize: 12, color: "#94a3b8" }}>{t.sub}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 22 }} className="features-grid-responsive">
-              {technologies.map((t: any, i: number) => (
-                <article key={i} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 24, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 26, transition: "0.25s ease" }}
-                  onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-5px)")}
-                  onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}>
-                  <div style={{ width: 52, height: 52, borderRadius: 16, display: "grid", placeItems: "center", background: "#eff6ff", color: "#2563eb", fontWeight: 900, marginBottom: 14, fontSize: 20 }}>{t.icon || t.label[0]}</div>
-                  <h3 style={{ margin: "0 0 10px", fontSize: 22, fontWeight: 800 }}>{t.label}</h3>
-                  <p style={{ margin: 0, color: "#64748b" }}>{t.desc}</p>
-                </article>
-              ))}
-            </div>
+            ) : (
+              /* Flat technologies */
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 22 }} className="features-grid-responsive">
+                {technologies.map((t: any, i: number) => (
+                  <article key={i} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 24, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 26, transition: "0.25s ease" }}
+                    onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-5px)")}
+                    onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}>
+                    <div style={{ width: 52, height: 52, borderRadius: 16, display: "grid", placeItems: "center", background: theme.chipBg, color: theme.chipColor, fontWeight: 900, marginBottom: 14, fontSize: 20 }}>{t.icon || t.label[0]}</div>
+                    <h3 style={{ margin: "0 0 10px", fontSize: 22, fontWeight: 800 }}>{t.label}</h3>
+                    <p style={{ margin: 0, color: "#64748b" }}>{t.desc}</p>
+                  </article>
+                ))}
+              </div>
+            )}
           </div>
         </section>
       )}
@@ -879,17 +1014,21 @@ export default function ServiceDetail({ lang = "ar", onLangChange }: ServiceDeta
               <h2 style={{ margin: "0 0 12px", fontSize: "clamp(28px,4vw,42px)", lineHeight: 1.2, fontWeight: 800 }}>
                 {isConsulting
                   ? (isAr ? "هل لديك مشروع يحتاج إلى رؤية تقنية واضحة؟" : "Do you have a project that needs a clear technical vision?")
+                  : isWebDev
+                  ? (isAr ? "هل لديك فكرة منصة أو نظام ويب تريد تنفيذها احترافياً؟" : "Have a web platform or system idea you want to build professionally?")
                   : (isAr ? "جاهز لتحويل فكرتك إلى واقع رقمي احترافي؟" : "Ready to Turn Your Idea into a Professional Digital Reality?")}
               </h2>
               <p style={{ margin: 0, color: ctaSubColor, fontSize: 17 }}>
                 {isConsulting
                   ? (isAr ? "سواء كان لديك نظام قائم يحتاج إلى تطوير، أو فكرة جديدة تريد تقييمها، سنساعدك في اتخاذ القرار الصحيح." : "Whether you have an existing system to develop, or a new idea to evaluate, we'll help you make the right decision.")
+                  : isWebDev
+                  ? (isAr ? "سواء كنت تحتاج متجر إلكتروني، نظام ERP، لوحة تحكم، أو منصة ويب مخصصة، سنحوّل فكرتك إلى منتج رقمي فعلي بجودة عالية." : "Whether you need an e-commerce store, ERP system, dashboard, or custom web platform, we'll turn your idea into a real digital product.")
                   : (isAr ? "ابدأ معنا بخطة واضحة وتصميم يعكس قيمة مشروعك." : "Start with a clear plan and design that reflects your project's value.")}
               </p>
             </div>
             <div style={{ display: "flex", justifyContent: "flex-start", gap: 14, flexWrap: "wrap", position: "relative" }}>
               <a href="#contact-section" style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 24px", fontSize: 15, fontWeight: 800, background: theme.checkBg, color: "#fff", boxShadow: `0 14px 28px ${theme.shadowColor}`, textDecoration: "none", border: 0 }}>
-                {isAr ? (isConsulting ? "احصل على استشارة مجانية" : isMarketing ? "اطلب استشارة الآن" : "اطلب عرض سعر") : (isConsulting ? "Get Free Consultation" : isMarketing ? "Request Consultation" : "Request a Quote")}
+                {isAr ? (isConsulting ? "احصل على استشارة مجانية" : isWebDev ? "ابدأ مشروعك الآن" : isMarketing ? "اطلب استشارة الآن" : "اطلب عرض سعر") : (isConsulting ? "Get Free Consultation" : isWebDev ? "Start Your Project" : isMarketing ? "Request Consultation" : "Request a Quote")}
               </a>
               <a href="/services" style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 24px", fontSize: 15, fontWeight: 700, background: theme.ctaDark ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.7)", color: theme.ctaDark ? "#fff" : "#374151", border: `1px solid ${theme.ctaDark ? "rgba(255,255,255,0.2)" : "rgba(229,146,105,0.25)"}`, textDecoration: "none" }}>
                 {isAr ? "استكشف الخدمات" : "Explore Services"}

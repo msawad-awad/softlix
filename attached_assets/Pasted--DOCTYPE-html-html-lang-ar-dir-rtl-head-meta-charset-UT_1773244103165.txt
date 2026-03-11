@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تطوير تطبيقات الويب | Softlix</title>
+  <meta name="description" content="صفحة HTML احترافية لخدمة تطوير تطبيقات الويب من Softlix بتصميم حديث ومتجاوب." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #e59269;
+      --primary-dark: #cf7e56;
+      --secondary: #82b735;
+      --bg: #fffaf7;
+      --surface: #ffffff;
+      --surface-2: #fff3ec;
+      --surface-3: #f8fbf2;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: rgba(31, 41, 55, 0.08);
+      --shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+      --radius: 22px;
+      --container: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Cairo', sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(229,146,105,.16), transparent 22%),
+        radial-gradient(circle at bottom left, rgba(130,183,53,.10), transparent 18%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    .container {
+      width: min(var(--container), calc(100% - 32px));
+      margin-inline: auto;
+    }
+
+    .topbar {
+      background: var(--secondary);
+      color: #fff;
+      font-size: 14px;
+    }
+    .topbar .wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      flex-wrap: wrap;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+      background: rgba(255, 250, 247, 0.9);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 16px 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 22px;
+      color: var(--text);
+    }
+
+    .logo-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      box-shadow: var(--shadow);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .nav-links a:hover { color: var(--primary-dark); }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 50px;
+      padding: 0 22px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-weight: 700;
+      transition: .25s ease;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(229, 146, 105, .28);
+    }
+
+    .btn-primary:hover { transform: translateY(-2px); }
+
+    .btn-outline {
+      border-color: rgba(229,146,105,.35);
+      background: rgba(255,255,255,.75);
+      color: var(--primary-dark);
+    }
+
+    .btn-outline:hover {
+      background: var(--surface-2);
+      transform: translateY(-2px);
+    }
+
+    .hero {
+      padding: 72px 0 40px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .hero-card,
+    .hero-visual,
+    .card,
+    .feature-card,
+    .tech-card,
+    .project-card,
+    .stat,
+    .cta-box,
+    .contact-card,
+    .method-card {
+      background: rgba(255,255,255,.88);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+    }
+
+    .hero-card {
+      padding: 38px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(229,146,105,.12);
+      color: var(--primary-dark);
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      margin: 0 0 14px;
+      font-size: clamp(34px, 4.4vw, 58px);
+      line-height: 1.18;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 18px;
+      max-width: 62ch;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .hero-points {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .hero-points div {
+      padding: 14px 16px;
+      background: var(--surface-2);
+      border: 1px solid rgba(229,146,105,.14);
+      border-radius: 16px;
+      font-weight: 700;
+      color: #374151;
+    }
+
+    .hero-visual {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dashboard {
+      border-radius: 20px;
+      background: linear-gradient(180deg, #fff 0%, #fff8f3 100%);
+      border: 1px solid rgba(31,41,55,.08);
+      padding: 20px;
+    }
+
+    .window-head {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .window-head span {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #e5e7eb;
+    }
+
+    .window-head span:nth-child(1){ background:#fda4af; }
+    .window-head span:nth-child(2){ background:#fde68a; }
+    .window-head span:nth-child(3){ background:#86efac; }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 14px;
+    }
+
+    .panel {
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid rgba(31,41,55,.06);
+      padding: 16px;
+    }
+
+    .bars { display: grid; gap: 12px; }
+    .bar {
+      height: 12px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      overflow: hidden;
+      position: relative;
+    }
+    .bar::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      width: var(--w);
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: inherit;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .stat {
+      padding: 18px;
+      text-align: center;
+    }
+    .stat strong {
+      display: block;
+      font-size: 28px;
+      color: var(--primary-dark);
+      line-height: 1.1;
+    }
+    .stat span { color: var(--muted); font-size: 14px; }
+
+    section { padding: 32px 0; }
+
+    .section-head {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .section-head h2 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 3vw, 42px);
+      line-height: 1.25;
+    }
+
+    .section-head p {
+      margin: 0 auto;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .grid-3,
+    .grid-4,
+    .tech-grid,
+    .projects,
+    .contact-grid,
+    .method-grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .tech-grid { grid-template-columns: repeat(5, 1fr); }
+    .projects { grid-template-columns: repeat(3, 1fr); }
+    .contact-grid { grid-template-columns: 1fr .68fr; }
+    .method-grid { grid-template-columns: .9fr 1.1fr; }
+
+    .card,
+    .feature-card,
+    .method-card,
+    .contact-card,
+    .tech-card { padding: 24px; }
+
+    .icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(229,146,105,.18), rgba(130,183,53,.18));
+      display: grid;
+      place-items: center;
+      font-size: 26px;
+      margin-bottom: 16px;
+    }
+
+    .card h3,
+    .feature-card h3,
+    .method-card h3,
+    .contact-card h3 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      line-height: 1.35;
+    }
+
+    .card p,
+    .feature-card p,
+    .method-card p,
+    .contact-card p { margin: 0; color: var(--muted); }
+
+    .check-list {
+      display: grid;
+      gap: 12px;
+      margin: 18px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .check-list li {
+      padding: 14px 16px;
+      background: var(--surface-2);
+      border-radius: 16px;
+      border: 1px solid rgba(229,146,105,.14);
+      font-weight: 600;
+    }
+
+    .method-card {
+      background: linear-gradient(135deg, rgba(229,146,105,.10), rgba(130,183,53,.08));
+    }
+
+    .steps {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: #fff;
+      border: 1px solid rgba(31,41,55,.07);
+    }
+
+    .step-num {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      flex: 0 0 38px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff;
+      font-weight: 800;
+    }
+
+    .step h4 {
+      margin: 0 0 4px;
+      font-size: 18px;
+    }
+
+    .step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14.5px;
+    }
+
+    .tech-section {
+      background: linear-gradient(180deg, rgba(255,255,255,.22), rgba(255,255,255,.62));
+      border-radius: 28px;
+      padding: 26px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+
+    .tech-group + .tech-group { margin-top: 26px; }
+
+    .tech-group h3 {
+      margin: 0 0 14px;
+      text-align: center;
+      font-size: 24px;
+    }
+
+    .tech-card {
+      text-align: center;
+      padding: 18px 14px;
+      min-height: 126px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .tech-badge {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(229,146,105,.18), rgba(130,183,53,.18));
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .tech-card strong { font-size: 16px; }
+    .tech-card span { color: var(--muted); font-size: 13px; }
+
+    .project-card {
+      overflow: hidden;
+    }
+
+    .project-cover {
+      height: 220px;
+      background: linear-gradient(135deg, rgba(229,146,105,.95), rgba(130,183,53,.95));
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: end;
+      color: #fff;
+      position: relative;
+    }
+
+    .project-cover::before {
+      content: "";
+      position: absolute;
+      inset: auto -40px -40px auto;
+      width: 140px;
+      height: 140px;
+      border-radius: 28px;
+      background: rgba(255,255,255,.15);
+      transform: rotate(18deg);
+    }
+
+    .project-body { padding: 22px; }
+    .project-body h3 { margin: 0 0 10px; font-size: 22px; }
+    .project-body p { margin: 0 0 14px; color: var(--muted); }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      border: 1px solid rgba(229,146,105,.16);
+      color: #5b6472;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .cta-box {
+      padding: 34px;
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 18px;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(229,146,105,.12), rgba(130,183,53,.10));
+    }
+
+    .cta-box h2 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 3vw, 42px);
+      line-height: 1.22;
+    }
+
+    .cta-box p { margin: 0; color: var(--muted); }
+
+    form {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid rgba(31,41,55,.10);
+      background: #fff;
+      border-radius: 16px;
+      padding: 15px 16px;
+      font: inherit;
+      outline: none;
+      transition: .2s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(229,146,105,.55);
+      box-shadow: 0 0 0 4px rgba(229,146,105,.10);
+    }
+
+    textarea { min-height: 140px; resize: vertical; }
+
+    .contact-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .contact-item {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: var(--surface-2);
+      border: 1px solid rgba(229,146,105,.12);
+      font-weight: 700;
+      color: #374151;
+    }
+
+    .footer {
+      margin-top: 36px;
+      background: #1f2937;
+      color: #fff;
+      padding: 26px 0;
+    }
+
+    .footer-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer small { color: rgba(255,255,255,.7); }
+
+    @media (max-width: 1100px) {
+      .hero-grid,
+      .method-grid,
+      .cta-box,
+      .contact-grid { grid-template-columns: 1fr; }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .tech-grid { grid-template-columns: repeat(3, 1fr); }
+      .projects { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 860px) {
+      .nav-links { display: none; }
+      .grid-3,
+      .hero-stats,
+      .form-row,
+      .hero-points,
+      .dashboard-grid,
+      .tech-grid { grid-template-columns: 1fr; }
+      .navbar { padding: 14px 0; }
+      .hero { padding-top: 42px; }
+      .hero-card,
+      .hero-visual,
+      .card,
+      .feature-card,
+      .method-card,
+      .contact-card,
+      .tech-section,
+      .cta-box,
+      .project-body { padding: 20px; }
+      .topbar .wrap,
+      .footer-wrap { justify-content: center; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="container wrap">
+      <div>حلول تطوير ويب احترافية للمتاجر والمنصات والأنظمة الداخلية</div>
+      <div>السبت - الخميس | 9:00 ص - 6:00 م</div>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="container navbar">
+      <a href="#" class="logo">
+        <span class="logo-badge"></span>
+        <span>Softlix</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#">الرئيسية</a>
+        <a href="#services">الخدمات</a>
+        <a href="#method">منهجية العمل</a>
+        <a href="#tech">التقنيات</a>
+        <a href="#contact">تواصل معنا</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="btn btn-outline" href="#projects">المشاريع</a>
+        <a class="btn btn-primary" href="#contact">اطلب عرض سعر</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-card">
+          <div class="eyebrow">تطوير تطبيقات الويب • Web Development</div>
+          <h1>نطوّر منصات ويب وأنظمة رقمية تدعم نمو أعمالك بثبات</h1>
+          <p>
+            نقدم في Softlix خدمات تطوير تطبيقات الويب والأنظمة المخصصة والمتاجر الإلكترونية باحترافية عالية، مع التركيز على الأداء، سهولة الاستخدام، قابلية التوسع، وربط الحلول التقنية باحتياجات المشروع الفعلية.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#contact" class="btn btn-primary">ابدأ مشروعك الآن</a>
+            <a href="#services" class="btn btn-outline">استكشف خدماتنا</a>
+          </div>
+
+          <div class="hero-points">
+            <div>أنظمة أعمال وERP</div>
+            <div>متاجر إلكترونية احترافية</div>
+            <div>تجربة مستخدم وواجهة قوية</div>
+            <div>حلول مخصصة وقابلة للتوسع</div>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="dashboard">
+            <div class="window-head"><span></span><span></span><span></span></div>
+            <div class="dashboard-grid">
+              <div class="panel">
+                <div class="bars">
+                  <div class="bar" style="--w:90%"></div>
+                  <div class="bar" style="--w:72%"></div>
+                  <div class="bar" style="--w:84%"></div>
+                  <div class="bar" style="--w:63%"></div>
+                  <div class="bar" style="--w:77%"></div>
+                </div>
+              </div>
+              <div class="panel" style="display:grid; gap:10px;">
+                <div style="height:54px; border-radius:14px; background:var(--surface-2);"></div>
+                <div style="height:54px; border-radius:14px; background:var(--surface-3);"></div>
+                <div style="height:54px; border-radius:14px; background:#f7f7fb;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat"><strong>ERP</strong><span>أنظمة أعمال</span></div>
+            <div class="stat"><strong>UX</strong><span>واجهات وتجربة</span></div>
+            <div class="stat"><strong>B2B</strong><span>منصات احترافية</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="services">
+      <div class="container">
+        <div class="section-head">
+          <h2>خدمات تطوير الويب</h2>
+          <p>
+            نبني حلول ويب متكاملة تجمع بين التحليل الجيد، التصميم الاحترافي، التطوير القوي، والبنية التقنية القادرة على دعم النمو المستقبلي للمشروع.
+          </p>
+        </div>
+
+        <div class="grid-3">
+          <article class="card">
+            <div class="icon">🎨</div>
+            <h3>تجربة المستخدم والتصميم</h3>
+            <p>نصمم واجهات حديثة وسهلة الاستخدام تركز على رحلة المستخدم، وضوح المعلومات، وسلاسة التفاعل بما يرفع جودة المنتج الرقمي بالكامل.</p>
+          </article>
+
+          <article class="card">
+            <div class="icon">🏢</div>
+            <h3>برمجة الأنظمة ERP</h3>
+            <p>نطوّر أنظمة أعمال متكاملة لإدارة الموارد، العمليات، المستخدمين، المبيعات، وسير العمل الداخلي ضمن بنية منظمة وقابلة للتوسع.</p>
+          </article>
+
+          <article class="card">
+            <div class="icon">🛍️</div>
+            <h3>تطوير التجارة الإلكترونية</h3>
+            <p>نقدّم حلولاً متقدمة لبناء المتاجر والمنصات التجارية، مع دعم العمليات الأساسية مثل المنتجات، الطلبات، الدفع، الشحن، والتقارير.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="method">
+      <div class="container method-grid">
+        <div class="method-card">
+          <h3>منهجية العمل</h3>
+          <p>
+            نعتمد على منهجية Agile في تطوير المشاريع الرقمية، لأنها تمنح مرونة أكبر، واختبارات أسرع، وقدرة على التحسين المستمر أثناء العمل بدلاً من انتظار نهاية المشروع.
+          </p>
+          <ul class="check-list">
+            <li>تقسيم المشروع إلى مراحل واضحة وقابلة للقياس</li>
+            <li>مراجعات دورية ومتابعة تقدم التنفيذ باستمرار</li>
+            <li>مرونة أعلى في تطوير المزايا والتحسينات</li>
+            <li>تقليل المخاطر وتسريع اكتشاف المشاكل</li>
+            <li>تواصل أفضل بين العميل والفريق التقني</li>
+          </ul>
+        </div>
+
+        <div class="feature-card">
+          <h3>كيف نحول الفكرة إلى منتج فعلي؟</h3>
+          <p>من أول اجتماع وحتى الإطلاق، نمر بخطوات منظمة تضمن وضوح الرؤية والتنفيذ بجودة عالية.</p>
+
+          <div class="steps">
+            <div class="step">
+              <div class="step-num">1</div>
+              <div>
+                <h4>تحليل المشروع</h4>
+                <p>فهم الأهداف، نوع المنصة، المستخدمين، والتدفقات الأساسية المطلوبة.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">2</div>
+              <div>
+                <h4>تصميم UX/UI</h4>
+                <p>بناء تجربة استخدام منظمة وواجهات احترافية متوافقة مع هوية المشروع.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">3</div>
+              <div>
+                <h4>التطوير المرحلي</h4>
+                <p>تنفيذ الخصائص الأساسية على مراحل مع مراجعة واختبار مستمر.</p>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-num">4</div>
+              <div>
+                <h4>الإطلاق والتحسين</h4>
+                <p>تجهيز المشروع للإطلاق مع إمكانية التوسع والتحسين المستقبلي.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tech">
+      <div class="container">
+        <div class="section-head">
+          <h2>التقنيات التي نستخدمها</h2>
+          <p>نختار التقنية المناسبة وفقاً لطبيعة المشروع، سرعة التنفيذ المطلوبة، وحجم التوسع المتوقع.</p>
+        </div>
+
+        <div class="tech-section">
+          <div class="tech-group">
+            <h3>التكنولوجيات الأساسية</h3>
+            <div class="tech-grid">
+              <div class="tech-card"><div class="tech-badge">H</div><strong>HTML5</strong><span>هيكلة الواجهات</span></div>
+              <div class="tech-card"><div class="tech-badge">C</div><strong>CSS3</strong><span>تصميم وتنسيق</span></div>
+              <div class="tech-card"><div class="tech-badge">JS</div><strong>JavaScript</strong><span>تفاعلات ديناميكية</span></div>
+              <div class="tech-card"><div class="tech-badge">TS</div><strong>TypeScript</strong><span>تطوير منظم</span></div>
+              <div class="tech-card"><div class="tech-badge">API</div><strong>REST APIs</strong><span>ربط الأنظمة</span></div>
+            </div>
+          </div>
+
+          <div class="tech-group">
+            <h3>أنظمة إدارة المحتوى</h3>
+            <div class="tech-grid">
+              <div class="tech-card"><div class="tech-badge">WP</div><strong>WordPress</strong><span>مواقع وإدارة محتوى</span></div>
+              <div class="tech-card"><div class="tech-badge">MG</div><strong>Magento</strong><span>تجارة إلكترونية</span></div>
+              <div class="tech-card"><div class="tech-badge">SH</div><strong>Shopify</strong><span>متاجر سريعة الإطلاق</span></div>
+              <div class="tech-card"><div class="tech-badge">CS</div><strong>Custom CMS</strong><span>لوحات مخصصة</span></div>
+              <div class="tech-card"><div class="tech-badge">EC</div><strong>E-Commerce</strong><span>حلول بيع رقمية</span></div>
+            </div>
+          </div>
+
+          <div class="tech-group">
+            <h3>قواعد البيانات</h3>
+            <div class="tech-grid">
+              <div class="tech-card"><div class="tech-badge">MY</div><strong>MySQL</strong><span>حلول مستقرة</span></div>
+              <div class="tech-card"><div class="tech-badge">PG</div><strong>PostgreSQL</strong><span>أنظمة متقدمة</span></div>
+              <div class="tech-card"><div class="tech-badge">MS</div><strong>MongoDB</strong><span>بيانات مرنة</span></div>
+            </div>
+          </div>
+
+          <div class="tech-group">
+            <h3>الفريموركات</h3>
+            <div class="tech-grid">
+              <div class="tech-card"><div class="tech-badge">L</div><strong>Laravel</strong><span>أنظمة ويب قوية</span></div>
+              <div class="tech-card"><div class="tech-badge">N</div><strong>Node.js</strong><span>واجهات وخدمات</span></div>
+              <div class="tech-card"><div class="tech-badge">R</div><strong>React</strong><span>واجهات متقدمة</span></div>
+              <div class="tech-card"><div class="tech-badge">V</div><strong>Vue</strong><span>تطوير مرن</span></div>
+              <div class="tech-card"><div class="tech-badge">NW</div><strong>Next.js</strong><span>أداء وSEO</span></div>
+            </div>
+          </div>
+
+          <div class="tech-group">
+            <h3>تقنيات الخوادم والبنية التحتية</h3>
+            <div class="tech-grid">
+              <div class="tech-card"><div class="tech-badge">NG</div><strong>Nginx</strong><span>ويب سيرفر</span></div>
+              <div class="tech-card"><div class="tech-badge">AP</div><strong>Apache</strong><span>استضافة تقليدية</span></div>
+              <div class="tech-card"><div class="tech-badge">CL</div><strong>Cloud</strong><span>نشر واستقرار</span></div>
+              <div class="tech-card"><div class="tech-badge">CD</div><strong>CI/CD</strong><span>تطوير مستمر</span></div>
+              <div class="tech-card"><div class="tech-badge">SV</div><strong>Servers</strong><span>إدارة وتشغيل</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects">
+      <div class="container">
+        <div class="section-head">
+          <h2>أحدث المشاريع</h2>
+          <p>يمكنك تخصيص هذا القسم لاحقاً لعرض مشاريع Softlix الحقيقية في الأنظمة والمتاجر والمنصات الإلكترونية.</p>
+        </div>
+
+        <div class="projects">
+          <article class="project-card">
+            <div class="project-cover">
+              <strong>منصة تجارة إلكترونية</strong>
+              <span>حل متكامل للبيع الإلكتروني</span>
+            </div>
+            <div class="project-body">
+              <h3>متجر ومنصة بيع متعددة الأقسام</h3>
+              <p>بناء متجر احترافي يدعم إدارة المنتجات والطلبات والدفع والشحن مع لوحة تحكم مرنة وتجربة استخدام متقدمة.</p>
+              <div class="tags">
+                <span class="tag">Magento</span>
+                <span class="tag">E-commerce</span>
+                <span class="tag">UX</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-cover">
+              <strong>نظام أعمال داخلي</strong>
+              <span>أتمتة العمليات وسير العمل</span>
+            </div>
+            <div class="project-body">
+              <h3>ERP مخصص لإدارة التشغيل</h3>
+              <p>نظام مخصص لإدارة المستخدمين والطلبات والتقارير والمهام والعمليات الداخلية ضمن واجهة ويب حديثة.</p>
+              <div class="tags">
+                <span class="tag">ERP</span>
+                <span class="tag">Laravel</span>
+                <span class="tag">Business</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-cover">
+              <strong>منصة خدمات رقمية</strong>
+              <span>حجز وإدارة ومتابعة</span>
+            </div>
+            <div class="project-body">
+              <h3>بوابة ويب للخدمات والطلبات</h3>
+              <p>منصة رقمية متكاملة تسمح بإدارة العملاء والخدمات والمدفوعات والإشعارات والتقارير من مكان واحد.</p>
+              <div class="tags">
+                <span class="tag">Web App</span>
+                <span class="tag">Dashboard</span>
+                <span class="tag">Scalable</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="cta-box">
+          <div>
+            <h2>هل لديك فكرة منصة أو نظام ويب وتريد تنفيذها باحتراف؟</h2>
+            <p>
+              سواء كنت تحتاج متجر إلكتروني، نظام ERP، لوحة تحكم، أو منصة ويب مخصصة، سنساعدك في تحويل الفكرة إلى منتج رقمي فعلي بجودة عالية.
+            </p>
+          </div>
+          <div style="display:flex; gap:12px; justify-content:flex-start; flex-wrap:wrap;">
+            <a href="#contact" class="btn btn-primary">ابدأ الآن</a>
+            <a href="#tech" class="btn btn-outline">عرض التقنيات</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="container contact-grid">
+        <div class="contact-card">
+          <h3>كن على تواصل</h3>
+          <p>أرسل تفاصيل مشروعك وسيتواصل معك فريقنا لتحديد أفضل تصور تقني وخطة تنفيذ مناسبة.</p>
+
+          <form>
+            <div class="form-row">
+              <input type="text" placeholder="الاسم الكامل" />
+              <input type="email" placeholder="البريد الإلكتروني" />
+            </div>
+            <div class="form-row">
+              <input type="tel" placeholder="رقم الهاتف" />
+              <select>
+                <option>نوع المشروع</option>
+                <option>متجر إلكتروني</option>
+                <option>نظام ERP</option>
+                <option>منصة ويب</option>
+                <option>لوحة تحكم مخصصة</option>
+              </select>
+            </div>
+            <textarea placeholder="صف فكرتك أو احتياجك هنا"></textarea>
+            <div>
+              <button class="btn btn-primary" type="submit">إرسال الطلب</button>
+            </div>
+          </form>
+        </div>
+
+        <aside class="contact-card">
+          <h3>معلومات التواصل</h3>
+          <p>يمكنك التواصل معنا مباشرة عبر الوسائل التالية.</p>
+
+          <div class="contact-list">
+            <div class="contact-item">📞 0537861534</div>
+            <div class="contact-item">💬 واتساب: 966537861534</div>
+            <div class="contact-item">✉️ info@softlix.net</div>
+            <div class="contact-item">📍 مبنى الامتياز، حي الصفا، طريق الحرمين، المملكة العربية السعودية</div>
+            <div class="contact-item">🕘 ساعات العمل: السبت - الخميس | 9 ص - 6 م</div>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-wrap">
+      <div class="logo" style="color:#fff;">
+        <span class="logo-badge"></span>
+        <span>Softlix</span>
+      </div>
+      <small>© 2026 Softlix For Information Technology. All rights reserved.</small>
+    </div>
+  </footer>
+</body>
+</html>
