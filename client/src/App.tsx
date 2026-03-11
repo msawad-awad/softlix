@@ -46,34 +46,40 @@ function AuthLayout({ children }: { children: React.ReactNode }) {
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { isRTL } = useLanguage() ?? { isRTL: false };
-  
-  return (
-    <div 
-      className="dashboard-layout flex min-h-screen w-full"
-      style={{ 
-        flexDirection: isRTL ? 'row-reverse' : 'row',
-        display: 'flex'
-      }}
+
+  const content = (
+    <SidebarInset
+      className="flex flex-col flex-1 min-w-0"
+      {...(isRTL ? { dir: "rtl" } : {})}
     >
-      <AppSidebar />
-      <SidebarInset className="sidebar-inset flex flex-col flex-1">
-        <header 
-          className="dashboard-header flex h-14 items-center justify-between gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 sticky top-0 z-50"
-          style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
-        >
-          <SidebarTrigger data-testid="button-sidebar-toggle" />
-          <div 
-            className="header-controls flex items-center gap-2"
-            style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
-          >
-            <LanguageToggle />
-            <ThemeToggle />
-          </div>
-        </header>
-        <main className="flex-1 overflow-auto p-6">
-          {children}
-        </main>
-      </SidebarInset>
+      <header className="flex h-14 items-center justify-between gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 sticky top-0 z-50">
+        <SidebarTrigger data-testid="button-sidebar-toggle" />
+        <div className="flex items-center gap-2">
+          <LanguageToggle />
+          <ThemeToggle />
+        </div>
+      </header>
+      <main className="flex-1 overflow-auto p-6">
+        {children}
+      </main>
+    </SidebarInset>
+  );
+
+  return (
+    // dir="ltr" prevents the CSS direction:rtl on <html> from reversing flex automatically.
+    // We control the sidebar position ourselves via DOM order + side="right" prop.
+    <div className="flex min-h-screen w-full" dir="ltr">
+      {isRTL ? (
+        <>
+          {content}
+          <AppSidebar />
+        </>
+      ) : (
+        <>
+          <AppSidebar />
+          {content}
+        </>
+      )}
     </div>
   );
 }
