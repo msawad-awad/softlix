@@ -1,0 +1,710 @@
+تطوير CRM متكامل
+Prompt
+أريد بناء نظام CRM احترافي متكامل مخصص لشركة تقدم خدمات تطوير البرمجيات، تصميم المواقع والتطبيقات، الأنظمة الإدارية، والتسويق الرقمي.
+يجب أن يكون النظام عملي، عصري، قابل للتوسع، ومبني بطريقة منظمة تسمح بإضافة وحدات مستقبلية مثل الدعم الفني والتذاكر لاحقاً، لكن حالياً لا يتم تنفيذ نظام التذاكر أو الدعم الفني.
+المطلوب بناء CRM يغطي المراحل التالية:
+•	استقبال العملاء المحتملين Leads
+•	إدارة العملاء Companies / Contacts
+•	إدارة فرص البيع Deals
+•	إدارة المتابعات والمهام Tasks
+•	إدارة العروض السعرية Proposals / Quotations
+•	تتبع مصادر العملاء والحملات
+•	إدارة سجل التواصل مع العميل
+•	التقارير ولوحات التحكم
+•	الأتمتة الأساسية
+•	إدارة الفريق والصلاحيات
+•	سجل زمني كامل Timeline لكل عميل ولكل فرصة بيع
+•	جاهزية مستقبلية للتوسع
+________________________________________
+1) الهدف من النظام
+النظام يجب أن يساعد الشركة على:
+•	تجميع كل العملاء المحتملين من الموقع، الحملات، الواتساب، الاتصال المباشر، والإضافة اليدوية
+•	تنظيم دورة البيع من أول Lead حتى إغلاق الصفقة
+•	معرفة من المسؤول عن كل عميل وكل فرصة
+•	متابعة التواصل والمهام والمواعيد
+•	إصدار عروض سعر احترافية
+•	قياس أداء فريق المبيعات
+•	تحليل مصادر العملاء الأكثر جودة
+•	بناء قاعدة بيانات عملاء وشركات منظمة
+•	تقليل ضياع العملاء المحتملين بسبب عدم المتابعة
+________________________________________
+2) الوحدات المطلوبة في المرحلة الحالية
+الوحدات الأساسية التي يجب تنفيذها الآن
+1.	Dashboard
+2.	Leads Management
+3.	Contacts Management
+4.	Companies Management
+5.	Deals / Opportunities Management
+6.	Tasks / Follow-ups Management
+7.	Activities / Timeline
+8.	Proposals / Quotations
+9.	Campaign Sources / Lead Sources
+10.	Reports & Analytics
+11.	Users / Roles / Permissions
+12.	Settings
+13.	Notifications
+14.	Basic Automation Rules
+15.	Visitor / Inquiry capture integration-ready structure
+وحدات لا يتم تنفيذها الآن ولكن يجب مراعاة التوسع لها لاحقاً
+•	Support Tickets
+•	Helpdesk
+•	SLA Management
+•	Knowledge Base
+•	Customer Portal للدعم الفني
+يجب تصميم قاعدة البيانات والهيكل البرمجي بحيث يسهل إضافة هذه الوحدات لاحقاً بدون إعادة هيكلة كبيرة.
+________________________________________
+3) نوع النظام المطلوب
+أريد النظام على شكل Web App Admin CRM احترافي، بواجهة عربية أساسية، مع قابلية دعم الإنجليزية لاحقاً.
+التصميم يجب أن يكون حديث، واضح، سريع، مناسب للعمل اليومي المكثف، ويعتمد على تجربة استخدام قوية.
+متطلبات الواجهة
+•	RTL كامل للعربية
+•	تصميم إداري احترافي
+•	Sidebar واضح
+•	Topbar فيه البحث والإشعارات وبيانات المستخدم
+•	صفحات Data Tables احترافية
+•	Forms منظمة وواضحة
+•	Kanban Board للصفقات
+•	Cards + Stats في لوحة التحكم
+•	Filters قوية
+•	Modals ذكية عند الحاجة
+•	Responsive مناسب
+________________________________________
+4) أنواع المستخدمين والصلاحيات
+يجب بناء نظام Roles & Permissions مرن.
+الأدوار الأساسية
+1.	Super Admin
+2.	Admin
+3.	Sales Manager
+4.	Sales Agent
+5.	Marketing Manager
+6.	Marketing User
+7.	Viewer / Read Only
+الصلاحيات
+يجب أن تكون granular وقابلة للتخصيص، مثل:
+•	view leads
+•	create leads
+•	edit leads
+•	delete leads
+•	assign leads
+•	change lead status
+•	view deals
+•	create deals
+•	edit deals
+•	move pipeline stage
+•	create quotations
+•	approve quotations
+•	view reports
+•	export reports
+•	manage users
+•	manage settings
+•	manage automation rules
+يجب أن يكون هناك ربط بين المستخدم والفروع/البيانات الخاصة به عند الحاجة.
+________________________________________
+5) Lead Management
+هذه من أهم الوحدات.
+المطلوب في Leads
+كل Lead يجب أن يحتوي على:
+•	id
+•	lead number
+•	full name
+•	mobile
+•	email
+•	company name
+•	job title
+•	country
+•	city
+•	service interested in
+•	estimated budget
+•	source
+•	source details
+•	campaign name
+•	assigned to
+•	lead status
+•	priority
+•	tags
+•	notes
+•	last contact at
+•	next follow-up at
+•	created by
+•	created at
+حالات الـ Lead
+يجب أن تكون قابلة للتخصيص من الإعدادات، مع حالات افتراضية مثل:
+•	New
+•	Attempting Contact
+•	Contacted
+•	Qualified
+•	Unqualified
+•	Proposal Sent
+•	Negotiation
+•	Converted
+•	Lost
+وظائف الـ Lead
+•	إنشاء Lead يدوي
+•	استيراد Leads من CSV
+•	التقاط Leads من نماذج الموقع
+•	تعيين Lead لموظف
+•	تغيير الحالة
+•	إضافة ملاحظة
+•	إضافة نشاط
+•	إنشاء مهمة متابعة
+•	تحويل Lead إلى Contact + Company + Deal
+•	أرشفة Lead
+•	تعليم Lead كمكرر Duplicate
+•	دمج Leads المكررة
+•	فلترة Leads حسب المصدر والحالة والموظف والفترة
+واجهات Lead
+•	صفحة قائمة Leads
+•	صفحة تفاصيل Lead
+•	نموذج إنشاء / تعديل Lead
+•	Timeline داخل صفحة Lead
+•	تبويب Activities
+•	تبويب Tasks
+•	تبويب Proposals
+•	تبويب Related Deals
+________________________________________
+6) Contacts Management
+الـ Contact هو الشخص المرتبط بشركة أو عميل.
+الحقول
+•	full name
+•	mobile
+•	alternative phone
+•	email
+•	company id
+•	job title
+•	department
+•	whatsapp number
+•	country
+•	city
+•	address
+•	tags
+•	notes
+•	owner
+•	status
+•	last interaction at
+الوظائف
+•	إضافة جهة اتصال
+•	ربطها بشركة
+•	ربط عدة Contacts بنفس الشركة
+•	عرض كل الصفقات الخاصة بجهة الاتصال
+•	عرض كل النشاطات
+•	عرض كل العروض السعرية
+•	إنشاء مهمة جديدة للـ Contact
+________________________________________
+7) Companies Management
+لأن أغلب عملائكم شركات، هذه الوحدة مهمة جداً.
+الحقول
+•	company name
+•	legal name
+•	industry
+•	website
+•	phone
+•	email
+•	tax number
+•	country
+•	city
+•	address
+•	company size
+•	annual value estimate
+•	status
+•	owner
+•	source
+•	notes
+•	tags
+الوظائف
+•	إنشاء شركة
+•	ربط الشركة بعدة Contacts
+•	عرض كل الصفقات التابعة للشركة
+•	عرض كل العروض التابعة للشركة
+•	عرض Timeline موحد للشركة
+•	عرض إجمالي قيمة الصفقات
+•	معرفة آخر تواصل
+________________________________________
+8) Deals / Opportunities Management
+هذه الوحدة تمثل فرص البيع الفعلية.
+الحقول
+•	deal title
+•	deal number
+•	company
+•	primary contact
+•	service type
+•	pipeline
+•	stage
+•	estimated value
+•	probability
+•	expected close date
+•	assigned sales rep
+•	source
+•	description
+•	lost reason
+•	won date
+•	lost date
+Pipelines
+يجب دعم أكثر من Pipeline، مثال:
+•	Software Development
+•	Website Projects
+•	Mobile Apps
+•	Digital Marketing
+•	ERP / CRM Projects
+مراحل الصفقة
+•	New Opportunity
+•	Discovery
+•	Meeting Scheduled
+•	Requirement Gathering
+•	Proposal Drafting
+•	Proposal Sent
+•	Negotiation
+•	Verbal Approval
+•	Contract Pending
+•	Won
+•	Lost
+الوظائف
+•	إنشاء صفقة من Lead أو مباشرة
+•	نقل الصفقة بين المراحل Drag & Drop
+•	تحديث القيمة والاحتمالية
+•	ربط الصفقة بمهام
+•	ربط الصفقة بعروض سعر
+•	إضافة ملاحظات واجتماعات ومكالمات
+•	تسجيل سبب الخسارة
+•	فلترة حسب المرحلة والموظف والقيمة والفترة
+•	عرض Kanban Board
+•	عرض Table View
+•	عرض Forecast View
+________________________________________
+9) Tasks / Follow-ups
+أنواع المهام
+•	Call
+•	WhatsApp Follow-up
+•	Email
+•	Meeting
+•	Proposal Preparation
+•	Contract Follow-up
+•	Internal Review
+•	Reminder
+الحقول
+•	title
+•	type
+•	related entity type
+•	related entity id
+•	assigned user
+•	due date
+•	due time
+•	priority
+•	status
+•	description
+•	completed at
+•	reminder before
+الوظائف
+•	إنشاء مهمة من داخل Lead أو Contact أو Company أو Deal
+•	إشعارات قبل الموعد
+•	تمييز المهام المتأخرة
+•	عرض مهامي اليوم
+•	عرض مهامي القادمة
+•	عرض المهام المكتملة
+•	فلترة حسب الموظف والحالة والنوع
+________________________________________
+10) Activities / Timeline
+هذه وحدة محورية.
+يجب أن يكون لكل Lead / Contact / Company / Deal سجل زمني موحد يظهر:
+•	تم إنشاء السجل
+•	تم تعديل الحالة
+•	تم تعيينه لموظف
+•	تمت إضافة ملاحظة
+•	تمت إضافة مهمة
+•	تم إنشاء عرض سعر
+•	تم تغيير مرحلة الصفقة
+•	تم تسجيل مكالمة
+•	تم تسجيل اجتماع
+•	تم تحويل Lead إلى Deal
+•	تم إغلاق الصفقة Won أو Lost
+أنواع الأنشطة
+•	Note
+•	Call Log
+•	Meeting Log
+•	Email Log
+•	WhatsApp Log
+•	Status Change
+•	Assignment Change
+•	Proposal Action
+•	Stage Change
+•	Manual Activity
+كل Activity يجب أن تحتوي على:
+•	type
+•	subject
+•	details
+•	created by
+•	created at
+•	related entity
+________________________________________
+11) Proposals / Quotations
+هذه مهمة جداً لشركتكم.
+الحقول
+•	proposal number
+•	proposal title
+•	related company
+•	related contact
+•	related deal
+•	issue date
+•	expiry date
+•	currency
+•	subtotal
+•	discount
+•	tax
+•	total
+•	status
+•	prepared by
+•	approved by
+•	terms and notes
+عناصر عرض السعر
+•	item title
+•	description
+•	quantity
+•	unit price
+•	line total
+حالات عرض السعر
+•	Draft
+•	Pending Approval
+•	Approved
+•	Sent
+•	Viewed
+•	Revised
+•	Accepted
+•	Rejected
+•	Expired
+الوظائف
+•	إنشاء عرض سعر
+•	حفظ كمسودة
+•	الموافقة عليه داخلياً
+•	إنشاء PDF احترافي
+•	ربط العرض بالصفقة
+•	تكرار عرض سعر سابق
+•	إصدار نسخة معدلة Revision
+•	تتبع حالته
+•	تحويل العرض المقبول إلى Deal Won milestone
+•	دعم إعدادات ضريبة القيمة المضافة
+________________________________________
+12) Campaign Sources / Lead Sources
+يجب أن تكون وحدة مستقلة أو قسم داخل الإعدادات.
+أمثلة المصادر
+•	Website Form
+•	Google Ads
+•	Meta Ads
+•	Snapchat Ads
+•	TikTok Ads
+•	WhatsApp
+•	Phone Call
+•	Referral
+•	Direct
+•	Manual Entry
+•	Exhibition / Event
+المطلوب
+•	إدارة مصادر العملاء
+•	إنشاء Sub Sources
+•	ربط الحملة بالمصدر
+•	تقارير لكل مصدر
+•	حساب عدد Leads
+•	عدد العملاء المحولين
+•	قيمة الصفقات الناتجة
+•	Conversion Rate لكل مصدر
+________________________________________
+13) Dashboard
+أريد Dashboard واضحة ومفيدة للإدارة والمبيعات.
+بطاقات إحصائية
+•	إجمالي Leads
+•	Leads جديدة اليوم
+•	عدد الصفقات المفتوحة
+•	قيمة الصفقات المفتوحة
+•	الصفقات الرابحة هذا الشهر
+•	الصفقات الخاسرة هذا الشهر
+•	العروض المرسلة
+•	المهام المتأخرة
+•	مهامي اليوم
+الرسوم البيانية
+•	Leads by source
+•	Leads by status
+•	Deals by stage
+•	Monthly won revenue
+•	Sales performance by user
+•	Conversion funnel
+•	Proposals status chart
+أقسام إضافية
+•	آخر Leads
+•	آخر Activities
+•	أقرب Follow-ups
+•	Top Performing Sales Reps
+________________________________________
+14) Reports & Analytics
+أريد وحدة تقارير حقيقية وليست شكلية.
+التقارير المطلوبة
+•	Leads report
+•	Conversion report
+•	Source performance report
+•	Sales pipeline report
+•	Deals won/lost report
+•	Sales rep performance report
+•	Follow-up performance report
+•	Proposal conversion report
+•	Monthly / Quarterly performance report
+الفلاتر
+•	date range
+•	user
+•	team
+•	source
+•	service type
+•	stage
+•	status
+•	company
+•	country
+التصدير
+•	CSV
+•	Excel
+•	PDF
+________________________________________
+15) Notifications
+المطلوب
+•	إشعارات داخل النظام
+•	إشعارات للمهام المستحقة
+•	إشعارات عند تعيين Lead جديد
+•	إشعارات عند نقل صفقة لمرحلة مهمة
+•	إشعارات عند اقتراب انتهاء عرض السعر
+•	إشعارات عند تأخر المتابعة
+________________________________________
+16) Automation Rules
+نفذ أتمتة أساسية قابلة للتوسع.
+أمثلة
+1.	عند إنشاء Lead جديد:
+•	assign based on rule
+•	create follow-up task
+•	add activity log
+2.	عند تغيير Lead إلى Qualified:
+•	allow creating deal بسرعة
+•	create reminder
+3.	عند إرسال عرض سعر:
+•	change related deal stage to Proposal Sent
+4.	عند مرور X أيام بدون متابعة:
+•	تنبيه للمسؤول
+•	وضع lead at risk
+5.	عند تحويل lead إلى customer:
+•	create company/contact if not exists
+•	mark source conversion
+يجب بناء محرك Rules بسيط وقابل للتوسع لاحقاً.
+________________________________________
+17) Search & Global Filtering
+أريد بحث عالمي داخل النظام يشمل:
+•	lead name
+•	company
+•	contact
+•	phone
+•	email
+•	deal number
+•	proposal number
+ويجب دعم فلاتر متقدمة داخل كل صفحة.
+________________________________________
+18) Duplicate Detection
+هذه مهمة جداً.
+المطلوب
+كشف التكرار عبر:
+•	الهاتف
+•	البريد
+•	اسم الشركة
+•	رقم الضريبة إن وجد
+مع إعطاء تنبيه قبل إنشاء سجل جديد:
+•	possible duplicate found
+وإتاحة:
+•	merge records
+•	ignore duplicate
+________________________________________
+19) Tags & Custom Fields
+يجب دعم:
+•	Tags على Leads / Contacts / Companies / Deals
+•	Custom Fields قابلة للإضافة من الإعدادات
+حتى يكون النظام مرن مع احتياجات المشاريع المختلفة.
+________________________________________
+20) Notes & Internal Comments
+كل سجل يجب أن يدعم:
+•	notes
+•	internal comments
+•	mentions للمستخدمين
+•	attachments لاحقاً أو الآن إن أمكن
+________________________________________
+21) Settings
+الإعدادات يجب أن تشمل:
+•	company profile
+•	logo
+•	VAT settings
+•	currencies
+•	lead statuses
+•	deal pipelines
+•	deal stages
+•	task types
+•	proposal statuses
+•	sources
+•	tags
+•	custom fields
+•	notification settings
+•	automation rules
+•	users & roles
+________________________________________
+22) قاعدة البيانات - الكيانات الرئيسية
+صمم قاعدة البيانات بشكل نظيف ومترابط.
+الجداول الأساسية المطلوبة
+•	users
+•	roles
+•	permissions
+•	user_roles
+•	role_permissions
+•	leads
+•	lead_sources
+•	lead_statuses
+•	lead_tags
+•	lead_tag_items
+•	contacts
+•	contact_tags
+•	contact_tag_items
+•	companies
+•	company_tags
+•	company_tag_items
+•	deals
+•	deal_pipelines
+•	deal_stages
+•	deal_stage_history
+•	deal_tags
+•	deal_tag_items
+•	tasks
+•	task_types
+•	activities
+•	notes
+•	proposals
+•	proposal_items
+•	proposal_statuses
+•	proposal_revisions
+•	notifications
+•	custom_fields
+•	custom_field_values
+•	automation_rules
+•	automation_logs
+•	settings
+يمكنك تبسيط التسمية لكن حافظ على الفكرة.
+________________________________________
+23) العلاقات الأساسية
+•	Lead يمكن أن يتحول إلى Contact + Company + Deal
+•	Company لها عدة Contacts
+•	Company لها عدة Deals
+•	Deal لها Contact رئيسي وCompany
+•	Deal لها Tasks وActivities وProposals
+•	Lead له Tasks وActivities
+•	Proposal مرتبط بـ Deal + Company + Contact
+•	Activity polymorphic على عدة كيانات
+•	Task polymorphic على عدة كيانات
+•	Notes polymorphic
+•	Tags polymorphic أو منفصلة حسب التصميم
+•	Custom fields polymorphic أو generic design
+________________________________________
+24) UX Requirements
+أريد تجربة استخدام قوية جداً:
+•	أقل عدد نقرات لإنجاز المهام المتكررة
+•	Quick actions من القائمة
+•	زر سريع لإضافة Lead
+•	زر سريع لإضافة Task
+•	زر سريع لإنشاء Proposal
+•	Actions dropdown داخل الجداول
+•	Status badges واضحة
+•	Priority badges
+•	Empty states جميلة
+•	Confirm dialogs قبل الحذف
+•	Toast notifications
+•	Skeleton loaders
+•	Pagination + sorting + filters
+________________________________________
+25) Design Direction
+التصميم المطلوب:
+•	إداري احترافي
+•	حديث
+•	نظيف
+•	ألوان هادئة
+•	تركيز على الوضوح وكثافة المعلومات بدون فوضى
+•	دعم كامل للعربية RTL
+•	قابلية عالية للتوسع
+الصفحات يجب أن تكون قريبة من مستوى:
+•	HubSpot style
+•	Zoho style
+•	Pipedrive style
+لكن بدون نسخ مباشر
+________________________________________
+26) Technical Expectations
+نفذ المشروع بهيكل قابل للصيانة والتوسع.
+المطلوب تقنياً
+•	Clean architecture أو modular architecture
+•	reusable components
+•	server-side validation
+•	client-side validation
+•	audit logging
+•	soft delete where needed
+•	secure auth
+•	role-based access control
+•	API-ready structure
+•	proper form requests / validators
+•	repository/service pattern إذا كان مناسباً
+•	clean database migrations
+•	seeders for default data
+________________________________________
+27) Security & Audit
+أريد:
+•	تسجيل كل العمليات الحساسة
+•	من أنشأ
+•	من عدل
+•	من حذف
+•	من غير الحالة
+•	من نقل الصفقة
+•	من وافق على العرض
+ويفضل Audit Log منفصل أو activity-based secure trail.
+________________________________________
+28) المرحلة القادمة لاحقاً
+لا تنفذها الآن، لكن صمم النظام ليستوعبها لاحقاً:
+•	Support Tickets
+•	Customer Support Portal
+•	Ticket SLAs
+•	Help Center
+•	Live Chat
+•	WhatsApp inbox unified
+________________________________________
+29) المخرجات المطلوبة من فريق التطوير / الـ Agent
+أريد تنفيذ المشروع مع تسليم التالي:
+1.	Database schema
+2.	Migrations
+3.	Seeders
+4.	Models
+5.	Controllers / Services
+6.	Admin pages
+7.	Forms and validation
+8.	Tables and filters
+9.	Dashboard
+10.	Reports
+11.	Proposal PDF generation
+12.	Roles and permissions
+13.	Automation base rules
+14.	Clean responsive UI
+15.	Arabic RTL support
+16.	Ready code structure for future modules
+________________________________________
+30) المطلوب في النهاية
+أريد CRM عملي حقيقي يخدم شركة خدمات رقمية ويغطي:
+•	العملاء المحتملين
+•	الشركات
+•	جهات الاتصال
+•	الصفقات
+•	المتابعات
+•	العروض السعرية
+•	التقارير
+•	الأتمتة
+•	الإشعارات
+•	الصلاحيات
+مع استبعاد الدعم الفني والتذاكر حالياً، لكن مع تصميم النظام من البداية ليكون قابلاً لإضافته بسهولة لاحقاً.
+ابدأ أولاً بـ:
+1.	تحليل الكيانات والعلاقات
+2.	تصميم قاعدة البيانات
+3.	بناء الصلاحيات
+4.	بناء الوحدات الأساسية واحدة تلو الأخرى
+5.	تنفيذ واجهات احترافية بالعربية RTL
+6.	إنشاء بيانات تجريبية
+7.	اختبار التدفق الكامل من Lead إلى Won Deal
+
