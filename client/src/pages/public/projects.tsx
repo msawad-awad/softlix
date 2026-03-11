@@ -3,29 +3,101 @@ import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { PublicNavbar } from "@/components/public/navbar";
 import { PublicFooter } from "@/components/public/footer";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight, ExternalLink, Layers } from "lucide-react";
 import type { Project } from "@shared/schema";
 
 const TENANT_ID = (import.meta.env.VITE_TENANT_ID as string) || "";
 
 const DEFAULT_PROJECTS = [
-  { id: "p1", title: "تطبيق مسكني", titleEn: "Maskaniun App", slug: "maskaniun", description: "منصة لإدارة الأملاك وتأجير الوحدات", descriptionEn: "A platform for property management and unit rental", category: "mobile-app", thumbnailUrl: null, clientName: null },
-  { id: "p2", title: "تطبيق تيسير", titleEn: "Taysir App", slug: "taysir-app", description: "تطبيق متكامل للخدمات اليومية", descriptionEn: "An integrated app for daily services", category: "mobile-app", thumbnailUrl: null, clientName: null },
-  { id: "p3", title: "تطبيق جمالا", titleEn: "Jamala App", slug: "jamala-app", description: "منصة خدمات التجميل والعناية", descriptionEn: "Beauty and care services platform", category: "mobile-app", thumbnailUrl: null, clientName: null },
-  { id: "p4", title: "تطبيق سعيد", titleEn: "Saeid App", slug: "saeid", description: "تطبيق خدمات متنوعة", descriptionEn: "Diverse services application", category: "mobile-app", thumbnailUrl: null, clientName: null },
-  { id: "p5", title: "تطبيق التحويل", titleEn: "Transfer Application", slug: "transfer-application", description: "حل لتحويل الأموال والمدفوعات", descriptionEn: "Money transfer and payments solution", category: "fintech", thumbnailUrl: null, clientName: null },
-  { id: "p6", title: "تطبيق استلمني", titleEn: "Estalamni App", slug: "estalamni", description: "حلول لخدمات التوصيل والشحن", descriptionEn: "Delivery and shipping services solutions", category: "logistics", thumbnailUrl: null, clientName: null },
+  {
+    id: "p1", slug: "maskaniun", category: "mobile-app",
+    title: "تطبيق مسكني", titleEn: "Maskaniun App",
+    clientName: "مساكني",
+    description: "منصة وتطبيق لإدارة الأملاك، تأجير الوحدات، وتنظيم العلاقة بين الملاك والمستأجرين عبر تجربة رقمية واضحة.",
+    descriptionEn: "A platform and app for property management, unit leasing, and organizing the landlord-tenant relationship via a clear digital experience.",
+    thumbnailUrl: "https://softlixagency.com/wp-content/uploads/2023/03/خلفية-مساكني.png",
+    badge: "منصة عقارية", badgeEn: "Property Platform",
+    tags: ["Property", "Mobile App", "Management"],
+  },
+  {
+    id: "p2", slug: "taysir-app", category: "mobile-app",
+    title: "تطبيق تيسير", titleEn: "Taysir App",
+    clientName: "تيسير",
+    description: "تجربة شراء رقمية من متاجر متعددة وسوبرماركت متنوعة، مع رحلة استخدام سهلة وسريعة للمستخدم النهائي.",
+    descriptionEn: "A digital shopping experience from multiple stores and supermarkets, with an easy and fast user journey for the end user.",
+    thumbnailUrl: "https://softlixagency.com/wp-content/uploads/2023/03/خلفية-بيهانس-تيسير.png",
+    badge: "تسوق وخدمات", badgeEn: "Shopping & Services",
+    tags: ["Marketplace", "Retail", "Delivery"],
+  },
+  {
+    id: "p3", slug: "jamala-app", category: "mobile-app",
+    title: "تطبيق جمالة", titleEn: "Jamala App",
+    clientName: "جماله",
+    description: "منصة تجارة جملة تربط الموردين بالتجار وتوفر تجربة طلب سريعة واحترافية لشراء المنتجات الاستهلاكية بكميات كبيرة.",
+    descriptionEn: "A wholesale trading platform connecting suppliers with merchants, providing a fast and professional ordering experience for bulk consumer products.",
+    thumbnailUrl: "https://softlixagency.com/wp-content/uploads/2023/03/خلفية-تطبيق-جماله.png",
+    badge: "تجارة جملة", badgeEn: "Wholesale",
+    tags: ["Wholesale", "B2B", "Commerce"],
+  },
+  {
+    id: "p4", slug: "saeid-app", category: "mobile-app",
+    title: "تطبيق ساعد", titleEn: "Saeid App",
+    clientName: "ساعد",
+    description: "منصة رقمية لخدمات المساعدة على الطريق توفر حلولاً سريعة للسائقين مثل السحب والصيانة الطارئة.",
+    descriptionEn: "A digital platform for roadside assistance services providing fast solutions for drivers such as towing and emergency maintenance.",
+    thumbnailUrl: null,
+    badge: "خدمات الطريق", badgeEn: "Roadside Services",
+    tags: ["Automotive", "Service", "Mobile"],
+  },
+  {
+    id: "p5", slug: "transfer-app", category: "logistics",
+    title: "تطبيق ترانسفير", titleEn: "Transfer App",
+    clientName: "ترانسفير",
+    description: "يمكّن المستخدمين من إرسال منتجاتهم بأسرع طريقة من خلال البحث عن مسافرين متجهين لنفس الوجهة.",
+    descriptionEn: "Enables users to send their products in the fastest way by finding travelers heading to the same destination.",
+    thumbnailUrl: null,
+    badge: "شحن وتوصيل", badgeEn: "Shipping & Delivery",
+    tags: ["Logistics", "P2P", "Mobile"],
+  },
+  {
+    id: "p6", slug: "estalimni-app", category: "logistics",
+    title: "تطبيق استلمني", titleEn: "Estalimni App",
+    clientName: "استلمني",
+    description: "ربط أصحاب الشحنات بمزودي خدمة التوصيل بشكل آمن وسريع مع لوحة تحكم متكاملة وتتبع الطلبات.",
+    descriptionEn: "Connects shipment owners with delivery providers safely and quickly with an integrated control panel and order tracking.",
+    thumbnailUrl: null,
+    badge: "لوجستيات", badgeEn: "Logistics",
+    tags: ["Delivery", "Tracking", "Mobile"],
+  },
 ];
 
 const CATEGORIES = [
   { value: "all", labelAr: "الكل", labelEn: "All" },
-  { value: "mobile-app", labelAr: "تطبيقات", labelEn: "Apps" },
-  { value: "web", labelAr: "مواقع ويب", labelEn: "Websites" },
-  { value: "marketing", labelAr: "تسويق", labelEn: "Marketing" },
-  { value: "fintech", labelAr: "تكنولوجيا مالية", labelEn: "Fintech" },
-  { value: "logistics", labelAr: "لوجستيات", labelEn: "Logistics" },
+  { value: "mobile-app", labelAr: "تطبيقات الجوال", labelEn: "Mobile Apps" },
+  { value: "web", labelAr: "منصات الويب", labelEn: "Web Platforms" },
+  { value: "logistics", labelAr: "اللوجستيات", labelEn: "Logistics" },
+];
+
+const INDUSTRIES = [
+  { icon: "🏠", titleAr: "العقارات", titleEn: "Real Estate", descAr: "منصات عقارية لربط الملاك بالمستأجرين وإدارة الوحدات.", descEn: "Property platforms connecting landlords with tenants and managing units." },
+  { icon: "🛒", titleAr: "التجارة الإلكترونية", titleEn: "E-Commerce", descAr: "متاجر ومنصات بيع تدعم الجملة والتجزئة والتوصيل.", descEn: "Stores and selling platforms supporting wholesale, retail, and delivery." },
+  { icon: "🚗", titleAr: "المواصلات والخدمات", titleEn: "Transport & Services", descAr: "تطبيقات النقل والمساعدة الطارئة وتتبع الطلبات.", descEn: "Transportation, emergency assistance, and order tracking applications." },
+  { icon: "📦", titleAr: "اللوجستيات والشحن", titleEn: "Logistics & Shipping", descAr: "حلول تتبع الشحنات وربط المرسلين بمزودي التوصيل.", descEn: "Shipment tracking solutions connecting senders with delivery providers." },
+];
+
+const PROCESS = [
+  { num: "01", titleAr: "الفهم والاستراتيجية", titleEn: "Discovery & Strategy", descAr: "ندرس الفرصة التجارية، الجمهور المستهدف، والمنافسين قبل كتابة أي كود.", descEn: "We study the business opportunity, target audience, and competitors before writing any code." },
+  { num: "02", titleAr: "التصميم وتجربة المستخدم", titleEn: "Design & UX", descAr: "نبني نماذج أولية واجهات عالية الجودة تعكس منتجات التقنية العالمية.", descEn: "We build high-quality interface prototypes reflecting global tech products." },
+  { num: "03", titleAr: "التطوير والبناء", titleEn: "Development & Build", descAr: "بناء المنتج بأفضل المعايير التقنية مع هيكل قابل للتوسع.", descEn: "Building the product to the highest technical standards with a scalable architecture." },
+  { num: "04", titleAr: "الإطلاق والمتابعة", titleEn: "Launch & Follow-up", descAr: "إطلاق المنتج وتقييمه الميداني مع دعم مستمر وتحديثات.", descEn: "Launching the product and field evaluation with ongoing support and updates." },
+];
+
+const COVER_GRADIENTS = [
+  "linear-gradient(135deg, #1e293b 0%, #334155 100%)",
+  "linear-gradient(135deg, #312e81 0%, #4c1d95 100%)",
+  "linear-gradient(135deg, #064e3b 0%, #065f46 100%)",
+  "linear-gradient(135deg, #7c2d12 0%, #9a3412 100%)",
+  "linear-gradient(135deg, #0c4a6e 0%, #075985 100%)",
+  "linear-gradient(135deg, #3b0764 0%, #5b21b6 100%)",
 ];
 
 interface ProjectsProps {
@@ -33,118 +105,353 @@ interface ProjectsProps {
   onLangChange?: (lang: "ar" | "en") => void;
 }
 
+const glassCard: React.CSSProperties = {
+  background: "rgba(255,255,255,0.76)",
+  border: "1px solid rgba(15,23,42,0.07)",
+  boxShadow: "0 14px 40px rgba(15,23,42,0.06)",
+  backdropFilter: "blur(12px)",
+};
+
 export default function PublicProjects({ lang = "ar", onLangChange }: ProjectsProps) {
   const isAr = lang === "ar";
-  const Arrow = isAr ? ArrowLeft : ArrowRight;
   const [activeCategory, setActiveCategory] = useState("all");
 
-  const { data: projects } = useQuery<Project[]>({
+  const { data: apiProjects } = useQuery<Project[]>({
     queryKey: ["/api/public/projects", TENANT_ID],
-    
   });
 
-  const displayProjects = projects && projects.length > 0 ? projects : DEFAULT_PROJECTS as any[];
-  const filtered = activeCategory === "all" ? displayProjects : displayProjects.filter(p => p.category === activeCategory);
+  const displayProjects = apiProjects && apiProjects.length > 0 ? apiProjects as any[] : DEFAULT_PROJECTS;
+  const filtered = activeCategory === "all"
+    ? displayProjects
+    : displayProjects.filter((p: any) => p.category === activeCategory);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950" dir={isAr ? "rtl" : "ltr"}>
+    <div
+      style={{
+        minHeight: "100vh",
+        fontFamily: "'Cairo', system-ui, sans-serif",
+        background: `
+          radial-gradient(circle at 10% 8%, rgba(229,146,105,.14), transparent 22%),
+          radial-gradient(circle at 88% 10%, rgba(130,183,53,.12), transparent 18%),
+          linear-gradient(180deg, #fff 0%, #f8fafc 28%, #f2f6fb 100%)
+        `,
+        color: "#0f172a",
+        lineHeight: 1.8,
+      }}
+      dir={isAr ? "rtl" : "ltr"}
+    >
       <PublicNavbar lang={lang} onLangChange={onLangChange} />
 
-      {/* Hero */}
-      <section className="pt-28 pb-16 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <Badge className="mb-4 bg-blue-600/20 text-blue-300 border-blue-600/30">{isAr ? "أعمالنا" : "Portfolio"}</Badge>
-          <h1 className="text-5xl font-black mb-5">{isAr ? "مشاريعنا" : "Our Projects"}</h1>
-          <p className="text-xl text-gray-300 leading-relaxed">
-            {isAr
-              ? "اكتشف مجموعة متنوعة من مشاريعنا في مجالات مختلفة - تطبيقات موبايل، مواقع ويب، منصات تجارة إلكترونية وأكثر"
-              : "Discover our diverse portfolio of projects in various fields - mobile apps, websites, e-commerce platforms and more"}
-          </p>
-        </div>
-      </section>
+      {/* ── HERO ── */}
+      <section style={{ position: "relative", overflow: "hidden", padding: "54px 0 28px" }}>
+        <div style={{ width: "min(1280px, calc(100% - 32px))", marginInline: "auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1.02fr .98fr", gap: 28, alignItems: "center" }} className="proj-hero-grid">
 
-      {/* Filter */}
-      <section className="py-8 border-b border-gray-100 dark:border-gray-800 sticky top-16 bg-white/95 dark:bg-gray-950/95 backdrop-blur z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-wrap gap-2 justify-center">
-            {CATEGORIES.map(cat => (
-              <button
-                key={cat.value}
-                onClick={() => setActiveCategory(cat.value)}
-                data-testid={`filter-${cat.value}`}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  activeCategory === cat.value
-                    ? "bg-blue-600 text-white shadow-sm"
-                    : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
-                }`}
-              >
-                {isAr ? cat.labelAr : cat.labelEn}
-              </button>
-            ))}
+            {/* Left: Text */}
+            <div>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "8px 14px", borderRadius: 999, background: "rgba(255,255,255,.76)", border: "1px solid rgba(15,23,42,.08)", boxShadow: "0 10px 28px rgba(15,23,42,.05)", color: "#334155", fontSize: ".92rem", fontWeight: 800, marginBottom: 22 }}>
+                <span style={{ width: 10, height: 10, borderRadius: "50%", background: "linear-gradient(135deg, #e59269, #82b735)", display: "inline-block" }} />
+                Portfolio / Case Studies
+              </span>
+
+              <h1 style={{ margin: 0, fontSize: "clamp(2.4rem, 5vw, 4.8rem)", lineHeight: 1.06, fontWeight: 900, letterSpacing: "-.03em", maxWidth: "10ch" }}>
+                {isAr ? "مشاريع رقمية صُممت لتخدم السوق الحقيقي لا العرض فقط" : "Digital Projects Designed to Serve the Real Market, Not Just Display"}
+              </h1>
+
+              <p style={{ margin: "20px 0 0", fontSize: "1.05rem", color: "#5f6b7d", maxWidth: "62ch" }}>
+                {isAr
+                  ? "اكتشف مجموعة من مشاريع Softlix في تطبيقات الجوال، التجارة الإلكترونية، المنصات الخدمية، وحلول الأعمال. نحن لا نعرض أعمالاً جميلة فحسب، بل نعرض منتجات مبنية لحل مشاكل فعلية وتحقيق نمو ملموس."
+                  : "Discover Softlix's portfolio of mobile apps, e-commerce, service platforms, and business solutions. We don't just showcase beautiful work — we show products built to solve real problems and achieve tangible growth."}
+              </p>
+
+              <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: 28 }}>
+                <a href="#projects" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 50, padding: "0 22px", borderRadius: 999, fontWeight: 800, background: "linear-gradient(135deg, #e59269, #cb7147)", color: "#fff", boxShadow: "0 14px 30px rgba(229,146,105,.28)", textDecoration: "none" }}>
+                  {isAr ? "استكشف المشاريع" : "Explore Projects"}
+                </a>
+                <a href="#industries" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 50, padding: "0 22px", borderRadius: 999, fontWeight: 800, background: "rgba(255,255,255,.8)", border: "1px solid rgba(15,23,42,.08)", color: "#0f172a", textDecoration: "none" }}>
+                  {isAr ? "القطاعات التي نخدمها" : "Industries We Serve"}
+                </a>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14, marginTop: 28 }}>
+                {[
+                  { num: "50+", arLabel: "منتج ومنصة وتطبيق", enLabel: "Products, Platforms & Apps" },
+                  { num: "8+", arLabel: "قطاعات أعمال مختلفة", enLabel: "Different Business Sectors" },
+                  { num: "100%", arLabel: "تركيز على القيمة والتجربة", enLabel: "Focus on Value & Experience" },
+                ].map((s, i) => (
+                  <div key={i} style={{ background: "rgba(255,255,255,.78)", border: "1px solid rgba(15,23,42,.06)", borderRadius: 22, padding: 18, boxShadow: "0 12px 40px rgba(15,23,42,.05)" }}>
+                    <strong style={{ display: "block", fontSize: "1.85rem", lineHeight: 1, marginBottom: 8 }}>{s.num}</strong>
+                    <span style={{ fontSize: ".92rem", color: "#5f6b7d", fontWeight: 700 }}>{isAr ? s.arLabel : s.enLabel}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right: Showcase board */}
+            <div style={{ position: "relative", minHeight: 610 }} className="proj-visual">
+              <div style={{ position: "absolute", inset: "24px 0 0 56px", borderRadius: 34, overflow: "hidden", background: "linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,255,255,.78))", border: "1px solid rgba(255,255,255,.8)", boxShadow: "0 18px 60px rgba(15,23,42,.10)" }}>
+                <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 85% 14%, rgba(130,183,53,.16), transparent 16%), linear-gradient(135deg, rgba(229,146,105,.14), transparent 38%)", pointerEvents: "none" }} />
+
+                <div style={{ display: "flex", gap: 8, padding: "18px 20px 0" }}>
+                  {[1, 2, 3].map(i => <span key={i} style={{ width: 10, height: 10, borderRadius: 999, background: "rgba(15,23,42,.18)", display: "inline-block" }} />)}
+                </div>
+
+                <div style={{ padding: "18px", height: "calc(100% - 22px)", display: "grid", gridTemplateColumns: "1.05fr .95fr", gap: 16 }}>
+                  {/* Mock left */}
+                  <div style={{ ...glassCard, borderRadius: 24, padding: 18, display: "grid", gap: 14, alignContent: "start" }}>
+                    <div style={{ borderRadius: 20, overflow: "hidden", minHeight: 182, background: "linear-gradient(135deg, rgba(34,41,51,.94), rgba(60,72,88,.92))", position: "relative", padding: 18, color: "#fff" }}>
+                      <div style={{ position: "absolute", width: 180, height: 180, borderRadius: "50%", left: -30, bottom: -90, background: "rgba(255,255,255,.08)" }} />
+                      <strong style={{ display: "block", fontSize: "1.35rem", lineHeight: 1.25, maxWidth: "10ch", position: "relative", zIndex: 1 }}>Projects designed for performance</strong>
+                      <span style={{ display: "inline-flex", marginTop: 10, color: "rgba(255,255,255,.78)", fontSize: ".88rem", fontWeight: 700, position: "relative", zIndex: 1 }}>Apps • Platforms • Commerce • Systems</span>
+                    </div>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
+                      {[
+                        { strong: "Mobile", span: "iOS / Android Apps" },
+                        { strong: "Web", span: "Platforms & Portals" },
+                        { strong: "ERP", span: "Business Operations" },
+                        { strong: "UX", span: "Modern Interfaces" },
+                      ].map((m, i) => (
+                        <div key={i} style={{ ...glassCard, borderRadius: 18, padding: 14 }}>
+                          <strong style={{ display: "block", fontSize: "1.2rem", marginBottom: 4 }}>{m.strong}</strong>
+                          <span style={{ color: "#5f6b7d", fontSize: ".84rem", fontWeight: 700 }}>{m.span}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Mock right */}
+                  <div style={{ ...glassCard, borderRadius: 24, padding: 18, display: "grid", gap: 14, alignContent: "start" }}>
+                    <strong style={{ fontSize: "1rem" }}>{isAr ? "جودة التنفيذ عبر المشاريع" : "Execution Quality Across Projects"}</strong>
+                    <div style={{ display: "grid", gap: 10 }}>
+                      {[92, 84, 88, 78].map((w, i) => (
+                        <div key={i} style={{ height: 10, borderRadius: 999, background: "rgba(15,23,42,.06)", overflow: "hidden" }}>
+                          <div style={{ width: `${w}%`, height: "100%", borderRadius: 999, background: "linear-gradient(90deg, #e59269, #82b735)" }} />
+                        </div>
+                      ))}
+                    </div>
+                    <div style={{ ...glassCard, borderRadius: 18, padding: 14 }}>
+                      <strong style={{ display: "block", fontSize: "1.05rem", marginBottom: 4 }}>{isAr ? "واجهة حديثة" : "Modern Interface"}</strong>
+                      <span style={{ color: "#5f6b7d", fontSize: ".84rem", fontWeight: 700 }}>{isAr ? "تصميم أقرب لمنتجات التقنية العالمية" : "Design closer to global tech products"}</span>
+                    </div>
+                    <div style={{ ...glassCard, borderRadius: 18, padding: 14 }}>
+                      <strong style={{ display: "block", fontSize: "1.05rem", marginBottom: 4 }}>{isAr ? "حل تجاري" : "Business Solution"}</strong>
+                      <span style={{ color: "#5f6b7d", fontSize: ".84rem", fontWeight: 700 }}>{isAr ? "كل مشروع مبني حول استخدام فعلي وحاجة حقيقية" : "Every project built around real usage and actual need"}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Floating notes */}
+              <div style={{ position: "absolute", left: 0, top: 80, width: 216, ...glassCard, borderRadius: 22, padding: 18, zIndex: 3 }}>
+                <strong style={{ display: "block", fontSize: "1.28rem", marginBottom: 8 }}>{isAr ? "تصميم + وظيفة" : "Design + Function"}</strong>
+                <p style={{ margin: 0, color: "#5f6b7d", fontSize: ".9rem", lineHeight: 1.75 }}>{isAr ? "نعرض المشاريع باعتبارها حلولاً مكتملة لا مجرد لقطات واجهات." : "We present projects as complete solutions, not just interface screenshots."}</p>
+              </div>
+              <div style={{ position: "absolute", right: 0, bottom: 54, width: 232, ...glassCard, borderRadius: 22, padding: 18, zIndex: 3 }}>
+                <strong style={{ display: "block", fontSize: "1.28rem", marginBottom: 8 }}>{isAr ? "تنوع قطاعات" : "Sector Diversity"}</strong>
+                <p style={{ margin: 0, color: "#5f6b7d", fontSize: ".9rem", lineHeight: 1.75 }}>{isAr ? "من الخدمات واللوجستيات وحتى الإعلانات والتسوق والمنصات المتخصصة." : "From services and logistics to advertising, shopping, and specialized platforms."}</p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Projects Grid */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* ── PROJECTS GRID ── */}
+      <section style={{ padding: "42px 0" }} id="projects">
+        <div style={{ width: "min(1280px, calc(100% - 32px))", marginInline: "auto" }}>
+          <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 18, marginBottom: 24, flexWrap: "wrap" }}>
+            <div style={{ maxWidth: 760 }}>
+              <h2 style={{ margin: "0 0 10px", fontSize: "clamp(1.9rem, 3vw, 3rem)", lineHeight: 1.15, fontWeight: 900 }}>{isAr ? "أبرز المشاريع" : "Featured Projects"}</h2>
+              <p style={{ margin: 0, color: "#5f6b7d", fontSize: "1rem" }}>{isAr ? "مشاريع مبنية لحل مشاكل فعلية، مع تجربة مستخدم بمستوى الشركات التقنية الكبيرة." : "Projects built to solve real problems, with a user experience matching large tech companies."}</p>
+            </div>
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+              {CATEGORIES.map(cat => (
+                <button
+                  key={cat.value}
+                  onClick={() => setActiveCategory(cat.value)}
+                  data-testid={`filter-${cat.value}`}
+                  style={{
+                    display: "inline-flex", alignItems: "center", justifyContent: "center",
+                    minHeight: 42, padding: "0 16px", borderRadius: 999,
+                    background: activeCategory === cat.value
+                      ? "linear-gradient(135deg, #e59269, #cb7147)"
+                      : "rgba(255,255,255,.82)",
+                    border: activeCategory === cat.value ? "1px solid transparent" : "1px solid rgba(15,23,42,.08)",
+                    color: activeCategory === cat.value ? "#fff" : "#324054",
+                    fontWeight: 800, fontSize: ".9rem", cursor: "pointer",
+                    boxShadow: "0 10px 24px rgba(15,23,42,.04)",
+                    fontFamily: "inherit",
+                    transition: ".2s ease",
+                  }}
+                >
+                  {isAr ? cat.labelAr : cat.labelEn}
+                </button>
+              ))}
+            </div>
+          </div>
+
           {filtered.length === 0 ? (
-            <div className="text-center py-20 text-gray-500 dark:text-gray-400">
-              <Layers className="w-12 h-12 mx-auto mb-3 opacity-40" />
-              <p>{isAr ? "لا توجد مشاريع في هذه الفئة" : "No projects in this category"}</p>
+            <div style={{ textAlign: "center", padding: "80px 0", color: "#5f6b7d" }}>
+              <div style={{ fontSize: 48, marginBottom: 12 }}>📂</div>
+              <p style={{ fontWeight: 700 }}>{isAr ? "لا توجد مشاريع في هذه الفئة" : "No projects in this category"}</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filtered.map((project: any) => (
-                <Link key={project.id} href={`/projects/${project.slug}`} data-testid={`card-project-${project.id}`}>
-                  <div className="group rounded-2xl overflow-hidden bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-                    <div className="aspect-video overflow-hidden bg-gradient-to-br from-blue-500 to-purple-700 flex items-center justify-center relative">
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }} className="proj-cards-grid">
+              {filtered.map((project: any, i: number) => {
+                const title = isAr ? project.title : (project.titleEn || project.title);
+                const desc = isAr ? project.description : (project.descriptionEn || project.description);
+                const badge = isAr ? (project.badge || project.category) : (project.badgeEn || project.badge || project.category);
+                const tags: string[] = project.tags || project.technologies || [];
+
+                return (
+                  <article
+                    key={project.id}
+                    data-testid={`card-project-${project.id}`}
+                    style={{
+                      ...glassCard,
+                      borderRadius: 28,
+                      overflow: "hidden",
+                      transition: "transform .25s ease, box-shadow .25s ease",
+                      cursor: "pointer",
+                    }}
+                    onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "translateY(-6px)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 28px 70px rgba(15,23,42,.12)"; }}
+                    onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ""; (e.currentTarget as HTMLElement).style.boxShadow = "0 14px 40px rgba(15,23,42,0.06)"; }}
+                  >
+                    {/* Cover */}
+                    <div style={{ position: "relative", aspectRatio: "1.2 / .92", overflow: "hidden", background: project.thumbnailUrl ? "#e8edf5" : COVER_GRADIENTS[i % COVER_GRADIENTS.length] }}>
                       {project.thumbnailUrl ? (
-                        <img src={project.thumbnailUrl} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        <img
+                          src={project.thumbnailUrl}
+                          alt={title}
+                          style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform .35s ease", display: "block" }}
+                          onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                        />
                       ) : (
-                        <div className="text-white text-5xl font-black opacity-30">S</div>
+                        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <span style={{ fontSize: 72, fontWeight: 900, color: "rgba(255,255,255,.15)", fontFamily: "monospace" }}>S</span>
+                        </div>
                       )}
-                      <div className="absolute top-3 right-3 rtl:right-auto rtl:left-3">
-                        {project.category && (
-                          <Badge className="bg-black/40 text-white border-0 text-xs">{project.category}</Badge>
-                        )}
+                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(180deg, rgba(15,23,42,.02), rgba(15,23,42,.46))" }} />
+                      <span style={{ position: "absolute", top: 16, insetInlineEnd: 16, display: "inline-flex", alignItems: "center", gap: 8, minHeight: 34, padding: "0 12px", borderRadius: 999, background: "rgba(255,255,255,.88)", color: "#222933", fontSize: ".82rem", fontWeight: 900, boxShadow: "0 10px 30px rgba(15,23,42,.08)" }}>
+                        {badge}
+                      </span>
+                    </div>
+
+                    {/* Body */}
+                    <div style={{ padding: "22px 22px 20px" }}>
+                      <h3 style={{ margin: "0 0 8px", fontSize: "1.22rem", fontWeight: 900, lineHeight: 1.35 }}>{title}</h3>
+                      <p style={{ margin: 0, color: "#5f6b7d", fontSize: ".95rem", lineHeight: 1.85, minHeight: 86 }}>{desc}</p>
+
+                      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 16 }}>
+                        {tags.slice(0, 3).map((tag: string, ti: number) => (
+                          <span key={ti} style={{ display: "inline-flex", alignItems: "center", minHeight: 32, padding: "0 12px", borderRadius: 999, background: "rgba(15,23,42,.05)", color: "#38465c", fontSize: ".8rem", fontWeight: 800 }}>{tag}</span>
+                        ))}
+                      </div>
+
+                      <div style={{ marginTop: 18, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10 }}>
+                        <Link
+                          href={`/projects/${project.slug}`}
+                          style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 46, padding: "0 18px", borderRadius: 14, background: "linear-gradient(135deg, #e59269, #cb7147)", color: "#fff", fontWeight: 900, boxShadow: "0 14px 30px rgba(229,146,105,.24)", textDecoration: "none", transition: ".25s ease" }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "translateY(-2px)"; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ""; }}
+                        >
+                          {isAr ? "قراءة المزيد" : "Read More"}
+                        </Link>
+                        <span style={{ color: "#64748b", fontWeight: 900, fontSize: "1rem" }}>↗</span>
                       </div>
                     </div>
-                    <div className="p-5">
-                      <h3 className="font-black text-lg text-gray-900 dark:text-white mb-2">
-                        {isAr ? project.title : (project.titleEn || project.title)}
-                      </h3>
-                      <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed mb-4">
-                        {isAr ? project.description : (project.descriptionEn || project.description)}
-                      </p>
-                      {project.clientName && (
-                        <p className="text-xs text-gray-400 mb-3">{isAr ? "العميل:" : "Client:"} {project.clientName}</p>
-                      )}
-                      <div className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400 text-sm font-medium">
-                        {isAr ? "عرض التفاصيل" : "View Details"}
-                        <Arrow className="w-4 h-4" />
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
+                  </article>
+                );
+              })}
             </div>
           )}
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="py-16 bg-gradient-to-r from-blue-600 to-purple-700 text-white">
-        <div className="max-w-3xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-black mb-4">{isAr ? "هل لديك مشروع جديد؟" : "Have a New Project?"}</h2>
-          <p className="text-blue-100 mb-8">{isAr ? "تواصل معنا وسنحوله إلى قصة نجاح جديدة" : "Contact us and we'll turn it into a new success story"}</p>
-          <Button asChild size="lg" className="bg-white text-blue-700 hover:bg-blue-50">
-            <Link href="/contact">{isAr ? "ابدأ مشروعك" : "Start Your Project"}</Link>
-          </Button>
+      {/* ── INDUSTRIES ── */}
+      <section style={{ padding: "42px 0" }} id="industries">
+        <div style={{ width: "min(1280px, calc(100% - 32px))", marginInline: "auto" }}>
+          <div style={{ maxWidth: 760, marginBottom: 24 }}>
+            <h2 style={{ margin: "0 0 10px", fontSize: "clamp(1.9rem, 3vw, 3rem)", lineHeight: 1.15, fontWeight: 900 }}>{isAr ? "القطاعات التي نخدمها" : "Industries We Serve"}</h2>
+            <p style={{ margin: 0, color: "#5f6b7d", fontSize: "1rem" }}>{isAr ? "خبرتنا ممتدة عبر قطاعات متعددة تجمع بين التقنية والأعمال والخدمات اليومية." : "Our expertise spans multiple sectors combining technology, business, and daily services."}</p>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 18 }} className="proj-4col-grid">
+            {INDUSTRIES.map((ind, i) => (
+              <article key={i} style={{ ...glassCard, borderRadius: 24, padding: 24 }}>
+                <div style={{ width: 54, height: 54, display: "inline-grid", placeItems: "center", borderRadius: 18, marginBottom: 16, background: "linear-gradient(135deg, rgba(229,146,105,.18), rgba(130,183,53,.18))", fontSize: "1.6rem" }}>{ind.icon}</div>
+                <h3 style={{ margin: "0 0 8px", fontSize: "1.08rem", fontWeight: 900 }}>{isAr ? ind.titleAr : ind.titleEn}</h3>
+                <p style={{ margin: 0, color: "#5f6b7d", fontSize: ".93rem" }}>{isAr ? ind.descAr : ind.descEn}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── PROCESS ── */}
+      <section style={{ padding: "42px 0" }} id="process">
+        <div style={{ width: "min(1280px, calc(100% - 32px))", marginInline: "auto" }}>
+          <div style={{ maxWidth: 760, marginBottom: 24 }}>
+            <h2 style={{ margin: "0 0 10px", fontSize: "clamp(1.9rem, 3vw, 3rem)", lineHeight: 1.15, fontWeight: 900 }}>{isAr ? "منهجية التنفيذ" : "Execution Methodology"}</h2>
+            <p style={{ margin: 0, color: "#5f6b7d", fontSize: "1rem" }}>{isAr ? "نتبع منهجية واضحة في كل مشروع تضمن جودة التسليم والنتائج الملموسة." : "We follow a clear methodology in every project ensuring delivery quality and tangible results."}</p>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 18 }} className="proj-4col-grid">
+            {PROCESS.map((proc, i) => (
+              <article key={i} style={{ ...glassCard, borderRadius: 24, padding: 24 }}>
+                <div style={{ width: 54, height: 54, display: "inline-grid", placeItems: "center", borderRadius: 18, marginBottom: 16, background: "linear-gradient(135deg, rgba(229,146,105,.18), rgba(130,183,53,.18))", color: "#0f172a", fontSize: "1.2rem", fontWeight: 900 }}>{proc.num}</div>
+                <h3 style={{ margin: "0 0 8px", fontSize: "1.08rem", fontWeight: 900 }}>{isAr ? proc.titleAr : proc.titleEn}</h3>
+                <p style={{ margin: 0, color: "#5f6b7d", fontSize: ".93rem" }}>{isAr ? proc.descAr : proc.descEn}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── CTA ── */}
+      <section style={{ padding: "18px 0 68px" }} id="cta">
+        <div style={{ width: "min(1280px, calc(100% - 32px))", marginInline: "auto" }}>
+          <div style={{ borderRadius: 34, overflow: "hidden", background: "linear-gradient(135deg, #222933, #323c4b)", color: "#fff", position: "relative", padding: 34 }}>
+            {/* Decorative circles */}
+            <div style={{ position: "absolute", width: 240, height: 240, borderRadius: "50%", background: "rgba(255,255,255,.06)", insetInlineEnd: -40, top: -110, pointerEvents: "none" }} />
+            <div style={{ position: "absolute", width: 180, height: 180, borderRadius: "50%", background: "rgba(255,255,255,.06)", insetInlineStart: 40, bottom: -80, pointerEvents: "none" }} />
+
+            <div style={{ position: "relative", zIndex: 1, display: "grid", gridTemplateColumns: "1.15fr .85fr", gap: 22, alignItems: "center" }} className="proj-cta-grid">
+              <div>
+                <h2 style={{ margin: "0 0 10px", fontSize: "clamp(1.85rem, 3vw, 3rem)", lineHeight: 1.14, fontWeight: 900 }}>
+                  {isAr ? "هل لديك مشروع جاهز للإطلاق أو فكرة تريد تحويلها إلى منتج؟" : "Do you have a project ready to launch or an idea you want to turn into a product?"}
+                </h2>
+                <p style={{ margin: 0, color: "rgba(255,255,255,.82)", maxWidth: "58ch" }}>
+                  {isAr ? "دعنا نبني معك منصة أو تطبيق أو نظام بمستوى عالمي، مع تجربة تنفيذ احترافية ونتائج قابلة للقياس." : "Let's build a platform, app, or system with you at a global level, with a professional execution experience and measurable results."}
+                </p>
+              </div>
+              <div style={{ display: "flex", gap: 12, justifyContent: "flex-end", flexWrap: "wrap" }}>
+                <Link href="/contact" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 50, padding: "0 22px", borderRadius: 999, fontWeight: 800, background: "#fff", color: "#0f172a", boxShadow: "0 14px 32px rgba(0,0,0,.12)", textDecoration: "none" }}>
+                  {isAr ? "ابدأ مشروعك" : "Start Your Project"}
+                </Link>
+                <Link href="/services" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 50, padding: "0 22px", borderRadius: 999, fontWeight: 800, color: "#fff", border: "1px solid rgba(255,255,255,.3)", background: "rgba(255,255,255,.08)", textDecoration: "none" }}>
+                  {isAr ? "استعرض خدماتنا" : "Browse Our Services"}
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
       <PublicFooter lang={lang} />
+
+      <style>{`
+        @media (max-width: 1180px) {
+          .proj-hero-grid { grid-template-columns: 1fr !important; }
+          .proj-cta-grid { grid-template-columns: 1fr !important; }
+          .proj-cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .proj-4col-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .proj-visual { min-height: 560px !important; }
+        }
+        @media (max-width: 760px) {
+          .proj-hero-grid, .proj-cta-grid { grid-template-columns: 1fr !important; }
+          .proj-cards-grid, .proj-4col-grid { grid-template-columns: 1fr !important; }
+          .proj-visual { min-height: auto !important; }
+        }
+      `}</style>
     </div>
   );
 }

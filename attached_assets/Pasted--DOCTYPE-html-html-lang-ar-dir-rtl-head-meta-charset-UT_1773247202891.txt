@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>المشاريع | Softlix</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f6f8fc;
+      --bg-2: #eef3f9;
+      --surface: rgba(255,255,255,.82);
+      --surface-strong: #ffffff;
+      --text: #0f172a;
+      --muted: #5f6b7d;
+      --line: rgba(15, 23, 42, .08);
+      --brand: #e59269;
+      --brand-dark: #cb7147;
+      --accent: #82b735;
+      --navy: #222933;
+      --shadow: 0 18px 60px rgba(15,23,42,.10);
+      --radius-xl: 30px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --max: 1280px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Cairo', system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 8%, rgba(229,146,105,.14), transparent 22%),
+        radial-gradient(circle at 88% 10%, rgba(130,183,53,.12), transparent 18%),
+        linear-gradient(180deg, #fff 0%, #f8fafc 28%, #f2f6fb 100%);
+      line-height: 1.8;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    .container {
+      width: min(var(--max), calc(100% - 32px));
+      margin-inline: auto;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      background: rgba(255,255,255,.72);
+      border-bottom: 1px solid rgba(15,23,42,.06);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      min-height: 82px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 900;
+      font-size: 1.08rem;
+    }
+
+    .brand-mark {
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--brand), var(--accent));
+      box-shadow: 0 14px 30px rgba(229,146,105,.24);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .brand-mark::before,
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      background: rgba(255,255,255,.62);
+    }
+
+    .brand-mark::before {
+      width: 28px;
+      height: 28px;
+      top: -7px;
+      right: -7px;
+    }
+
+    .brand-mark::after {
+      width: 16px;
+      height: 16px;
+      left: 7px;
+      bottom: 6px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 26px;
+      align-items: center;
+      color: #2b3648;
+      font-weight: 700;
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-height: 50px;
+      padding: 0 22px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-weight: 800;
+      white-space: nowrap;
+      transition: .25s ease;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      box-shadow: 0 14px 30px rgba(229,146,105,.28);
+    }
+
+    .btn-primary:hover,
+    .btn-dark:hover,
+    .project-link:hover { transform: translateY(-2px); }
+
+    .btn-secondary {
+      background: rgba(255,255,255,.8);
+      color: var(--text);
+      border-color: rgba(15,23,42,.08);
+    }
+
+    .btn-dark {
+      background: var(--navy);
+      color: #fff;
+      box-shadow: 0 18px 36px rgba(34,41,51,.22);
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      padding: 54px 0 28px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.02fr .98fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.76);
+      border: 1px solid rgba(15,23,42,.08);
+      box-shadow: 0 10px 28px rgba(15,23,42,.05);
+      color: #334155;
+      font-size: .92rem;
+      font-weight: 800;
+      margin-bottom: 22px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand), var(--accent));
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.4rem, 5vw, 4.8rem);
+      line-height: 1.06;
+      font-weight: 900;
+      letter-spacing: -.03em;
+      max-width: 10ch;
+    }
+
+    .hero p {
+      margin: 20px 0 0;
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 62ch;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 28px;
+    }
+
+    .stat {
+      background: rgba(255,255,255,.78);
+      border: 1px solid rgba(15,23,42,.06);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 12px 40px rgba(15,23,42,.05);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 1.85rem;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat span {
+      font-size: .92rem;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .hero-showcase {
+      position: relative;
+      min-height: 610px;
+    }
+
+    .showcase-board {
+      position: absolute;
+      inset: 24px 0 0 56px;
+      border-radius: 34px;
+      overflow: hidden;
+      background: linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,255,255,.78));
+      border: 1px solid rgba(255,255,255,.8);
+      box-shadow: var(--shadow);
+    }
+
+    .showcase-board::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 85% 14%, rgba(130,183,53,.16), transparent 16%),
+        linear-gradient(135deg, rgba(229,146,105,.14), transparent 38%),
+        linear-gradient(180deg, rgba(15,23,42,.02), transparent 36%);
+      pointer-events: none;
+    }
+
+    .window-bar {
+      display: flex;
+      gap: 8px;
+      padding: 18px 20px 0;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(15,23,42,.18);
+    }
+
+    .showcase-content {
+      padding: 18px;
+      height: calc(100% - 22px);
+      display: grid;
+      grid-template-columns: 1.05fr .95fr;
+      gap: 16px;
+    }
+
+    .mock-left,
+    .mock-right,
+    .floating-note,
+    .project-card,
+    .category-card,
+    .process-card,
+    .cta-box,
+    .metric-box {
+      background: rgba(255,255,255,.76);
+      border: 1px solid rgba(15,23,42,.07);
+      box-shadow: 0 14px 40px rgba(15,23,42,.06);
+      backdrop-filter: blur(12px);
+    }
+
+    .mock-left,
+    .mock-right {
+      border-radius: 24px;
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .mini-hero {
+      border-radius: 20px;
+      overflow: hidden;
+      min-height: 182px;
+      background:
+        linear-gradient(135deg, rgba(34,41,51,.94), rgba(60,72,88,.92)),
+        linear-gradient(135deg, var(--brand), transparent 60%);
+      position: relative;
+      padding: 18px;
+      color: #fff;
+    }
+
+    .mini-hero::before {
+      content: "";
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      left: -30px;
+      bottom: -90px;
+      background: rgba(255,255,255,.08);
+    }
+
+    .mini-hero strong {
+      display: block;
+      font-size: 1.35rem;
+      line-height: 1.25;
+      max-width: 10ch;
+    }
+
+    .mini-hero span {
+      display: inline-flex;
+      margin-top: 10px;
+      color: rgba(255,255,255,.78);
+      font-size: .88rem;
+      font-weight: 700;
+    }
+
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .metric-box {
+      border-radius: 18px;
+      padding: 14px;
+    }
+
+    .metric-box strong {
+      display: block;
+      font-size: 1.2rem;
+      margin-bottom: 4px;
+    }
+
+    .metric-box span {
+      color: var(--muted);
+      font-size: .84rem;
+      font-weight: 700;
+    }
+
+    .bars { display: grid; gap: 10px; }
+    .bar {
+      height: 10px;
+      border-radius: 999px;
+      background: rgba(15,23,42,.06);
+      overflow: hidden;
+    }
+
+    .bar > i {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--brand), var(--accent));
+    }
+
+    .floating-note {
+      position: absolute;
+      border-radius: 22px;
+      padding: 18px;
+      z-index: 3;
+    }
+
+    .floating-note.one {
+      left: 0;
+      top: 80px;
+      width: 216px;
+    }
+
+    .floating-note.two {
+      right: 0;
+      bottom: 54px;
+      width: 232px;
+    }
+
+    .floating-note strong {
+      display: block;
+      font-size: 1.28rem;
+      margin-bottom: 8px;
+    }
+
+    .floating-note p {
+      margin: 0;
+      color: var(--muted);
+      font-size: .9rem;
+      line-height: 1.75;
+    }
+
+    .section { padding: 42px 0; }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .section-head-content {
+      max-width: 760px;
+    }
+
+    .section-head h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.9rem, 3vw, 3rem);
+      line-height: 1.15;
+      font-weight: 900;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .filters {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 0 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.82);
+      border: 1px solid rgba(15,23,42,.08);
+      color: #324054;
+      font-weight: 800;
+      font-size: .9rem;
+      box-shadow: 0 10px 24px rgba(15,23,42,.04);
+    }
+
+    .chip.active {
+      color: #fff;
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      border-color: transparent;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .project-card {
+      border-radius: 28px;
+      overflow: hidden;
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+    .project-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 28px 70px rgba(15,23,42,.12);
+    }
+
+    .project-cover {
+      position: relative;
+      aspect-ratio: 1.2 / .92;
+      overflow: hidden;
+      background: linear-gradient(135deg, #e8edf5, #dce7f2);
+    }
+
+    .project-cover img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .35s ease;
+    }
+
+    .project-card:hover .project-cover img { transform: scale(1.04); }
+
+    .project-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(15,23,42,.02), rgba(15,23,42,.46));
+    }
+
+    .project-badge {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.88);
+      color: var(--navy);
+      font-size: .82rem;
+      font-weight: 900;
+      box-shadow: 0 10px 30px rgba(15,23,42,.08);
+    }
+
+    .project-body {
+      padding: 22px 22px 20px;
+    }
+
+    .project-title {
+      margin: 0 0 8px;
+      font-size: 1.22rem;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    .project-desc {
+      margin: 0;
+      color: var(--muted);
+      font-size: .95rem;
+      line-height: 1.85;
+      min-height: 86px;
+    }
+
+    .project-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .project-tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      padding: 0 12px;
+      border-radius: 999px;
+      background: rgba(15,23,42,.05);
+      color: #38465c;
+      font-size: .8rem;
+      font-weight: 800;
+    }
+
+    .project-actions {
+      margin-top: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .project-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 46px;
+      padding: 0 18px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      color: #fff;
+      font-weight: 900;
+      box-shadow: 0 14px 30px rgba(229,146,105,.24);
+      transition: .25s ease;
+    }
+
+    .project-arrow {
+      color: #64748b;
+      font-weight: 900;
+      font-size: 1rem;
+    }
+
+    .categories-grid,
+    .process-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    .categories-grid { grid-template-columns: repeat(4, 1fr); }
+    .process-grid { grid-template-columns: repeat(4, 1fr); }
+
+    .category-card,
+    .process-card {
+      border-radius: 24px;
+      padding: 24px;
+    }
+
+    .icon {
+      width: 54px;
+      height: 54px;
+      display: inline-grid;
+      place-items: center;
+      border-radius: 18px;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, rgba(229,146,105,.18), rgba(130,183,53,.18));
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--text);
+    }
+
+    .category-card h3,
+    .process-card h3 {
+      margin: 0 0 8px;
+      font-size: 1.08rem;
+      font-weight: 900;
+    }
+
+    .category-card p,
+    .process-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: .93rem;
+    }
+
+    .cta {
+      padding: 18px 0 68px;
+    }
+
+    .cta-box {
+      border-radius: 34px;
+      overflow: hidden;
+      background: linear-gradient(135deg, var(--navy), #323c4b);
+      border: none;
+      color: #fff;
+      position: relative;
+      padding: 34px;
+    }
+
+    .cta-box::before,
+    .cta-box::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,.06);
+    }
+
+    .cta-box::before {
+      width: 240px;
+      height: 240px;
+      right: -40px;
+      top: -110px;
+    }
+
+    .cta-box::after {
+      width: 180px;
+      height: 180px;
+      left: 40px;
+      bottom: -80px;
+    }
+
+    .cta-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap: 22px;
+      align-items: center;
+    }
+
+    .cta-box h2 {
+      margin: 0 0 10px;
+      font-size: clamp(1.85rem, 3vw, 3rem);
+      line-height: 1.14;
+      font-weight: 900;
+    }
+
+    .cta-box p {
+      margin: 0;
+      color: rgba(255,255,255,.82);
+      max-width: 58ch;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .btn-white {
+      background: #fff;
+      color: var(--text);
+      box-shadow: 0 14px 32px rgba(0,0,0,.12);
+    }
+
+    .btn-outline-white {
+      color: #fff;
+      border-color: rgba(255,255,255,.3);
+      background: rgba(255,255,255,.08);
+    }
+
+    .site-footer {
+      border-top: 1px solid rgba(15,23,42,.08);
+      background: rgba(255,255,255,.66);
+      backdrop-filter: blur(10px);
+    }
+
+    .footer-inner {
+      min-height: 82px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      color: #536072;
+      font-weight: 700;
+      font-size: .94rem;
+    }
+
+    @media (max-width: 1180px) {
+      .projects-grid { grid-template-columns: repeat(2, 1fr); }
+      .categories-grid, .process-grid { grid-template-columns: repeat(2, 1fr); }
+      .hero-grid, .cta-grid { grid-template-columns: 1fr; }
+      .hero-showcase { min-height: 560px; }
+    }
+
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .hero-stats { grid-template-columns: 1fr; }
+      .showcase-content { grid-template-columns: 1fr; }
+      .showcase-board { inset: 24px 0 0 0; }
+      .floating-note.one, .floating-note.two {
+        position: static;
+        width: auto;
+        margin-top: 14px;
+      }
+      .hero-showcase { min-height: auto; display: grid; gap: 14px; }
+      .projects-grid,
+      .categories-grid,
+      .process-grid,
+      .cta-grid { grid-template-columns: 1fr; }
+      .cta-actions { justify-content: flex-start; }
+      .footer-inner {
+        flex-direction: column;
+        justify-content: center;
+        padding: 18px 0;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav">
+      <a href="#" class="brand">
+        <span class="brand-mark"></span>
+        <span>Softlix</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#projects">المشاريع</a>
+        <a href="#industries">القطاعات</a>
+        <a href="#process">منهجية التنفيذ</a>
+        <a href="#cta">ابدأ معنا</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="#projects">استعرض الأعمال</a>
+        <a class="btn btn-primary" href="#cta">قدّر مشروعك</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <span class="eyebrow">Portfolio / Case Studies</span>
+          <h1>مشاريع رقمية صُممت لتخدم السوق الحقيقي لا العرض فقط</h1>
+          <p>
+            اكتشف مجموعة من مشاريع Softlix في تطبيقات الجوال، التجارة الإلكترونية، المنصات الخدمية،
+            وحلول الأعمال. نحن لا نعرض أعمالاً جميلة فحسب، بل نعرض منتجات مبنية لحل مشاكل فعلية وتحقيق نمو ملموس.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#projects">استكشف المشاريع</a>
+            <a class="btn btn-secondary" href="#industries">القطاعات التي نخدمها</a>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat">
+              <strong>50+</strong>
+              <span>منتج ومنصة وتطبيق</span>
+            </div>
+            <div class="stat">
+              <strong>8+</strong>
+              <span>قطاعات أعمال مختلفة</span>
+            </div>
+            <div class="stat">
+              <strong>100%</strong>
+              <span>تركيز على القيمة والتجربة</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-showcase">
+          <div class="showcase-board">
+            <div class="window-bar">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
+
+            <div class="showcase-content">
+              <div class="mock-left">
+                <div class="mini-hero">
+                  <strong>Projects designed for performance</strong>
+                  <span>Apps • Platforms • Commerce • Systems</span>
+                </div>
+
+                <div class="mini-grid">
+                  <div class="metric-box">
+                    <strong>Mobile</strong>
+                    <span>iOS / Android Apps</span>
+                  </div>
+                  <div class="metric-box">
+                    <strong>Web</strong>
+                    <span>Platforms & Portals</span>
+                  </div>
+                  <div class="metric-box">
+                    <strong>ERP</strong>
+                    <span>Business Operations</span>
+                  </div>
+                  <div class="metric-box">
+                    <strong>UX</strong>
+                    <span>Modern Interfaces</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mock-right">
+                <strong style="font-size:1rem;">جودة التنفيذ عبر المشاريع</strong>
+                <div class="bars">
+                  <div class="bar"><i style="width:92%"></i></div>
+                  <div class="bar"><i style="width:84%"></i></div>
+                  <div class="bar"><i style="width:88%"></i></div>
+                  <div class="bar"><i style="width:78%"></i></div>
+                </div>
+
+                <div class="metric-box">
+                  <strong>واجهة حديثة</strong>
+                  <span>تصميم أقرب لمنتجات التقنية العالمية</span>
+                </div>
+
+                <div class="metric-box">
+                  <strong>حل تجاري</strong>
+                  <span>كل مشروع مبني حول استخدام فعلي وحاجة حقيقية</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="floating-note one">
+            <strong>تصميم + وظيفة</strong>
+            <p>نعرض المشاريع باعتبارها حلولاً مكتملة لا مجرد لقطات واجهات.</p>
+          </div>
+
+          <div class="floating-note two">
+            <strong>تنوع قطاعات</strong>
+            <p>من الخدمات واللوجستيات وحتى الإعلانات والتسوق والمنصات المتخصصة.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="projects">
+      <div class="container">
+        <div class="section-head">
+          <div class="section-head-content">
+            <h2>أبرز المشاريع</h2>
+            <p>نسخة حديثة من صفحة المشاريع، بطريقة عرض أقوى بكثير من الكروت التقليدية الحالية، وبأسلوب أقرب لصفحات الشركات التقنية الكبيرة.</p>
+          </div>
+
+          <div class="filters">
+            <span class="chip active">الكل</span>
+            <span class="chip">تطبيقات الجوال</span>
+            <span class="chip">منصات الويب</span>
+            <span class="chip">التجارة</span>
+          </div>
+        </div>
+
+        <div class="projects-grid">
+          <article class="project-card">
+            <div class="project-cover">
+              <img src="https://softlixagency.com/wp-content/uploads/2023/03/خلفية-مساكني.png" alt="تطبيق مسكني">
+              <div class="project-overlay"></div>
+              <span class="project-badge">منصة عقارية</span>
+            </div>
+            <div class="project-body">
+              <h3 class="project-title">تطبيق مسكني</h3>
+              <p class="project-desc">منصة وتطبيق لإدارة الأملاك، تأجير الوحدات، وتنظيم العلاقة بين الملاك والمستأجرين عبر تجربة رقمية واضحة.</p>
+              <div class="project-meta">
+                <span class="project-tag">Property</span>
+                <span class="project-tag">Mobile App</span>
+                <span class="project-tag">Management</span>
+              </div>
+              <div class="project-actions">
+                <a href="#" class="project-link">قراءة المزيد</a>
+                <span class="project-arrow">↗</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-cover">
+              <img src="https://softlixagency.com/wp-content/uploads/2023/03/خلفية-بيهانس-تيسير.png" alt="تطبيق تيسير">
+              <div class="project-overlay"></div>
+              <span class="project-badge">تسوق وخدمات</span>
+            </div>
+            <div class="project-body">
+              <h3 class="project-title">تطبيق تيسير</h3>
+              <p class="project-desc">تجربة شراء رقمية من متاجر متعددة وسوبرماركت متنوعة، مع رحلة استخدام سهلة وسريعة للمستخدم النهائي.</p>
+              <div class="project-meta">
+                <span class="project-tag">Marketplace</span>
+                <span class="project-tag">Retail</span>
+                <span class="project-tag">Delivery</span>
+              </div>
+              <div class="project-actions">
+                <a href="#" class="project-link">قراءة المزيد</a>
+                <span class="project-arrow">↗</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-cover">
+              <img src="https://softlixagency.com/wp-content/uploads/2023/03/خلفية-تطبيق-جماله.png" alt="تطبيق جمالة">
+              <div class="project-overlay"></div>
+              <span class="project-badge">تجارة جملة</span>
+            </div>
+            <div class="project-body">
+              <h3 class="project-title">تطبيق جمالة</h3>
+              <p class="<p class="project-desc">
+منصة تجارة جملة تربط الموردين بالتجار وتوفر تجربة طلب
+سريعة واحترافية لشراء المنتجات الاستهلاكية بكميات كبيرة.
+</p>
+
+<div class="project-meta">
+<span class="project-tag">Wholesale</span>
+<span class="project-tag">B2B</span>
+<span class="project-tag">Commerce</span>
+</div>
+
+<div class="project-actions">
+<a href="#" class="project-link">قراءة المزيد</a>
+<span class="project-arrow">↗</span>
+</div>
+
+</div>
+</article>
+
+
+
+<article class="project-card">
+<div class="project-cover">
+<img src="https://softlixagency.com/wp-content/uploads/2023/09/cropped-شعار-سوفتلكس-500-500.png" alt="تطبيق منشأتي">
+<div class="project-overlay"></div>
+<span class="project-badge">إعلانات مبوبة</span>
+</div>
+
+<div class="project-body">
+
+<h3 class="project-title">تطبيق منشأتي</h3>
+
+<p class="project-desc">
+تطبيق للإعلانات المبوبة يتيح للمستخدمين نشر الإعلانات
+وبيع المنتجات والخدمات بسهولة داخل منصة موحدة.
+</p>
+
+<div class="project-meta">
+<span class="project-tag">Classifieds</span>
+<span class="project-tag">Marketplace</span>
+<span class="project-tag">Mobile</span>
+</div>
+
+<div class="project-actions">
+<a href="#" class="project-link">قراءة المزيد</a>
+<span class="project-arrow">↗</span>
+</div>
+
+</div>
+</article>
+
+
+
+<article class="project-card">
+<div class="project-cover">
+<img src="https://softlixagency.com/wp-content/uploads/2023/09/cropped-شعار-سوفتلكس-500-500.png" alt="تطبيق ساعد">
+<div class="project-overlay"></div>
+<span class="project-badge">خدمات الطريق</span>
+</div>
+
+<div class="project-body">
+
+<h3 class="project-title">تطبيق ساعد</h3>
+
+<p class="project-desc">
+منصة رقمية لخدمات المساعدة على الطريق توفر
+حلولاً سريعة للسائقين مثل السحب والصيانة الطارئة.
+</p>
+
+<div class="project-meta">
+<span class="project-tag">Automotive</span>
+<span class="project-tag">Service</span>
+<span class="project-tag">Mobile</span>
+</div>
+
+<div class="project-actions">
+<a href="#" class="project-link">قراءة المزيد</a>
+<span class="project-arrow">↗</span>
+</div>
+
+</div>
+</article>
+
+</div>
+</div>
+</section>
