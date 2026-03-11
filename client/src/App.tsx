@@ -29,6 +29,7 @@ import Inventory from "@/pages/inventory";
 import PublicHome from "@/pages/public/home";
 import PublicAbout from "@/pages/public/about";
 import PublicServices from "@/pages/public/services";
+import ServiceDetail from "@/pages/public/service-detail";
 import PublicProjects from "@/pages/public/projects";
 import PublicBlog from "@/pages/public/blog";
 import PublicContact from "@/pages/public/contact";
@@ -95,7 +96,7 @@ function PublicSite() {
   return (
     <Switch>
       <Route path="/about"><PublicAbout {...p} /></Route>
-      <Route path="/services/:slug"><PublicServices {...p} /></Route>
+      <Route path="/services/:slug"><ServiceDetail {...p} /></Route>
       <Route path="/services"><PublicServices {...p} /></Route>
       <Route path="/projects/:slug"><PublicProjects {...p} /></Route>
       <Route path="/projects"><PublicProjects {...p} /></Route>

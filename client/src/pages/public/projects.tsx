@@ -40,7 +40,7 @@ export default function PublicProjects({ lang = "ar", onLangChange }: ProjectsPr
 
   const { data: projects } = useQuery<Project[]>({
     queryKey: ["/api/public/projects", TENANT_ID],
-    enabled: !!TENANT_ID,
+    
   });
 
   const displayProjects = projects && projects.length > 0 ? projects : DEFAULT_PROJECTS as any[];

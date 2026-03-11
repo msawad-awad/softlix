@@ -43,12 +43,12 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
 
   const { data: services } = useQuery<Service[]>({
     queryKey: ["/api/public/services", TENANT_ID],
-    enabled: !!TENANT_ID,
+    
   });
 
   const { data: projects } = useQuery<Project[]>({
     queryKey: ["/api/public/projects", TENANT_ID],
-    enabled: !!TENANT_ID,
+    
   });
 
   const displayServices = services && services.length > 0 ? [] : DEFAULT_SERVICES;

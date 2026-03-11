@@ -29,7 +29,7 @@ export default function PublicServices({ lang = "ar", onLangChange }: ServicesPr
 
   const { data: servicesData } = useQuery<Service[]>({
     queryKey: ["/api/public/services", TENANT_ID],
-    enabled: !!TENANT_ID,
+    
   });
 
   const useDefault = !servicesData || servicesData.length === 0;
@@ -75,12 +75,19 @@ export default function PublicServices({ lang = "ar", onLangChange }: ServicesPr
                         </li>
                       ))}
                     </ul>
-                    <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
-                      <Link href="/contact">
-                        {isAr ? "استفسر عن هذه الخدمة" : "Inquire About This Service"}
-                        <Arrow className="w-4 h-4 mx-2" />
-                      </Link>
-                    </Button>
+                    <div className="flex flex-wrap gap-3">
+                      <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white" data-testid={`button-service-detail-${i}`}>
+                        <Link href={`/services/${service.slug}`}>
+                          {isAr ? "تفاصيل الخدمة" : "Service Details"}
+                          <Arrow className="w-4 h-4 mx-2" />
+                        </Link>
+                      </Button>
+                      <Button asChild variant="outline" data-testid={`button-service-request-${i}`}>
+                        <Link href={`/services/${service.slug}#request-form`}>
+                          {isAr ? "اطلب الخدمة" : "Request Service"}
+                        </Link>
+                      </Button>
+                    </div>
                   </div>
                   <div className={i % 2 === 1 ? "md:order-1" : ""}>
                     <div className="aspect-square rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
@@ -101,9 +108,18 @@ export default function PublicServices({ lang = "ar", onLangChange }: ServicesPr
                   <p className="text-gray-600 dark:text-gray-400 leading-relaxed mb-6">
                     {isAr ? service.fullDescription : (service.fullDescriptionEn || service.fullDescription)}
                   </p>
-                  <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
-                    <Link href="/contact">{isAr ? "استفسر عن هذه الخدمة" : "Inquire About This Service"}<Arrow className="w-4 h-4 mx-2" /></Link>
-                  </Button>
+                  <div className="flex flex-wrap gap-3">
+                    <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white" data-testid={`button-service-detail-${service.id}`}>
+                      <Link href={`/services/${service.slug}`}>
+                        {isAr ? "تفاصيل الخدمة" : "Service Details"}<Arrow className="w-4 h-4 mx-2" />
+                      </Link>
+                    </Button>
+                    <Button asChild variant="outline" data-testid={`button-service-request-db-${service.id}`}>
+                      <Link href={`/services/${service.slug}#request-form`}>
+                        {isAr ? "اطلب الخدمة" : "Request Service"}
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
                 <div>
                   {service.imageUrl ? (

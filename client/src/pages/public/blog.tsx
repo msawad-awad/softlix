@@ -24,7 +24,7 @@ export default function PublicBlog({ lang = "ar", onLangChange }: BlogProps) {
 
   const { data: posts } = useQuery<BlogPost[]>({
     queryKey: ["/api/public/blog", TENANT_ID],
-    enabled: !!TENANT_ID,
+    
   });
 
   const displayPosts = posts && posts.length > 0 ? posts : DEFAULT_POSTS as any[];
