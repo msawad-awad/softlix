@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useSEO } from "@/hooks/use-seo";
 import { PublicNavbar } from "@/components/public/navbar";
 import { PublicFooter } from "@/components/public/footer";
 import { Badge } from "@/components/ui/badge";
@@ -20,10 +22,26 @@ interface ContactProps {
 
 export default function PublicContact({ lang = "ar", onLangChange }: ContactProps) {
   const isAr = lang === "ar";
+  useSEO({
+    title: isAr ? "تواصل معنا" : "Contact Us",
+    description: isAr
+      ? "تواصل مع فريق Softlix لمناقشة مشروعك. نحن في جدة، المملكة العربية السعودية - متاحون السبت إلى الخميس."
+      : "Contact the Softlix team to discuss your project. We're in Jeddah, Saudi Arabia - available Saturday to Thursday.",
+  });
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", phone: "", budget: "", message: "" });
+
+  const { data: settings } = useQuery<any>({ queryKey: ["/api/public/site-settings"] });
+
+  const phone = settings?.contactPhone || "0537861534";
+  const email = settings?.contactEmail || "info@softlix.net";
+  const addressAr = settings?.contactAddressAr || "مبنى الامتياز، حي الصفا، طريق الحرمين، المملكة العربية السعودية";
+  const addressEn = settings?.contactAddressEn || "Al Imtiyaz Building, Al Safa, Haramain Road, Saudi Arabia";
+  const workingHoursAr = settings?.contactHoursAr || "السبت - الخميس: 9ص - 6م (UTC+3)";
+  const workingHoursEn = settings?.contactHoursEn || "Sat - Thu: 9AM - 6PM (UTC+3)";
+  const whatsappUrl = settings?.socialWhatsapp || "https://wa.me/966537861534";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,10 +93,10 @@ export default function PublicContact({ lang = "ar", onLangChange }: ContactProp
                 <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-6">{isAr ? "معلومات التواصل" : "Contact Information"}</h2>
                 <div className="space-y-5">
                   {[
-                    { icon: Phone, labelAr: "الهاتف", labelEn: "Phone", value: "0537861534", href: "tel:0537861534" },
-                    { icon: Mail, labelAr: "البريد الإلكتروني", labelEn: "Email", value: "info@softlix.net", href: "mailto:info@softlix.net" },
-                    { icon: MapPin, labelAr: "العنوان", labelEn: "Address", value: isAr ? "مبنى الامتياز، حي الصفا، طريق الحرمين، المملكة العربية السعودية" : "Al Imtiyaz Building, Al Safa, Haramain Road, Saudi Arabia", href: null },
-                    { icon: Clock, labelAr: "ساعات العمل", labelEn: "Working Hours", value: isAr ? "السبت - الخميس: 9ص - 6م (UTC+3)" : "Sat - Thu: 9AM - 6PM (UTC+3)", href: null },
+                    { icon: Phone, labelAr: "الهاتف", labelEn: "Phone", value: phone, href: `tel:${phone}` },
+                    { icon: Mail, labelAr: "البريد الإلكتروني", labelEn: "Email", value: email, href: `mailto:${email}` },
+                    { icon: MapPin, labelAr: "العنوان", labelEn: "Address", value: isAr ? addressAr : addressEn, href: null },
+                    { icon: Clock, labelAr: "ساعات العمل", labelEn: "Working Hours", value: isAr ? workingHoursAr : workingHoursEn, href: null },
                   ].map((item, i) => {
                     const Icon = item.icon;
                     return (
@@ -106,7 +124,7 @@ export default function PublicContact({ lang = "ar", onLangChange }: ContactProp
                   <span className="font-bold text-green-800 dark:text-green-300">{isAr ? "واتساب" : "WhatsApp"}</span>
                 </div>
                 <p className="text-sm text-green-700 dark:text-green-400 mb-3">{isAr ? "تواصل معنا مباشرة عبر واتساب" : "Contact us directly via WhatsApp"}</p>
-                <a href="https://wa.me/966537861534" target="_blank" rel="noopener noreferrer"
+                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                   <SiWhatsapp className="w-4 h-4" />
                   {isAr ? "ابدأ محادثة" : "Start Chat"}

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { PublicNavbar } from "@/components/public/navbar";
 import { PublicFooter } from "@/components/public/footer";
 import type { Service } from "@shared/schema";
+import { useSEO } from "@/hooks/use-seo";
 
 const TENANT_ID = (import.meta.env.VITE_TENANT_ID as string) || "";
 
@@ -126,6 +127,12 @@ const glassCard: React.CSSProperties = {
 
 export default function PublicServices({ lang = "ar", onLangChange }: ServicesProps) {
   const isAr = lang === "ar";
+  useSEO({
+    title: isAr ? "خدماتنا" : "Our Services",
+    description: isAr
+      ? "Softlix تقدم خدمات برمجة التطبيقات، تصميم المواقع، التسويق الرقمي، وتطوير المنصات الرقمية للأعمال."
+      : "Softlix provides app development, web design, digital marketing, and digital platform development services for businesses.",
+  });
 
   const { data: apiServices } = useQuery<Service[]>({
     queryKey: ["/api/public/services", TENANT_ID],

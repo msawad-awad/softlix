@@ -55,6 +55,9 @@
 
 ### 8. Website CMS Module - FULLY IMPLEMENTED
 - ✅ **Public Pages**: `/` (Home), `/about`, `/services`, `/services/:slug`, `/projects`, `/projects/:slug`, `/blog`, `/blog/:slug`, `/contact`
+- ✅ **Blog Detail View**: `/blog/:slug` shows full article content with back navigation
+- ✅ **Project Detail View**: `/projects/:slug` shows project details, tags, client, CTA
+- ✅ **Dynamic SEO**: `useSEO` hook sets page `<title>` + `<meta description>` on all public pages
 - ✅ **Arabic/English**: All public pages bilingual with lang toggle
 - ✅ **CMS Dashboard**: `/website/*` - manage services, projects, blog, clients, redirects, leads
 - ✅ **Marketing Tracking**: `/marketing` - GTM, Meta Pixel, GA4, TikTok, Snapchat, LinkedIn injection
@@ -64,6 +67,8 @@
 - ✅ **Default Redirects**: One-click add all softlixagency.com legacy URLs (e.g. /porjects/ → /projects)
 - ✅ **Client Logos**: Manage client brand logos displayed on site
 - ✅ **Sidebar**: "الموقع الإلكتروني" and "التسويق والتتبع" sections in admin sidebar
+- ✅ **Site Settings**: Field names aligned with DB schema (contactPhone, contactEmail, socialWhatsapp etc.)
+- ✅ **WhatsApp URL**: socialWhatsapp field stores full URL (https://wa.me/...) used directly in footer and contact page
 
 ## 📋 Features Shipped
 - Real-time data fetching with TanStack Query v5

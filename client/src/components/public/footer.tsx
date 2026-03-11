@@ -1,4 +1,5 @@
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { SiWhatsapp, SiLinkedin, SiInstagram, SiX } from "react-icons/si";
 
 interface FooterProps {
@@ -54,6 +55,23 @@ const dotIcon: React.CSSProperties = {
 export function PublicFooter({ lang = "ar" }: FooterProps) {
   const isAr = lang === "ar";
 
+  const { data: settings } = useQuery<any>({ queryKey: ["/api/public/site-settings"] });
+
+  const siteName = settings?.siteNameAr || "softlix";
+  const siteNameEn = settings?.siteNameEn || "softlix";
+  const footerDescAr = settings?.footerDescAr || "شريكك التقني المتكامل في برمجة التطبيقات والتسويق الرقمي. نحوّل أفكارك إلى منتجات رقمية ناجحة.";
+  const footerDescEn = settings?.footerDescEn || "Your complete tech partner in app development and digital marketing. We turn your ideas into successful digital products.";
+  const phone = settings?.contactPhone || "0537861534";
+  const email = settings?.contactEmail || "info@softlix.net";
+  const addressAr = settings?.contactAddressAr || "مبنى الامتياز في الصفا، طريق الحرمين السعودية";
+  const addressEn = settings?.contactAddressEn || "Al Imtiyaz Building, Al Safa, Haramain Road, Saudi Arabia";
+  const workingHoursAr = settings?.contactHoursAr || "السبت - الخميس: 9ص - 6م";
+  const workingHoursEn = settings?.contactHoursEn || "Sat - Thu: 9AM - 6PM";
+  const twitterUrl = settings?.socialX || "https://x.com";
+  const instagramUrl = settings?.socialInstagram || "https://instagram.com";
+  const linkedinUrl = settings?.socialLinkedIn || "https://linkedin.com";
+  const whatsappUrl = settings?.socialWhatsapp || "https://wa.me/966537861534";
+
   return (
     <footer
       dir={isAr ? "rtl" : "ltr"}
@@ -70,59 +88,65 @@ export function PublicFooter({ lang = "ar" }: FooterProps) {
           <div>
             <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: 12, marginBottom: 18, textDecoration: "none" }}>
               <div style={{ width: 42, height: 42, borderRadius: 12, background: "linear-gradient(135deg, #e59269, #82b735)", boxShadow: "0 10px 28px rgba(229,146,105,.28)", flexShrink: 0, position: "relative", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <span style={{ fontSize: 18, fontWeight: 900, color: "#fff", fontFamily: "monospace" }}>S</span>
+                <span style={{ fontSize: 18, fontWeight: 900, color: "#fff", fontFamily: "monospace" }}>{(isAr ? siteName : siteNameEn).charAt(0).toUpperCase()}</span>
               </div>
-              <span style={{ color: "#fff", fontWeight: 900, fontSize: "1.18rem", letterSpacing: "-.01em" }}>softlix</span>
+              <span style={{ color: "#fff", fontWeight: 900, fontSize: "1.18rem", letterSpacing: "-.01em" }}>{isAr ? siteName : siteNameEn}</span>
             </Link>
 
             <p style={{ color: "rgba(255,255,255,.42)", fontSize: ".92rem", lineHeight: 1.85, marginBottom: 24, maxWidth: "30ch" }}>
-              {isAr
-                ? "شريكك التقني المتكامل في برمجة التطبيقات والتسويق الرقمي. نحوّل أفكارك إلى منتجات رقمية ناجحة."
-                : "Your complete tech partner in app development and digital marketing. We turn your ideas into successful digital products."}
+              {isAr ? footerDescAr : footerDescEn}
             </p>
 
             {/* Socials */}
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-              <a
-                href="https://x.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={iconStyle}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#fff"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,.22)"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,.10)"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,.5)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,.10)"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,.05)"; }}
-              >
-                <SiX size={14} />
-              </a>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={iconStyle}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#e1306c"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(225,48,108,.3)"; (e.currentTarget as HTMLElement).style.background = "rgba(225,48,108,.08)"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,.5)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,.10)"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,.05)"; }}
-              >
-                <SiInstagram size={15} />
-              </a>
-              <a
-                href="https://linkedin.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={iconStyle}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#0a66c2"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(10,102,194,.3)"; (e.currentTarget as HTMLElement).style.background = "rgba(10,102,194,.08)"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,.5)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,.10)"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,.05)"; }}
-              >
-                <SiLinkedin size={15} />
-              </a>
-              <a
-                href="https://wa.me/966537861534"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={iconStyle}
-                onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#25d366"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(37,211,102,.3)"; (e.currentTarget as HTMLElement).style.background = "rgba(37,211,102,.08)"; }}
-                onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,.5)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,.10)"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,.05)"; }}
-              >
-                <SiWhatsapp size={15} />
-              </a>
+              {twitterUrl && (
+                <a
+                  href={twitterUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={iconStyle}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#fff"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,.22)"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,.10)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,.5)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,.10)"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,.05)"; }}
+                >
+                  <SiX size={14} />
+                </a>
+              )}
+              {instagramUrl && (
+                <a
+                  href={instagramUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={iconStyle}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#e1306c"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(225,48,108,.3)"; (e.currentTarget as HTMLElement).style.background = "rgba(225,48,108,.08)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,.5)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,.10)"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,.05)"; }}
+                >
+                  <SiInstagram size={15} />
+                </a>
+              )}
+              {linkedinUrl && (
+                <a
+                  href={linkedinUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={iconStyle}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#0a66c2"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(10,102,194,.3)"; (e.currentTarget as HTMLElement).style.background = "rgba(10,102,194,.08)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,.5)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,.10)"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,.05)"; }}
+                >
+                  <SiLinkedin size={15} />
+                </a>
+              )}
+              {whatsappUrl && (
+                <a
+                  href={whatsappUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={iconStyle}
+                  onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#25d366"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(37,211,102,.3)"; (e.currentTarget as HTMLElement).style.background = "rgba(37,211,102,.08)"; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,.5)"; (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,.10)"; (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,.05)"; }}
+                >
+                  <SiWhatsapp size={15} />
+                </a>
+              )}
             </div>
           </div>
 
@@ -188,29 +212,29 @@ export function PublicFooter({ lang = "ar" }: FooterProps) {
             <div style={{ display: "grid", gap: 14 }}>
               <div style={contactRow}>
                 <span style={dotIcon} />
-                <span>{isAr ? "مبنى الامتياز في الصفا، طريق الحرمين السعودية" : "Al Imtiyaz Building, Al Safa, Haramain Road, Saudi Arabia"}</span>
+                <span>{isAr ? addressAr : addressEn}</span>
               </div>
               <div style={contactRow}>
                 <span style={dotIcon} />
-                <a href="tel:0537861534" style={{ ...linkStyle, color: "rgba(255,255,255,.48)" }}
+                <a href={`tel:${phone}`} style={{ ...linkStyle, color: "rgba(255,255,255,.48)" }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#e59269"; }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,.48)"; }}
                 >
-                  0537861534
+                  {phone}
                 </a>
               </div>
               <div style={contactRow}>
                 <span style={dotIcon} />
-                <a href="mailto:info@softlix.net" style={{ ...linkStyle, color: "rgba(255,255,255,.48)" }}
+                <a href={`mailto:${email}`} style={{ ...linkStyle, color: "rgba(255,255,255,.48)" }}
                   onMouseEnter={e => { (e.currentTarget as HTMLElement).style.color = "#e59269"; }}
                   onMouseLeave={e => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,.48)"; }}
                 >
-                  info@softlix.net
+                  {email}
                 </a>
               </div>
               <div style={contactRow}>
                 <span style={dotIcon} />
-                <span>{isAr ? "السبت - الخميس: 9ص - 6م" : "Sat - Thu: 9AM - 6PM"}</span>
+                <span>{isAr ? workingHoursAr : workingHoursEn}</span>
               </div>
             </div>
           </div>
@@ -221,7 +245,7 @@ export function PublicFooter({ lang = "ar" }: FooterProps) {
       <div style={{ borderTop: "1px solid rgba(255,255,255,.06)", marginTop: 48 }}>
         <div style={{ width: "min(1280px, calc(100% - 32px))", marginInline: "auto", minHeight: 60, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", padding: "0 0" }}>
           <p style={{ color: "rgba(255,255,255,.28)", fontSize: ".88rem", fontWeight: 600, margin: 0, fontFamily: "'Cairo', system-ui, sans-serif" }}>
-            © {new Date().getFullYear()} softlix. {isAr ? "جميع الحقوق محفوظة." : "All rights reserved."}
+            © {new Date().getFullYear()} {isAr ? siteName : siteNameEn}. {isAr ? "جميع الحقوق محفوظة." : "All rights reserved."}
           </p>
           <p style={{ color: "rgba(255,255,255,.28)", fontSize: ".88rem", fontWeight: 600, margin: 0, fontFamily: "'Cairo', system-ui, sans-serif" }}>
             {isAr ? "صُنع بـ ❤️ في المملكة العربية السعودية" : "Made with ❤️ in Saudi Arabia"}

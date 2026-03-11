@@ -2,6 +2,8 @@ import {
   tenants, users, subscriptions, companies, contacts, activityLog, sessions,
   services, projects, blogCategories, blogPosts, siteClients, redirects,
   marketingSettings, formLeads,
+  siteSettings, pageSections, testimonials, processSteps, whyUsItems,
+  aboutValues, aboutTimeline, siteStats,
   type Tenant, type InsertTenant,
   type User, type InsertUser,
   type Subscription, type InsertSubscription,
@@ -17,6 +19,14 @@ import {
   type Redirect, type InsertRedirect,
   type MarketingSettings, type InsertMarketingSettings,
   type FormLead, type InsertFormLead,
+  type SiteSettings, type InsertSiteSettings,
+  type PageSection, type InsertPageSection,
+  type Testimonial, type InsertTestimonial,
+  type ProcessStep, type InsertProcessStep,
+  type WhyUsItem, type InsertWhyUsItem,
+  type AboutValue, type InsertAboutValue,
+  type AboutTimeline, type InsertAboutTimeline,
+  type SiteStat, type InsertSiteStat,
   type AuthenticatedUser,
 } from "@shared/schema";
 import { db } from "./db";
@@ -126,6 +136,51 @@ export interface IStorage {
   createFormLead(lead: InsertFormLead): Promise<FormLead>;
   updateFormLead(id: string, tenantId: string, lead: Partial<InsertFormLead>): Promise<FormLead | undefined>;
   deleteFormLead(id: string, tenantId: string): Promise<void>;
+
+  // Site Settings (Branding)
+  getSiteSettings(tenantId: string): Promise<SiteSettings | undefined>;
+  upsertSiteSettings(tenantId: string, data: Partial<InsertSiteSettings>): Promise<SiteSettings>;
+
+  // Page Sections
+  getPageSections(tenantId: string, page: string): Promise<PageSection[]>;
+  getPageSection(tenantId: string, page: string, sectionKey: string): Promise<PageSection | undefined>;
+  upsertPageSection(tenantId: string, page: string, sectionKey: string, data: { contentAr?: any; contentEn?: any; isVisible?: boolean }): Promise<PageSection>;
+
+  // Testimonials
+  getTestimonials(tenantId: string): Promise<Testimonial[]>;
+  createTestimonial(t: InsertTestimonial): Promise<Testimonial>;
+  updateTestimonial(id: string, tenantId: string, t: Partial<InsertTestimonial>): Promise<Testimonial | undefined>;
+  deleteTestimonial(id: string, tenantId: string): Promise<void>;
+
+  // Process Steps
+  getProcessSteps(tenantId: string): Promise<ProcessStep[]>;
+  createProcessStep(step: InsertProcessStep): Promise<ProcessStep>;
+  updateProcessStep(id: string, tenantId: string, step: Partial<InsertProcessStep>): Promise<ProcessStep | undefined>;
+  deleteProcessStep(id: string, tenantId: string): Promise<void>;
+
+  // Why Us Items
+  getWhyUsItems(tenantId: string): Promise<WhyUsItem[]>;
+  createWhyUsItem(item: InsertWhyUsItem): Promise<WhyUsItem>;
+  updateWhyUsItem(id: string, tenantId: string, item: Partial<InsertWhyUsItem>): Promise<WhyUsItem | undefined>;
+  deleteWhyUsItem(id: string, tenantId: string): Promise<void>;
+
+  // About Values
+  getAboutValues(tenantId: string): Promise<AboutValue[]>;
+  createAboutValue(v: InsertAboutValue): Promise<AboutValue>;
+  updateAboutValue(id: string, tenantId: string, v: Partial<InsertAboutValue>): Promise<AboutValue | undefined>;
+  deleteAboutValue(id: string, tenantId: string): Promise<void>;
+
+  // About Timeline
+  getAboutTimeline(tenantId: string): Promise<AboutTimeline[]>;
+  createAboutTimelineItem(item: InsertAboutTimeline): Promise<AboutTimeline>;
+  updateAboutTimelineItem(id: string, tenantId: string, item: Partial<InsertAboutTimeline>): Promise<AboutTimeline | undefined>;
+  deleteAboutTimelineItem(id: string, tenantId: string): Promise<void>;
+
+  // Site Stats
+  getSiteStats(tenantId: string): Promise<SiteStat[]>;
+  createSiteStat(stat: InsertSiteStat): Promise<SiteStat>;
+  updateSiteStat(id: string, tenantId: string, stat: Partial<InsertSiteStat>): Promise<SiteStat | undefined>;
+  deleteSiteStat(id: string, tenantId: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -573,6 +628,215 @@ export class DatabaseStorage implements IStorage {
 
   async deleteFormLead(id: string, tenantId: string): Promise<void> {
     await db.delete(formLeads).where(and(eq(formLeads.id, id), eq(formLeads.tenantId, tenantId)));
+  }
+
+  // ============================================================
+  // SITE SETTINGS (Branding)
+  // ============================================================
+  async getSiteSettings(tenantId: string): Promise<SiteSettings | undefined> {
+    const [s] = await db.select().from(siteSettings).where(eq(siteSettings.tenantId, tenantId));
+    return s || undefined;
+  }
+
+  async upsertSiteSettings(tenantId: string, data: Partial<InsertSiteSettings>): Promise<SiteSettings> {
+    const existing = await this.getSiteSettings(tenantId);
+    if (existing) {
+      const [updated] = await db.update(siteSettings)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(siteSettings.tenantId, tenantId))
+        .returning();
+      return updated;
+    }
+    const [created] = await db.insert(siteSettings)
+      .values({ tenantId, ...data } as InsertSiteSettings)
+      .returning();
+    return created;
+  }
+
+  // ============================================================
+  // PAGE SECTIONS
+  // ============================================================
+  async getPageSections(tenantId: string, page: string): Promise<PageSection[]> {
+    return db.select().from(pageSections)
+      .where(and(eq(pageSections.tenantId, tenantId), eq(pageSections.page, page)))
+      .orderBy(asc(pageSections.displayOrder));
+  }
+
+  async getPageSection(tenantId: string, page: string, sectionKey: string): Promise<PageSection | undefined> {
+    const [s] = await db.select().from(pageSections)
+      .where(and(eq(pageSections.tenantId, tenantId), eq(pageSections.page, page), eq(pageSections.sectionKey, sectionKey)));
+    return s || undefined;
+  }
+
+  async upsertPageSection(tenantId: string, page: string, sectionKey: string, data: { contentAr?: any; contentEn?: any; isVisible?: boolean }): Promise<PageSection> {
+    const existing = await this.getPageSection(tenantId, page, sectionKey);
+    if (existing) {
+      const [updated] = await db.update(pageSections)
+        .set({ ...data, updatedAt: new Date() })
+        .where(and(eq(pageSections.tenantId, tenantId), eq(pageSections.page, page), eq(pageSections.sectionKey, sectionKey)))
+        .returning();
+      return updated;
+    }
+    const [created] = await db.insert(pageSections)
+      .values({ tenantId, page, sectionKey, ...data } as InsertPageSection)
+      .returning();
+    return created;
+  }
+
+  // ============================================================
+  // TESTIMONIALS
+  // ============================================================
+  async getTestimonials(tenantId: string): Promise<Testimonial[]> {
+    return db.select().from(testimonials)
+      .where(eq(testimonials.tenantId, tenantId))
+      .orderBy(asc(testimonials.displayOrder));
+  }
+
+  async createTestimonial(t: InsertTestimonial): Promise<Testimonial> {
+    const [row] = await db.insert(testimonials).values(t).returning();
+    return row;
+  }
+
+  async updateTestimonial(id: string, tenantId: string, t: Partial<InsertTestimonial>): Promise<Testimonial | undefined> {
+    const [row] = await db.update(testimonials)
+      .set(t)
+      .where(and(eq(testimonials.id, id), eq(testimonials.tenantId, tenantId)))
+      .returning();
+    return row || undefined;
+  }
+
+  async deleteTestimonial(id: string, tenantId: string): Promise<void> {
+    await db.delete(testimonials).where(and(eq(testimonials.id, id), eq(testimonials.tenantId, tenantId)));
+  }
+
+  // ============================================================
+  // PROCESS STEPS
+  // ============================================================
+  async getProcessSteps(tenantId: string): Promise<ProcessStep[]> {
+    return db.select().from(processSteps)
+      .where(eq(processSteps.tenantId, tenantId))
+      .orderBy(asc(processSteps.displayOrder));
+  }
+
+  async createProcessStep(step: InsertProcessStep): Promise<ProcessStep> {
+    const [row] = await db.insert(processSteps).values(step).returning();
+    return row;
+  }
+
+  async updateProcessStep(id: string, tenantId: string, step: Partial<InsertProcessStep>): Promise<ProcessStep | undefined> {
+    const [row] = await db.update(processSteps)
+      .set(step)
+      .where(and(eq(processSteps.id, id), eq(processSteps.tenantId, tenantId)))
+      .returning();
+    return row || undefined;
+  }
+
+  async deleteProcessStep(id: string, tenantId: string): Promise<void> {
+    await db.delete(processSteps).where(and(eq(processSteps.id, id), eq(processSteps.tenantId, tenantId)));
+  }
+
+  // ============================================================
+  // WHY US ITEMS
+  // ============================================================
+  async getWhyUsItems(tenantId: string): Promise<WhyUsItem[]> {
+    return db.select().from(whyUsItems)
+      .where(eq(whyUsItems.tenantId, tenantId))
+      .orderBy(asc(whyUsItems.displayOrder));
+  }
+
+  async createWhyUsItem(item: InsertWhyUsItem): Promise<WhyUsItem> {
+    const [row] = await db.insert(whyUsItems).values(item).returning();
+    return row;
+  }
+
+  async updateWhyUsItem(id: string, tenantId: string, item: Partial<InsertWhyUsItem>): Promise<WhyUsItem | undefined> {
+    const [row] = await db.update(whyUsItems)
+      .set(item)
+      .where(and(eq(whyUsItems.id, id), eq(whyUsItems.tenantId, tenantId)))
+      .returning();
+    return row || undefined;
+  }
+
+  async deleteWhyUsItem(id: string, tenantId: string): Promise<void> {
+    await db.delete(whyUsItems).where(and(eq(whyUsItems.id, id), eq(whyUsItems.tenantId, tenantId)));
+  }
+
+  // ============================================================
+  // ABOUT VALUES
+  // ============================================================
+  async getAboutValues(tenantId: string): Promise<AboutValue[]> {
+    return db.select().from(aboutValues)
+      .where(eq(aboutValues.tenantId, tenantId))
+      .orderBy(asc(aboutValues.displayOrder));
+  }
+
+  async createAboutValue(v: InsertAboutValue): Promise<AboutValue> {
+    const [row] = await db.insert(aboutValues).values(v).returning();
+    return row;
+  }
+
+  async updateAboutValue(id: string, tenantId: string, v: Partial<InsertAboutValue>): Promise<AboutValue | undefined> {
+    const [row] = await db.update(aboutValues)
+      .set(v)
+      .where(and(eq(aboutValues.id, id), eq(aboutValues.tenantId, tenantId)))
+      .returning();
+    return row || undefined;
+  }
+
+  async deleteAboutValue(id: string, tenantId: string): Promise<void> {
+    await db.delete(aboutValues).where(and(eq(aboutValues.id, id), eq(aboutValues.tenantId, tenantId)));
+  }
+
+  // ============================================================
+  // ABOUT TIMELINE
+  // ============================================================
+  async getAboutTimeline(tenantId: string): Promise<AboutTimeline[]> {
+    return db.select().from(aboutTimeline)
+      .where(eq(aboutTimeline.tenantId, tenantId))
+      .orderBy(asc(aboutTimeline.displayOrder));
+  }
+
+  async createAboutTimelineItem(item: InsertAboutTimeline): Promise<AboutTimeline> {
+    const [row] = await db.insert(aboutTimeline).values(item).returning();
+    return row;
+  }
+
+  async updateAboutTimelineItem(id: string, tenantId: string, item: Partial<InsertAboutTimeline>): Promise<AboutTimeline | undefined> {
+    const [row] = await db.update(aboutTimeline)
+      .set(item)
+      .where(and(eq(aboutTimeline.id, id), eq(aboutTimeline.tenantId, tenantId)))
+      .returning();
+    return row || undefined;
+  }
+
+  async deleteAboutTimelineItem(id: string, tenantId: string): Promise<void> {
+    await db.delete(aboutTimeline).where(and(eq(aboutTimeline.id, id), eq(aboutTimeline.tenantId, tenantId)));
+  }
+
+  // ============================================================
+  // SITE STATS
+  // ============================================================
+  async getSiteStats(tenantId: string): Promise<SiteStat[]> {
+    return db.select().from(siteStats)
+      .where(eq(siteStats.tenantId, tenantId))
+      .orderBy(asc(siteStats.displayOrder));
+  }
+
+  async createSiteStat(stat: InsertSiteStat): Promise<SiteStat> {
+    const [row] = await db.insert(siteStats).values(stat).returning();
+    return row;
+  }
+
+  async updateSiteStat(id: string, tenantId: string, stat: Partial<InsertSiteStat>): Promise<SiteStat | undefined> {
+    const [row] = await db.update(siteStats)
+      .set(stat)
+      .where(and(eq(siteStats.id, id), eq(siteStats.tenantId, tenantId)))
+      .returning();
+    return row || undefined;
+  }
+
+  async deleteSiteStat(id: string, tenantId: string): Promise<void> {
+    await db.delete(siteStats).where(and(eq(siteStats.id, id), eq(siteStats.tenantId, tenantId)));
   }
 }
 

@@ -41,6 +41,12 @@ import WebsiteBlog from "@/pages/website/blog";
 import WebsiteLeads from "@/pages/website/leads";
 import WebsiteClients from "@/pages/website/clients";
 import WebsiteRedirects from "@/pages/website/redirects";
+import WebsiteBranding from "@/pages/website/branding";
+import WebsiteHomeContent from "@/pages/website/home-content";
+import WebsiteAboutContent from "@/pages/website/about-content";
+import WebsiteTestimonials from "@/pages/website/testimonials";
+import WebsiteProcessSteps from "@/pages/website/process-steps";
+import WebsiteWhyUs from "@/pages/website/why-us";
 import Marketing from "@/pages/marketing";
 import { useMarketingTracking } from "@/hooks/use-marketing-tracking";
 
@@ -133,6 +139,12 @@ function Router() {
       <Route path="/inventory"><AdminRoute><Inventory /></AdminRoute></Route>
 
       {/* CMS website routes */}
+      <Route path="/website/branding"><AdminRoute><WebsiteBranding /></AdminRoute></Route>
+      <Route path="/website/home-content"><AdminRoute><WebsiteHomeContent /></AdminRoute></Route>
+      <Route path="/website/about-content"><AdminRoute><WebsiteAboutContent /></AdminRoute></Route>
+      <Route path="/website/testimonials"><AdminRoute><WebsiteTestimonials /></AdminRoute></Route>
+      <Route path="/website/process-steps"><AdminRoute><WebsiteProcessSteps /></AdminRoute></Route>
+      <Route path="/website/why-us"><AdminRoute><WebsiteWhyUs /></AdminRoute></Route>
       <Route path="/website/services"><AdminRoute><WebsiteServices /></AdminRoute></Route>
       <Route path="/website/projects"><AdminRoute><WebsiteProjects /></AdminRoute></Route>
       <Route path="/website/blog"><AdminRoute><WebsiteBlog /></AdminRoute></Route>

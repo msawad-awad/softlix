@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { Menu, X, Globe, ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
@@ -28,6 +29,17 @@ export function PublicNavbar({ lang = "ar", onLangChange }: NavbarProps) {
   const [location] = useLocation();
   const isAr = lang === "ar";
 
+  const { data: settings } = useQuery<any>({ queryKey: ["/api/public/site-settings"] });
+  const siteName = isAr ? (settings?.siteNameAr || "Softlix") : (settings?.siteNameEn || "Softlix");
+  const phone = settings?.contactPhone || "0537861534";
+  const email = settings?.contactEmail || "info@softlix.net";
+  const workingHoursAr = settings?.contactHoursAr || "السبت - الخميس | 9:00 ص - 6:00 م";
+  const workingHoursEn = settings?.contactHoursEn || "Sat - Thu | 9:00 AM - 6:00 PM";
+  const addressAr = settings?.contactAddressAr || "";
+  const addressEn = settings?.contactAddressEn || "";
+  const cityAr = addressAr || "جدة، المملكة العربية السعودية";
+  const cityEn = addressEn || "Jeddah, Saudi Arabia";
+
   const navLinks = [
     { label: isAr ? "الرئيسية" : "Home", href: "/" },
     { label: isAr ? "من نحن" : "About", href: "/about" },
@@ -42,12 +54,12 @@ export function PublicNavbar({ lang = "ar", onLangChange }: NavbarProps) {
       <div style={{ background: "#0f172a", color: "#cbd5e1", fontSize: 14, padding: "10px 0" }}>
         <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
           <div style={{ display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
-            <span>📍 {isAr ? "جدة، المملكة العربية السعودية" : "Jeddah, Saudi Arabia"}</span>
-            <span>⏰ {isAr ? "السبت - الخميس | 9:00 ص - 6:00 م" : "Sat - Thu | 9:00 AM - 6:00 PM"}</span>
+            <span>📍 {isAr ? cityAr : cityEn}</span>
+            <span>⏰ {isAr ? workingHoursAr : workingHoursEn}</span>
           </div>
           <div style={{ display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
-            <a href="tel:+966537861534" style={{ color: "#cbd5e1", textDecoration: "none" }}>📞 0537861534</a>
-            <a href="mailto:info@softlix.net" style={{ color: "#cbd5e1", textDecoration: "none" }}>✉️ info@softlix.net</a>
+            <a href={`tel:${phone}`} style={{ color: "#cbd5e1", textDecoration: "none" }}>📞 {phone}</a>
+            <a href={`mailto:${email}`} style={{ color: "#cbd5e1", textDecoration: "none" }}>✉️ {email}</a>
             <button
               onClick={() => onLangChange?.(isAr ? "en" : "ar")}
               style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 6, color: "#cbd5e1", cursor: "pointer", padding: "2px 10px", fontSize: 13, fontFamily: "inherit" }}
@@ -69,7 +81,7 @@ export function PublicNavbar({ lang = "ar", onLangChange }: NavbarProps) {
               <div style={{ position: "absolute", width: 22, height: 6, top: 10, right: 8, background: "rgba(255,255,255,0.85)", borderRadius: 99, transform: "rotate(-35deg)" }} />
               <div style={{ position: "absolute", width: 18, height: 6, bottom: 10, left: 8, background: "rgba(255,255,255,0.85)", borderRadius: 99, transform: "rotate(-35deg)" }} />
             </div>
-            <span>Softlix</span>
+            <span>{siteName}</span>
           </Link>
 
           {/* Desktop Nav */}

@@ -1,6 +1,8 @@
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import { PublicNavbar } from "@/components/public/navbar";
 import { PublicFooter } from "@/components/public/footer";
+import { useSEO } from "@/hooks/use-seo";
 
 interface AboutProps {
   lang?: "ar" | "en";
@@ -74,6 +76,36 @@ const miniCard: React.CSSProperties = {
 
 export default function PublicAbout({ lang = "ar", onLangChange }: AboutProps) {
   const isAr = lang === "ar";
+  useSEO({
+    title: isAr ? "من نحن" : "About Us",
+    description: isAr
+      ? "Softlix - شركة تقنية متخصصة في بناء التطبيقات والمنصات الرقمية وتقديم حلول الأعمال للسوق السعودي والخليجي."
+      : "Softlix - A tech company specializing in building apps, digital platforms and business solutions for the Saudi and Gulf market.",
+  });
+
+  const { data: pageSections } = useQuery<any>({ queryKey: ["/api/public/page-sections/about"] });
+  const { data: aboutValuesData } = useQuery<any[]>({ queryKey: ["/api/public/about-values"] });
+  const { data: aboutTimelineData } = useQuery<any[]>({ queryKey: ["/api/public/about-timeline"] });
+
+  const activeValues = (aboutValuesData && aboutValuesData.length > 0)
+    ? aboutValuesData.sort((a: any, b: any) => a.displayOrder - b.displayOrder).map((v: any, i: number) => ({
+        num: String(i + 1).padStart(2, "0"),
+        titleAr: v.titleAr,
+        titleEn: v.titleEn,
+        descAr: v.descriptionAr,
+        descEn: v.descriptionEn,
+      }))
+    : VALUES;
+
+  const activeTimeline = (aboutTimelineData && aboutTimelineData.length > 0)
+    ? aboutTimelineData.sort((a: any, b: any) => a.displayOrder - b.displayOrder).map((t: any) => ({
+        year: t.year,
+        titleAr: t.titleAr,
+        titleEn: t.titleEn,
+        descAr: t.descriptionAr,
+        descEn: t.descriptionEn,
+      }))
+    : TIMELINE;
 
   return (
     <div
@@ -262,7 +294,7 @@ export default function PublicAbout({ lang = "ar", onLangChange }: AboutProps) {
             <p style={{ margin: 0, color: "#5b6475", fontSize: "1rem" }}>{isAr ? "هذه المبادئ هي التي تجعل شكل Softlix أقرب للشركات التقنية العالمية لا لشركات الخدمات التقليدية." : "These principles make Softlix closer in form to global tech companies rather than traditional service companies."}</p>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 18 }} className="about-3col-grid">
-            {VALUES.map((v, i) => (
+            {activeValues.map((v, i) => (
               <article key={i} style={{ background: "rgba(255,255,255,0.78)", border: "1px solid rgba(15,23,42,0.07)", backdropFilter: "blur(12px)", boxShadow: "0 14px 40px rgba(15,23,42,0.06)", borderRadius: 24, padding: 24 }}>
                 <div style={{ width: 54, height: 54, display: "inline-grid", placeItems: "center", borderRadius: 18, marginBottom: 16, background: "linear-gradient(135deg, rgba(229,146,105,.16), rgba(130,183,53,.18))", color: "#0f172a", fontSize: "1.25rem", fontWeight: 900 }}>{v.num}</div>
                 <h3 style={{ margin: "0 0 8px", fontSize: "1.12rem", fontWeight: 900 }}>{isAr ? v.titleAr : v.titleEn}</h3>
@@ -281,7 +313,7 @@ export default function PublicAbout({ lang = "ar", onLangChange }: AboutProps) {
             <p style={{ margin: 0, color: "#5b6475", fontSize: "1rem" }}>{isAr ? "من فكرة ناشئة إلى شركة تبني حلولاً رقمية متقدمة للشركات والمؤسسات." : "From a startup idea to a company building advanced digital solutions for businesses and institutions."}</p>
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 18 }} className="about-4col-grid">
-            {TIMELINE.map((t, i) => (
+            {activeTimeline.map((t, i) => (
               <article key={i} style={{ background: "rgba(255,255,255,0.78)", border: "1px solid rgba(15,23,42,0.07)", backdropFilter: "blur(12px)", boxShadow: "0 14px 40px rgba(15,23,42,0.06)", borderRadius: 24, padding: 24 }}>
                 <span style={{ display: "inline-flex", padding: "8px 14px", borderRadius: 999, marginBottom: 14, background: "rgba(15,23,42,.05)", color: "#1e293b", fontSize: ".88rem", fontWeight: 900 }}>{t.year}</span>
                 <h3 style={{ margin: "0 0 8px", fontSize: "1.12rem", fontWeight: 900 }}>{isAr ? t.titleAr : t.titleEn}</h3>

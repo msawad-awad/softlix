@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { PublicNavbar } from "@/components/public/navbar";
+import { useSEO } from "@/hooks/use-seo";
 import { PublicFooter } from "@/components/public/footer";
 import type { Service, Project } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
@@ -71,13 +72,71 @@ interface LeadForm {
 
 export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
   const isAr = lang === "ar";
+  useSEO({
+    title: isAr ? "شريكك التقني المتكامل" : "Your Complete Tech Partner",
+    description: isAr
+      ? "Softlix - شريكك التقني المتكامل في برمجة التطبيقات والتسويق الرقمي. نحوّل أفكارك إلى منتجات رقمية ناجحة."
+      : "Softlix - Your complete tech partner in app development and digital marketing. We turn your ideas into successful digital products.",
+  });
   const { toast } = useToast();
 
   const { data: services } = useQuery<Service[]>({ queryKey: ["/api/public/services", TENANT_ID] });
   const { data: projects } = useQuery<Project[]>({ queryKey: ["/api/public/projects", TENANT_ID] });
   const { data: clients } = useQuery<any[]>({ queryKey: ["/api/public/clients", TENANT_ID] });
+  const { data: siteStatsData } = useQuery<any[]>({ queryKey: ["/api/public/site-stats"] });
+  const { data: processStepsData } = useQuery<any[]>({ queryKey: ["/api/public/process-steps"] });
+  const { data: testimonialsData } = useQuery<any[]>({ queryKey: ["/api/public/testimonials"] });
+  const { data: whyUsData } = useQuery<any[]>({ queryKey: ["/api/public/why-us"] });
+  const { data: pageSections } = useQuery<any>({ queryKey: ["/api/public/page-sections/home"] });
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<LeadForm>();
+
+  const heroTitle = isAr
+    ? (pageSections?.hero_title?.contentAr || "نطوّر مواقع وتطبيقات وأنظمة CRM تساعدك على النمو بسرعة وثقة")
+    : (pageSections?.hero_title?.contentEn || "We Build Websites, Apps & CRM Systems to Help You Grow Fast");
+  const heroSubtitle = isAr
+    ? (pageSections?.hero_subtitle?.contentAr || "نصمم ونبني حلولاً رقمية حديثة تشمل المواقع الاحترافية، المتاجر الإلكترونية، تطبيقات الجوال، وأنظمة إدارة العملاء والعمليات.")
+    : (pageSections?.hero_subtitle?.contentEn || "We design and build modern digital solutions including professional websites, e-commerce stores, mobile apps, and customer management systems.");
+  const heroBadge = isAr
+    ? (pageSections?.hero_badge?.contentAr || "حلول رقمية متكاملة للشركات ورواد الأعمال")
+    : (pageSections?.hero_badge?.contentEn || "Integrated Digital Solutions for Businesses & Entrepreneurs");
+
+  const activeStats = (siteStatsData && siteStatsData.length > 0)
+    ? siteStatsData.map((s: any) => ({ value: s.value, labelAr: s.labelAr, labelEn: s.labelEn }))
+    : STATS;
+
+  const activeProcess = (processStepsData && processStepsData.length > 0)
+    ? processStepsData.sort((a: any, b: any) => a.displayOrder - b.displayOrder).map((s: any, i: number) => ({
+        num: String(s.stepNumber ?? i + 1).padStart(2, "0"),
+        titleAr: s.titleAr,
+        titleEn: s.titleEn,
+        descAr: s.descriptionAr,
+        descEn: s.descriptionEn,
+      }))
+    : PROCESS;
+
+  const activeTestimonials = (testimonialsData && testimonialsData.length > 0)
+    ? testimonialsData.sort((a: any, b: any) => a.displayOrder - b.displayOrder).map((t: any) => ({
+        stars: t.rating ?? 5,
+        quoteAr: t.quoteAr,
+        quoteEn: t.quoteEn,
+        nameAr: t.nameAr,
+        nameEn: t.nameEn,
+        roleAr: t.roleAr,
+        roleEn: t.roleEn,
+        initial: (t.nameAr || t.nameEn || "؟").charAt(0),
+      }))
+    : TESTIMONIALS;
+
+  const activeFeatures = (whyUsData && whyUsData.length > 0)
+    ? whyUsData.sort((a: any, b: any) => a.displayOrder - b.displayOrder).map((f: any, i: number) => ({
+        num: String(i + 1).padStart(2, "0"),
+        titleAr: f.titleAr,
+        titleEn: f.titleEn,
+        descAr: f.descriptionAr,
+        descEn: f.descriptionEn,
+      }))
+    : FEATURES;
 
   const leadMutation = useMutation({
     mutationFn: (data: LeadForm) =>
@@ -117,17 +176,13 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
             {/* Left: Text */}
             <div>
               <span style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#e0f2fe", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 700, marginBottom: 18 }}>
-                {isAr ? "حلول رقمية متكاملة للشركات ورواد الأعمال" : "Integrated Digital Solutions for Businesses & Entrepreneurs"}
+                {heroBadge}
               </span>
               <h1 style={{ margin: "0 0 18px", fontSize: "clamp(34px, 5vw, 58px)", lineHeight: 1.15, letterSpacing: -0.5, color: "#0f172a", fontWeight: 800 }}>
-                {isAr
-                  ? "نطوّر مواقع وتطبيقات وأنظمة CRM تساعدك على النمو بسرعة وثقة"
-                  : "We Build Websites, Apps & CRM Systems to Help You Grow Fast"}
+                {heroTitle}
               </h1>
               <p style={{ margin: 0, fontSize: 18, color: "#64748b", maxWidth: 680 }}>
-                {isAr
-                  ? "نصمم ونبني حلولاً رقمية حديثة تشمل المواقع الاحترافية، المتاجر الإلكترونية، تطبيقات الجوال، وأنظمة إدارة العملاء والعمليات."
-                  : "We design and build modern digital solutions including professional websites, e-commerce stores, mobile apps, and customer management systems."}
+                {heroSubtitle}
               </p>
               <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", marginTop: 28 }}>
                 <a href="#contact" style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 24px", fontSize: 15, fontWeight: 700, cursor: "pointer", background: "linear-gradient(135deg,#2563eb,#38bdf8)", color: "#fff", boxShadow: "0 12px 30px rgba(37,99,235,0.25)", textDecoration: "none", border: 0 }} data-testid="btn-hero-contact">
@@ -140,7 +195,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
 
               {/* Stats */}
               <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginTop: 34 }} className="stats-grid-responsive">
-                {STATS.map((s, i) => (
+                {activeStats.map((s, i) => (
                   <div key={i} style={{ background: "rgba(255,255,255,0.88)", border: "1px solid rgba(226,232,240,0.9)", borderRadius: 18, padding: 18, boxShadow: "0 20px 50px rgba(15,23,42,0.08)" }}>
                     <strong style={{ display: "block", fontSize: 28, color: "#0f172a", lineHeight: 1.1, marginBottom: 6 }}>{s.value}</strong>
                     <span style={{ color: "#64748b", fontSize: 14, fontWeight: 600 }}>{isAr ? s.labelAr : s.labelEn}</span>
@@ -341,7 +396,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 22 }} className="features-grid-responsive">
-            {FEATURES.map((f, i) => (
+            {activeFeatures.map((f, i) => (
               <article key={i} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 22, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 28, transition: "0.3s ease" }}
                 onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-6px)")}
                 onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}>
@@ -383,7 +438,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20 }} className="process-grid-responsive">
-            {PROCESS.map((step, i) => (
+            {activeProcess.map((step, i) => (
               <article key={i} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 22, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 24, position: "relative", overflow: "hidden" }}>
                 <div style={{ fontSize: 44, fontWeight: 900, lineHeight: 1, color: "rgba(37,99,235,0.12)", marginBottom: 10 }}>{step.num}</div>
                 <h3 style={{ margin: "0 0 10px", fontSize: 21, fontWeight: 800 }}>{isAr ? step.titleAr : step.titleEn}</h3>
@@ -407,7 +462,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 22 }} className="testimonials-grid-responsive">
-            {TESTIMONIALS.map((t, i) => (
+            {activeTestimonials.map((t, i) => (
               <article key={i} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 22, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 28, transition: "0.3s ease" }}
                 onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-6px)")}
                 onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}>

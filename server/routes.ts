@@ -1025,6 +1025,292 @@ export async function registerRoutes(
     }
   });
 
+  // =========================================================================
+  // SITE SETTINGS - Branding (Public + Protected)
+  // =========================================================================
+
+  app.get("/api/public/site-settings", async (req, res) => {
+    try {
+      const tenantId = await resolvePublicTenantId(req);
+      const s = await storage.getSiteSettings(tenantId);
+      res.json(s || {});
+    } catch { res.json({}); }
+  });
+
+  app.get("/api/cms/site-settings", requireAuth, async (req, res) => {
+    try {
+      const s = await storage.getSiteSettings(req.user!.tenantId);
+      res.json(s || {});
+    } catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  app.put("/api/cms/site-settings", requireAuth, async (req, res) => {
+    try {
+      const s = await storage.upsertSiteSettings(req.user!.tenantId, req.body);
+      res.json(s);
+    } catch (e) { console.error(e); res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  // =========================================================================
+  // PAGE SECTIONS (Public + Protected)
+  // =========================================================================
+
+  app.get("/api/public/page-sections/:page", async (req, res) => {
+    try {
+      const tenantId = await resolvePublicTenantId(req);
+      const sections = await storage.getPageSections(tenantId, req.params.page);
+      const map: Record<string, any> = {};
+      sections.forEach(s => { map[s.sectionKey] = s; });
+      res.json(map);
+    } catch { res.json({}); }
+  });
+
+  app.get("/api/cms/page-sections/:page", requireAuth, async (req, res) => {
+    try {
+      const sections = await storage.getPageSections(req.user!.tenantId, req.params.page);
+      const map: Record<string, any> = {};
+      sections.forEach(s => { map[s.sectionKey] = s; });
+      res.json(map);
+    } catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  app.put("/api/cms/page-sections/:page/:key", requireAuth, async (req, res) => {
+    try {
+      const { contentAr, contentEn, isVisible } = req.body;
+      const s = await storage.upsertPageSection(req.user!.tenantId, req.params.page, req.params.key, { contentAr, contentEn, isVisible });
+      res.json(s);
+    } catch (e) { console.error(e); res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  // =========================================================================
+  // TESTIMONIALS (Public + CRUD)
+  // =========================================================================
+
+  app.get("/api/public/testimonials", async (req, res) => {
+    try {
+      const tenantId = await resolvePublicTenantId(req);
+      const items = await storage.getTestimonials(tenantId);
+      res.json(items.filter(t => t.isActive));
+    } catch { res.json([]); }
+  });
+
+  app.get("/api/cms/testimonials", requireAuth, async (req, res) => {
+    try { res.json(await storage.getTestimonials(req.user!.tenantId)); }
+    catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  app.post("/api/cms/testimonials", requireAuth, async (req, res) => {
+    try {
+      const t = await storage.createTestimonial({ ...req.body, tenantId: req.user!.tenantId });
+      res.status(201).json(t);
+    } catch (e) { console.error(e); res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  app.patch("/api/cms/testimonials/:id", requireAuth, async (req, res) => {
+    try {
+      const t = await storage.updateTestimonial(req.params.id, req.user!.tenantId, req.body);
+      if (!t) return res.status(404).json({ message: "Not found" });
+      res.json(t);
+    } catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  app.delete("/api/cms/testimonials/:id", requireAuth, async (req, res) => {
+    try {
+      await storage.deleteTestimonial(req.params.id, req.user!.tenantId);
+      res.json({ message: "Deleted" });
+    } catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  // =========================================================================
+  // PROCESS STEPS (Public + CRUD)
+  // =========================================================================
+
+  app.get("/api/public/process-steps", async (req, res) => {
+    try {
+      const tenantId = await resolvePublicTenantId(req);
+      res.json(await storage.getProcessSteps(tenantId));
+    } catch { res.json([]); }
+  });
+
+  app.get("/api/cms/process-steps", requireAuth, async (req, res) => {
+    try { res.json(await storage.getProcessSteps(req.user!.tenantId)); }
+    catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  app.post("/api/cms/process-steps", requireAuth, async (req, res) => {
+    try {
+      const s = await storage.createProcessStep({ ...req.body, tenantId: req.user!.tenantId });
+      res.status(201).json(s);
+    } catch (e) { console.error(e); res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  app.patch("/api/cms/process-steps/:id", requireAuth, async (req, res) => {
+    try {
+      const s = await storage.updateProcessStep(req.params.id, req.user!.tenantId, req.body);
+      if (!s) return res.status(404).json({ message: "Not found" });
+      res.json(s);
+    } catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  app.delete("/api/cms/process-steps/:id", requireAuth, async (req, res) => {
+    try {
+      await storage.deleteProcessStep(req.params.id, req.user!.tenantId);
+      res.json({ message: "Deleted" });
+    } catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  // =========================================================================
+  // WHY US ITEMS (Public + CRUD)
+  // =========================================================================
+
+  app.get("/api/public/why-us", async (req, res) => {
+    try {
+      const tenantId = await resolvePublicTenantId(req);
+      res.json(await storage.getWhyUsItems(tenantId));
+    } catch { res.json([]); }
+  });
+
+  app.get("/api/cms/why-us", requireAuth, async (req, res) => {
+    try { res.json(await storage.getWhyUsItems(req.user!.tenantId)); }
+    catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  app.post("/api/cms/why-us", requireAuth, async (req, res) => {
+    try {
+      const item = await storage.createWhyUsItem({ ...req.body, tenantId: req.user!.tenantId });
+      res.status(201).json(item);
+    } catch (e) { console.error(e); res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  app.patch("/api/cms/why-us/:id", requireAuth, async (req, res) => {
+    try {
+      const item = await storage.updateWhyUsItem(req.params.id, req.user!.tenantId, req.body);
+      if (!item) return res.status(404).json({ message: "Not found" });
+      res.json(item);
+    } catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  app.delete("/api/cms/why-us/:id", requireAuth, async (req, res) => {
+    try {
+      await storage.deleteWhyUsItem(req.params.id, req.user!.tenantId);
+      res.json({ message: "Deleted" });
+    } catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  // =========================================================================
+  // ABOUT VALUES (Public + CRUD)
+  // =========================================================================
+
+  app.get("/api/public/about-values", async (req, res) => {
+    try {
+      const tenantId = await resolvePublicTenantId(req);
+      res.json(await storage.getAboutValues(tenantId));
+    } catch { res.json([]); }
+  });
+
+  app.get("/api/cms/about-values", requireAuth, async (req, res) => {
+    try { res.json(await storage.getAboutValues(req.user!.tenantId)); }
+    catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  app.post("/api/cms/about-values", requireAuth, async (req, res) => {
+    try {
+      const v = await storage.createAboutValue({ ...req.body, tenantId: req.user!.tenantId });
+      res.status(201).json(v);
+    } catch (e) { console.error(e); res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  app.patch("/api/cms/about-values/:id", requireAuth, async (req, res) => {
+    try {
+      const v = await storage.updateAboutValue(req.params.id, req.user!.tenantId, req.body);
+      if (!v) return res.status(404).json({ message: "Not found" });
+      res.json(v);
+    } catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  app.delete("/api/cms/about-values/:id", requireAuth, async (req, res) => {
+    try {
+      await storage.deleteAboutValue(req.params.id, req.user!.tenantId);
+      res.json({ message: "Deleted" });
+    } catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  // =========================================================================
+  // ABOUT TIMELINE (Public + CRUD)
+  // =========================================================================
+
+  app.get("/api/public/about-timeline", async (req, res) => {
+    try {
+      const tenantId = await resolvePublicTenantId(req);
+      res.json(await storage.getAboutTimeline(tenantId));
+    } catch { res.json([]); }
+  });
+
+  app.get("/api/cms/about-timeline", requireAuth, async (req, res) => {
+    try { res.json(await storage.getAboutTimeline(req.user!.tenantId)); }
+    catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  app.post("/api/cms/about-timeline", requireAuth, async (req, res) => {
+    try {
+      const item = await storage.createAboutTimelineItem({ ...req.body, tenantId: req.user!.tenantId });
+      res.status(201).json(item);
+    } catch (e) { console.error(e); res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  app.patch("/api/cms/about-timeline/:id", requireAuth, async (req, res) => {
+    try {
+      const item = await storage.updateAboutTimelineItem(req.params.id, req.user!.tenantId, req.body);
+      if (!item) return res.status(404).json({ message: "Not found" });
+      res.json(item);
+    } catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  app.delete("/api/cms/about-timeline/:id", requireAuth, async (req, res) => {
+    try {
+      await storage.deleteAboutTimelineItem(req.params.id, req.user!.tenantId);
+      res.json({ message: "Deleted" });
+    } catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  // =========================================================================
+  // SITE STATS (Public + CRUD)
+  // =========================================================================
+
+  app.get("/api/public/site-stats", async (req, res) => {
+    try {
+      const tenantId = await resolvePublicTenantId(req);
+      res.json(await storage.getSiteStats(tenantId));
+    } catch { res.json([]); }
+  });
+
+  app.get("/api/cms/site-stats", requireAuth, async (req, res) => {
+    try { res.json(await storage.getSiteStats(req.user!.tenantId)); }
+    catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  app.post("/api/cms/site-stats", requireAuth, async (req, res) => {
+    try {
+      const s = await storage.createSiteStat({ ...req.body, tenantId: req.user!.tenantId });
+      res.status(201).json(s);
+    } catch (e) { console.error(e); res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  app.patch("/api/cms/site-stats/:id", requireAuth, async (req, res) => {
+    try {
+      const s = await storage.updateSiteStat(req.params.id, req.user!.tenantId, req.body);
+      if (!s) return res.status(404).json({ message: "Not found" });
+      res.json(s);
+    } catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
+  app.delete("/api/cms/site-stats/:id", requireAuth, async (req, res) => {
+    try {
+      await storage.deleteSiteStat(req.params.id, req.user!.tenantId);
+      res.json({ message: "Deleted" });
+    } catch { res.status(500).json({ message: "Internal server error" }); }
+  });
+
   // Sitemap.xml - dynamic generation
   app.get("/sitemap.xml", async (req, res) => {
     try {

@@ -5,6 +5,7 @@ import { PublicNavbar } from "@/components/public/navbar";
 import { PublicFooter } from "@/components/public/footer";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { useSEO } from "@/hooks/use-seo";
 import type { Service, Project } from "@shared/schema";
 
 const TENANT_ID = (import.meta.env.VITE_TENANT_ID as string) || "";
@@ -385,6 +386,17 @@ export default function ServiceDetail({ lang = "ar", onLangChange }: ServiceDeta
   const relatedProjects = (allProjects || [])
     .filter(p => p.category === relatedCategory || p.category === slug)
     .slice(0, 3);
+
+  useSEO({
+    title: isAr
+      ? (service?.title || service?.seoTitle || slug)
+      : ((service as any)?.titleEn || service?.title || service?.seoTitle || slug),
+    description: isAr
+      ? (service?.shortDescription || service?.seoDescription || "")
+      : ((service as any)?.shortDescriptionEn || service?.shortDescription || ""),
+    image: service?.imageUrl || undefined,
+    type: "article",
+  });
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<LeadForm>();
 

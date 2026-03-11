@@ -363,6 +363,180 @@ export type InsertFormLead = z.infer<typeof insertFormLeadSchema>;
 export type FormLead = typeof formLeads.$inferSelect;
 
 // ============================================================================
+// WEBSITE CMS - SITE SETTINGS (Branding + Contact + Social)
+// ============================================================================
+export const siteSettings = pgTable("site_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull().unique(),
+  siteNameAr: text("site_name_ar").default("softlix"),
+  siteNameEn: text("site_name_en").default("softlix"),
+  siteDescAr: text("site_desc_ar"),
+  siteDescEn: text("site_desc_en"),
+  logoUrl: text("logo_url"),
+  faviconUrl: text("favicon_url"),
+  colorPrimary: text("color_primary").default("#e59269"),
+  colorSecondary: text("color_secondary").default("#82b735"),
+  colorAccent: text("color_accent").default("#0f172a"),
+  colorBg: text("color_bg").default("#f8fafc"),
+  colorText: text("color_text").default("#0f172a"),
+  fontFamily: text("font_family").default("Cairo"),
+  contactPhone: text("contact_phone"),
+  contactEmail: text("contact_email"),
+  contactAddressAr: text("contact_address_ar"),
+  contactAddressEn: text("contact_address_en"),
+  contactHoursAr: text("contact_hours_ar"),
+  contactHoursEn: text("contact_hours_en"),
+  socialX: text("social_x"),
+  socialInstagram: text("social_instagram"),
+  socialLinkedIn: text("social_linked_in"),
+  socialWhatsapp: text("social_whatsapp"),
+  socialFacebook: text("social_facebook"),
+  socialYoutube: text("social_youtube"),
+  footerDescAr: text("footer_desc_ar"),
+  footerDescEn: text("footer_desc_en"),
+  copyrightAr: text("copyright_ar"),
+  copyrightEn: text("copyright_en"),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertSiteSettingsSchema = createInsertSchema(siteSettings).omit({ id: true, updatedAt: true });
+export type InsertSiteSettings = z.infer<typeof insertSiteSettingsSchema>;
+export type SiteSettings = typeof siteSettings.$inferSelect;
+
+// ============================================================================
+// WEBSITE CMS - PAGE SECTIONS (Per-page editable content)
+// ============================================================================
+export const pageSections = pgTable("page_sections", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  page: text("page").notNull(),
+  sectionKey: text("section_key").notNull(),
+  contentAr: jsonb("content_ar").default({}),
+  contentEn: jsonb("content_en").default({}),
+  isVisible: boolean("is_visible").default(true),
+  displayOrder: integer("display_order").default(0),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertPageSectionSchema = createInsertSchema(pageSections).omit({ id: true, updatedAt: true });
+export type InsertPageSection = z.infer<typeof insertPageSectionSchema>;
+export type PageSection = typeof pageSections.$inferSelect;
+
+// ============================================================================
+// WEBSITE CMS - TESTIMONIALS
+// ============================================================================
+export const testimonials = pgTable("testimonials", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  nameAr: text("name_ar").notNull(),
+  nameEn: text("name_en"),
+  roleAr: text("role_ar"),
+  roleEn: text("role_en"),
+  textAr: text("text_ar").notNull(),
+  textEn: text("text_en"),
+  avatarUrl: text("avatar_url"),
+  stars: integer("stars").default(5),
+  isActive: boolean("is_active").default(true),
+  displayOrder: integer("display_order").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertTestimonialSchema = createInsertSchema(testimonials).omit({ id: true, createdAt: true });
+export type InsertTestimonial = z.infer<typeof insertTestimonialSchema>;
+export type Testimonial = typeof testimonials.$inferSelect;
+
+// ============================================================================
+// WEBSITE CMS - PROCESS STEPS
+// ============================================================================
+export const processSteps = pgTable("process_steps", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  stepNumber: integer("step_number").notNull(),
+  titleAr: text("title_ar").notNull(),
+  titleEn: text("title_en"),
+  descAr: text("desc_ar"),
+  descEn: text("desc_en"),
+  icon: text("icon"),
+  isActive: boolean("is_active").default(true),
+  displayOrder: integer("display_order").default(0),
+});
+
+export const insertProcessStepSchema = createInsertSchema(processSteps).omit({ id: true });
+export type InsertProcessStep = z.infer<typeof insertProcessStepSchema>;
+export type ProcessStep = typeof processSteps.$inferSelect;
+
+// ============================================================================
+// WEBSITE CMS - WHY US ITEMS
+// ============================================================================
+export const whyUsItems = pgTable("why_us_items", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  icon: text("icon").default("✓"),
+  titleAr: text("title_ar").notNull(),
+  titleEn: text("title_en"),
+  descAr: text("desc_ar"),
+  descEn: text("desc_en"),
+  isActive: boolean("is_active").default(true),
+  displayOrder: integer("display_order").default(0),
+});
+
+export const insertWhyUsItemSchema = createInsertSchema(whyUsItems).omit({ id: true });
+export type InsertWhyUsItem = z.infer<typeof insertWhyUsItemSchema>;
+export type WhyUsItem = typeof whyUsItems.$inferSelect;
+
+// ============================================================================
+// WEBSITE CMS - ABOUT VALUES
+// ============================================================================
+export const aboutValues = pgTable("about_values", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  icon: text("icon").default("⭐"),
+  titleAr: text("title_ar").notNull(),
+  titleEn: text("title_en"),
+  descAr: text("desc_ar"),
+  descEn: text("desc_en"),
+  displayOrder: integer("display_order").default(0),
+});
+
+export const insertAboutValueSchema = createInsertSchema(aboutValues).omit({ id: true });
+export type InsertAboutValue = z.infer<typeof insertAboutValueSchema>;
+export type AboutValue = typeof aboutValues.$inferSelect;
+
+// ============================================================================
+// WEBSITE CMS - ABOUT TIMELINE
+// ============================================================================
+export const aboutTimeline = pgTable("about_timeline", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  year: text("year").notNull(),
+  titleAr: text("title_ar").notNull(),
+  titleEn: text("title_en"),
+  descAr: text("desc_ar"),
+  descEn: text("desc_en"),
+  displayOrder: integer("display_order").default(0),
+});
+
+export const insertAboutTimelineSchema = createInsertSchema(aboutTimeline).omit({ id: true });
+export type InsertAboutTimeline = z.infer<typeof insertAboutTimelineSchema>;
+export type AboutTimeline = typeof aboutTimeline.$inferSelect;
+
+// ============================================================================
+// WEBSITE CMS - STATS (Homepage stats numbers)
+// ============================================================================
+export const siteStats = pgTable("site_stats", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  value: text("value").notNull(),
+  labelAr: text("label_ar").notNull(),
+  labelEn: text("label_en"),
+  displayOrder: integer("display_order").default(0),
+});
+
+export const insertSiteStatSchema = createInsertSchema(siteStats).omit({ id: true });
+export type InsertSiteStat = z.infer<typeof insertSiteStatSchema>;
+export type SiteStat = typeof siteStats.$inferSelect;
+
+// ============================================================================
 // API Response Types
 // ============================================================================
 export type UserWithoutPassword = Omit<User, "passwordHash">;

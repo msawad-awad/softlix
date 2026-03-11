@@ -21,6 +21,12 @@ import {
   Link2,
   Inbox,
   Megaphone,
+  Palette,
+  Home,
+  Info,
+  MessageSquareQuote,
+  ListOrdered,
+  Trophy,
 } from "lucide-react";
 import {
   Sidebar,
@@ -117,6 +123,12 @@ export function AppSidebar() {
 
   const websiteItems = [
     { title: "نظرة عامة", url: "/website", icon: Globe },
+    { title: "البراندينج والإعدادات", url: "/website/branding", icon: Palette },
+    { title: "الصفحة الرئيسية", url: "/website/home-content", icon: Home },
+    { title: "من نحن", url: "/website/about-content", icon: Info },
+    { title: "الشهادات", url: "/website/testimonials", icon: MessageSquareQuote },
+    { title: "خطوات العمل", url: "/website/process-steps", icon: ListOrdered },
+    { title: "لماذا نحن؟", url: "/website/why-us", icon: Trophy },
     { title: "الخدمات", url: "/website/services", icon: Layers },
     { title: "المشاريع", url: "/website/projects", icon: Package },
     { title: "المدونة", url: "/website/blog", icon: BookOpen },

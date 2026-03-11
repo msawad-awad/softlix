@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { Link } from "wouter";
+import { Link, useRoute } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { PublicNavbar } from "@/components/public/navbar";
 import { PublicFooter } from "@/components/public/footer";
+import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { Project } from "@shared/schema";
+import { useSEO } from "@/hooks/use-seo";
 
 const TENANT_ID = (import.meta.env.VITE_TENANT_ID as string) || "";
 
@@ -112,18 +115,209 @@ const glassCard: React.CSSProperties = {
   backdropFilter: "blur(12px)",
 };
 
+function ProjectDetail({ slug, lang = "ar", onLangChange }: { slug: string } & ProjectsProps) {
+  const isAr = lang === "ar";
+  const Arrow = isAr ? ChevronRight : ChevronLeft;
+
+  const { data: project, isLoading } = useQuery<Project>({
+    queryKey: ["/api/public/projects", slug, TENANT_ID],
+    queryFn: async () => {
+      const url = TENANT_ID
+        ? `/api/public/projects/${slug}?tenantId=${TENANT_ID}`
+        : `/api/public/projects/${slug}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Not found");
+      return res.json();
+    },
+  });
+
+  const fallback = DEFAULT_PROJECTS.find(p => p.slug === slug) as any;
+  const proj = (project as any) || fallback;
+
+  useSEO({
+    title: isAr ? (proj?.title || "مشروع") : (proj?.titleEn || proj?.title || "Project"),
+    description: isAr ? (proj?.description || "") : (proj?.descriptionEn || proj?.description || ""),
+    image: proj?.thumbnailUrl || undefined,
+    type: "article",
+  });
+
+  if (isLoading) {
+    return (
+      <div style={{ minHeight: "100vh", fontFamily: "'Cairo', system-ui, sans-serif", background: "#f8fafc" }} dir={isAr ? "rtl" : "ltr"}>
+        <PublicNavbar lang={lang} onLangChange={onLangChange} />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh" }}>
+          <div style={{ width: 44, height: 44, borderRadius: "50%", border: "4px solid #e59269", borderTopColor: "transparent", animation: "spin 0.8s linear infinite" }} />
+        </div>
+        <PublicFooter lang={lang} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+      </div>
+    );
+  }
+
+  if (!proj) {
+    return (
+      <div style={{ minHeight: "100vh", fontFamily: "'Cairo', system-ui, sans-serif", background: "#f8fafc" }} dir={isAr ? "rtl" : "ltr"}>
+        <PublicNavbar lang={lang} onLangChange={onLangChange} />
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "60vh", gap: 20 }}>
+          <div style={{ fontSize: 64 }}>📂</div>
+          <h2 style={{ fontSize: "1.6rem", fontWeight: 900, color: "#0f172a" }}>{isAr ? "المشروع غير موجود" : "Project Not Found"}</h2>
+          <Button asChild variant="outline"><Link href="/projects">{isAr ? "العودة للمشاريع" : "Back to Projects"}</Link></Button>
+        </div>
+        <PublicFooter lang={lang} />
+      </div>
+    );
+  }
+
+  const title = isAr ? proj.title : (proj.titleEn || proj.title);
+  const desc = isAr ? proj.description : (proj.descriptionEn || proj.description);
+  const badge = isAr ? (proj.badge || proj.category) : (proj.badgeEn || proj.badge || proj.category);
+  const tags: string[] = proj.tags || proj.technologies || [];
+  const client = proj.clientName || proj.client || "";
+
+  return (
+    <div style={{ minHeight: "100vh", fontFamily: "'Cairo', system-ui, sans-serif", background: "linear-gradient(180deg, #fff 0%, #f8fafc 100%)", color: "#0f172a" }} dir={isAr ? "rtl" : "ltr"}>
+      <PublicNavbar lang={lang} onLangChange={onLangChange} />
+
+      {/* Hero */}
+      <section style={{ paddingTop: 88 }}>
+        <div style={{ background: "linear-gradient(135deg, #0f172a 0%, #1a2742 60%, #0f172a 100%)", color: "#fff", padding: "56px 0 72px" }}>
+          <div style={{ width: "min(1100px, calc(100% - 32px))", marginInline: "auto" }}>
+            <Link href="/projects" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "rgba(255,255,255,0.6)", fontSize: 14, textDecoration: "none", marginBottom: 28, fontWeight: 500 }}>
+              <Arrow size={16} />
+              {isAr ? "العودة للمشاريع" : "Back to Projects"}
+            </Link>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 24, alignItems: "start" }} className="proj-detail-header">
+              <div>
+                {badge && (
+                  <span style={{ display: "inline-block", background: "rgba(229,146,105,0.2)", color: "#f4a975", borderRadius: 999, padding: "4px 16px", fontSize: 13, fontWeight: 700, marginBottom: 18 }}>{badge}</span>
+                )}
+                <h1 style={{ fontSize: "clamp(2rem, 4.5vw, 3.5rem)", fontWeight: 900, lineHeight: 1.15, margin: "0 0 20px" }}>{title}</h1>
+                {client && (
+                  <p style={{ color: "rgba(255,255,255,0.55)", fontSize: 14, fontWeight: 600, margin: "0 0 16px" }}>
+                    {isAr ? "العميل:" : "Client:"} <span style={{ color: "rgba(255,255,255,0.85)" }}>{client}</span>
+                  </p>
+                )}
+                <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "1.1rem", lineHeight: 1.75, maxWidth: "65ch", margin: 0 }}>{desc}</p>
+              </div>
+              {proj.projectUrl && (
+                <a href={proj.projectUrl} target="_blank" rel="noopener noreferrer"
+                  style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 22px", borderRadius: 14, background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", color: "#fff", fontWeight: 700, textDecoration: "none", whiteSpace: "nowrap" }}>
+                  <ExternalLink size={16} />
+                  {isAr ? "زيارة المشروع" : "Visit Project"}
+                </a>
+              )}
+            </div>
+            {tags.length > 0 && (
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 28 }}>
+                {tags.map((tag, i) => (
+                  <span key={i} style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.8)", borderRadius: 999, padding: "4px 14px", fontSize: 13, fontWeight: 600 }}>{tag}</span>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* Project Image */}
+      {proj.thumbnailUrl && (
+        <div style={{ width: "min(1100px, calc(100% - 32px))", marginInline: "auto", marginTop: -28, position: "relative", zIndex: 10 }}>
+          <img
+            src={proj.thumbnailUrl}
+            alt={title}
+            style={{ width: "100%", borderRadius: 24, objectFit: "cover", maxHeight: 500, boxShadow: "0 24px 60px rgba(15,23,42,0.16)", display: "block" }}
+            onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+          />
+        </div>
+      )}
+
+      {/* Description Detail */}
+      <section style={{ padding: "60px 0 80px" }}>
+        <div style={{ width: "min(900px, calc(100% - 32px))", marginInline: "auto" }}>
+          {proj.content && (
+            <div
+              className="prose prose-lg dark:prose-invert max-w-none"
+              style={{ color: "#1e293b", lineHeight: 1.9, fontSize: "1.07rem" }}
+              dangerouslySetInnerHTML={{ __html: isAr ? proj.content : (proj.contentEn || proj.content) }}
+            />
+          )}
+
+          {/* About Project */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginTop: 48 }} className="proj-detail-grid">
+            {[
+              { icon: "💼", labelAr: "العميل", labelEn: "Client", value: client },
+              { icon: "🏷️", labelAr: "التصنيف", labelEn: "Category", value: badge },
+              { icon: "🛠️", labelAr: "التقنيات", labelEn: "Technologies", value: tags.join(" · ") },
+              { icon: "📅", labelAr: "تاريخ الإطلاق", labelEn: "Launch Date", value: proj.createdAt ? new Date(proj.createdAt).toLocaleDateString(isAr ? "ar-SA" : "en-US", { year: "numeric", month: "long" }) : "" },
+            ].filter(item => item.value).map((item, i) => (
+              <div key={i} style={{ ...glassCard, borderRadius: 20, padding: 22 }}>
+                <div style={{ fontSize: "1.6rem", marginBottom: 8 }}>{item.icon}</div>
+                <div style={{ fontSize: ".88rem", color: "#64748b", fontWeight: 700, marginBottom: 4 }}>{isAr ? item.labelAr : item.labelEn}</div>
+                <div style={{ fontSize: "1.05rem", fontWeight: 800, color: "#0f172a" }}>{item.value}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <div style={{ marginTop: 64, padding: 40, borderRadius: 28, background: "linear-gradient(135deg, #222933, #323c4b)", color: "#fff", textAlign: "center", position: "relative", overflow: "hidden" }}>
+            <div style={{ position: "absolute", width: 280, height: 280, borderRadius: "50%", background: "rgba(255,255,255,.05)", insetInlineEnd: -80, top: -120, pointerEvents: "none" }} />
+            <div style={{ position: "relative", zIndex: 1 }}>
+              <h3 style={{ fontSize: "clamp(1.5rem, 3vw, 2.2rem)", fontWeight: 900, margin: "0 0 14px" }}>
+                {isAr ? "هل لديك فكرة مشابهة؟" : "Have a Similar Idea?"}
+              </h3>
+              <p style={{ color: "rgba(255,255,255,0.75)", margin: "0 0 28px", maxWidth: "52ch", marginInline: "auto" }}>
+                {isAr ? "نبني منتجات رقمية بمستوى عالمي مع تجربة تنفيذ احترافية ونتائج قابلة للقياس." : "We build digital products at a global level with professional execution and measurable results."}
+              </p>
+              <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
+                <Link href="/contact" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 50, padding: "0 28px", borderRadius: 999, fontWeight: 800, background: "linear-gradient(135deg, #e59269, #cb7147)", color: "#fff", boxShadow: "0 14px 30px rgba(229,146,105,.28)", textDecoration: "none" }}>
+                  {isAr ? "ابدأ مشروعك الآن" : "Start Your Project Now"}
+                </Link>
+                <Link href="/projects" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 50, padding: "0 28px", borderRadius: 999, fontWeight: 800, color: "#fff", border: "1px solid rgba(255,255,255,.25)", background: "rgba(255,255,255,.08)", textDecoration: "none" }}>
+                  {isAr ? "مشاريع أخرى" : "Other Projects"}
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <PublicFooter lang={lang} />
+
+      <style>{`
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @media (max-width: 760px) {
+          .proj-detail-header { grid-template-columns: 1fr !important; }
+          .proj-detail-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 export default function PublicProjects({ lang = "ar", onLangChange }: ProjectsProps) {
   const isAr = lang === "ar";
+  const [match, params] = useRoute("/projects/:slug");
   const [activeCategory, setActiveCategory] = useState("all");
+
+  useSEO({
+    title: isAr ? "المشاريع" : "Projects",
+    description: isAr
+      ? "اكتشف مجموعة مشاريع Softlix في تطبيقات الجوال والمنصات الرقمية وحلول الأعمال"
+      : "Discover Softlix's portfolio of mobile apps, digital platforms and business solutions",
+  });
 
   const { data: apiProjects } = useQuery<Project[]>({
     queryKey: ["/api/public/projects", TENANT_ID],
+    enabled: !match,
   });
 
   const displayProjects = apiProjects && apiProjects.length > 0 ? apiProjects as any[] : DEFAULT_PROJECTS;
   const filtered = activeCategory === "all"
     ? displayProjects
     : displayProjects.filter((p: any) => p.category === activeCategory);
+
+  if (match && params?.slug) {
+    return <ProjectDetail slug={params.slug} lang={lang} onLangChange={onLangChange} />;
+  }
 
   return (
     <div
