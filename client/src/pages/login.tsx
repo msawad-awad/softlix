@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, Link } from "wouter";
 import { useForm } from "react-hook-form";
@@ -33,11 +33,19 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function Login() {
   const { t } = useTranslation();
   const { isRTL } = useLanguage();
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const [, setLocation] = useLocation();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  // Auto-redirect when authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log("User authenticated, redirecting to dashboard...");
+      setLocation("/dashboard");
+    }
+  }, [isAuthenticated, setLocation]);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -52,8 +60,7 @@ export default function Login() {
     try {
       console.log("Attempting login with:", data.email);
       await login(data.email, data.password);
-      console.log("Login successful, redirecting...");
-      setLocation("/dashboard");
+      console.log("Login successful, user state updated");
     } catch (error) {
       console.error("Login failed:", error);
       const errorMessage = error instanceof Error ? error.message : "Invalid email or password";
@@ -62,7 +69,6 @@ export default function Login() {
         description: errorMessage,
         variant: "destructive",
       });
-    } finally {
       setIsLoading(false);
     }
   };
