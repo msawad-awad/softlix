@@ -313,3 +313,30 @@ html[dir="rtl"] [class*="text-4xl"] {
     @apply transition-all duration-200 ease-in-out;
   }
 }
+
+/* ── Public website responsive layout ── */
+@media (max-width: 1100px) {
+  .hero-grid-responsive,
+  .cta-grid-responsive,
+  .contact-grid-responsive { grid-template-columns: 1fr !important; }
+
+  .services-grid-responsive,
+  .projects-grid-responsive,
+  .features-grid-responsive,
+  .testimonials-grid-responsive { grid-template-columns: repeat(2, 1fr) !important; }
+
+  .process-grid-responsive,
+  .stats-grid-responsive,
+  .logo-cloud-responsive { grid-template-columns: repeat(2, 1fr) !important; }
+}
+
+@media (max-width: 768px) {
+  .services-grid-responsive,
+  .projects-grid-responsive,
+  .features-grid-responsive,
+  .testimonials-grid-responsive,
+  .process-grid-responsive,
+  .stats-grid-responsive,
+  .logo-cloud-responsive,
+  .grid-2-responsive { grid-template-columns: 1fr !important; }
+}

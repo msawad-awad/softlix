@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Menu, X, Globe, ChevronDown, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Menu, X, Globe, ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,8 +12,9 @@ const SERVICES = [
   { label: "برمجة تطبيقات الجوال", labelEn: "Mobile App Development", href: "/services/mobile-app-development" },
   { label: "تطوير وبرمجة المواقع", labelEn: "Web Development", href: "/services/web-development" },
   { label: "التجارة الإلكترونية", labelEn: "E-Commerce & Magento", href: "/services/ecommerce" },
+  { label: "أنظمة CRM و ERP", labelEn: "CRM & ERP Systems", href: "/services/erp-systems" },
   { label: "استشارات تقنية", labelEn: "Technical Consulting", href: "/services/technical-consulting" },
-  { label: "تسويق رقمي إلكتروني", labelEn: "Digital Marketing", href: "/services/digital-marketing" },
+  { label: "تسويق رقمي", labelEn: "Digital Marketing", href: "/services/digital-marketing" },
   { label: "إدارة محتوى والتصاميم", labelEn: "Content & Design", href: "/services/content-management" },
 ];
 
@@ -25,80 +25,84 @@ interface NavbarProps {
 
 export function PublicNavbar({ lang = "ar", onLangChange }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const [location] = useLocation();
   const isAr = lang === "ar";
-
-  useEffect(() => {
-    const handler = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handler);
-    return () => window.removeEventListener("scroll", handler);
-  }, []);
 
   const navLinks = [
     { label: isAr ? "الرئيسية" : "Home", href: "/" },
     { label: isAr ? "من نحن" : "About", href: "/about" },
     { label: isAr ? "المشاريع" : "Projects", href: "/projects" },
     { label: isAr ? "المدونة" : "Blog", href: "/blog" },
+    { label: isAr ? "تواصل معنا" : "Contact", href: "/contact" },
   ];
 
-  const navBase = scrolled
-    ? "border-b border-white/10 bg-[#040812]/90"
-    : "border-b border-transparent bg-transparent";
-
   return (
-    <nav
-      className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-md transition-all duration-300 ${navBase}`}
-      dir={isAr ? "rtl" : "ltr"}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+    <div dir={isAr ? "rtl" : "ltr"} style={{ fontFamily: "'Cairo', sans-serif" }}>
+      {/* ── Topbar ── */}
+      <div style={{ background: "#0f172a", color: "#cbd5e1", fontSize: 14, padding: "10px 0" }}>
+        <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
+            <span>📍 {isAr ? "جدة، المملكة العربية السعودية" : "Jeddah, Saudi Arabia"}</span>
+            <span>⏰ {isAr ? "السبت - الخميس | 9:00 ص - 6:00 م" : "Sat - Thu | 9:00 AM - 6:00 PM"}</span>
+          </div>
+          <div style={{ display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
+            <a href="tel:+966537861534" style={{ color: "#cbd5e1", textDecoration: "none" }}>📞 0537861534</a>
+            <a href="mailto:info@softlix.net" style={{ color: "#cbd5e1", textDecoration: "none" }}>✉️ info@softlix.net</a>
+            <button
+              onClick={() => onLangChange?.(isAr ? "en" : "ar")}
+              style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 6, color: "#cbd5e1", cursor: "pointer", padding: "2px 10px", fontSize: 13, fontFamily: "inherit" }}
+              data-testid="nav-lang-toggle"
+            >
+              {isAr ? "EN" : "عر"}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Navbar ── */}
+      <header style={{ position: "sticky", top: 0, zIndex: 1000, backdropFilter: "blur(18px)", background: "rgba(248,250,252,0.92)", borderBottom: "1px solid rgba(226,232,240,0.85)" }}>
+        <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto", minHeight: 84, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 24 }}>
 
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2.5 group" data-testid="nav-logo">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/30 transition-transform group-hover:scale-105" style={{ background: "linear-gradient(135deg, #2563eb, #7c3aed)" }}>
-              <Sparkles className="w-4 h-4 text-white" />
+          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 12, fontWeight: 800, fontSize: 24, color: "#0f172a", textDecoration: "none" }} data-testid="nav-logo">
+            <div style={{ width: 42, height: 42, borderRadius: 14, background: "linear-gradient(135deg,#2563eb,#38bdf8)", boxShadow: "0 12px 25px rgba(56,189,248,0.3)", position: "relative", overflow: "hidden", flexShrink: 0 }}>
+              <div style={{ position: "absolute", width: 22, height: 6, top: 10, right: 8, background: "rgba(255,255,255,0.85)", borderRadius: 99, transform: "rotate(-35deg)" }} />
+              <div style={{ position: "absolute", width: 18, height: 6, bottom: 10, left: 8, background: "rgba(255,255,255,0.85)", borderRadius: 99, transform: "rotate(-35deg)" }} />
             </div>
-            <span className="font-black text-lg text-white tracking-tight">softlix</span>
+            <span>Softlix</span>
           </Link>
 
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-1">
-            {navLinks.map(link => (
+          <nav style={{ display: "flex", alignItems: "center", gap: 26, fontWeight: 700, color: "#334155" }} className="hide-mobile">
+            {navLinks.filter(l => l.href !== "/contact").map(link => (
               <Link
                 key={link.href}
                 href={link.href}
-                className={`px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                  location === link.href
-                    ? "text-white bg-white/10"
-                    : "text-slate-400 hover:text-white hover:bg-white/5"
-                }`}
+                style={{ color: location === link.href ? "#2563eb" : "#334155", textDecoration: "none", fontSize: 15, transition: "color 0.2s" }}
+                onMouseEnter={(e: any) => e.currentTarget.style.color = "#2563eb"}
+                onMouseLeave={(e: any) => e.currentTarget.style.color = location === link.href ? "#2563eb" : "#334155"}
               >
                 {link.label}
               </Link>
             ))}
 
+            {/* Services dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <button
-                  className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    location.startsWith("/services") ? "text-white bg-white/10" : "text-slate-400 hover:text-white hover:bg-white/5"
-                  }`}
+                  style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", fontWeight: 700, fontSize: 15, color: location.startsWith("/services") ? "#2563eb" : "#334155", padding: 0 }}
                   data-testid="nav-services-dropdown"
                 >
-                  {isAr ? "خدماتنا" : "Services"}
-                  <ChevronDown className="w-3.5 h-3.5 opacity-60" />
+                  {isAr ? "الخدمات" : "Services"}
+                  <ChevronDown style={{ width: 14, height: 14 }} />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent
-                align={isAr ? "end" : "start"}
-                className="w-60 rounded-xl border border-white/10 bg-[#0d1526] shadow-xl shadow-black/50 p-1"
-              >
+              <DropdownMenuContent align={isAr ? "end" : "start"} style={{ width: 240, borderRadius: 16, border: "1px solid #e2e8f0", boxShadow: "0 20px 50px rgba(15,23,42,0.12)", background: "#fff", padding: 8 }}>
                 {SERVICES.map(s => (
                   <DropdownMenuItem key={s.href} asChild>
                     <Link
                       href={s.href}
-                      className="flex items-center px-3 py-2.5 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-white/[0.07] cursor-pointer transition-colors"
+                      style={{ display: "block", padding: "10px 14px", borderRadius: 10, fontSize: 14, fontWeight: 600, color: "#334155", textDecoration: "none", cursor: "pointer" }}
                     >
                       {isAr ? s.label : s.labelEn}
                     </Link>
@@ -106,91 +110,85 @@ export function PublicNavbar({ lang = "ar", onLangChange }: NavbarProps) {
                 ))}
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
+          </nav>
 
           {/* Actions */}
-          <div className="hidden md:flex items-center gap-3">
-            <button
-              onClick={() => onLangChange?.(isAr ? "en" : "ar")}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-white/5 transition-all"
-              data-testid="nav-lang-toggle"
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }} className="hide-mobile">
+            <a
+              href="/projects"
+              style={{ display: "inline-flex", alignItems: "center", borderRadius: 999, padding: "12px 20px", fontSize: 14, fontWeight: 700, background: "#fff", color: "#0f172a", border: "1px solid rgba(15,23,42,0.1)", textDecoration: "none" }}
+              data-testid="nav-projects-btn"
             >
-              <Globe className="w-4 h-4" />
-              {isAr ? "EN" : "عر"}
-            </button>
-            <Button
-              asChild
-              size="sm"
-              className="h-9 px-4 rounded-lg text-sm font-semibold text-white border border-blue-400/20 shadow-lg shadow-blue-500/20 transition-all hover:shadow-blue-500/30"
-              style={{ background: "linear-gradient(135deg, #2563eb, #7c3aed)" }}
+              {isAr ? "شاهد الأعمال" : "View Work"}
+            </a>
+            <a
+              href="#contact"
+              style={{ display: "inline-flex", alignItems: "center", borderRadius: 999, padding: "12px 20px", fontSize: 14, fontWeight: 700, background: "linear-gradient(135deg,#2563eb,#38bdf8)", color: "#fff", boxShadow: "0 8px 20px rgba(37,99,235,0.25)", textDecoration: "none", border: 0 }}
               data-testid="nav-contact-btn"
             >
-              <Link href="/contact">{isAr ? "تواصل معنا" : "Contact Us"}</Link>
-            </Button>
+              {isAr ? "اطلب عرض سعر" : "Request a Quote"}
+            </a>
           </div>
 
           {/* Mobile menu btn */}
           <button
-            className="md:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+            style={{ display: "none", background: "#fff", border: "1px solid #e2e8f0", width: 46, height: 46, borderRadius: 14, cursor: "pointer", fontSize: 20, alignItems: "center", justifyContent: "center" }}
+            className="show-mobile"
             onClick={() => setMenuOpen(!menuOpen)}
             data-testid="nav-mobile-menu-btn"
           >
-            {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            {menuOpen ? "✕" : "☰"}
           </button>
         </div>
-      </div>
 
-      {/* Mobile Menu */}
-      {menuOpen && (
-        <div className="md:hidden border-t border-white/10 bg-[#040812]/98 backdrop-blur-lg px-4 py-4 space-y-1">
-          {navLinks.map(link => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`block px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                location === link.href ? "text-white bg-white/10" : "text-slate-400 hover:text-white hover:bg-white/5"
-              }`}
-              onClick={() => setMenuOpen(false)}
-            >
-              {link.label}
-            </Link>
-          ))}
-          <div className="py-1">
-            <p className="px-4 text-xs text-slate-600 font-semibold uppercase tracking-wider mb-1">
-              {isAr ? "الخدمات" : "Services"}
-            </p>
-            {SERVICES.map(s => (
-              <Link
-                key={s.href}
-                href={s.href}
-                className="block px-4 py-2 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
-                onClick={() => setMenuOpen(false)}
-              >
-                {isAr ? s.label : s.labelEn}
-              </Link>
-            ))}
+        {/* Mobile Menu */}
+        {menuOpen && (
+          <div style={{ borderTop: "1px solid #e2e8f0", background: "#fff", padding: "12px 0" }}>
+            <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto", display: "grid", gap: 4 }}>
+              {navLinks.map(link => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  style={{ display: "block", padding: "10px 14px", borderRadius: 10, fontSize: 14, fontWeight: 700, color: location === link.href ? "#2563eb" : "#334155", textDecoration: "none", background: location === link.href ? "#eff6ff" : "transparent" }}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {link.label}
+                </Link>
+              ))}
+              <div style={{ paddingTop: 8, borderTop: "1px solid #e2e8f0", marginTop: 4 }}>
+                <p style={{ margin: "0 0 4px", padding: "0 14px", fontSize: 12, fontWeight: 700, color: "#94a3b8", textTransform: "uppercase", letterSpacing: "0.1em" }}>
+                  {isAr ? "الخدمات" : "Services"}
+                </p>
+                {SERVICES.map(s => (
+                  <Link
+                    key={s.href}
+                    href={s.href}
+                    style={{ display: "block", padding: "8px 14px", borderRadius: 10, fontSize: 13, fontWeight: 600, color: "#64748b", textDecoration: "none" }}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    {isAr ? s.label : s.labelEn}
+                  </Link>
+                ))}
+              </div>
+              <div style={{ padding: "12px 14px 4px", display: "flex", gap: 10, flexWrap: "wrap" }}>
+                <button onClick={() => { onLangChange?.(isAr ? "en" : "ar"); setMenuOpen(false); }} style={{ padding: "8px 16px", borderRadius: 999, border: "1px solid #e2e8f0", background: "#fff", cursor: "pointer", fontFamily: "inherit", fontSize: 13, fontWeight: 700, color: "#334155" }}>
+                  {isAr ? "English" : "العربية"}
+                </button>
+                <a href="#contact" style={{ display: "inline-flex", flex: 1, justifyContent: "center", borderRadius: 999, padding: "10px 20px", fontSize: 14, fontWeight: 700, background: "linear-gradient(135deg,#2563eb,#38bdf8)", color: "#fff", textDecoration: "none" }} onClick={() => setMenuOpen(false)}>
+                  {isAr ? "اطلب عرض سعر" : "Request a Quote"}
+                </a>
+              </div>
+            </div>
           </div>
-          <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-3">
-            <button
-              onClick={() => { onLangChange?.(isAr ? "en" : "ar"); setMenuOpen(false); }}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm text-slate-400 hover:text-white hover:bg-white/5 transition-all"
-            >
-              <Globe className="w-4 h-4" />
-              {isAr ? "English" : "العربية"}
-            </button>
-            <Button
-              asChild
-              size="sm"
-              className="rounded-lg text-white flex-1"
-              style={{ background: "linear-gradient(135deg, #2563eb, #7c3aed)" }}
-            >
-              <Link href="/contact" onClick={() => setMenuOpen(false)}>
-                {isAr ? "تواصل معنا" : "Contact Us"}
-              </Link>
-            </Button>
-          </div>
-        </div>
-      )}
-    </nav>
+        )}
+      </header>
+
+      <style>{`
+        @media (max-width: 860px) {
+          .hide-mobile { display: none !important; }
+          .show-mobile { display: inline-flex !important; }
+        }
+      `}</style>
+    </div>
   );
 }
