@@ -2,17 +2,34 @@
 @tailwind components;
 @tailwind utilities;
 
-/* RTL Support */
-html[dir="rtl"] .dashboard-layout {
-  flex-direction: row-reverse;
+/* RTL Support - Critical RTL fixes */
+html[dir="rtl"] {
+  direction: rtl;
+  text-align: right;
 }
 
+html[dir="rtl"] * {
+  text-align: inherit;
+}
+
+/* Dashboard layout - Force sidebar to right in RTL */
+html[dir="rtl"] .dashboard-layout {
+  flex-direction: row-reverse !important;
+  direction: rtl;
+}
+
+/* Header - Reverse controls order */
 html[dir="rtl"] .dashboard-header {
   flex-direction: row-reverse;
 }
 
 html[dir="rtl"] .header-controls {
   flex-direction: row-reverse;
+}
+
+/* Sidebar wrapper - Support RTL */
+html[dir="rtl"] [data-slot="sidebar-wrapper"] {
+  flex-direction: row-reverse !important;
 }
 
 /* LIGHT MODE - Professional Business Blue Theme */

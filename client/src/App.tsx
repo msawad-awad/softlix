@@ -45,13 +45,26 @@ function AuthLayout({ children }: { children: React.ReactNode }) {
 }
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
+  const { isRTL } = useLanguage() ?? { isRTL: false };
+  
   return (
-    <div className="dashboard-layout flex min-h-screen w-full">
+    <div 
+      className="dashboard-layout flex min-h-screen w-full"
+      style={{ 
+        flexDirection: isRTL ? 'row-reverse' : 'row' 
+      }}
+    >
       <AppSidebar />
       <SidebarInset className="flex flex-col flex-1">
-        <header className="dashboard-header flex h-14 items-center justify-between gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 sticky top-0 z-50">
+        <header 
+          className="dashboard-header flex h-14 items-center justify-between gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 sticky top-0 z-50"
+          style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
+        >
           <SidebarTrigger data-testid="button-sidebar-toggle" />
-          <div className="header-controls flex items-center gap-2">
+          <div 
+            className="header-controls flex items-center gap-2"
+            style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
+          >
             <LanguageToggle />
             <ThemeToggle />
           </div>
