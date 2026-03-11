@@ -92,14 +92,14 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
   const { register, handleSubmit, reset, formState: { errors } } = useForm<LeadForm>();
 
   const heroTitle = isAr
-    ? (pageSections?.hero_title?.contentAr || "نطوّر مواقع وتطبيقات وأنظمة CRM تساعدك على النمو بسرعة وثقة")
-    : (pageSections?.hero_title?.contentEn || "We Build Websites, Apps & CRM Systems to Help You Grow Fast");
+    ? (pageSections?.hero?.contentAr?.h1 || "نطوّر مواقع وتطبيقات وأنظمة CRM تساعدك على النمو بسرعة وثقة")
+    : (pageSections?.hero?.contentEn?.h1 || "We Build Websites, Apps & CRM Systems to Help You Grow Fast");
   const heroSubtitle = isAr
-    ? (pageSections?.hero_subtitle?.contentAr || "نصمم ونبني حلولاً رقمية حديثة تشمل المواقع الاحترافية، المتاجر الإلكترونية، تطبيقات الجوال، وأنظمة إدارة العملاء والعمليات.")
-    : (pageSections?.hero_subtitle?.contentEn || "We design and build modern digital solutions including professional websites, e-commerce stores, mobile apps, and customer management systems.");
+    ? (pageSections?.hero?.contentAr?.subtitle || "نصمم ونبني حلولاً رقمية حديثة تشمل المواقع الاحترافية، المتاجر الإلكترونية، تطبيقات الجوال، وأنظمة إدارة العملاء والعمليات.")
+    : (pageSections?.hero?.contentEn?.subtitle || "We design and build modern digital solutions including professional websites, e-commerce stores, mobile apps, and customer management systems.");
   const heroBadge = isAr
-    ? (pageSections?.hero_badge?.contentAr || "حلول رقمية متكاملة للشركات ورواد الأعمال")
-    : (pageSections?.hero_badge?.contentEn || "Integrated Digital Solutions for Businesses & Entrepreneurs");
+    ? (pageSections?.hero?.contentAr?.badge || "حلول رقمية متكاملة للشركات ورواد الأعمال")
+    : (pageSections?.hero?.contentEn?.badge || "Integrated Digital Solutions for Businesses & Entrepreneurs");
 
   const activeStats = (siteStatsData && siteStatsData.length > 0)
     ? siteStatsData.map((s: any) => ({ value: s.value, labelAr: s.labelAr, labelEn: s.labelEn }))
@@ -133,8 +133,8 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
         num: String(i + 1).padStart(2, "0"),
         titleAr: f.titleAr,
         titleEn: f.titleEn,
-        descAr: f.descriptionAr,
-        descEn: f.descriptionEn,
+        descAr: f.descAr,
+        descEn: f.descEn,
       }))
     : FEATURES;
 
