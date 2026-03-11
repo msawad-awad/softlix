@@ -4,6 +4,33 @@ import { storage } from "./storage";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 import type { AuthenticatedUser } from "@shared/schema";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
+// Multer setup – store files in public/uploads with unique names
+const uploadsDir = path.resolve(process.cwd(), "public/uploads");
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+const multerStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, uploadsDir),
+  filename: (_req, file, cb) => {
+    const ext = path.extname(file.originalname).toLowerCase();
+    const safe = Date.now() + "-" + Math.round(Math.random() * 1e9) + ext;
+    cb(null, safe);
+  },
+});
+
+const upload = multer({
+  storage: multerStorage,
+  limits: { fileSize: 8 * 1024 * 1024 }, // 8 MB
+  fileFilter: (_req, file, cb) => {
+    const allowed = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".ico"];
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (allowed.includes(ext)) cb(null, true);
+    else cb(new Error("Only image files are allowed"));
+  },
+});
 
 // Extend Express Request to include user
 declare global {
@@ -629,6 +656,29 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Lead submission error:", error);
       res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // =========================================================================
+  // FILE UPLOAD (Protected – returns public URL)
+  // =========================================================================
+
+  app.post("/api/upload", requireAuth, upload.single("file"), (req: Request, res: Response) => {
+    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+    const protocol = req.headers["x-forwarded-proto"] || req.protocol;
+    const host = req.headers["x-forwarded-host"] || req.get("host");
+    const url = `${protocol}://${host}/uploads/${req.file.filename}`;
+    res.json({ url, filename: req.file.filename, size: req.file.size });
+  });
+
+  app.delete("/api/upload/:filename", requireAuth, (req: Request, res: Response) => {
+    const filename = path.basename(req.params.filename); // prevent traversal
+    const filePath = path.join(uploadsDir, filename);
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+      res.json({ message: "Deleted" });
+    } else {
+      res.status(404).json({ message: "File not found" });
     }
   });
 

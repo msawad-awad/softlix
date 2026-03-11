@@ -9,8 +9,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Palette, Globe, Phone, Share2, Type, Save, Eye, RefreshCw } from "lucide-react";
+import { ImageUploader } from "@/components/ui/image-uploader";
+import { Palette, Globe, Phone, Share2, Type, Save, Eye, RefreshCw, ImageIcon } from "lucide-react";
 import type { SiteSettings } from "@shared/schema";
 
 const FONTS = ["Cairo", "Tajawal", "IBM Plex Arabic", "Noto Kufi Arabic", "Almarai", "Rubik", "Inter", "Poppins"];
@@ -49,6 +49,7 @@ export default function BrandingPage() {
     defaultValues: {
       siteNameAr: "softlix", siteNameEn: "softlix",
       siteDescAr: "", siteDescEn: "",
+      logoUrl: "", faviconUrl: "",
       colorPrimary: "#e59269", colorSecondary: "#82b735",
       colorAccent: "#0f172a", colorBg: "#f8fafc", colorText: "#0f172a",
       fontFamily: "Cairo",
@@ -75,8 +76,6 @@ export default function BrandingPage() {
     onError: () => toast({ title: "خطأ", description: "فشل حفظ الإعدادات", variant: "destructive" }),
   });
 
-  const colors = watch(["colorPrimary", "colorSecondary", "colorAccent", "colorBg", "colorText"]);
-
   if (isLoading) return (
     <div className="flex items-center justify-center h-64">
       <RefreshCw className="w-6 h-6 animate-spin text-blue-500" />
@@ -91,7 +90,7 @@ export default function BrandingPage() {
             <Palette className="w-6 h-6 text-orange-500" />
             البراندينج والإعدادات العامة
           </h1>
-          <p className="text-gray-500 text-sm mt-1">تحكم في ألوان الموقع، الخطوط، معلومات الاتصال والسوشيال ميديا</p>
+          <p className="text-gray-500 text-sm mt-1">تحكم في الشعار، الألوان، الخطوط، معلومات الاتصال والسوشيال ميديا</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" asChild data-testid="btn-preview-site">
@@ -106,8 +105,9 @@ export default function BrandingPage() {
 
       <form onSubmit={handleSubmit(d => saveMutation.mutate(d))}>
         <Tabs defaultValue="identity">
-          <TabsList className="mb-6">
+          <TabsList className="mb-6 flex-wrap h-auto gap-1">
             <TabsTrigger value="identity"><Globe className="w-4 h-4 me-1" />الهوية</TabsTrigger>
+            <TabsTrigger value="logo"><ImageIcon className="w-4 h-4 me-1" />الشعار واللوغو</TabsTrigger>
             <TabsTrigger value="colors"><Palette className="w-4 h-4 me-1" />الألوان</TabsTrigger>
             <TabsTrigger value="typography"><Type className="w-4 h-4 me-1" />الخطوط</TabsTrigger>
             <TabsTrigger value="contact"><Phone className="w-4 h-4 me-1" />التواصل</TabsTrigger>
@@ -153,6 +153,72 @@ export default function BrandingPage() {
                   <div>
                     <Label>وصف الشركة في الفوتر (إنجليزي)</Label>
                     <Textarea {...register("footerDescEn")} className="mt-1 resize-none" rows={3} data-testid="input-footer-desc-en" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Logo & Favicon */}
+          <TabsContent value="logo">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">شعار الموقع (Logo)</CardTitle>
+                  <CardDescription>يظهر في الهيدر والفوتر والبريد الإلكتروني. يُفضل PNG أو SVG بخلفية شفافة.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ImageUploader
+                    value={watch("logoUrl")}
+                    onChange={v => setValue("logoUrl", v, { shouldDirty: true })}
+                    label="رفع الشعار أو إدخال رابطه"
+                    hint="يُفضل أبعاد: 200×60 بكسل أو SVG"
+                    data-testid="uploader-logo"
+                  />
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-base">أيقونة الموقع (Favicon)</CardTitle>
+                  <CardDescription>الأيقونة الصغيرة التي تظهر في تبويب المتصفح. يجب أن تكون ICO أو PNG 32×32.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ImageUploader
+                    value={watch("faviconUrl")}
+                    onChange={v => setValue("faviconUrl", v, { shouldDirty: true })}
+                    label="رفع الفافيكون أو إدخال رابطه"
+                    hint="يُفضل أبعاد: 32×32 أو 64×64 بكسل (ICO أو PNG)"
+                    data-testid="uploader-favicon"
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Live preview */}
+              <Card className="md:col-span-2">
+                <CardHeader><CardTitle className="text-base">معاينة الهيدر</CardTitle></CardHeader>
+                <CardContent>
+                  <div
+                    className="flex items-center gap-3 p-4 rounded-xl border"
+                    style={{ background: watch("colorBg") || "#f8fafc" }}
+                  >
+                    {watch("logoUrl") ? (
+                      <img
+                        src={watch("logoUrl")}
+                        alt="logo preview"
+                        className="h-10 w-auto max-w-[160px] object-contain"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                      />
+                    ) : (
+                      <div
+                        className="h-10 px-4 rounded-lg flex items-center font-black text-white text-lg"
+                        style={{ background: `linear-gradient(135deg, ${watch("colorPrimary") || "#e59269"}, ${watch("colorSecondary") || "#82b735"})` }}
+                      >
+                        {watch("siteNameEn") || "Softlix"}
+                      </div>
+                    )}
+                    <span className="text-sm font-medium" style={{ color: watch("colorText") || "#0f172a" }}>
+                      {watch("siteNameAr") || "سوفتلكس"}
+                    </span>
                   </div>
                 </CardContent>
               </Card>
@@ -306,15 +372,18 @@ export default function BrandingPage() {
                   { key: "socialX", label: "X (تويتر)", placeholder: "https://x.com/softlix" },
                   { key: "socialInstagram", label: "Instagram", placeholder: "https://instagram.com/softlix" },
                   { key: "socialLinkedIn", label: "LinkedIn", placeholder: "https://linkedin.com/company/softlix" },
-                  { key: "socialWhatsapp", label: "WhatsApp", placeholder: "https://wa.me/966537861534" },
+                  { key: "socialWhatsapp", label: "WhatsApp (رابط كامل)", placeholder: "https://wa.me/966537861534" },
                   { key: "socialFacebook", label: "Facebook", placeholder: "https://facebook.com/softlix" },
                   { key: "socialYoutube", label: "YouTube", placeholder: "https://youtube.com/@softlix" },
                 ].map(s => (
                   <div key={s.key} className="flex items-center gap-3">
-                    <Label className="w-32 text-sm shrink-0">{s.label}</Label>
+                    <Label className="w-36 text-sm shrink-0">{s.label}</Label>
                     <Input {...register(s.key as any)} placeholder={s.placeholder} dir="ltr" data-testid={`input-${s.key}`} />
                   </div>
                 ))}
+                <p className="text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 rounded-lg p-3">
+                  💡 رابط WhatsApp يجب أن يكون كاملاً مثل: https://wa.me/966537861534
+                </p>
               </CardContent>
             </Card>
           </TabsContent>

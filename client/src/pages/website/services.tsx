@@ -2,7 +2,8 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient } from "@/lib/queryClient";
 import { apiRequest } from "@/lib/queryClient";
-import { Plus, Pencil, Trash2, Globe, ToggleLeft, ToggleRight, GripVertical } from "lucide-react";
+import { Plus, Pencil, Trash2, Globe, GripVertical } from "lucide-react";
+import { ImageUploader } from "@/components/ui/image-uploader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -182,11 +183,16 @@ export default function WebsiteServices() {
                 <Textarea value={form.fullDescriptionEn} onChange={e => F("fullDescriptionEn", e.target.value)} rows={4} className="mt-1" />
               </div>
             </div>
+            <div>
+              <ImageUploader
+                value={form.imageUrl}
+                onChange={v => F("imageUrl", v)}
+                label="صورة الخدمة"
+                hint="صورة تعبر عن الخدمة تظهر في الصفحة وبطاقة الخدمة"
+                data-testid="uploader-service-image"
+              />
+            </div>
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label>رابط الصورة</Label>
-                <Input value={form.imageUrl} onChange={e => F("imageUrl", e.target.value)} placeholder="https://..." className="mt-1" dir="ltr" />
-              </div>
               <div>
                 <Label>الحالة</Label>
                 <Select value={form.status} onValueChange={v => F("status", v)}>
@@ -197,10 +203,10 @@ export default function WebsiteServices() {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-            <div>
-              <Label>الترتيب</Label>
-              <Input type="number" value={form.displayOrder} onChange={e => F("displayOrder", parseInt(e.target.value) || 0)} className="mt-1 w-32" />
+              <div>
+                <Label>الترتيب</Label>
+                <Input type="number" value={form.displayOrder} onChange={e => F("displayOrder", parseInt(e.target.value) || 0)} className="mt-1 w-32" />
+              </div>
             </div>
           </div>
           <DialogFooter>

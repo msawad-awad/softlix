@@ -69,6 +69,10 @@
 - ✅ **Sidebar**: "الموقع الإلكتروني" and "التسويق والتتبع" sections in admin sidebar
 - ✅ **Site Settings**: Field names aligned with DB schema (contactPhone, contactEmail, socialWhatsapp etc.)
 - ✅ **WhatsApp URL**: socialWhatsapp field stores full URL (https://wa.me/...) used directly in footer and contact page
+- ✅ **Image Upload**: `POST /api/upload` endpoint with multer, stores files in `public/uploads/`, serves at `/uploads/<filename>`
+- ✅ **ImageUploader Component**: Dual-mode (file drag-drop OR URL input) at `client/src/components/ui/image-uploader.tsx`
+- ✅ **Logo & Favicon Management**: Branding page has dedicated tab for logo/favicon with ImageUploader
+- ✅ **All CMS Image Fields**: Services, Projects, Blog, Clients, Testimonials all use ImageUploader (no plain URL inputs)
 
 ## 📋 Features Shipped
 - Real-time data fetching with TanStack Query v5

@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
+import { ImageUploader } from "@/components/ui/image-uploader";
 import { Plus, Pencil, Trash2, Star, RefreshCw, MessageSquareQuote } from "lucide-react";
 import type { Testimonial } from "@shared/schema";
 
@@ -29,6 +30,7 @@ function StarRating({ value, onChange }: { value: number; onChange: (v: number) 
 function TestimonialForm({ item, onClose }: { item?: Testimonial; onClose: () => void }) {
   const { toast } = useToast();
   const [stars, setStars] = useState(item?.stars || 5);
+  const [avatarUrl, setAvatarUrl] = useState(item?.avatarUrl || "");
   const { register, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
       nameAr: item?.nameAr || "",
@@ -37,15 +39,14 @@ function TestimonialForm({ item, onClose }: { item?: Testimonial; onClose: () =>
       roleEn: item?.roleEn || "",
       textAr: item?.textAr || "",
       textEn: item?.textEn || "",
-      avatarUrl: item?.avatarUrl || "",
       displayOrder: item?.displayOrder || 0,
     }
   });
 
   const saveMutation = useMutation({
     mutationFn: (data: any) => item
-      ? apiRequest("PATCH", `/api/cms/testimonials/${item.id}`, { ...data, stars })
-      : apiRequest("POST", "/api/cms/testimonials", { ...data, stars }),
+      ? apiRequest("PATCH", `/api/cms/testimonials/${item.id}`, { ...data, stars, avatarUrl })
+      : apiRequest("POST", "/api/cms/testimonials", { ...data, stars, avatarUrl }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/cms/testimonials"] });
       queryClient.invalidateQueries({ queryKey: ["/api/public/testimonials"] });
@@ -83,15 +84,16 @@ function TestimonialForm({ item, onClose }: { item?: Testimonial; onClose: () =>
         <Label>Testimonial Text (English)</Label>
         <Textarea {...register("textEn")} className="mt-1 resize-none" rows={3} data-testid="input-text-en" />
       </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <Label>رابط الصورة (Avatar URL)</Label>
-          <Input {...register("avatarUrl")} dir="ltr" className="mt-1" placeholder="https://..." data-testid="input-avatar" />
-        </div>
-        <div>
-          <Label>ترتيب العرض</Label>
-          <Input type="number" {...register("displayOrder", { valueAsNumber: true })} className="mt-1" data-testid="input-order" />
-        </div>
+      <ImageUploader
+        value={avatarUrl}
+        onChange={setAvatarUrl}
+        label="صورة الشخص (Avatar)"
+        hint="صورة شخصية للمراجع، مربعة 100×100 بكسل أو أكبر"
+        data-testid="uploader-avatar"
+      />
+      <div>
+        <Label>ترتيب العرض</Label>
+        <Input type="number" {...register("displayOrder", { valueAsNumber: true })} className="mt-1 w-32" data-testid="input-order" />
       </div>
       <div>
         <Label className="mb-2 block">التقييم</Label>

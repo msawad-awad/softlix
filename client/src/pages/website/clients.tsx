@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Plus, Pencil, Trash2, Users2, GripVertical } from "lucide-react";
+import { ImageUploader } from "@/components/ui/image-uploader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -87,9 +88,13 @@ export default function WebsiteClients() {
           <DialogHeader><DialogTitle>{editId ? "تعديل العميل" : "إضافة عميل جديد"}</DialogTitle></DialogHeader>
           <div className="space-y-4 py-2">
             <div><Label>اسم العميل *</Label><Input data-testid="input-client-name" value={form.name} onChange={e=>F("name",e.target.value)} placeholder="اسم الشركة أو العميل" className="mt-1"/></div>
-            <div><Label>رابط الشعار (Logo URL)</Label><Input value={form.logoUrl} onChange={e=>F("logoUrl",e.target.value)} placeholder="https://..." className="mt-1" dir="ltr"/>
-              {form.logoUrl && <img src={form.logoUrl} alt="preview" className="h-12 mt-2 object-contain" onError={e=>(e.currentTarget.style.display="none")}/>}
-            </div>
+            <ImageUploader
+              value={form.logoUrl}
+              onChange={v => F("logoUrl", v)}
+              label="شعار العميل (Logo)"
+              hint="يُفضل PNG أو SVG بخلفية شفافة"
+              data-testid="uploader-client-logo"
+            />
             <div><Label>رابط الموقع</Label><Input value={form.websiteUrl} onChange={e=>F("websiteUrl",e.target.value)} placeholder="https://..." className="mt-1" dir="ltr"/></div>
             <div><Label>الترتيب</Label><Input type="number" value={form.displayOrder} onChange={e=>F("displayOrder",parseInt(e.target.value)||0)} className="mt-1 w-24"/></div>
           </div>

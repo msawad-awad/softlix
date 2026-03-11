@@ -3,6 +3,8 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import cookieParser from "cookie-parser";
+import path from "path";
+import fs from "fs";
 
 const app = express();
 const httpServer = createServer(app);
@@ -14,6 +16,11 @@ declare module "http" {
 }
 
 app.use(cookieParser());
+
+// Serve uploaded files statically
+const uploadsDir = path.resolve(process.cwd(), "public/uploads");
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+app.use("/uploads", express.static(uploadsDir));
 
 app.use(
   express.json({

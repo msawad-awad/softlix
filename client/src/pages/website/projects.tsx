@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Plus, Pencil, Trash2, Layers, GripVertical } from "lucide-react";
+import { ImageUploader } from "@/components/ui/image-uploader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -119,10 +120,14 @@ export default function WebsiteProjects() {
               <div><Label>الوصف (عربي)</Label><Textarea value={form.description} onChange={e => F("description", e.target.value)} rows={3} className="mt-1" /></div>
               <div><Label>Description (English)</Label><Textarea value={form.descriptionEn} onChange={e => F("descriptionEn", e.target.value)} rows={3} className="mt-1" /></div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div><Label>صورة مصغرة (URL)</Label><Input value={form.thumbnailUrl} onChange={e => F("thumbnailUrl", e.target.value)} className="mt-1" dir="ltr" /></div>
-              <div><Label>اسم العميل</Label><Input value={form.clientName} onChange={e => F("clientName", e.target.value)} className="mt-1" /></div>
-            </div>
+            <ImageUploader
+              value={form.thumbnailUrl}
+              onChange={v => F("thumbnailUrl", v)}
+              label="صورة مصغرة للمشروع"
+              hint="تظهر في بطاقة المشروع وصفحة Portfolio"
+              data-testid="uploader-project-thumbnail"
+            />
+            <div><Label>اسم العميل</Label><Input value={form.clientName} onChange={e => F("clientName", e.target.value)} className="mt-1" /></div>
             <div className="grid grid-cols-2 gap-4">
               <div><Label>التصنيف</Label>
                 <Select value={form.category} onValueChange={v => F("category", v)}>

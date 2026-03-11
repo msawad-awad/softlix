@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import { Plus, Pencil, Trash2, FileText, Eye } from "lucide-react";
+import { ImageUploader } from "@/components/ui/image-uploader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -116,17 +117,22 @@ export default function WebsiteBlog() {
               <div><Label>المحتوى (عربي)</Label><Textarea value={form.content} onChange={e=>F("content",e.target.value)} rows={6} className="mt-1"/></div>
               <div><Label>Content (English)</Label><Textarea value={form.contentEn} onChange={e=>F("contentEn",e.target.value)} rows={6} className="mt-1"/></div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div><Label>صورة رئيسية (URL)</Label><Input value={form.featuredImageUrl} onChange={e=>F("featuredImageUrl",e.target.value)} className="mt-1" dir="ltr"/></div>
-              <div><Label>الحالة</Label>
-                <Select value={form.status} onValueChange={v=>F("status",v)}>
-                  <SelectTrigger data-testid="select-post-status" className="mt-1"><SelectValue/></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="published">منشور</SelectItem>
-                    <SelectItem value="draft">مسودة</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <ImageUploader
+              value={form.featuredImageUrl}
+              onChange={v => F("featuredImageUrl", v)}
+              label="الصورة الرئيسية للمقال"
+              hint="تظهر في بطاقة المقال وأعلى صفحة التفاصيل"
+              data-testid="uploader-post-image"
+            />
+            <div>
+              <Label>الحالة</Label>
+              <Select value={form.status} onValueChange={v=>F("status",v)}>
+                <SelectTrigger data-testid="select-post-status" className="mt-1 w-48"><SelectValue/></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="published">منشور</SelectItem>
+                  <SelectItem value="draft">مسودة</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <DialogFooter>
