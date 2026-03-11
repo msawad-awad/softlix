@@ -1,0 +1,352 @@
+تطوير نظام إدارة محتوى متكامل داخل ERP بحيث يصبح الموقع الرسمي للشركة هو واجهة النظام ويتم التحكم بجميع الصفحات والمحتوى والتتبع التسويقي من داخل لوحة التحكم.
+
+يجب أن يدعم النظام:
+
+إدارة صفحات الموقع
+
+إدارة السكشنات
+
+إدارة الخدمات والمشاريع
+
+المدونة
+
+تحسين SEO
+
+إدارة التحويلات Redirects
+
+إدارة مكتبة الوسائط
+
+دعم التتبع التسويقي
+
+دعم Google Tag Manager
+
+دعم Meta Pixel
+
+دعم أدوات التحليل
+
+الهدف النهائي أن يصبح النظام:
+
+ERP + Website CMS + Marketing Tracking Platform
+
+بدون الاعتماد على WordPress.
+
+الهيكل العام للنظام
+
+يجب إنشاء قسم داخل لوحة التحكم باسم:
+
+Website & Marketing
+
+ويحتوي على:
+
+Pages
+Sections
+Services
+Projects
+Blog
+Clients
+Media Library
+Redirect Manager
+SEO Settings
+Marketing Tracking
+Forms Leads
+إدارة صفحات الموقع
+
+النظام يجب أن يسمح بإنشاء صفحات ديناميكية.
+
+الصفحات الأساسية للموقع:
+
+/
+about
+services
+projects
+blog
+contact
+
+كما يجب دعم صفحات فرعية مثل:
+
+/services/mobile-app-development
+/services/web-development
+/services/digital-marketing
+/projects/project-name
+/blog/article-name
+
+كل صفحة يجب أن تحتوي على:
+
+title
+slug
+meta title
+meta description
+canonical url
+status
+language
+layout
+نظام السكشنات (Sections)
+
+كل صفحة تتكون من Sections يمكن إدارتها من لوحة التحكم.
+
+السكشنات يجب أن تكون قابلة:
+
+للإضافة
+
+للتعديل
+
+للحذف
+
+لإعادة الترتيب
+
+أنواع السكشنات:
+
+Hero
+Services
+Features
+Clients Logos
+Portfolio
+Statistics
+Call To Action
+Testimonials
+Contact Form
+Custom Content
+
+يجب أن يكون ترتيب السكشنات قابل للتعديل بسهولة.
+
+إدارة الخدمات
+
+يجب إنشاء نظام لإدارة الخدمات المعروضة في الموقع.
+
+كل خدمة تحتوي على:
+
+title
+slug
+short description
+full description
+image
+icon
+seo title
+seo description
+status
+
+ويمكن عرضها في:
+
+صفحة الخدمات
+
+الصفحة الرئيسية
+
+صفحات الخدمة المفردة
+
+إدارة المشاريع
+
+النظام يجب أن يدعم عرض مشاريع الشركة.
+
+كل مشروع يحتوي على:
+
+title
+slug
+description
+project images
+client name
+project url
+category
+status
+
+ويظهر في:
+
+projects page
+project detail page
+home portfolio section
+إدارة المدونة
+
+النظام يجب أن يدعم إنشاء مقالات.
+
+كل مقال يحتوي على:
+
+title
+slug
+excerpt
+content
+featured image
+category
+seo title
+seo description
+publish date
+status
+إدارة العملاء (Clients Logos)
+
+عرض شعارات العملاء في الموقع.
+
+كل سجل يحتوي على:
+
+client name
+logo
+website
+display order
+status
+مكتبة الوسائط (Media Library)
+
+إدارة جميع الصور والملفات المستخدمة في الموقع.
+
+يجب دعم:
+
+upload
+image preview
+file categorization
+image optimization
+reuse across pages
+نظام SEO
+
+كل صفحة يجب أن تدعم إعدادات SEO مثل:
+
+meta title
+meta description
+canonical
+open graph
+schema data
+robots meta
+
+كما يجب إنشاء:
+
+automatic sitemap.xml
+نظام Redirects للحفاظ على الروابط القديمة
+
+بسبب انتقال الموقع من WordPress.
+
+يجب إنشاء مدير تحويلات.
+
+يحتوي على:
+
+old url
+new url
+status code (301/302)
+
+وعند فتح رابط قديم يجب تحويله تلقائياً.
+
+مثال:
+
+/about-us → /about
+/services/mobile-app → /services/mobile-app-development
+قسم التسويق (Marketing)
+
+يجب إنشاء قسم داخل لوحة التحكم باسم:
+
+Marketing
+
+ويحتوي على إعدادات التتبع والتحليلات.
+
+Google Tag Manager
+
+يجب أن يسمح النظام بإضافة:
+
+Google Tag Manager ID
+
+مثال:
+
+GTM-XXXXXXX
+
+ويتم إدراجه تلقائياً في الموقع داخل:
+
+<head>
+
+و
+
+<body>
+Meta Pixel (Facebook Pixel)
+
+إمكانية إضافة:
+
+Meta Pixel ID
+
+ويتم تضمينه تلقائياً في الموقع.
+
+أدوات التحليل (Analytics)
+
+يجب دعم إضافة:
+
+Google Analytics ID
+TikTok Pixel
+Snapchat Pixel
+LinkedIn Insight Tag
+Custom Tracking Scripts
+
+ويجب أن يتم إدراجها تلقائياً في جميع صفحات الموقع.
+
+تتبع التحويلات (Conversion Tracking)
+
+النظام يجب أن يدعم تتبع:
+
+contact form submissions
+consultation requests
+quote requests
+button clicks
+lead generation
+
+ويجب تسجيل هذه البيانات داخل النظام.
+
+إدارة العملاء المحتملين (Leads)
+
+أي نموذج في الموقع يجب أن يتم تسجيله داخل النظام.
+
+مثال:
+
+Contact Form
+Consultation Form
+Quote Request
+
+ويتم حفظ البيانات مثل:
+
+name
+phone
+email
+message
+page source
+date
+ip address
+صفحات الموقع حسب التصميم الحالي
+
+بناء الصفحات وفق تصميم الموقع الحالي.
+
+الصفحة الرئيسية تحتوي على:
+
+Hero Section
+Services Cards
+Clients Logos
+Portfolio
+Why Choose Us
+Call To Action
+Contact Form
+صفحة الخدمة
+
+يجب أن تحتوي على:
+
+Hero
+Service Description
+Features
+Technology Highlights
+Portfolio
+CTA
+Contact
+الأداء
+
+يجب أن يكون الموقع:
+
+SEO friendly
+fast loading
+optimized images
+lazy loading
+mobile responsive
+CDN compatible
+دعم اللغات
+
+الموقع يجب أن يدعم:
+
+Arabic RTL
+English LTR
+الهدف النهائي
+
+تحويل النظام إلى:
+
+ERP
++
+Website CMS
++
+Marketing Tracking System
+
+بحيث يتم إدارة الموقع والتسويق والتحليلات بالكامل من داخل لوحة تحكم ERP.
