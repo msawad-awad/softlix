@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>الاستشارات الفنية | Softlix</title>
+  <meta name="description" content="صفحة HTML احترافية لخدمة الاستشارات الفنية من Softlix بتصميم حديث ومتجاوب." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #e59269;
+      --primary-dark: #cf7e56;
+      --secondary: #82b735;
+      --bg: #fffaf7;
+      --surface: #ffffff;
+      --surface-2: #fff3ec;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: rgba(31, 41, 55, 0.08);
+      --shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+      --radius: 22px;
+      --container: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: 'Cairo', sans-serif;
+      background:
+        radial-gradient(circle at top right, rgba(229,146,105,.16), transparent 22%),
+        radial-gradient(circle at bottom left, rgba(130,183,53,.10), transparent 18%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+
+    .container {
+      width: min(var(--container), calc(100% - 32px));
+      margin-inline: auto;
+    }
+
+    .topbar {
+      background: var(--secondary);
+      color: #fff;
+      font-size: 14px;
+    }
+    .topbar .wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      flex-wrap: wrap;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(14px);
+      background: rgba(255, 250, 247, 0.9);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 16px 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 22px;
+      color: var(--text);
+    }
+
+    .logo-badge {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      box-shadow: var(--shadow);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-weight: 600;
+      color: #374151;
+    }
+
+    .nav-links a:hover { color: var(--primary-dark); }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 50px;
+      padding: 0 22px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      font-weight: 700;
+      transition: .25s ease;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      box-shadow: 0 10px 24px rgba(229, 146, 105, .28);
+    }
+
+    .btn-primary:hover { transform: translateY(-2px); }
+
+    .btn-outline {
+      border-color: rgba(229,146,105,.35);
+      background: rgba(255,255,255,.75);
+      color: var(--primary-dark);
+    }
+
+    .btn-outline:hover {
+      background: var(--surface-2);
+      transform: translateY(-2px);
+    }
+
+    .hero {
+      padding: 72px 0 40px;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 28px;
+      align-items: center;
+    }
+
+    .hero-card,
+    .hero-visual,
+    .card,
+    .process-card,
+    .contact-card,
+    .project-card,
+    .stat,
+    .cta-box {
+      background: rgba(255,255,255,.88);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+    }
+
+    .hero-card {
+      padding: 38px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(229,146,105,.12);
+      color: var(--primary-dark);
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      margin: 0 0 14px;
+      font-size: clamp(34px, 4.4vw, 58px);
+      line-height: 1.18;
+    }
+
+    .hero p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 18px;
+      max-width: 62ch;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .hero-points {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .hero-points div {
+      padding: 14px 16px;
+      background: var(--surface-2);
+      border: 1px solid rgba(229,146,105,.14);
+      border-radius: 16px;
+      font-weight: 700;
+      color: #374151;
+    }
+
+    .hero-visual {
+      padding: 24px;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mock-window {
+      border-radius: 20px;
+      background: linear-gradient(180deg, #fff 0%, #fff8f3 100%);
+      border: 1px solid rgba(31,41,55,.08);
+      padding: 20px;
+    }
+
+    .window-head {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .window-head span {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #e5e7eb;
+    }
+
+    .window-head span:nth-child(1){ background:#fda4af; }
+    .window-head span:nth-child(2){ background:#fde68a; }
+    .window-head span:nth-child(3){ background:#86efac; }
+
+    .bars { display: grid; gap: 12px; }
+    .bar {
+      height: 12px;
+      border-radius: 999px;
+      background: #f1f5f9;
+      overflow: hidden;
+      position: relative;
+    }
+    .bar::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      width: var(--w);
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      border-radius: inherit;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .stat {
+      padding: 18px;
+      text-align: center;
+    }
+    .stat strong {
+      display: block;
+      font-size: 28px;
+      color: var(--primary-dark);
+      line-height: 1.1;
+    }
+    .stat span { color: var(--muted); font-size: 14px; }
+
+    section { padding: 32px 0; }
+
+    .section-head {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .section-head h2 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 3vw, 42px);
+      line-height: 1.25;
+    }
+
+    .section-head p {
+      margin: 0 auto;
+      max-width: 760px;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      padding: 24px;
+      height: 100%;
+    }
+
+    .icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(229,146,105,.18), rgba(130,183,53,.18));
+      display: grid;
+      place-items: center;
+      font-size: 26px;
+      margin-bottom: 16px;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      line-height: 1.35;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15.5px;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: .95fr 1.05fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+
+    .panel {
+      background: rgba(255,255,255,.88);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      padding: 28px;
+    }
+
+    .panel h3 {
+      margin: 0 0 14px;
+      font-size: 30px;
+      line-height: 1.25;
+    }
+
+    .panel p {
+      color: var(--muted);
+      margin: 0 0 18px;
+    }
+
+    .check-list {
+      display: grid;
+      gap: 12px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .check-list li {
+      padding: 14px 16px;
+      background: var(--surface-2);
+      border-radius: 16px;
+      border: 1px solid rgba(229,146,105,.14);
+      font-weight: 600;
+    }
+
+    .process {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .process-card {
+      padding: 22px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .step {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff;
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .process-card h3 {
+      margin: 0 0 10px;
+      font-size: 20px;
+    }
+
+    .process-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .projects {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .project-card {
+      overflow: hidden;
+    }
+
+    .project-cover {
+      height: 220px;
+      background: linear-gradient(135deg, rgba(229,146,105,.95), rgba(130,183,53,.95));
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: end;
+      color: #fff;
+      position: relative;
+    }
+
+    .project-cover::before {
+      content: "";
+      position: absolute;
+      inset: auto -40px -40px auto;
+      width: 140px;
+      height: 140px;
+      border-radius: 28px;
+      background: rgba(255,255,255,.15);
+      transform: rotate(18deg);
+    }
+
+    .project-body { padding: 22px; }
+    .project-body h3 { margin: 0 0 10px; font-size: 22px; }
+    .project-body p { margin: 0 0 14px; color: var(--muted); }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: var(--surface-2);
+      border: 1px solid rgba(229,146,105,.16);
+      color: #5b6472;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .cta-box {
+      padding: 34px;
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 18px;
+      align-items: center;
+      background: linear-gradient(135deg, rgba(229,146,105,.12), rgba(130,183,53,.10));
+    }
+
+    .cta-box h2 {
+      margin: 0 0 8px;
+      font-size: clamp(28px, 3vw, 42px);
+      line-height: 1.22;
+    }
+
+    .cta-box p { margin: 0; color: var(--muted); }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr .68fr;
+      gap: 22px;
+    }
+
+    .contact-card {
+      padding: 28px;
+    }
+
+    .contact-card h3 {
+      margin: 0 0 10px;
+      font-size: 28px;
+    }
+
+    .contact-card p {
+      margin: 0 0 18px;
+      color: var(--muted);
+    }
+
+    form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid rgba(31,41,55,.10);
+      background: #fff;
+      border-radius: 16px;
+      padding: 15px 16px;
+      font: inherit;
+      outline: none;
+      transition: .2s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(229,146,105,.55);
+      box-shadow: 0 0 0 4px rgba(229,146,105,.10);
+    }
+
+    textarea { min-height: 140px; resize: vertical; }
+
+    .contact-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .contact-item {
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: var(--surface-2);
+      border: 1px solid rgba(229,146,105,.12);
+      font-weight: 700;
+      color: #374151;
+    }
+
+    .footer {
+      margin-top: 36px;
+      background: #1f2937;
+      color: #fff;
+      padding: 26px 0;
+    }
+
+    .footer-wrap {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer small { color: rgba(255,255,255,.7); }
+
+    @media (max-width: 1100px) {
+      .hero-grid,
+      .split,
+      .cta-box,
+      .contact-grid { grid-template-columns: 1fr; }
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .process { grid-template-columns: repeat(2, 1fr); }
+      .projects { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 860px) {
+      .nav-links { display: none; }
+      .grid-3,
+      .hero-stats,
+      .form-row,
+      .hero-points { grid-template-columns: 1fr; }
+      .navbar { padding: 14px 0; }
+      .hero { padding-top: 42px; }
+      .hero-card,
+      .hero-visual,
+      .panel,
+      .contact-card,
+      .cta-box,
+      .card,
+      .project-body,
+      .process-card { padding: 20px; }
+      .process,
+      .grid-4 { grid-template-columns: 1fr; }
+      .topbar .wrap,
+      .footer-wrap { justify-content: center; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="container wrap">
+      <div>استشارات تقنية احترافية لتخطيط المشاريع وتحليل الأنظمة وتطوير الحلول الرقمية</div>
+      <div>السبت - الخميس | 9:00 ص - 6:00 م</div>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="container navbar">
+      <a href="#" class="logo">
+        <span class="logo-badge"></span>
+        <span>Softlix</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#">الرئيسية</a>
+        <a href="#services">الخدمات</a>
+        <a href="#why-us">لماذا نحن</a>
+        <a href="#projects">المشاريع</a>
+        <a href="#contact">تواصل معنا</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="btn btn-outline" href="#projects">شاهد الأعمال</a>
+        <a class="btn btn-primary" href="#contact">اطلب استشارة</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-card">
+          <div class="eyebrow">الاستشارات الفنية • Technical Consulting</div>
+          <h1>نحوّل أفكارك التقنية إلى خطة تنفيذ واضحة وقابلة للنمو</h1>
+          <p>
+            إذا كان لديك مشروع قائم أو فكرة جديدة وتحتاج إلى رؤية تقنية دقيقة، فإن فريق Softlix يساعدك في تحليل الوضع الحالي، اختيار التقنيات المناسبة، تقليل المخاطر، وبناء خارطة طريق عملية تقود مشروعك إلى النجاح.
+          </p>
+
+          <div class="hero-actions">
+            <a href="#contact" class="btn btn-primary">احصل على استشارة مجانية</a>
+            <a href="#services" class="btn btn-outline">استكشف الخدمة</a>
+          </div>
+
+          <div class="hero-points">
+            <div>تحليل شامل للمشروع الحالي</div>
+            <div>توصيات تقنية عملية وواضحة</div>
+            <div>تقليل المخاطر والتكاليف</div>
+            <div>خطة تنفيذ ونمو مستقبلية</div>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="mock-window">
+            <div class="window-head"><span></span><span></span><span></span></div>
+            <div class="bars">
+              <div class="bar" style="--w:88%"></div>
+              <div class="bar" style="--w:72%"></div>
+              <div class="bar" style="--w:94%"></div>
+              <div class="bar" style="--w:61%"></div>
+              <div class="bar" style="--w:83%"></div>
+            </div>
+          </div>
+
+          <div class="hero-stats">
+            <div class="stat"><strong>360°</strong><span>رؤية تقنية شاملة</span></div>
+            <div class="stat"><strong>UX</strong><span>تحسين التجربة</span></div>
+            <div class="stat"><strong>MVP</strong><span>تخطيط الإطلاق</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="services">
+      <div class="container">
+        <div class="section-head">
+          <h2>خدمات الاستشارات الفنية</h2>
+          <p>
+            نقدم استشارات متخصصة تساعد الشركات ورواد الأعمال على اتخاذ قرارات تقنية صحيحة، ورفع جودة المشاريع، وتسريع الوصول إلى نتائج أفضل بأقل قدر من المخاطر.
+          </p>
+        </div>
+
+        <div class="grid-3">
+          <article class="card">
+            <div class="icon">⚙️</div>
+            <h3>استشارات الأنظمة والتطبيقات</h3>
+            <p>تحليل التطبيقات الحالية، مراجعة البنية التقنية، تحديد المشاكل الحرجة، وتقديم توصيات قابلة للتنفيذ لتحسين الأداء والاستقرار وقابلية التوسع.</p>
+          </article>
+
+          <article class="card">
+            <div class="icon">📈</div>
+            <h3>استشارات التحول الرقمي</h3>
+            <p>مساعدتك في تحويل العمليات التقليدية إلى حلول رقمية أكثر كفاءة، مع فهم واضح للاحتياجات التشغيلية والتجارية والتقنية.</p>
+          </article>
+
+          <article class="card">
+            <div class="icon">🛒</div>
+            <h3>استشارات التجارة الإلكترونية</h3>
+            <p>اختيار المنصة الأنسب، تخطيط تجربة المستخدم، هيكلة عمليات المتجر والدفع والشحن، ووضع تصور تقني يدعم النمو والمبيعات.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="why-us">
+      <div class="container split">
+        <div class="panel">
+          <h3>لماذا تحتاج إلى استشارة فنية قبل التنفيذ؟</h3>
+          <p>
+            كثير من المشاريع تتعثر ليس بسبب ضعف الفكرة، بل بسبب قرارات تقنية غير مدروسة. الاستشارة الفنية تمنحك وضوحًا منذ البداية، وتساعدك على توجيه الميزانية والوقت نحو المسار الصحيح.
+          </p>
+          <ul class="check-list">
+            <li>اختيار التقنية المناسبة لطبيعة المشروع</li>
+            <li>تقليل احتمالات إعادة البناء مستقبلاً</li>
+            <li>تحديد أولويات التطوير بشكل احترافي</li>
+            <li>وضع خارطة طريق واضحة قبل بدء التنفيذ</li>
+            <li>فهم أدق لاحتياجات المستخدم والسوق</li>
+          </ul>
+        </div>
+
+        <div class="panel">
+          <h3>ما الذي يميز Softlix؟</h3>
+          <p>
+            نحن لا نقدم استشارة نظرية فقط، بل نبني رؤية قابلة للتطبيق ترتكز على خبرة عملية في تطوير المواقع، التطبيقات، الأنظمة، وتجارب المستخدم الرقمية.
+          </p>
+
+          <div class="grid-4">
+            <div class="card" style="padding:18px;">
+              <div class="icon" style="margin-bottom:12px;">🧠</div>
+              <h3 style="font-size:18px;">فهم تجاري وتقني</h3>
+              <p>نربط القرار التقني بهدف المشروع التجاري.</p>
+            </div>
+            <div class="card" style="padding:18px;">
+              <div class="icon" style="margin-bottom:12px;">🧩</div>
+              <h3 style="font-size:18px;">حلول مخصصة</h3>
+              <p>لا نعتمد على حلول عامة لا تناسب كل مشروع.</p>
+            </div>
+            <div class="card" style="padding:18px;">
+              <div class="icon" style="margin-bottom:12px;">🚀</div>
+              <h3 style="font-size:18px;">جاهزية للتنفيذ</h3>
+              <p>كل مخرجات الاستشارة قابلة للتحويل مباشرة لتطوير فعلي.</p>
+            </div>
+            <div class="card" style="padding:18px;">
+              <div class="icon" style="margin-bottom:12px;">🔍</div>
+              <h3 style="font-size:18px;">تحليل دقيق</h3>
+              <p>نراجع المشروع من زاوية الأداء والهيكل والتجربة.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="section-head">
+          <h2>كيف نعمل معك؟</h2>
+          <p>من الفكرة الأولية وحتى التوصية التنفيذية النهائية، نتبع منهجية واضحة تمنحك صورة كاملة عن مشروعك.</p>
+        </div>
+
+        <div class="process">
+          <article class="process-card">
+            <div class="step">1</div>
+            <h3>فهم المشروع</h3>
+            <p>نجتمع معك لفهم الفكرة، التحديات الحالية، الأهداف، والجمهور المستهدف.</p>
+          </article>
+
+          <article class="process-card">
+            <div class="step">2</div>
+            <h3>التحليل الفني</h3>
+            <p>نراجع الوضع الحالي أو الفكرة المقترحة ونحدد الفرص والمخاطر والاحتياجات التقنية.</p>
+          </article>
+
+          <article class="process-card">
+            <div class="step">3</div>
+            <h3>صياغة التوصيات</h3>
+            <p>نقدم لك حلولاً واضحة تشمل التقنية المقترحة، الهيكل العام، وخيارات التنفيذ الممكنة.</p>
+          </article>
+
+          <article class="process-card">
+            <div class="step">4</div>
+            <h3>خطة الطريق</h3>
+            <p>نضع معك تصوراً عملياً للمراحل القادمة، الأولويات، ومجالات التحسين أو التطوير.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="projects">
+      <div class="container">
+        <div class="section-head">
+          <h2>نماذج من المشاريع</h2>
+          <p>يمكن تخصيص هذا القسم لاحقاً لعرض مشاريع Softlix المرتبطة بالتطبيقات، الأنظمة، والتحول الرقمي.</p>
+        </div>
+
+        <div class="projects">
+          <article class="project-card">
+            <div class="project-cover">
+              <strong>منصة أعمال B2B</strong>
+              <span>استشارة بنية النظام والتوسع</span>
+            </div>
+            <div class="project-body">
+              <h3>تحليل وبناء خارطة تطوير لمنصة أعمال</h3>
+              <p>تقييم البنية الحالية، تحديد أولويات التطوير، وتحسين قابلية التوسع وتجربة المستخدم.</p>
+              <div class="tags">
+                <span class="tag">Architecture</span>
+                <span class="tag">B2B</span>
+                <span class="tag">UX</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-cover">
+              <strong>تطبيق خدمات ميدانية</strong>
+              <span>استشارة تجربة المستخدم والتدفق التشغيلي</span>
+            </div>
+            <div class="project-body">
+              <h3>إعادة هيكلة الرحلة الرقمية للتطبيق</h3>
+              <p>تحسين تدفقات المستخدمين، تنظيم الوظائف الأساسية، وتحديد أولويات MVP ومرحلة الإطلاق.</p>
+              <div class="tags">
+                <span class="tag">Mobile App</span>
+                <span class="tag">MVP</span>
+                <span class="tag">Consulting</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-cover">
+              <strong>متجر إلكتروني متكامل</strong>
+              <span>استشارة تقنية وتشغيلية</span>
+            </div>
+            <div class="project-body">
+              <h3>اختيار المنصة المناسبة وهيكلة العمليات</h3>
+              <p>اقتراح الحلول التقنية الخاصة بالمنتجات، الطلبات، الشحن، والدفع بما يضمن نمو المشروع بثبات.</p>
+              <div class="tags">
+                <span class="tag">E-commerce</span>
+                <span class="tag">Operations</span>
+                <span class="tag">Growth</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="cta-box">
+          <div>
+            <h2>هل لديك مشروع يحتاج إلى رؤية تقنية واضحة؟</h2>
+            <p>
+              سواء كان لديك نظام قائم يحتاج إلى تطوير، أو فكرة جديدة تريد تقييمها قبل الاستثمار، سنساعدك في اتخاذ القرار الصحيح بخطوات عملية ومدروسة.
+            </p>
+          </div>
+          <div style="display:flex; gap:12px; justify-content:flex-start; flex-wrap:wrap;">
+            <a href="#contact" class="btn btn-primary">ابدأ الآن</a>
+            <a href="#services" class="btn btn-outline">تعرف على الخدمة</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="container contact-grid">
+        <div class="contact-card">
+          <h3>اطلب استشارة مجانية</h3>
+          <p>املأ النموذج التالي وسيتواصل معك فريقنا لفهم احتياجك وتحديد المسار الأنسب لمشروعك.</p>
+
+          <form>
+            <div class="form-row">
+              <input type="text" placeholder="الاسم الكامل" />
+              <input type="email" placeholder="البريد الإلكتروني" />
+            </div>
+            <div class="form-row">
+              <input type="tel" placeholder="رقم الهاتف" />
+              <select>
+                <option>نوع الاستشارة</option>
+                <option>استشارات برمجية</option>
+                <option>استشارات تطبيقات</option>
+                <option>استشارات تجارة إلكترونية</option>
+                <option>استشارات تحول رقمي</option>
+              </select>
+            </div>
+            <textarea placeholder="اكتب نبذة مختصرة عن مشروعك أو التحدي الذي تواجهه"></textarea>
+            <div>
+              <button class="btn btn-primary" type="submit">إرسال الطلب</button>
+            </div>
+          </form>
+        </div>
+
+        <aside class="contact-card">
+          <h3>معلومات التواصل</h3>
+          <p>يمكنك أيضاً التواصل معنا مباشرة عبر القنوات التالية.</p>
+
+          <div class="contact-list">
+            <div class="contact-item">📞 0565378003</div>
+            <div class="contact-item">✉️ info@softlix.net</div>
+            <div class="contact-item">📍 مبنى الامتياز، حي الصفا، طريق الحرمين، المملكة العربية السعودية</div>
+            <div class="contact-item">🕘 أوقات العمل: السبت - الخميس | 9 ص - 6 م</div>
+            <div class="contact-item">💬 واتساب: 966565378003</div>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-wrap">
+      <div class="logo" style="color:#fff;">
+        <span class="logo-badge"></span>
+        <span>Softlix</span>
+      </div>
+      <small>© 2026 Softlix For Information Technology. All rights reserved.</small>
+    </div>
+  </footer>
+</body>
+</html>

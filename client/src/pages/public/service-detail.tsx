@@ -31,17 +31,30 @@ const TESTIMONIALS = [
 ];
 
 // Theme colors per service
-const SERVICE_THEMES: Record<string, { eyebrowBg: string; eyebrowColor: string; checkBg: string; ctaBg: string; shadowColor: string; chipBg: string; chipColor: string; contactIconBg: string; stepColor: string }> = {
+const SERVICE_THEMES: Record<string, { eyebrowBg: string; eyebrowColor: string; checkBg: string; ctaBg: string; ctaDark: boolean; shadowColor: string; chipBg: string; chipColor: string; contactIconBg: string; stepColor: string }> = {
   "digital-marketing": {
     eyebrowBg: "#fff1f7",
     eyebrowColor: "#a11d64",
     checkBg: "linear-gradient(135deg,#7c3aed,#ec4899)",
     ctaBg: "linear-gradient(135deg,#0f172a,#7c3aed 58%,#ec4899)",
+    ctaDark: true,
     shadowColor: "rgba(124,58,237,0.22)",
     chipBg: "#f5efff",
     chipColor: "#6d28d9",
     contactIconBg: "#f3e8ff",
     stepColor: "rgba(124,58,237,0.12)",
+  },
+  "technical-consulting": {
+    eyebrowBg: "rgba(229,146,105,0.14)",
+    eyebrowColor: "#cf7e56",
+    checkBg: "linear-gradient(135deg,#e59269,#82b735)",
+    ctaBg: "linear-gradient(135deg,rgba(229,146,105,0.14),rgba(130,183,53,0.12))",
+    ctaDark: false,
+    shadowColor: "rgba(229,146,105,0.26)",
+    chipBg: "rgba(229,146,105,0.12)",
+    chipColor: "#b86a3e",
+    contactIconBg: "rgba(229,146,105,0.16)",
+    stepColor: "rgba(229,146,105,0.13)",
   },
 };
 const DEFAULT_THEME = {
@@ -49,6 +62,7 @@ const DEFAULT_THEME = {
   eyebrowColor: "#9a4f22",
   checkBg: "linear-gradient(135deg,#2563eb,#38bdf8)",
   ctaBg: "linear-gradient(135deg,#0f172a,#2563eb 60%,#38bdf8)",
+  ctaDark: true,
   shadowColor: "rgba(37,99,235,0.22)",
   chipBg: "#eff6ff",
   chipColor: "#1d4ed8",
@@ -58,6 +72,42 @@ const DEFAULT_THEME = {
 
 // Per-service config: metrics, sub-services, benefits, technologies
 const SERVICE_CONFIG: Record<string, any> = {
+  "technical-consulting": {
+    eyebrowAr: "الاستشارات الفنية • Technical Consulting",
+    eyebrowEn: "Technical Consulting • الاستشارات الفنية",
+    heroPointsAr: ["تحليل شامل للمشروع الحالي", "توصيات تقنية عملية وواضحة", "تقليل المخاطر والتكاليف", "خطة تنفيذ ونمو مستقبلية"],
+    heroPointsEn: ["Comprehensive project analysis", "Practical & clear technical recommendations", "Risk & cost reduction", "Future execution & growth plan"],
+    metrics: [
+      { strong: "360°", spanAr: "رؤية تقنية شاملة", spanEn: "Full technical vision" },
+      { strong: "UX", spanAr: "تحسين التجربة الرقمية", spanEn: "Digital experience improvement" },
+      { strong: "MVP", spanAr: "تخطيط الإطلاق الأول", spanEn: "First launch planning" },
+      { strong: "ROI", spanAr: "رفع العائد على الاستثمار", spanEn: "Investment return improvement" },
+    ],
+    subServicesAr: [
+      { icon: "⚙️", title: "استشارات الأنظمة والتطبيقات", desc: "تحليل التطبيقات الحالية، مراجعة البنية التقنية، تحديد المشاكل الحرجة، وتقديم توصيات قابلة للتنفيذ.", features: ["مراجعة البنية التقنية", "تحديد المشاكل الحرجة", "توصيات لتحسين الأداء والاستقرار"] },
+      { icon: "📈", title: "استشارات التحول الرقمي", desc: "مساعدتك في تحويل العمليات التقليدية إلى حلول رقمية أكثر كفاءة مع فهم واضح للاحتياجات التشغيلية والتجارية.", features: ["تقييم العمليات الحالية", "تصميم الحل الرقمي المناسب", "خطة انتقال تدريجية وآمنة"] },
+      { icon: "🛒", title: "استشارات التجارة الإلكترونية", desc: "اختيار المنصة الأنسب، تخطيط تجربة المستخدم، هيكلة عمليات المتجر والدفع والشحن.", features: ["اختيار المنصة المناسبة", "هيكلة تجربة المستخدم", "تصور تقني يدعم النمو والمبيعات"] },
+    ],
+    subServicesEn: [
+      { icon: "⚙️", title: "Systems & Applications Consulting", desc: "Analyzing existing apps, reviewing technical architecture, identifying critical issues, and providing actionable recommendations.", features: ["Technical architecture review", "Critical issues identification", "Performance & stability improvement recommendations"] },
+      { icon: "📈", title: "Digital Transformation Consulting", desc: "Helping you convert traditional processes into more efficient digital solutions with clear operational and business understanding.", features: ["Current operations evaluation", "Appropriate digital solution design", "Gradual & safe transition plan"] },
+      { icon: "🛒", title: "E-commerce Consulting", desc: "Choosing the right platform, planning user experience, structuring store operations, payments, and shipping.", features: ["Right platform selection", "UX structure", "Technical vision supporting growth & sales"] },
+    ],
+    benefitsAr: [
+      { icon: "🧠", title: "فهم تجاري وتقني", desc: "نربط القرار التقني بهدف المشروع التجاري لضمان أن التقنية تخدم الأعمال وليس العكس." },
+      { icon: "🧩", title: "حلول مخصصة", desc: "لا نعتمد على حلول عامة. كل استشارة مبنية على احتياجات مشروعك تحديداً." },
+      { icon: "🚀", title: "جاهزية للتنفيذ", desc: "كل مخرجات الاستشارة قابلة للتحويل مباشرة إلى تطوير فعلي دون تأخير." },
+      { icon: "🔍", title: "تحليل دقيق", desc: "نراجع المشروع من زاوية الأداء والهيكل وتجربة المستخدم للوصول لتشخيص شامل." },
+    ],
+    benefitsEn: [
+      { icon: "🧠", title: "Business & Technical Understanding", desc: "We link technical decisions to business goals to ensure technology serves the business." },
+      { icon: "🧩", title: "Custom Solutions", desc: "We don't rely on generic solutions. Every consultation is built on your specific project needs." },
+      { icon: "🚀", title: "Ready for Implementation", desc: "All consultation outputs can be directly converted to actual development without delay." },
+      { icon: "🔍", title: "Precise Analysis", desc: "We review the project from performance, structure, and UX angles for a comprehensive diagnosis." },
+    ],
+    technologiesAr: [] as any[],
+    technologiesEn: [] as any[],
+  },
   "digital-marketing": {
     eyebrowAr: "خدمة تسويق رقمي احترافية",
     eyebrowEn: "Professional Digital Marketing Service",
@@ -285,7 +335,10 @@ export default function ServiceDetail({ lang = "ar", onLangChange }: ServiceDeta
 
   const isMobile = slug === "mobile-app-development";
   const isMarketing = slug === "digital-marketing";
+  const isConsulting = slug === "technical-consulting";
   const theme = SERVICE_THEMES[slug] || DEFAULT_THEME;
+  const ctaTextColor = theme.ctaDark ? "#fff" : "#0f172a";
+  const ctaSubColor = theme.ctaDark ? "rgba(255,255,255,0.85)" : "#6b7280";
 
   return (
     <div dir={isAr ? "rtl" : "ltr"} style={{ fontFamily: "'Cairo', sans-serif", background: "#f8fafc", color: "#0f172a", lineHeight: 1.7 }}>
@@ -386,6 +439,53 @@ export default function ServiceDetail({ lang = "ar", onLangChange }: ServiceDeta
                     </div>
                   </div>
                 </div>
+              ) : isConsulting ? (
+                /* Technical Consulting Visual */
+                <div style={{ position: "relative", zIndex: 2, width: "92%", display: "flex", flexDirection: "column", gap: 18 }}>
+                  {/* Mock Window */}
+                  <div style={{ borderRadius: 24, background: "linear-gradient(180deg,#fff,#fff8f3)", border: "1px solid rgba(31,41,55,0.08)", padding: 22, boxShadow: "0 30px 70px rgba(15,23,42,0.14)" }}>
+                    <div style={{ display: "flex", gap: 8, marginBottom: 18 }}>
+                      <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#fda4af", display: "inline-block" }} />
+                      <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#fde68a", display: "inline-block" }} />
+                      <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#86efac", display: "inline-block" }} />
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, fontWeight: 800, color: "#64748b", marginBottom: 14 }}>
+                      <span>{isAr ? "تحليل المشروع" : "Project Analysis"}</span>
+                      <span style={{ color: "#82b735" }}>● {isAr ? "نشط" : "Active"}</span>
+                    </div>
+                    <div style={{ display: "grid", gap: 10 }}>
+                      {[
+                        { label: isAr ? "جودة البنية التقنية" : "Architecture Quality", w: 88 },
+                        { label: isAr ? "قابلية التوسع" : "Scalability", w: 72 },
+                        { label: isAr ? "تجربة المستخدم" : "User Experience", w: 94 },
+                        { label: isAr ? "الأمان والاستقرار" : "Security & Stability", w: 61 },
+                        { label: isAr ? "أداء النظام" : "System Performance", w: 83 },
+                      ].map((row, i) => (
+                        <div key={i}>
+                          <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, fontWeight: 700, color: "#374151", marginBottom: 4 }}>
+                            <span>{row.label}</span><span style={{ color: "#cf7e56" }}>{row.w}%</span>
+                          </div>
+                          <div style={{ height: 10, borderRadius: 999, background: "#f1f5f9", overflow: "hidden", position: "relative" }}>
+                            <div style={{ position: "absolute", inset: 0, width: `${row.w}%`, borderRadius: "inherit", background: "linear-gradient(90deg,#e59269,#82b735)" }} />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Stats Row */}
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12 }}>
+                    {[
+                      { strong: "360°", spanAr: "رؤية شاملة", spanEn: "Full Vision" },
+                      { strong: "UX", spanAr: "تحسين التجربة", spanEn: "UX Improvement" },
+                      { strong: "MVP", spanAr: "تخطيط الإطلاق", spanEn: "Launch Planning" },
+                    ].map((s, i) => (
+                      <div key={i} style={{ background: "rgba(255,255,255,0.92)", border: "1px solid rgba(31,41,55,0.08)", borderRadius: 20, padding: "16px 10px", textAlign: "center", boxShadow: "0 12px 32px rgba(15,23,42,0.07)" }}>
+                        <strong style={{ display: "block", fontSize: 24, color: "#cf7e56", lineHeight: 1.1 }}>{s.strong}</strong>
+                        <span style={{ color: "#6b7280", fontSize: 12, fontWeight: 700 }}>{isAr ? s.spanAr : s.spanEn}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               ) : isMarketing ? (
                 /* Marketing Dashboard Visual */
                 <div style={{ position: "relative", zIndex: 2, width: "92%", height: 420, borderRadius: 36, background: "linear-gradient(135deg,#ffffff,#faf5ff)", border: "1px solid rgba(226,232,240,0.92)", boxShadow: "0 30px 70px rgba(15,23,42,0.14)", overflow: "hidden" }}>
@@ -468,14 +568,18 @@ export default function ServiceDetail({ lang = "ar", onLangChange }: ServiceDeta
               )}
 
               {/* Floating cards */}
-              <div style={{ position: "absolute", background: "#fff", color: "#0f172a", borderRadius: 20, padding: "14px 16px", boxShadow: "0 20px 50px rgba(15,23,42,0.08)", border: "1px solid #e2e8f0", minWidth: 180, zIndex: 3, ...(isAr ? { right: -10 } : { left: -10 }), top: 30 }}>
-                <strong style={{ display: "block", fontSize: 17, marginBottom: 4 }}>{isMarketing ? (isAr ? "استراتيجية قبل التنفيذ" : "Strategy before execution") : (isAr ? "Flutter / Native" : "Flutter / Native")}</strong>
-                <span style={{ color: "#64748b", fontSize: 13, fontWeight: 700 }}>{isMarketing ? (isAr ? "لا نبدأ الحملة قبل فهم السوق والهدف" : "We don't start before understanding the market") : (isAr ? "حلول مرنة حسب المشروع" : "Flexible solutions per project")}</span>
-              </div>
-              <div style={{ position: "absolute", background: "#fff", color: "#0f172a", borderRadius: 20, padding: "14px 16px", boxShadow: "0 20px 50px rgba(15,23,42,0.08)", border: "1px solid #e2e8f0", minWidth: 180, zIndex: 3, ...(isAr ? { left: 4 } : { right: 4 }), bottom: 20 }}>
-                <strong style={{ display: "block", fontSize: 17, marginBottom: 4 }}>{isMarketing ? (isAr ? "نتائج قابلة للقياس" : "Measurable results") : (isAr ? "واجهة ترفع التفاعل" : "Interface that boosts engagement")}</strong>
-                <span style={{ color: "#64748b", fontSize: 13, fontWeight: 700 }}>{isMarketing ? (isAr ? "تحسين مستمر مبني على الأرقام" : "Continuous improvement based on numbers") : (isAr ? "تصميم يركز على الوضوح" : "Design focused on clarity")}</span>
-              </div>
+              {!isConsulting && (
+                <>
+                  <div style={{ position: "absolute", background: "#fff", color: "#0f172a", borderRadius: 20, padding: "14px 16px", boxShadow: "0 20px 50px rgba(15,23,42,0.08)", border: "1px solid #e2e8f0", minWidth: 180, zIndex: 3, ...(isAr ? { right: -10 } : { left: -10 }), top: 30 }}>
+                    <strong style={{ display: "block", fontSize: 17, marginBottom: 4 }}>{isMarketing ? (isAr ? "استراتيجية قبل التنفيذ" : "Strategy before execution") : (isAr ? "Flutter / Native" : "Flutter / Native")}</strong>
+                    <span style={{ color: "#64748b", fontSize: 13, fontWeight: 700 }}>{isMarketing ? (isAr ? "لا نبدأ الحملة قبل فهم السوق والهدف" : "We don't start before understanding the market") : (isAr ? "حلول مرنة حسب المشروع" : "Flexible solutions per project")}</span>
+                  </div>
+                  <div style={{ position: "absolute", background: "#fff", color: "#0f172a", borderRadius: 20, padding: "14px 16px", boxShadow: "0 20px 50px rgba(15,23,42,0.08)", border: "1px solid #e2e8f0", minWidth: 180, zIndex: 3, ...(isAr ? { left: 4 } : { right: 4 }), bottom: 20 }}>
+                    <strong style={{ display: "block", fontSize: 17, marginBottom: 4 }}>{isMarketing ? (isAr ? "نتائج قابلة للقياس" : "Measurable results") : (isAr ? "واجهة ترفع التفاعل" : "Interface that boosts engagement")}</strong>
+                    <span style={{ color: "#64748b", fontSize: 13, fontWeight: 700 }}>{isMarketing ? (isAr ? "تحسين مستمر مبني على الأرقام" : "Continuous improvement based on numbers") : (isAr ? "تصميم يركز على الوضوح" : "Design focused on clarity")}</span>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -768,22 +872,26 @@ export default function ServiceDetail({ lang = "ar", onLangChange }: ServiceDeta
       {/* ── CTA Box ── */}
       <section style={{ padding: "0 0 88px" }}>
         <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
-          <div style={{ background: theme.ctaBg, color: "#fff", borderRadius: 34, padding: 42, display: "grid", gridTemplateColumns: "1.08fr 0.92fr", gap: 24, alignItems: "center", position: "relative", overflow: "hidden", boxShadow: "0 30px 70px rgba(15,23,42,0.13)" }} className="cta-grid-responsive">
-            <div style={{ position: "absolute", width: 220, height: 220, borderRadius: "50%", background: "rgba(255,255,255,0.08)", left: -70, bottom: -110 }} />
-            <div style={{ position: "absolute", width: 190, height: 190, borderRadius: "50%", background: "rgba(255,255,255,0.08)", right: -60, top: -70 }} />
+          <div style={{ background: theme.ctaBg, color: ctaTextColor, borderRadius: 34, padding: 42, display: "grid", gridTemplateColumns: "1.08fr 0.92fr", gap: 24, alignItems: "center", position: "relative", overflow: "hidden", boxShadow: theme.ctaDark ? "0 30px 70px rgba(15,23,42,0.13)" : "0 20px 50px rgba(229,146,105,0.14)", border: theme.ctaDark ? "none" : "1px solid rgba(229,146,105,0.18)" }} className="cta-grid-responsive">
+            {theme.ctaDark && <div style={{ position: "absolute", width: 220, height: 220, borderRadius: "50%", background: "rgba(255,255,255,0.08)", left: -70, bottom: -110 }} />}
+            {theme.ctaDark && <div style={{ position: "absolute", width: 190, height: 190, borderRadius: "50%", background: "rgba(255,255,255,0.08)", right: -60, top: -70 }} />}
             <div style={{ position: "relative" }}>
               <h2 style={{ margin: "0 0 12px", fontSize: "clamp(28px,4vw,42px)", lineHeight: 1.2, fontWeight: 800 }}>
-                {isAr ? "جاهز لتحويل فكرتك إلى واقع رقمي احترافي؟" : "Ready to Turn Your Idea into a Professional Digital Reality?"}
+                {isConsulting
+                  ? (isAr ? "هل لديك مشروع يحتاج إلى رؤية تقنية واضحة؟" : "Do you have a project that needs a clear technical vision?")
+                  : (isAr ? "جاهز لتحويل فكرتك إلى واقع رقمي احترافي؟" : "Ready to Turn Your Idea into a Professional Digital Reality?")}
               </h2>
-              <p style={{ margin: 0, color: "rgba(255,255,255,0.85)", fontSize: 17 }}>
-                {isAr ? "ابدأ معنا بخطة واضحة وتصميم يعكس قيمة مشروعك." : "Start with a clear plan and design that reflects your project's value."}
+              <p style={{ margin: 0, color: ctaSubColor, fontSize: 17 }}>
+                {isConsulting
+                  ? (isAr ? "سواء كان لديك نظام قائم يحتاج إلى تطوير، أو فكرة جديدة تريد تقييمها، سنساعدك في اتخاذ القرار الصحيح." : "Whether you have an existing system to develop, or a new idea to evaluate, we'll help you make the right decision.")
+                  : (isAr ? "ابدأ معنا بخطة واضحة وتصميم يعكس قيمة مشروعك." : "Start with a clear plan and design that reflects your project's value.")}
               </p>
             </div>
             <div style={{ display: "flex", justifyContent: "flex-start", gap: 14, flexWrap: "wrap", position: "relative" }}>
               <a href="#contact-section" style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 24px", fontSize: 15, fontWeight: 800, background: theme.checkBg, color: "#fff", boxShadow: `0 14px 28px ${theme.shadowColor}`, textDecoration: "none", border: 0 }}>
-                {isAr ? (isMarketing ? "اطلب استشارة الآن" : "اطلب عرض سعر") : (isMarketing ? "Request Consultation" : "Request a Quote")}
+                {isAr ? (isConsulting ? "احصل على استشارة مجانية" : isMarketing ? "اطلب استشارة الآن" : "اطلب عرض سعر") : (isConsulting ? "Get Free Consultation" : isMarketing ? "Request Consultation" : "Request a Quote")}
               </a>
-              <a href="/services" style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 24px", fontSize: 15, fontWeight: 700, background: "rgba(255,255,255,0.12)", color: "#fff", border: "1px solid rgba(255,255,255,0.2)", textDecoration: "none" }}>
+              <a href="/services" style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 24px", fontSize: 15, fontWeight: 700, background: theme.ctaDark ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.7)", color: theme.ctaDark ? "#fff" : "#374151", border: `1px solid ${theme.ctaDark ? "rgba(255,255,255,0.2)" : "rgba(229,146,105,0.25)"}`, textDecoration: "none" }}>
                 {isAr ? "استكشف الخدمات" : "Explore Services"}
               </a>
             </div>
