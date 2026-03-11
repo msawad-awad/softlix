@@ -27,6 +27,7 @@ import {
   MessageSquareQuote,
   ListOrdered,
   Trophy,
+  BarChart3,
 } from "lucide-react";
 import {
   Sidebar,
@@ -129,6 +130,7 @@ export function AppSidebar() {
     { title: "الشهادات", url: "/website/testimonials", icon: MessageSquareQuote },
     { title: "خطوات العمل", url: "/website/process-steps", icon: ListOrdered },
     { title: "لماذا نحن؟", url: "/website/why-us", icon: Trophy },
+    { title: "الأرقام والإحصاءات", url: "/website/site-stats", icon: BarChart3 },
     { title: "الخدمات", url: "/website/services", icon: Layers },
     { title: "المشاريع", url: "/website/projects", icon: Package },
     { title: "المدونة", url: "/website/blog", icon: BookOpen },

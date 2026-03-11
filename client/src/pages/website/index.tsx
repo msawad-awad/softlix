@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { Globe, Layers, FileText, Users2, ArrowUpRight, Settings2, Megaphone, Link2, Inbox } from "lucide-react";
+import { Globe, Layers, FileText, Users2, ArrowUpRight, Settings2, Megaphone, Link2, Inbox, BarChart3 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -29,6 +29,7 @@ export default function WebsiteOverview() {
     { label: "شعارات العملاء", labelEn: "Client Logos", href: "/website/clients", icon: Users2 },
     { label: "إدارة التحويلات", labelEn: "Manage Redirects", href: "/website/redirects", icon: Link2 },
     { label: "العملاء المحتملون", labelEn: "Leads", href: "/website/leads", icon: Inbox },
+    { label: "الأرقام والإحصاءات", labelEn: "Site Stats", href: "/website/site-stats", icon: BarChart3 },
     { label: "إعدادات التسويق", labelEn: "Marketing Settings", href: "/marketing", icon: Megaphone },
   ];
 

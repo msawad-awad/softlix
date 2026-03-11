@@ -47,6 +47,7 @@ import WebsiteAboutContent from "@/pages/website/about-content";
 import WebsiteTestimonials from "@/pages/website/testimonials";
 import WebsiteProcessSteps from "@/pages/website/process-steps";
 import WebsiteWhyUs from "@/pages/website/why-us";
+import WebsiteSiteStats from "@/pages/website/site-stats";
 import Marketing from "@/pages/marketing";
 import { useMarketingTracking } from "@/hooks/use-marketing-tracking";
 
@@ -145,6 +146,7 @@ function Router() {
       <Route path="/website/testimonials"><AdminRoute><WebsiteTestimonials /></AdminRoute></Route>
       <Route path="/website/process-steps"><AdminRoute><WebsiteProcessSteps /></AdminRoute></Route>
       <Route path="/website/why-us"><AdminRoute><WebsiteWhyUs /></AdminRoute></Route>
+      <Route path="/website/site-stats"><AdminRoute><WebsiteSiteStats /></AdminRoute></Route>
       <Route path="/website/services"><AdminRoute><WebsiteServices /></AdminRoute></Route>
       <Route path="/website/projects"><AdminRoute><WebsiteProjects /></AdminRoute></Route>
       <Route path="/website/blog"><AdminRoute><WebsiteBlog /></AdminRoute></Route>
