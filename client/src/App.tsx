@@ -20,6 +20,10 @@ import CompanyForm from "@/pages/company-form";
 import Contacts from "@/pages/contacts";
 import ContactForm from "@/pages/contact-form";
 import Settings from "@/pages/settings";
+import Tasks from "@/pages/tasks";
+import Tickets from "@/pages/tickets";
+import HR from "@/pages/hr";
+import Inventory from "@/pages/inventory";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -162,6 +166,38 @@ function Router() {
         <ProtectedRoute>
           <DashboardLayout>
             <Settings />
+          </DashboardLayout>
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/tasks">
+        <ProtectedRoute>
+          <DashboardLayout>
+            <Tasks />
+          </DashboardLayout>
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/tickets">
+        <ProtectedRoute>
+          <DashboardLayout>
+            <Tickets />
+          </DashboardLayout>
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/hr">
+        <ProtectedRoute>
+          <DashboardLayout>
+            <HR />
+          </DashboardLayout>
+        </ProtectedRoute>
+      </Route>
+
+      <Route path="/inventory">
+        <ProtectedRoute>
+          <DashboardLayout>
+            <Inventory />
           </DashboardLayout>
         </ProtectedRoute>
       </Route>
