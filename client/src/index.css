@@ -2,34 +2,95 @@
 @tailwind components;
 @tailwind utilities;
 
-/* RTL Support - Critical RTL fixes */
+/* ============================================
+   RTL (Right-to-Left) Support for Arabic
+   ============================================ */
+
 html[dir="rtl"] {
   direction: rtl;
   text-align: right;
 }
 
+/* Global text alignment for RTL */
 html[dir="rtl"] * {
   text-align: inherit;
 }
 
-/* Dashboard layout - Force sidebar to right in RTL */
+/* ============================================
+   Dashboard Layout - Sidebar Right in RTL
+   ============================================ */
+
 html[dir="rtl"] .dashboard-layout {
   flex-direction: row-reverse !important;
-  direction: rtl;
 }
 
-/* Header - Reverse controls order */
+/* Header RTL - Reverse the flex order of toggle buttons */
 html[dir="rtl"] .dashboard-header {
   flex-direction: row-reverse;
+  justify-content: space-between;
 }
 
 html[dir="rtl"] .header-controls {
   flex-direction: row-reverse;
 }
 
-/* Sidebar wrapper - Support RTL */
-html[dir="rtl"] [data-slot="sidebar-wrapper"] {
-  flex-direction: row-reverse !important;
+/* ============================================
+   Sidebar Positioning - Right Side in RTL
+   ============================================ */
+
+html[dir="rtl"] .group\/sidebar-wrapper,
+html[dir="rtl"] [data-slot="sidebar"],
+html[dir="rtl"] .peer.hidden.md\:block {
+  order: 2;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+html[dir="rtl"] .sidebar {
+  margin-left: auto !important;
+  margin-right: 0 !important;
+}
+
+/* Sidebar inset content - Left side in RTL */
+html[dir="rtl"] .sidebar-inset,
+html[dir="rtl"] [class*="sidebar-inset"] {
+  order: 1;
+  margin-right: auto;
+  margin-left: 0;
+}
+
+/* ============================================
+   Responsive RTL Adjustments
+   ============================================ */
+
+/* Mobile sheet RTL */
+html[dir="rtl"] .bg-sidebar.text-sidebar-foreground {
+  direction: rtl;
+}
+
+/* Fix padding/margin directions for RTL */
+html[dir="rtl"] [class*="ps-"],
+html[dir="rtl"] [class*="pe-"],
+html[dir="rtl"] [class*="pl-"],
+html[dir="rtl"] [class*="pr-"] {
+  /* Tailwind will handle logical properties */
+}
+
+/* Icon alignment in RTL */
+html[dir="rtl"] [class*="gap-"] {
+  gap: inherit;
+}
+
+/* Button and control RTL alignment */
+html[dir="rtl"] button,
+html[dir="rtl"] [role="button"] {
+  direction: rtl;
+  text-align: right;
+}
+
+html[dir="rtl"] svg {
+  margin-right: auto;
+  margin-left: auto;
 }
 
 /* LIGHT MODE - Professional Business Blue Theme */

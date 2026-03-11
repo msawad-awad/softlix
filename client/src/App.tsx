@@ -51,11 +51,12 @@ function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
     <div 
       className="dashboard-layout flex min-h-screen w-full"
       style={{ 
-        flexDirection: isRTL ? 'row-reverse' : 'row' 
+        flexDirection: isRTL ? 'row-reverse' : 'row',
+        display: 'flex'
       }}
     >
       <AppSidebar />
-      <SidebarInset className="flex flex-col flex-1">
+      <SidebarInset className="sidebar-inset flex flex-col flex-1">
         <header 
           className="dashboard-header flex h-14 items-center justify-between gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 sticky top-0 z-50"
           style={{ flexDirection: isRTL ? 'row-reverse' : 'row' }}
