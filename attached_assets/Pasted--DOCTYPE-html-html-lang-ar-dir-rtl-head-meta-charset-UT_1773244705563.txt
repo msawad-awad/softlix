@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>التصميم وإدارة المواقع الإلكترونية | Softlix</title>
+  <meta name="description" content="صفحة خدمة التصميم وإدارة المواقع الإلكترونية من Softlix - إدارة المحتوى، تحديث المواقع، كتابة المحتوى، وتحسين الظهور الرقمي بتصميم احترافي." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #e59269;
+      --primary-dark: #d07b52;
+      --secondary: #82b735;
+      --dark: #1f2937;
+      --text: #4b5563;
+      --muted: #6b7280;
+      --bg: #fffaf7;
+      --card: #ffffff;
+      --line: #f1e5dc;
+      --shadow: 0 20px 50px rgba(38, 30, 24, 0.08);
+      --radius: 22px;
+      --container: 1180px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Cairo", sans-serif;
+      background: #fff;
+      color: var(--dark);
+      line-height: 1.8;
+    }
+
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; display: block; }
+
+    .container {
+      width: min(var(--container), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .section { padding: 84px 0; }
+    .section-sm { padding: 64px 0; }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      border-radius: 999px;
+      background: rgba(229, 146, 105, 0.12);
+      color: var(--primary-dark);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .section-head {
+      text-align: center;
+      max-width: 760px;
+      margin: 0 auto 42px;
+    }
+
+    .section-head h2 {
+      margin: 14px 0 12px;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.2;
+      color: var(--dark);
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 52px;
+      padding: 0 24px;
+      border-radius: 999px;
+      font-weight: 700;
+      transition: .25s ease;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      box-shadow: 0 18px 30px rgba(229, 146, 105, 0.28);
+    }
+
+    .btn-primary:hover { transform: translateY(-2px); }
+
+    .btn-outline {
+      border-color: rgba(31, 41, 55, 0.14);
+      color: var(--dark);
+      background: #fff;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary-dark);
+    }
+
+    .topbar {
+      background: var(--secondary);
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .topbar-inner {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .topbar-links {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(10px);
+      background: rgba(255, 255, 255, 0.92);
+      border-bottom: 1px solid rgba(229, 146, 105, 0.12);
+    }
+
+    .nav-inner {
+      min-height: 84px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 800;
+      color: var(--dark);
+    }
+
+    .logo-badge {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--primary), #f4c5ab);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      box-shadow: 0 12px 24px rgba(229, 146, 105, 0.22);
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--primary-dark);
+    }
+
+    .hero {
+      background:
+        radial-gradient(circle at 85% 20%, rgba(130, 183, 53, 0.14), transparent 20%),
+        radial-gradient(circle at 15% 10%, rgba(229, 146, 105, 0.18), transparent 24%),
+        linear-gradient(180deg, #fffaf7 0%, #ffffff 100%);
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 42px;
+      align-items: center;
+      min-height: 78vh;
+      padding: 44px 0 56px;
+    }
+
+    .hero h1 {
+      font-size: clamp(34px, 5vw, 58px);
+      line-height: 1.1;
+      margin: 18px 0 18px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 18px;
+      margin: 0 0 28px;
+      max-width: 650px;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 28px;
+    }
+
+    .stat {
+      background: rgba(255,255,255,0.88);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat strong {
+      display: block;
+      font-size: 28px;
+      color: var(--primary-dark);
+      line-height: 1.1;
+      margin-bottom: 6px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .hero-visual {
+      position: relative;
+    }
+
+    .hero-card {
+      background: linear-gradient(180deg, #fff 0%, #fff7f2 100%);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+      position: relative;
+    }
+
+    .hero-card img {
+      width: 100%;
+      border-radius: 20px;
+      object-fit: cover;
+      min-height: 480px;
+    }
+
+    .floating-badge {
+      position: absolute;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      border-radius: 18px;
+      padding: 16px 18px;
+      max-width: 240px;
+    }
+
+    .floating-badge.top {
+      top: 24px;
+      left: -10px;
+    }
+
+    .floating-badge.bottom {
+      bottom: 26px;
+      right: -10px;
+    }
+
+    .floating-badge strong {
+      display: block;
+      color: var(--dark);
+      margin-bottom: 6px;
+      font-size: 16px;
+    }
+
+    .floating-badge span {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .grid-2, .grid-3, .grid-4 {
+      display: grid;
+      gap: 24px;
+    }
+
+    .grid-2 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    .grid-4 { grid-template-columns: repeat(4, 1fr); }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      height: 100%;
+    }
+
+    .card-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background: rgba(229, 146, 105, 0.12);
+      color: var(--primary-dark);
+      font-size: 26px;
+      margin-bottom: 16px;
+      font-weight: 800;
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      line-height: 1.3;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .feature-list,
+    .contact-list,
+    .timeline {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .feature-list li,
+    .contact-list li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .dot {
+      width: 28px;
+      height: 28px;
+      min-width: 28px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: rgba(130, 183, 53, 0.16);
+      color: var(--secondary);
+      font-size: 14px;
+      font-weight: 800;
+      margin-top: 2px;
+    }
+
+    .split-box {
+      display: grid;
+      grid-template-columns: .95fr 1.05fr;
+      gap: 30px;
+      align-items: center;
+      background: linear-gradient(180deg, #fff, #fff9f6);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+    }
+
+    .split-box img {
+      border-radius: 22px;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      min-height: 350px;
+    }
+
+    .timeline {
+      display: grid;
+      gap: 18px;
+    }
+
+    .timeline li {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 16px;
+      align-items: start;
+      padding: 18px;
+      border-radius: 20px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+
+    .timeline .step {
+      width: 56px;
+      height: 56px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: #fff;
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    .timeline h4 {
+      margin: 0 0 6px;
+      font-size: 18px;
+    }
+
+    .timeline p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .highlight {
+      background: linear-gradient(135deg, rgba(229,146,105,.12), rgba(130,183,53,.10));
+    }
+
+    .project-card {
+      overflow: hidden;
+      padding: 0;
+    }
+
+    .project-card img {
+      width: 100%;
+      aspect-ratio: 16/10;
+      object-fit: cover;
+    }
+
+    .project-body { padding: 24px; }
+    .project-body h3 { margin-top: 0; }
+    .project-body p { margin-bottom: 18px; }
+
+    .cta {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-box {
+      border-radius: 30px;
+      padding: 42px;
+      color: #fff;
+      background: linear-gradient(135deg, #1f2937, #3a4659 45%, var(--primary-dark));
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+
+    .cta-box h2 {
+      margin: 0 0 10px;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.2;
+    }
+
+    .cta-box p {
+      margin: 0;
+      color: rgba(255,255,255,.85);
+      max-width: 700px;
+    }
+
+    .contact-wrap {
+      display: grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap: 24px;
+    }
+
+    .form-card,
+    .aside-card {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 28px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .field,
+    .textarea,
+    .select {
+      width: 100%;
+      border: 1px solid #eadfd7;
+      background: #fffaf7;
+      border-radius: 16px;
+      min-height: 56px;
+      padding: 14px 18px;
+      font-family: inherit;
+      font-size: 15px;
+      color: var(--dark);
+      outline: none;
+      transition: .2s ease;
+    }
+
+    .textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    .field:focus,
+    .textarea:focus,
+    .select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(229, 146, 105, 0.12);
+    }
+
+    .full { grid-column: 1 / -1; }
+
+    .aside-card h3,
+    .form-card h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+      font-size: 24px;
+    }
+
+    .aside-card p,
+    .form-card p {
+      color: var(--muted);
+      margin-top: 0;
+    }
+
+    .contact-list li strong {
+      display: block;
+      color: var(--dark);
+      margin-bottom: 2px;
+    }
+
+    .contact-list li span,
+    .contact-list li a {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .footer {
+      background: #f9f5f1;
+      border-top: 1px solid var(--line);
+      padding: 28px 0;
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 1100px) {
+      .hero-grid,
+      .split-box,
+      .contact-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .grid-3 { grid-template-columns: repeat(2, 1fr); }
+      .hero-stats { grid-template-columns: repeat(3, 1fr); }
+      .floating-badge.top { left: 8px; }
+      .floating-badge.bottom { right: 8px; }
+    }
+
+    @media (max-width: 760px) {
+      .nav-links { display: none; }
+      .section { padding: 68px 0; }
+      .hero-grid { min-height: unset; }
+      .hero-stats,
+      .grid-2,
+      .grid-3,
+      .grid-4,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar-inner,
+      .nav-inner,
+      .footer-inner { justify-content: center; text-align: center; }
+      .cta-box { padding: 28px; }
+      .floating-badge {
+        position: static;
+        max-width: 100%;
+        margin-top: 14px;
+      }
+      .hero-card img { min-height: auto; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <div>Softlix for Information Technology</div>
+      <div class="topbar-links">
+        <a href="tel:0565378003">0565378003</a>
+        <a href="mailto:info@softlix.net">info@softlix.net</a>
+        <a href="https://wa.me/966565378003" target="_blank" rel="noopener">واتساب</a>
+      </div>
+    </div>
+  </div>
+
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="#" class="logo">
+        <span class="logo-badge">S</span>
+        <span>Softlix</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#hero">الرئيسية</a>
+        <a href="#services" class="active">الخدمة</a>
+        <a href="#workflow">آلية العمل</a>
+        <a href="#benefits">المميزات</a>
+        <a href="#projects">المشاريع</a>
+        <a href="#contact">تواصل معنا</a>
+      </nav>
+
+      <a class="btn btn-primary" href="#contact">استشارة مجانية</a>
+    </div>
+  </header>
+
+  <section class="hero" id="hero">
+    <div class="container hero-grid">
+      <div>
+        <span class="eyebrow">خدمة احترافية متكاملة للمواقع الإلكترونية</span>
+        <h1>التصميم وإدارة المواقع الإلكترونية<br>بمحتوى احترافي وهوية أقوى</h1>
+        <p>
+          نقدم في Softlix خدمة متكاملة لإدارة محتوى المواقع الإلكترونية والتصاميم،
+          تشمل تحديث الموقع، كتابة المحتوى الإبداعي، إضافة المنتجات، تحسين الظهور الرقمي،
+          ومتابعة الأداء بشكل مستمر لضمان حضور أقوى لعلامتك التجارية.
+        </p>
+        <div class="btns">
+          <a class="btn btn-primary" href="#contact">اطلب الخدمة الآن</a>
+          <a class="btn btn-outline" href="#projects">شاهد المشاريع</a>
+        </div>
+
+        <div class="hero-stats">
+          <div class="stat">
+            <strong>360°</strong>
+            <span>إدارة شاملة للمحتوى</span>
+          </div>
+          <div class="stat">
+            <strong>SEO</strong>
+            <span>تهيئة المحتوى لمحركات البحث</span>
+          </div>
+          <div class="stat">
+            <strong>Brand</strong>
+            <span>تصميم يعكس هوية البراند</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="hero-card">
+          <img src="https://softlixagency.com/wp-content/uploads/2023/02/content_filling-2.png" alt="إدارة المحتوى والتصميم" />
+        </div>
+        <div class="floating-badge top">
+          <strong>إدارة مستمرة للموقع</strong>
+          <span>تحديث المحتوى، الصفحات، والأقسام بشكل منظم ومتجدد.</span>
+        </div>
+        <div class="floating-badge bottom">
+          <strong>تصميم + محتوى + نشر</strong>
+          <span>خدمة موحدة تساعدك على تحسين حضورك الرقمي وتحويل الزيارات إلى نتائج.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="services">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">الفئات المستهدفة والخدمات</span>
+        <h2>نخدم المشاريع التي تحتاج محتوى منظم وتصميم احترافي</h2>
+        <p>
+          هذه الخدمة مناسبة للمتاجر الإلكترونية، الشركات، المؤسسات، والأنشطة التجارية
+          التي تحتاج إلى إدارة مستمرة للموقع مع محتوى يعكس قيمتها ويزيد من ظهورها الرقمي.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <article class="card">
+          <div class="card-icon">◎</div>
+          <h3>الفئات المستهدفة</h3>
+          <p>
+            شركاء النجاح هم الفئة المستهدفة التي نسعد بخدمتها، من أصحاب المتاجر والأنشطة التجارية
+            إلى الشركات التي تريد رفع القيمة السوقية وتعزيز حضورها الرقمي والوصول إلى جمهورها بدقة.
+          </p>
+        </article>
+
+        <article class="card highlight">
+          <div class="card-icon">✓</div>
+          <h3>طريقة العمل</h3>
+          <ul class="feature-list">
+            <li><span class="dot">1</span><span>متابعة الموقع بشكل مستمر والتأكد من أنه يعمل بكفاءة.</span></li>
+            <li><span class="dot">2</span><span>المحافظة على أحدث الإصدارات والإضافات لرفع الأمان والأداء.</span></li>
+            <li><span class="dot">3</span><span>تحديث البيانات وإضافة محتوى جديد عند الحاجة.</span></li>
+            <li><span class="dot">4</span><span>إضافة المنتجات وتحديثها وتنظيم عرضها داخل الموقع.</span></li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-sm">
+    <div class="container split-box">
+      <div>
+        <img src="https://softlixagency.com/wp-content/uploads/2022/04/4f7e732.webp" alt="خطوات تنفيذ الخدمة" />
+      </div>
+      <div>
+        <span class="eyebrow">خطوات البدء بالتنفيذ</span>
+        <h2 style="margin:14px 0 16px; font-size: clamp(28px,4vw,40px); line-height:1.2;">نبدأ بخطة واضحة ثم ننفذ المحتوى والتصميم باحتراف</h2>
+        <ul class="feature-list">
+          <li><span class="dot">•</span><span>الاتفاق على مجريات العمل والنقاط الرئيسية التي يحتاجها العميل.</span></li>
+          <li><span class="dot">•</span><span>كتابة محتوى إبداعي متوافق مع هوية الشركة والجمهور المستهدف.</span></li>
+          <li><span class="dot">•</span><span>متابعة سير العمل وعقد مناقشات دورية بما يناسب جميع الأطراف.</span></li>
+          <li><span class="dot">•</span><span>النشر والتسويق عبر المنصات المتفق عليها مع تحسين العرض البصري للمحتوى.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="workflow">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">آلية التنفيذ</span>
+        <h2>كيف ندير المحتوى والتصميم داخل Softlix</h2>
+        <p>نعمل وفق خطوات واضحة تضمن جودة المخرجات وسهولة المتابعة ووضوح النتائج من البداية حتى الاستمرارية.</p>
+      </div>
+
+      <ul class="timeline">
+        <li>
+          <div class="step">01</div>
+          <div>
+            <h4>فهم المشروع والجمهور المستهدف</h4>
+            <p>نبدأ بتحليل نشاطك التجاري، أهدافك، هوية البراند، ونوعية العملاء الذين تريد الوصول إليهم.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step">02</div>
+          <div>
+            <h4>بناء استراتيجية المحتوى</h4>
+            <p>نضع خطة منظمة لإنشاء ونشر المحتوى بما يخدم الموقع، محركات البحث، ورسائل البراند الأساسية.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step">03</div>
+          <div>
+            <h4>إنتاج المحتوى والتصميمات</h4>
+            <p>نكتب المحتوى، نصمم العناصر البصرية، ونجهز الصفحات والأقسام بأسلوب جذاب واحترافي.</p>
+          </div>
+        </li>
+        <li>
+          <div class="step">04</div>
+          <div>
+            <h4>التحديث والنشر والمتابعة</h4>
+            <p>نحدث الموقع بشكل دوري، نضيف المنتجات أو الصفحات الجديدة، ونحافظ على استمرارية الظهور والجودة.</p>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" id="benefits">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">مميزات الخدمة</span>
+        <h2>لماذا تحتاج إلى استراتيجية لإدارة المحتوى والتصميم؟</h2>
+        <p>إدارة المحتوى ليست مجرد كتابة نصوص، بل منظومة تساعد على تحسين الحضور الرقمي، رفع الثقة، وتحويل الزيارات إلى نتائج عملية.</p>
+      </div>
+
+      <div class="grid-3">
+        <article class="card">
+          <div class="card-icon">01</div>
+          <h3>ميزة تنافسية أقوى</h3>
+          <p>تمنحك استراتيجية المحتوى والتصميم حضورًا مختلفًا داخل السوق وتساعد جمهورك على تمييز علامتك بسرعة.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">02</div>
+          <h3>تحسين محركات البحث</h3>
+          <p>اختيار الكلمات المناسبة وكتابة الوصف والمحتوى بطريقة احترافية يرفع من فرص ظهور خدماتك ومنتجاتك في البحث.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">03</div>
+          <h3>هوية بصرية أكثر رسوخًا</h3>
+          <p>التصميم الجذاب والفريد يعكس هوية البراند ويجعلها أكثر ثباتًا في ذهن العميل من النظرة الأولى.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">04</div>
+          <h3>عمليات معرفية أذكى</h3>
+          <p>المحتوى المنظم يساعد على دعم الأتمتة، التحليل، واتخاذ القرار بشكل أكثر كفاءة داخل المؤسسة.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">05</div>
+          <h3>إدارة معرفة فعالة</h3>
+          <p>تسمح الاستراتيجية الجيدة بتكامل أفضل للمعلومات وتقديم الرؤى في صيغ سهلة مثل التقارير ولوحات التحكم.</p>
+        </article>
+        <article class="card">
+          <div class="card-icon">06</div>
+          <h3>ضمان جودة المعلومات</h3>
+          <p>توفر أساسًا متينًا لدقة المعلومات واتساقها واكتمالها وسهولة الوصول إليها من قبل المستخدم النهائي.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="projects">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">أحدث المشاريع</span>
+        <h2>نماذج من الأعمال المرتبطة بالمحتوى والتصميم</h2>
+        <p>نعرض هنا مثالًا لمشروع يعكس أسلوبنا في تقديم تجربة مرئية ومحتوى ينسجم مع طبيعة البراند والجمهور المستهدف.</p>
+      </div>
+
+      <div class="grid-3">
+        <article class="card project-card">
+          <img src="https://softlixagency.com/wp-content/uploads/2023/02/logo-Atelier-.png" alt="Atelier" />
+          <div class="project-body">
+            <h3>Atelier Show</h3>
+            <p>
+              مشروع يعكس الدمج بين الهوية البصرية والمحتوى التسويقي لعرض متجر أزياء راقٍ بشكل احترافي وجذاب.
+            </p>
+            <a class="btn btn-primary" href="https://ateliershow.com/" target="_blank" rel="noopener">شاهد المشروع</a>
+          </div>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">✦</div>
+          <h3>تصميم واجهات وصفحات</h3>
+          <p>
+            نهتم بإخراج الصفحات بصورة مرتبة وسهلة التصفح مع توزيع بصري يرفع من فهم الزائر للمحتوى ويعزز الثقة.
+          </p>
+        </article>
+
+        <article class="card">
+          <div class="card-icon">✦</div>
+          <h3>كتابة محتوى يعكس البراند</h3>
+          <p>
+            نعمل على صياغة محتوى يترجم هوية النشاط التجاري إلى رسائل واضحة، احترافية، ومناسبة للسوق المستهدف.
+          </p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section cta">
+    <div class="container">
+      <div class="cta-box">
+        <div>
+          <h2>هل تريد إدارة موقعك الإلكتروني باحتراف؟</h2>
+          <p>
+            دع فريق Softlix يتولى كتابة المحتوى، إدارة الصفحات، تحديث الموقع، وتحسين العرض البصري والظهور الرقمي.
+          </p>
+        </div>
+        <div class="btns">
+          <a class="btn btn-primary" href="#contact">ابدأ الآن</a>
+          <a class="btn btn-outline" style="background:transparent;border-color:rgba(255,255,255,.35);color:#fff" href="https://wa.me/966565378003" target="_blank" rel="noopener">واتساب</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="contact">
+    <div class="container contact-wrap">
+      <div class="form-card">
+        <span class="eyebrow">احصل على استشارة مجانية</span>
+        <h3>أخبرنا عن مشروعك</h3>
+        <p>املأ النموذج التالي وسيتواصل معك فريقنا لفهم احتياجك وتقديم أفضل تصور للخدمة.</p>
+
+        <form>
+          <div class="form-grid">
+            <input class="field" type="text" placeholder="الاسم الأول" />
+            <input class="field" type="email" placeholder="البريد الإلكتروني" />
+            <input class="field" type="tel" placeholder="رقم الهاتف" />
+            <select class="select">
+              <option selected>الميزانية التقريبية</option>
+              <option>+ $2200</option>
+              <option>+ $7500</option>
+              <option>+ $15000</option>
+            </select>
+            <textarea class="textarea full" placeholder="صف فكرتك هنا"></textarea>
+            <div class="full">
+              <button class="btn btn-primary" type="submit">إرسال الطلب</button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <aside class="aside-card">
+        <span class="eyebrow">بيانات التواصل</span>
+        <h3>كن على تواصل معنا</h3>
+        <p>يمكنك الوصول إلينا مباشرة عبر البيانات التالية:</p>
+
+        <ul class="contact-list">
+          <li>
+            <span class="dot">⌂</span>
+            <div>
+              <strong>العنوان</strong>
+              <span>مبنى الامتياز، حي الصفا، طريق الحرمين، المملكة العربية السعودية</span>
+            </div>
+          </li>
+          <li>
+            <span class="dot">☎</span>
+            <div>
+              <strong>الهاتف</strong>
+              <a href="tel:0565378003">0565378003</a>
+            </div>
+          </li>
+          <li>
+            <span class="dot">✉</span>
+            <div>
+              <strong>البريد الإلكتروني</strong>
+              <a href="mailto:info@softlix.net">info@softlix.net</a>
+            </div>
+          </li>
+          <li>
+            <span class="dot">↗</span>
+            <div>
+              <strong>واتساب</strong>
+              <a href="https://wa.me/966565378003" target="_blank" rel="noopener">راسلنا عبر واتساب</a>
+            </div>
+          </li>
+          <li>
+            <span class="dot">◔</span>
+            <div>
+              <strong>أوقات العمل</strong>
+              <span>السبت - الخميس | 9 صباحًا - 6 مساءً (UTC+3)</span>
+            </div>
+          </li>
+        </ul>
+      </aside>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>© 2026 Softlix for Information Technology. جميع الحقوق محفوظة.</div>
+      <div class="footer-links">
+        <a href="#services">الخدمة</a>
+        <a href="#workflow">آلية العمل</a>
+        <a href="#projects">المشاريع</a>
+        <a href="#contact">تواصل معنا</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

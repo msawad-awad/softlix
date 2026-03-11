@@ -56,6 +56,18 @@ const SERVICE_THEMES: Record<string, { eyebrowBg: string; eyebrowColor: string; 
     contactIconBg: "rgba(229,146,105,0.16)",
     stepColor: "rgba(229,146,105,0.13)",
   },
+  "content-management": {
+    eyebrowBg: "rgba(20,184,166,0.12)",
+    eyebrowColor: "#0f766e",
+    checkBg: "linear-gradient(135deg,#14b8a6,#6366f1)",
+    ctaBg: "linear-gradient(135deg,#1f2937,#3a4659 50%,#d07b52)",
+    ctaDark: true,
+    shadowColor: "rgba(20,184,166,0.22)",
+    chipBg: "rgba(20,184,166,0.10)",
+    chipColor: "#0f766e",
+    contactIconBg: "rgba(20,184,166,0.14)",
+    stepColor: "rgba(20,184,166,0.10)",
+  },
   "web-development": {
     eyebrowBg: "rgba(14,165,233,0.12)",
     eyebrowColor: "#0369a1",
@@ -84,6 +96,46 @@ const DEFAULT_THEME = {
 
 // Per-service config: metrics, sub-services, benefits, technologies
 const SERVICE_CONFIG: Record<string, any> = {
+  "content-management": {
+    eyebrowAr: "التصميم وإدارة المواقع • Content & Design",
+    eyebrowEn: "Content & Design • التصميم وإدارة المواقع",
+    heroPointsAr: ["إدارة مستمرة للموقع والمحتوى", "تهيئة SEO لمحركات البحث", "هوية بصرية احترافية", "تحديث الصفحات والمنتجات"],
+    heroPointsEn: ["Continuous website & content management", "SEO optimization for search engines", "Professional visual identity", "Pages & products updates"],
+    metrics: [
+      { strong: "360°", spanAr: "إدارة شاملة للمحتوى", spanEn: "Full content management" },
+      { strong: "SEO", spanAr: "تهيئة لمحركات البحث", spanEn: "Search engine optimization" },
+      { strong: "Brand", spanAr: "تصميم يعكس هوية البراند", spanEn: "Brand identity design" },
+      { strong: "UX", spanAr: "تجربة مستخدم محسّنة", spanEn: "Enhanced user experience" },
+    ],
+    subServicesAr: [
+      { icon: "📝", title: "إدارة المحتوى والصفحات", desc: "نتولى كتابة المحتوى الإبداعي وإدارة صفحات الموقع وتحديثها باستمرار بما يعكس هوية علامتك التجارية.", features: ["كتابة محتوى إبداعي احترافي", "إدارة وتحديث الصفحات", "إضافة المنتجات وتنظيم العرض"] },
+      { icon: "🎨", title: "التصميم البصري والهوية", desc: "نصمم العناصر البصرية للموقع بأسلوب جذاب يعكس هوية البراند ويرفع جودة تجربة الزائر من النظرة الأولى.", features: ["تصميم واجهات وصفحات احترافية", "بناء هوية بصرية متسقة", "تصاميم جذابة تعكس قيمة البراند"] },
+      { icon: "🔍", title: "SEO والظهور الرقمي", desc: "نحسّن محتوى الموقع والوصف والكلمات المفتاحية بطريقة احترافية ترفع ظهور خدماتك ومنتجاتك في نتائج البحث.", features: ["اختيار الكلمات المفتاحية المناسبة", "تحسين محتوى الصفحات للبحث", "تقارير الأداء والظهور"] },
+    ],
+    subServicesEn: [
+      { icon: "📝", title: "Content & Pages Management", desc: "We handle creative content writing and continuous website page management to reflect your brand identity.", features: ["Professional creative content writing", "Page management & updates", "Product additions & organization"] },
+      { icon: "🎨", title: "Visual Design & Identity", desc: "We design visual elements with an attractive style reflecting the brand identity and enhancing the visitor experience.", features: ["Professional interfaces & page design", "Consistent visual identity", "Attractive designs reflecting brand value"] },
+      { icon: "🔍", title: "SEO & Digital Visibility", desc: "We optimize website content, descriptions, and keywords professionally to boost your services' search rankings.", features: ["Appropriate keyword selection", "Page content SEO optimization", "Performance & visibility reports"] },
+    ],
+    benefitsAr: [
+      { icon: "🏆", title: "ميزة تنافسية أقوى", desc: "استراتيجية المحتوى والتصميم تمنحك حضوراً مختلفاً داخل السوق وتساعد جمهورك على تمييز علامتك بسرعة." },
+      { icon: "🔍", title: "تحسين محركات البحث", desc: "اختيار الكلمات واحتراف كتابة المحتوى يرفع من فرص ظهور خدماتك في نتائج البحث الطبيعية." },
+      { icon: "🎭", title: "هوية بصرية أكثر رسوخاً", desc: "التصميم الجذاب والفريد يعكس هوية البراند ويجعلها أكثر ثباتاً في ذهن العميل من النظرة الأولى." },
+      { icon: "⚙️", title: "عمليات أكثر كفاءة", desc: "المحتوى المنظم يدعم الأتمتة والتحليل واتخاذ القرار بصورة أكثر ذكاءً داخل المؤسسة." },
+      { icon: "📊", title: "إدارة معرفة فعالة", desc: "استراتيجية محتوى جيدة تضمن تكامل المعلومات وتقديم الرؤى بصيغ سهلة وقابلة للتحليل." },
+      { icon: "✅", title: "ضمان جودة المعلومات", desc: "توفر أساساً متيناً لدقة المعلومات واتساقها واكتمالها وسهولة الوصول إليها من قبل المستخدم." },
+    ],
+    benefitsEn: [
+      { icon: "🏆", title: "Stronger Competitive Advantage", desc: "Content and design strategy gives you a distinct market presence and helps your audience identify your brand quickly." },
+      { icon: "🔍", title: "Search Engine Optimization", desc: "Right keywords and professional content writing boosts your services' chances of appearing in organic search results." },
+      { icon: "🎭", title: "More Established Visual Identity", desc: "Attractive and unique design reflects the brand identity and makes it more memorable from the first glance." },
+      { icon: "⚙️", title: "More Efficient Operations", desc: "Organized content supports automation, analysis, and smarter decision-making within the organization." },
+      { icon: "📊", title: "Effective Knowledge Management", desc: "Good content strategy ensures information integration and presents insights in easy, analyzable formats." },
+      { icon: "✅", title: "Information Quality Assurance", desc: "Provides a solid foundation for accuracy, consistency, completeness, and accessibility of information for end users." },
+    ],
+    technologiesAr: [] as any[],
+    technologiesEn: [] as any[],
+  },
   "web-development": {
     eyebrowAr: "تطوير تطبيقات الويب • Web Development",
     eyebrowEn: "Web Development • تطوير تطبيقات الويب",
@@ -399,6 +451,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange }: ServiceDeta
   const isMarketing = slug === "digital-marketing";
   const isConsulting = slug === "technical-consulting";
   const isWebDev = slug === "web-development";
+  const isContent = slug === "content-management";
   const techGroups = isAr ? cfg.techGroupsAr : cfg.techGroupsEn;
   const theme = SERVICE_THEMES[slug] || DEFAULT_THEME;
   const ctaTextColor = theme.ctaDark ? "#fff" : "#0f172a";
@@ -550,6 +603,56 @@ export default function ServiceDetail({ lang = "ar", onLangChange }: ServiceDeta
                     ))}
                   </div>
                 </div>
+              ) : isContent ? (
+                /* Content Management Visual - CMS Editor */
+                <div style={{ position: "relative", zIndex: 2, width: "92%", display: "flex", flexDirection: "column", gap: 18 }}>
+                  {/* Editor Window */}
+                  <div style={{ borderRadius: 24, background: "linear-gradient(180deg,#fff,#f0fdfa)", border: "1px solid rgba(20,184,166,0.18)", padding: 22, boxShadow: "0 30px 70px rgba(20,184,166,0.14)" }}>
+                    {/* Toolbar */}
+                    <div style={{ display: "flex", gap: 8, marginBottom: 16, alignItems: "center" }}>
+                      <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#fda4af", display: "inline-block" }} />
+                      <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#fde68a", display: "inline-block" }} />
+                      <span style={{ width: 12, height: 12, borderRadius: "50%", background: "#86efac", display: "inline-block" }} />
+                      <div style={{ marginRight: "auto", marginLeft: 8, display: "flex", gap: 6 }}>
+                        {["H1","B","I","🖼","🔗"].map((t,i) => (
+                          <span key={i} style={{ padding: "4px 8px", borderRadius: 8, background: i === 0 ? "rgba(20,184,166,0.18)" : "#f1f5f9", fontSize: 11, fontWeight: 800, color: i === 0 ? "#0f766e" : "#64748b" }}>{t}</span>
+                        ))}
+                      </div>
+                    </div>
+                    {/* Content blocks */}
+                    <div style={{ display: "grid", gap: 10 }}>
+                      <div style={{ height: 18, borderRadius: 999, background: "rgba(20,184,166,0.25)", width: "68%" }} />
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 0.4fr", gap: 10, marginTop: 4 }}>
+                        <div style={{ display: "grid", gap: 8 }}>
+                          <div style={{ height: 10, borderRadius: 999, background: "#e2e8f0", width: "100%" }} />
+                          <div style={{ height: 10, borderRadius: 999, background: "#e2e8f0", width: "90%" }} />
+                          <div style={{ height: 10, borderRadius: 999, background: "#e2e8f0", width: "82%" }} />
+                          <div style={{ height: 10, borderRadius: 999, background: "#e2e8f0", width: "95%" }} />
+                        </div>
+                        <div style={{ borderRadius: 14, background: "linear-gradient(135deg,rgba(20,184,166,0.2),rgba(99,102,241,0.15))", display: "grid", placeItems: "center", fontSize: 22 }}>🖼</div>
+                      </div>
+                      {/* SEO field */}
+                      <div style={{ marginTop: 6, padding: "10px 14px", borderRadius: 14, background: "#f0fdfa", border: "1px solid rgba(20,184,166,0.2)", display: "flex", alignItems: "center", gap: 10 }}>
+                        <span style={{ fontSize: 11, fontWeight: 800, color: "#0f766e", whiteSpace: "nowrap" }}>SEO</span>
+                        <div style={{ height: 8, borderRadius: 999, background: "rgba(20,184,166,0.3)", flex: 1 }} />
+                        <span style={{ fontSize: 11, fontWeight: 800, color: "#16a34a" }}>✓</span>
+                      </div>
+                    </div>
+                  </div>
+                  {/* Stats Row */}
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)", gap: 12 }}>
+                    {[
+                      { strong: "360°", spanAr: "إدارة شاملة", spanEn: "Full Management" },
+                      { strong: "SEO", spanAr: "ظهور في البحث", spanEn: "Search Visibility" },
+                      { strong: "Brand", spanAr: "هوية البراند", spanEn: "Brand Identity" },
+                    ].map((s, i) => (
+                      <div key={i} style={{ background: "rgba(255,255,255,0.92)", border: "1px solid rgba(20,184,166,0.14)", borderRadius: 20, padding: "16px 10px", textAlign: "center", boxShadow: "0 12px 32px rgba(20,184,166,0.08)" }}>
+                        <strong style={{ display: "block", fontSize: 20, color: "#0f766e", lineHeight: 1.1 }}>{s.strong}</strong>
+                        <span style={{ color: "#6b7280", fontSize: 12, fontWeight: 700 }}>{isAr ? s.spanAr : s.spanEn}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               ) : isWebDev ? (
                 /* Web Development Dashboard Visual */
                 <div style={{ position: "relative", zIndex: 2, width: "92%", display: "flex", flexDirection: "column", gap: 18 }}>
@@ -680,7 +783,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange }: ServiceDeta
               )}
 
               {/* Floating cards */}
-              {!isConsulting && !isWebDev && (
+              {!isConsulting && !isWebDev && !isContent && (
                 <>
                   <div style={{ position: "absolute", background: "#fff", color: "#0f172a", borderRadius: 20, padding: "14px 16px", boxShadow: "0 20px 50px rgba(15,23,42,0.08)", border: "1px solid #e2e8f0", minWidth: 180, zIndex: 3, ...(isAr ? { right: -10 } : { left: -10 }), top: 30 }}>
                     <strong style={{ display: "block", fontSize: 17, marginBottom: 4 }}>{isMarketing ? (isAr ? "استراتيجية قبل التنفيذ" : "Strategy before execution") : (isAr ? "Flutter / Native" : "Flutter / Native")}</strong>
@@ -1016,6 +1119,8 @@ export default function ServiceDetail({ lang = "ar", onLangChange }: ServiceDeta
                   ? (isAr ? "هل لديك مشروع يحتاج إلى رؤية تقنية واضحة؟" : "Do you have a project that needs a clear technical vision?")
                   : isWebDev
                   ? (isAr ? "هل لديك فكرة منصة أو نظام ويب تريد تنفيذها احترافياً؟" : "Have a web platform or system idea you want to build professionally?")
+                  : isContent
+                  ? (isAr ? "هل تريد إدارة موقعك الإلكتروني باحتراف ومحتوى يعكس قيمتك؟" : "Want to manage your website professionally with content that reflects your value?")
                   : (isAr ? "جاهز لتحويل فكرتك إلى واقع رقمي احترافي؟" : "Ready to Turn Your Idea into a Professional Digital Reality?")}
               </h2>
               <p style={{ margin: 0, color: ctaSubColor, fontSize: 17 }}>
@@ -1023,12 +1128,14 @@ export default function ServiceDetail({ lang = "ar", onLangChange }: ServiceDeta
                   ? (isAr ? "سواء كان لديك نظام قائم يحتاج إلى تطوير، أو فكرة جديدة تريد تقييمها، سنساعدك في اتخاذ القرار الصحيح." : "Whether you have an existing system to develop, or a new idea to evaluate, we'll help you make the right decision.")
                   : isWebDev
                   ? (isAr ? "سواء كنت تحتاج متجر إلكتروني، نظام ERP، لوحة تحكم، أو منصة ويب مخصصة، سنحوّل فكرتك إلى منتج رقمي فعلي بجودة عالية." : "Whether you need an e-commerce store, ERP system, dashboard, or custom web platform, we'll turn your idea into a real digital product.")
+                  : isContent
+                  ? (isAr ? "دع فريق Softlix يتولى كتابة المحتوى، إدارة الصفحات، تحديث الموقع، وتحسين الظهور الرقمي ليكون موقعك أمام العملاء دائماً." : "Let the Softlix team handle content writing, page management, site updates, and digital visibility so your site is always in front of customers.")
                   : (isAr ? "ابدأ معنا بخطة واضحة وتصميم يعكس قيمة مشروعك." : "Start with a clear plan and design that reflects your project's value.")}
               </p>
             </div>
             <div style={{ display: "flex", justifyContent: "flex-start", gap: 14, flexWrap: "wrap", position: "relative" }}>
               <a href="#contact-section" style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 24px", fontSize: 15, fontWeight: 800, background: theme.checkBg, color: "#fff", boxShadow: `0 14px 28px ${theme.shadowColor}`, textDecoration: "none", border: 0 }}>
-                {isAr ? (isConsulting ? "احصل على استشارة مجانية" : isWebDev ? "ابدأ مشروعك الآن" : isMarketing ? "اطلب استشارة الآن" : "اطلب عرض سعر") : (isConsulting ? "Get Free Consultation" : isWebDev ? "Start Your Project" : isMarketing ? "Request Consultation" : "Request a Quote")}
+                {isAr ? (isConsulting ? "احصل على استشارة مجانية" : isWebDev ? "ابدأ مشروعك الآن" : isMarketing ? "اطلب استشارة الآن" : isContent ? "اطلب الخدمة الآن" : "اطلب عرض سعر") : (isConsulting ? "Get Free Consultation" : isWebDev ? "Start Your Project" : isMarketing ? "Request Consultation" : isContent ? "Request Service Now" : "Request a Quote")}
               </a>
               <a href="/services" style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 24px", fontSize: 15, fontWeight: 700, background: theme.ctaDark ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.7)", color: theme.ctaDark ? "#fff" : "#374151", border: `1px solid ${theme.ctaDark ? "rgba(255,255,255,0.2)" : "rgba(229,146,105,0.25)"}`, textDecoration: "none" }}>
                 {isAr ? "استكشف الخدمات" : "Explore Services"}
