@@ -444,17 +444,20 @@ function BlogDetail({ slug, lang = "ar", onLangChange }: { slug: string } & Blog
 
   const fallback = DEFAULT_POSTS.find(p => p.slug === slug);
   const displayPost = post || fallback;
+  const relatedPosts = DEFAULT_POSTS.filter(p => p.slug !== slug).slice(0, 3);
 
   useSEO({
     title: isAr ? (displayPost?.title || "مقال") : ((displayPost as any)?.titleEn || displayPost?.title || "Article"),
     description: isAr ? (displayPost?.excerpt || "") : ((displayPost as any)?.excerptEn || displayPost?.excerpt || ""),
   });
 
+  const CONTAINER_WIDE: React.CSSProperties = { width: "min(1180px, calc(100% - 32px))", marginInline: "auto" };
+
   if (isLoading) return (
     <div dir={isAr ? "rtl" : "ltr"} style={{ ...GRADIENT_BG, minHeight: "100vh", fontFamily: "'Cairo', sans-serif" }}>
       <PublicNavbar lang={lang} onLangChange={onLangChange} />
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh" }}>
-        <div style={{ width: 40, height: 40, borderRadius: "50%", border: `4px solid ${BRAND}`, borderTopColor: "transparent", animation: "spin 1s linear infinite" }} />
+        <div style={{ width: 44, height: 44, borderRadius: "50%", border: `4px solid rgba(229,146,105,.2)`, borderTopColor: BRAND, animation: "spin 0.8s linear infinite" }} />
       </div>
       <PublicFooter lang={lang} />
     </div>
@@ -464,9 +467,17 @@ function BlogDetail({ slug, lang = "ar", onLangChange }: { slug: string } & Blog
     <div dir={isAr ? "rtl" : "ltr"} style={{ ...GRADIENT_BG, minHeight: "100vh", fontFamily: "'Cairo', sans-serif" }}>
       <PublicNavbar lang={lang} onLangChange={onLangChange} />
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "60vh", gap: 16, textAlign: "center" }}>
-        <BookOpen size={64} color="#d1d5db" />
-        <h2 style={{ color: "#374151", fontWeight: 900, margin: 0 }}>{isAr ? "المقال غير موجود" : "Article Not Found"}</h2>
-        <Link href="/blog"><button style={{ padding: "10px 24px", borderRadius: 999, border: `1px solid ${LINE}`, background: "#fff", cursor: "pointer", fontFamily: "'Cairo', sans-serif", fontWeight: 700 }}>{isAr ? "العودة للمدونة" : "Back to Blog"}</button></Link>
+        <div style={{ width: 80, height: 80, borderRadius: 24, background: `linear-gradient(135deg, rgba(229,146,105,.12), rgba(130,183,53,.12))`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <BookOpen size={36} color={BRAND} />
+        </div>
+        <h2 style={{ color: TEXT, fontWeight: 900, margin: 0, fontSize: "1.6rem" }}>{isAr ? "المقال غير موجود" : "Article Not Found"}</h2>
+        <p style={{ color: MUTED, margin: 0 }}>{isAr ? "ربما تم نقل المقال أو حذفه" : "The article may have been moved or deleted"}</p>
+        <Link href="/blog">
+          <button style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 28px", borderRadius: 999, border: "none", background: `linear-gradient(135deg,${BRAND},${BRAND_DARK})`, color: "#fff", cursor: "pointer", fontFamily: "'Cairo', sans-serif", fontWeight: 800, fontSize: "1rem" }}>
+            <Arrow size={16} />
+            {isAr ? "العودة للمدونة" : "Back to Blog"}
+          </button>
+        </Link>
       </div>
       <PublicFooter lang={lang} />
     </div>
@@ -475,70 +486,290 @@ function BlogDetail({ slug, lang = "ar", onLangChange }: { slug: string } & Blog
   const title = isAr ? displayPost.title : ((displayPost as any).titleEn || displayPost.title);
   const content = isAr ? ((displayPost as any).content || displayPost.excerpt) : ((displayPost as any).contentEn || (displayPost as any).content || (displayPost as any).excerptEn || displayPost.excerpt);
   const excerpt = isAr ? displayPost.excerpt : ((displayPost as any).excerptEn || displayPost.excerpt);
+  const date = displayPost.publishedAt ? new Date(displayPost.publishedAt) : null;
 
   return (
     <div dir={isAr ? "rtl" : "ltr"} style={{ ...GRADIENT_BG, minHeight: "100vh", fontFamily: "'Cairo', sans-serif", color: TEXT }}>
       <PublicNavbar lang={lang} onLangChange={onLangChange} />
 
-      <section style={{ paddingTop: 88 }}>
-        <div style={{ background: `linear-gradient(135deg, ${NAVY} 0%, #1e3a5f 60%, ${NAVY} 100%)`, color: "#fff", padding: "56px 0 80px" }}>
-          <div style={{ width: "min(820px, calc(100% - 32px))", marginInline: "auto" }}>
-            <Link href="/blog" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "rgba(255,255,255,0.65)", fontSize: 14, textDecoration: "none", marginBottom: 28, fontWeight: 500 }}>
-              <Arrow size={16} />
-              {isAr ? "العودة للمدونة" : "Back to Blog"}
-            </Link>
-            {(displayPost as any).category && (
-              <div style={{ marginBottom: 18 }}>
-                <span style={{ background: "rgba(229,146,105,.22)", color: "#fdba74", borderRadius: 999, padding: "4px 14px", fontSize: 13, fontWeight: 700 }}>{(displayPost as any).category}</span>
+      {/* ── HERO ── */}
+      <section style={{ paddingTop: 96, paddingBottom: 0 }}>
+        <div style={{ ...CONTAINER_WIDE }}>
+
+          {/* Breadcrumb */}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 28, fontSize: ".9rem", fontWeight: 700 }}>
+            <Link href="/" style={{ color: MUTED, textDecoration: "none" }}>{isAr ? "الرئيسية" : "Home"}</Link>
+            <span style={{ color: MUTED, fontSize: ".8rem" }}>›</span>
+            <Link href="/blog" style={{ color: MUTED, textDecoration: "none" }}>{isAr ? "المدونة" : "Blog"}</Link>
+            <span style={{ color: MUTED, fontSize: ".8rem" }}>›</span>
+            <span style={{ color: TEXT, maxWidth: "32ch", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{title}</span>
+          </div>
+
+          {/* Hero card */}
+          <div style={{ borderRadius: 32, overflow: "hidden", background: SURFACE, border: `1px solid ${LINE}`, boxShadow: SHADOW, position: "relative", marginBottom: 32 }}>
+            {/* Decorative blobs */}
+            <div style={{ position: "absolute", top: -60, right: -60, width: 240, height: 240, borderRadius: "50%", background: `radial-gradient(circle, rgba(229,146,105,.14), transparent 70%)`, pointerEvents: "none" }} />
+            <div style={{ position: "absolute", bottom: -40, left: -40, width: 180, height: 180, borderRadius: "50%", background: `radial-gradient(circle, rgba(130,183,53,.12), transparent 70%)`, pointerEvents: "none" }} />
+
+            <div style={{ position: "relative", zIndex: 1, padding: "44px 52px 40px" }}>
+              {/* Back link */}
+              <Link href="/blog" style={{ display: "inline-flex", alignItems: "center", gap: 8, color: MUTED, textDecoration: "none", fontSize: ".88rem", fontWeight: 700, marginBottom: 20 }}>
+                <Arrow size={15} />
+                {isAr ? "العودة للمدونة" : "Back to Blog"}
+              </Link>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 32, alignItems: "start" }}>
+                <div>
+                  {/* Category + meta row */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
+                    {(displayPost as any).category && (
+                      <span style={{ display: "inline-flex", alignItems: "center", minHeight: 30, padding: "0 14px", borderRadius: 999, background: `rgba(229,146,105,.14)`, color: "#9b5e41", fontWeight: 800, fontSize: ".82rem" }}>
+                        {(displayPost as any).category}
+                      </span>
+                    )}
+                    {date && (
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 5, color: MUTED, fontSize: ".85rem", fontWeight: 700 }}>
+                        <Calendar size={13} />
+                        {date.toLocaleDateString(isAr ? "ar-SA" : "en-US", { year: "numeric", month: "long", day: "numeric" })}
+                      </span>
+                    )}
+                    {(displayPost as any).readTime && (
+                      <span style={{ display: "inline-flex", alignItems: "center", gap: 5, color: MUTED, fontSize: ".85rem", fontWeight: 700 }}>
+                        <Clock size={13} />
+                        {isAr ? `${(displayPost as any).readTime} دقائق قراءة` : `${(displayPost as any).readTime} min read`}
+                      </span>
+                    )}
+                  </div>
+
+                  <h1 style={{ margin: "0 0 16px", fontSize: "clamp(1.7rem, 3.5vw, 2.8rem)", fontWeight: 900, lineHeight: 1.2, color: TEXT, letterSpacing: "-.02em" }}>{title}</h1>
+                  {excerpt && (
+                    <p style={{ margin: 0, fontSize: "1.05rem", color: MUTED, lineHeight: 1.75, maxWidth: "70ch" }}>{excerpt}</p>
+                  )}
+                </div>
+
+                {/* Date badge */}
+                {date && (
+                  <div style={{ background: `linear-gradient(135deg, rgba(229,146,105,.12), rgba(130,183,53,.12))`, border: `1px solid rgba(229,146,105,.2)`, borderRadius: 20, padding: "16px 22px", textAlign: "center", flexShrink: 0, minWidth: 80 }}>
+                    <strong style={{ display: "block", fontSize: "2rem", fontWeight: 900, lineHeight: 1, color: BRAND }}>
+                      {String(date.getDate()).padStart(2, "0")}
+                    </strong>
+                    <span style={{ display: "block", fontSize: ".8rem", fontWeight: 800, color: MUTED, marginTop: 4 }}>
+                      {date.toLocaleDateString("ar-SA", { month: "long" }).replace(/\s*\d{4}/, "")}
+                    </span>
+                    <span style={{ display: "block", fontSize: ".75rem", fontWeight: 700, color: MUTED, marginTop: 2 }}>
+                      {date.getFullYear()}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Featured image */}
+            {displayPost.featuredImageUrl && (
+              <div style={{ borderTop: `1px solid ${LINE}` }}>
+                <img
+                  src={displayPost.featuredImageUrl}
+                  alt={title}
+                  style={{ width: "100%", maxHeight: 420, objectFit: "cover", display: "block" }}
+                />
               </div>
             )}
-            <h1 style={{ fontSize: "clamp(1.9rem, 4vw, 3rem)", fontWeight: 900, lineHeight: 1.2, margin: "0 0 20px" }}>{title}</h1>
-            {excerpt && <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "1.1rem", lineHeight: 1.7, margin: "0 0 28px", maxWidth: "65ch" }}>{excerpt}</p>}
-            <div style={{ display: "flex", alignItems: "center", gap: 20, fontSize: 14, color: "rgba(255,255,255,0.55)" }}>
-              {displayPost.publishedAt && (
-                <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <Calendar size={14} />
-                  {new Date(displayPost.publishedAt).toLocaleDateString(isAr ? "ar-SA" : "en-US", { year: "numeric", month: "long", day: "numeric" })}
-                </span>
-              )}
-              {(displayPost as any).readTime && (
-                <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <Clock size={14} />
-                  {isAr ? `${(displayPost as any).readTime} دقائق قراءة` : `${(displayPost as any).readTime} min read`}
-                </span>
-              )}
-            </div>
           </div>
-        </div>
-        <div style={{ marginTop: -2, lineHeight: 0 }}>
-          <svg viewBox="0 0 1440 60" preserveAspectRatio="none" style={{ width: "100%", height: 60, display: "block" }}>
-            <path d="M0,60 L1440,60 L1440,0 Q720,60 0,0 Z" fill="#f8fafc" />
-          </svg>
         </div>
       </section>
 
-      {displayPost.featuredImageUrl && (
-        <div style={{ width: "min(820px, calc(100% - 32px))", marginInline: "auto", marginBottom: 40 }}>
-          <img src={displayPost.featuredImageUrl} alt={title} style={{ width: "100%", borderRadius: 20, objectFit: "cover", maxHeight: 420, boxShadow: "0 20px 60px rgba(0,0,0,0.12)" }} />
-        </div>
-      )}
+      {/* ── ARTICLE BODY + SIDEBAR ── */}
+      <section style={{ paddingBottom: 72 }}>
+        <div style={{ ...CONTAINER_WIDE, display: "grid", gridTemplateColumns: "minmax(0,1fr) 300px", gap: 28, alignItems: "start" }}>
 
-      <article style={{ width: "min(820px, calc(100% - 32px))", marginInline: "auto", paddingBottom: 80 }}>
-        {content ? (
-          <div className="prose prose-lg max-w-none" style={{ color: "#1e293b", lineHeight: 1.9, fontSize: "1.07rem" }} dangerouslySetInnerHTML={{ __html: content }} />
-        ) : (
-          <p style={{ color: "#64748b", fontSize: "1.07rem", lineHeight: 1.9 }}>{excerpt}</p>
-        )}
-        <div style={{ marginTop: 64, padding: 40, borderRadius: 24, background: `linear-gradient(135deg, rgba(229,146,105,.08), rgba(130,183,53,.08))`, border: `1px solid rgba(229,146,105,.2)`, textAlign: "center" }}>
-          <h3 style={{ fontSize: "1.6rem", fontWeight: 900, color: TEXT, margin: "0 0 12px" }}>{isAr ? "هل لديك مشروع تريد تنفيذه؟" : "Have a Project You Want to Launch?"}</h3>
-          <p style={{ color: "#475569", margin: "0 0 24px" }}>{isAr ? "تواصل معنا وسنحوّل فكرتك إلى منتج رقمي ناجح" : "Contact us and we'll turn your idea into a successful digital product"}</p>
-          <Link href="/contact">
-            <button style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 52, padding: "0 28px", borderRadius: 999, border: "none", fontWeight: 800, fontSize: "1rem", color: "#fff", background: `linear-gradient(135deg,${BRAND},${BRAND_DARK})`, boxShadow: `0 14px 30px rgba(229,146,105,.26)`, cursor: "pointer", fontFamily: "'Cairo', sans-serif" }}>
-              {isAr ? "تواصل معنا الآن" : "Contact Us Now"}
-            </button>
-          </Link>
+          {/* Article content */}
+          <div>
+            <div style={{ background: SURFACE, border: `1px solid ${LINE}`, borderRadius: 28, padding: "40px 48px", boxShadow: "0 14px 40px rgba(15,23,42,.06)" }}>
+              {content ? (
+                <div style={{ color: "#1e293b", lineHeight: 1.95, fontSize: "1.06rem" }}
+                  dangerouslySetInnerHTML={{
+                    __html: content
+                      .replace(/<h2>/g, `<h2 style="font-size:1.45rem;font-weight:900;color:${TEXT};margin:36px 0 14px;padding-bottom:10px;border-bottom:2px solid rgba(229,146,105,.2)">`)
+                      .replace(/<h3>/g, `<h3 style="font-size:1.2rem;font-weight:900;color:${TEXT};margin:28px 0 10px">`)
+                      .replace(/<p>/g, `<p style="margin:0 0 20px;color:#334155;line-height:1.95">`)
+                  }}
+                />
+              ) : (
+                <p style={{ color: "#475569", fontSize: "1.06rem", lineHeight: 1.9, margin: 0 }}>{excerpt}</p>
+              )}
+
+              {/* Tags row */}
+              {(displayPost as any).category && (
+                <div style={{ marginTop: 40, paddingTop: 28, borderTop: `1px solid ${LINE}`, display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                  <span style={{ color: MUTED, fontWeight: 700, fontSize: ".88rem" }}>{isAr ? "التصنيف:" : "Category:"}</span>
+                  <span style={{ display: "inline-flex", alignItems: "center", minHeight: 32, padding: "0 14px", borderRadius: 999, background: `rgba(229,146,105,.12)`, color: "#9b5e41", fontWeight: 800, fontSize: ".84rem" }}>
+                    {(displayPost as any).category}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* CTA block */}
+            <div style={{ marginTop: 24, borderRadius: 28, padding: "36px 48px", background: `linear-gradient(135deg, ${NAVY}, #2d3748)`, color: "#fff", position: "relative", overflow: "hidden", boxShadow: "0 22px 60px rgba(34,41,51,.20)" }}>
+              <div style={{ position: "absolute", top: -50, right: -50, width: 180, height: 180, borderRadius: "50%", background: "rgba(255,255,255,.06)" }} />
+              <div style={{ position: "absolute", bottom: -40, left: -40, width: 140, height: 140, borderRadius: "50%", background: `rgba(229,146,105,.14)` }} />
+              <div style={{ position: "relative", zIndex: 1, display: "grid", gridTemplateColumns: "1fr auto", gap: 24, alignItems: "center" }}>
+                <div>
+                  <div style={{ display: "inline-flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                    <span style={{ width: 8, height: 8, borderRadius: "50%", background: BRAND }} />
+                    <span style={{ fontSize: ".85rem", fontWeight: 800, color: "rgba(255,255,255,.7)" }}>Softlix</span>
+                  </div>
+                  <h3 style={{ margin: "0 0 10px", fontSize: "1.55rem", fontWeight: 900, lineHeight: 1.25 }}>
+                    {isAr ? "هل لديك مشروع تريد تنفيذه؟" : "Have a Project You Want to Launch?"}
+                  </h3>
+                  <p style={{ margin: 0, color: "rgba(255,255,255,.72)", fontSize: ".97rem", lineHeight: 1.7 }}>
+                    {isAr ? "تواصل معنا وسنحوّل فكرتك إلى منتج رقمي ناجح" : "Contact us and we'll turn your idea into a successful digital product"}
+                  </p>
+                </div>
+                <Link href="/contact">
+                  <button style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 52, padding: "0 28px", borderRadius: 999, border: "none", fontWeight: 800, fontSize: "1rem", color: "#fff", background: `linear-gradient(135deg,${BRAND},${BRAND_DARK})`, boxShadow: `0 14px 30px rgba(229,146,105,.3)`, cursor: "pointer", fontFamily: "'Cairo', sans-serif", whiteSpace: "nowrap" }}>
+                    {isAr ? "تواصل الآن" : "Contact Us"}
+                  </button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Related posts */}
+            {relatedPosts.length > 0 && (
+              <div style={{ marginTop: 36 }}>
+                <h2 style={{ margin: "0 0 20px", fontSize: "1.4rem", fontWeight: 900, color: TEXT }}>
+                  {isAr ? "مقالات ذات صلة" : "Related Articles"}
+                </h2>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
+                  {relatedPosts.map(rp => {
+                    const rpTitle = isAr ? rp.title : ((rp as any).titleEn || rp.title);
+                    const rpExcerpt = isAr ? rp.excerpt : ((rp as any).excerptEn || rp.excerpt);
+                    const rpDate = rp.publishedAt ? new Date(rp.publishedAt) : null;
+                    return (
+                      <Link key={rp.id} href={`/blog/${rp.slug}`} style={{ textDecoration: "none", color: "inherit" }}>
+                        <div style={{ background: SURFACE, border: `1px solid ${LINE}`, borderRadius: 22, overflow: "hidden", transition: "transform .25s, box-shadow .25s", cursor: "pointer" }}
+                          onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 20px 50px rgba(15,23,42,.1)"; }}
+                          onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ""; (e.currentTarget as HTMLElement).style.boxShadow = ""; }}>
+                          <div style={{ height: 90, background: `linear-gradient(135deg, rgba(229,146,105,.18), rgba(130,183,53,.14))`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <BookOpen size={28} color={BRAND} style={{ opacity: .6 }} />
+                          </div>
+                          <div style={{ padding: "14px 16px" }}>
+                            {rp.category && (
+                              <span style={{ fontSize: ".75rem", fontWeight: 800, color: "#9b5e41", background: "rgba(229,146,105,.1)", borderRadius: 999, padding: "2px 10px", display: "inline-block", marginBottom: 8 }}>{rp.category}</span>
+                            )}
+                            <p style={{ margin: "0 0 8px", fontSize: ".9rem", fontWeight: 900, lineHeight: 1.4, color: TEXT, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{rpTitle}</p>
+                            {rpDate && (
+                              <span style={{ fontSize: ".78rem", color: MUTED, fontWeight: 700, display: "flex", alignItems: "center", gap: 4 }}>
+                                <Calendar size={11} />
+                                {rpDate.toLocaleDateString(isAr ? "ar-SA" : "en-US", { month: "short", year: "numeric" })}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Sticky Sidebar */}
+          <aside style={{ display: "grid", gap: 18, position: "sticky", top: 100 }}>
+
+            {/* Author / info card */}
+            <div style={{ borderRadius: 24, padding: 22, background: SURFACE, border: `1px solid ${LINE}`, boxShadow: "0 14px 40px rgba(15,23,42,.06)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+                <div style={{ width: 44, height: 44, borderRadius: 14, background: `linear-gradient(135deg,${BRAND},${ACCENT})`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <span style={{ color: "#fff", fontWeight: 900, fontSize: "1rem" }}>S</span>
+                </div>
+                <div>
+                  <div style={{ fontWeight: 900, fontSize: ".96rem", color: TEXT }}>Softlix</div>
+                  <div style={{ fontSize: ".8rem", color: MUTED, fontWeight: 700 }}>{isAr ? "فريق المحتوى التقني" : "Technical Content Team"}</div>
+                </div>
+              </div>
+              <p style={{ margin: 0, fontSize: ".88rem", color: MUTED, lineHeight: 1.7, borderTop: `1px solid ${LINE}`, paddingTop: 12 }}>
+                {isAr ? "نكتب محتوى تقنياً وتجارياً يساعد الشركات على النمو في السوق الرقمي." : "We write technical and business content that helps companies grow in the digital market."}
+              </p>
+            </div>
+
+            {/* Article meta */}
+            <div style={{ borderRadius: 24, padding: 22, background: SURFACE, border: `1px solid ${LINE}`, boxShadow: "0 14px 40px rgba(15,23,42,.06)" }}>
+              <h3 style={{ margin: "0 0 14px", fontSize: "1rem", fontWeight: 900, color: TEXT }}>{isAr ? "تفاصيل المقال" : "Article Details"}</h3>
+              <div style={{ display: "grid", gap: 10 }}>
+                {date && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 14, background: "rgba(15,23,42,.03)" }}>
+                    <Calendar size={15} color={BRAND} />
+                    <div>
+                      <div style={{ fontSize: ".75rem", color: MUTED, fontWeight: 700 }}>{isAr ? "تاريخ النشر" : "Published"}</div>
+                      <div style={{ fontSize: ".88rem", fontWeight: 800, color: TEXT }}>
+                        {date.toLocaleDateString(isAr ? "ar-SA" : "en-US", { year: "numeric", month: "long", day: "numeric" })}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {(displayPost as any).readTime && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 14, background: "rgba(15,23,42,.03)" }}>
+                    <Clock size={15} color={BRAND} />
+                    <div>
+                      <div style={{ fontSize: ".75rem", color: MUTED, fontWeight: 700 }}>{isAr ? "وقت القراءة" : "Read Time"}</div>
+                      <div style={{ fontSize: ".88rem", fontWeight: 800, color: TEXT }}>
+                        {isAr ? `${(displayPost as any).readTime} دقائق` : `${(displayPost as any).readTime} minutes`}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {(displayPost as any).category && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "10px 12px", borderRadius: 14, background: "rgba(15,23,42,.03)" }}>
+                    <BookOpen size={15} color={BRAND} />
+                    <div>
+                      <div style={{ fontSize: ".75rem", color: MUTED, fontWeight: 700 }}>{isAr ? "التصنيف" : "Category"}</div>
+                      <div style={{ fontSize: ".88rem", fontWeight: 800, color: TEXT }}>{(displayPost as any).category}</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Recent posts in sidebar */}
+            <div style={{ borderRadius: 24, padding: 22, background: SURFACE, border: `1px solid ${LINE}`, boxShadow: "0 14px 40px rgba(15,23,42,.06)" }}>
+              <h3 style={{ margin: "0 0 14px", fontSize: "1rem", fontWeight: 900, color: TEXT }}>{isAr ? "أحدث المقالات" : "Recent Articles"}</h3>
+              <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 0 }}>
+                {DEFAULT_POSTS.slice(0, 4).map((rp, idx) => (
+                  <li key={rp.id}>
+                    <Link href={`/blog/${rp.slug}`} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 0", borderBottom: idx < 3 ? `1px solid rgba(15,23,42,.06)` : "none", textDecoration: "none" }}>
+                      <div style={{ width: 36, height: 36, borderRadius: 10, background: `linear-gradient(135deg, rgba(229,146,105,.18), rgba(130,183,53,.14))`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2 }}>
+                        <BookOpen size={14} color={BRAND} />
+                      </div>
+                      <span style={{ fontSize: ".86rem", fontWeight: 700, color: rp.slug === slug ? BRAND : "#334155", lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                        {isAr ? rp.title : ((rp as any).titleEn || rp.title)}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Newsletter mini */}
+            <div style={{ borderRadius: 24, padding: 22, background: `linear-gradient(135deg,${NAVY},#2d3748)`, color: "#fff", position: "relative", overflow: "hidden" }}>
+              <div style={{ position: "absolute", top: -30, left: -30, width: 100, height: 100, borderRadius: "50%", background: "rgba(255,255,255,.06)" }} />
+              <div style={{ position: "relative", zIndex: 1 }}>
+                <div style={{ width: 40, height: 40, borderRadius: 12, background: `linear-gradient(135deg,${BRAND},${BRAND_DARK})`, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 12 }}>
+                  <span style={{ fontSize: "1.1rem" }}>✉️</span>
+                </div>
+                <h3 style={{ margin: "0 0 8px", fontSize: "1.05rem", fontWeight: 900 }}>{isAr ? "اشترك في النشرة" : "Subscribe"}</h3>
+                <p style={{ margin: "0 0 14px", fontSize: ".85rem", color: "rgba(255,255,255,.72)", lineHeight: 1.6 }}>
+                  {isAr ? "احصل على أحدث المقالات مباشرة في بريدك" : "Get the latest articles directly in your inbox"}
+                </p>
+                <input type="email" placeholder={isAr ? "بريدك الإلكتروني" : "Your email"} style={{ width: "100%", minHeight: 44, borderRadius: 12, border: "none", padding: "0 12px", fontFamily: "'Cairo', sans-serif", fontSize: ".9rem", outline: "none", marginBottom: 10, boxSizing: "border-box" }} />
+                <button style={{ width: "100%", minHeight: 44, borderRadius: 12, border: "none", background: `linear-gradient(135deg,${BRAND},${BRAND_DARK})`, color: "#fff", fontWeight: 800, fontSize: ".95rem", cursor: "pointer", fontFamily: "'Cairo', sans-serif" }}>
+                  {isAr ? "اشترك الآن" : "Subscribe"}
+                </button>
+              </div>
+            </div>
+          </aside>
         </div>
-      </article>
+      </section>
 
       <PublicFooter lang={lang} />
     </div>
