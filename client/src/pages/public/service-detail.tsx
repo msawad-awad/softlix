@@ -2,6 +2,7 @@ import { useRoute, Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { PublicNavbar } from "@/components/public/navbar";
+import { PublicFooter } from "@/components/public/footer";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import type { Service, Project } from "@shared/schema";
@@ -1221,17 +1222,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange }: ServiceDeta
         </div>
       </section>
 
-      {/* ── Footer ── */}
-      <footer style={{ background: "#0f172a", color: "#cbd5e1", padding: "28px 0", marginTop: 88 }}>
-        <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
-          <div>© {new Date().getFullYear()} Softlix. {isAr ? "جميع الحقوق محفوظة." : "All rights reserved."}</div>
-          <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-            {[{ href: "/", labelAr: "الرئيسية", labelEn: "Home" }, { href: "/services", labelAr: "الخدمات", labelEn: "Services" }, { href: "/projects", labelAr: "الأعمال", labelEn: "Projects" }].map(l => (
-              <a key={l.href} href={l.href} style={{ color: "#cbd5e1", textDecoration: "none", fontSize: 14 }}>{isAr ? l.labelAr : l.labelEn}</a>
-            ))}
-          </div>
-        </div>
-      </footer>
+      <PublicFooter lang={lang} />
 
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
