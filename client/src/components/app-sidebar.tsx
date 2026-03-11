@@ -28,6 +28,9 @@ import {
   ListOrdered,
   Trophy,
   BarChart3,
+  TrendingUp,
+  Activity,
+  Target,
 } from "lucide-react";
 import {
   Sidebar,
@@ -71,16 +74,13 @@ export function AppSidebar() {
   ];
 
   const crmItems = [
-    {
-      title: t("nav.companies"),
-      url: "/companies",
-      icon: Building2,
-    },
-    {
-      title: t("nav.contacts"),
-      url: "/contacts",
-      icon: Users,
-    },
+    { title: "لوحة تحكم CRM", url: "/crm", icon: Target },
+    { title: "العملاء المحتملون", url: "/crm/leads", icon: Inbox },
+    { title: "الصفقات", url: "/crm/deals", icon: TrendingUp },
+    { title: "عروض الأسعار", url: "/crm/proposals", icon: FileText },
+    { title: "سجل الأنشطة", url: "/crm/activities", icon: Activity },
+    { title: t("nav.companies"), url: "/companies", icon: Building2 },
+    { title: t("nav.contacts"), url: "/contacts", icon: Users },
   ];
 
   const moduleItems = [

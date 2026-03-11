@@ -4,6 +4,8 @@ import {
   marketingSettings, formLeads,
   siteSettings, pageSections, testimonials, processSteps, whyUsItems,
   aboutValues, aboutTimeline, siteStats,
+  crmLeadSources, crmLeads, crmDealPipelines, crmDealStages, crmDeals,
+  crmActivities, crmTasks, crmProposals, crmProposalItems,
   type Tenant, type InsertTenant,
   type User, type InsertUser,
   type Subscription, type InsertSubscription,
@@ -27,10 +29,19 @@ import {
   type AboutValue, type InsertAboutValue,
   type AboutTimeline, type InsertAboutTimeline,
   type SiteStat, type InsertSiteStat,
+  type CrmLeadSource, type InsertCrmLeadSource,
+  type CrmLead, type InsertCrmLead,
+  type CrmDealPipeline, type InsertCrmDealPipeline,
+  type CrmDealStage, type InsertCrmDealStage,
+  type CrmDeal, type InsertCrmDeal,
+  type CrmActivity, type InsertCrmActivity,
+  type CrmTask, type InsertCrmTask,
+  type CrmProposal, type InsertCrmProposal,
+  type CrmProposalItem, type InsertCrmProposalItem,
   type AuthenticatedUser,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc, asc, gte, count, sql } from "drizzle-orm";
+import { eq, and, desc, asc, gte, count, sql, like, or, ilike } from "drizzle-orm";
 
 export interface IStorage {
   // Tenants
@@ -181,6 +192,75 @@ export interface IStorage {
   createSiteStat(stat: InsertSiteStat): Promise<SiteStat>;
   updateSiteStat(id: string, tenantId: string, stat: Partial<InsertSiteStat>): Promise<SiteStat | undefined>;
   deleteSiteStat(id: string, tenantId: string): Promise<void>;
+
+  // CRM - Lead Sources
+  getCrmLeadSources(tenantId: string): Promise<CrmLeadSource[]>;
+  createCrmLeadSource(source: InsertCrmLeadSource): Promise<CrmLeadSource>;
+  updateCrmLeadSource(id: string, tenantId: string, source: Partial<InsertCrmLeadSource>): Promise<CrmLeadSource | undefined>;
+  deleteCrmLeadSource(id: string, tenantId: string): Promise<void>;
+
+  // CRM - Leads
+  getCrmLeads(tenantId: string, filters?: { status?: string; sourceId?: string; assignedToId?: string; search?: string }): Promise<CrmLead[]>;
+  getCrmLead(id: string, tenantId: string): Promise<CrmLead | undefined>;
+  createCrmLead(lead: InsertCrmLead): Promise<CrmLead>;
+  updateCrmLead(id: string, tenantId: string, lead: Partial<InsertCrmLead>): Promise<CrmLead | undefined>;
+  deleteCrmLead(id: string, tenantId: string): Promise<void>;
+  getCrmLeadsStats(tenantId: string): Promise<{ total: number; new: number; qualified: number; converted: number; lost: number; byStatus: Record<string, number>; bySource: Record<string, number> }>;
+
+  // CRM - Deal Pipelines
+  getCrmDealPipelines(tenantId: string): Promise<CrmDealPipeline[]>;
+  getCrmDealPipeline(id: string, tenantId: string): Promise<CrmDealPipeline | undefined>;
+  createCrmDealPipeline(pipeline: InsertCrmDealPipeline): Promise<CrmDealPipeline>;
+  updateCrmDealPipeline(id: string, tenantId: string, pipeline: Partial<InsertCrmDealPipeline>): Promise<CrmDealPipeline | undefined>;
+  deleteCrmDealPipeline(id: string, tenantId: string): Promise<void>;
+
+  // CRM - Deal Stages
+  getCrmDealStages(tenantId: string, pipelineId?: string): Promise<CrmDealStage[]>;
+  createCrmDealStage(stage: InsertCrmDealStage): Promise<CrmDealStage>;
+  updateCrmDealStage(id: string, tenantId: string, stage: Partial<InsertCrmDealStage>): Promise<CrmDealStage | undefined>;
+  deleteCrmDealStage(id: string, tenantId: string): Promise<void>;
+
+  // CRM - Deals
+  getCrmDeals(tenantId: string, filters?: { status?: string; pipelineId?: string; stageId?: string; assignedToId?: string }): Promise<CrmDeal[]>;
+  getCrmDeal(id: string, tenantId: string): Promise<CrmDeal | undefined>;
+  createCrmDeal(deal: InsertCrmDeal): Promise<CrmDeal>;
+  updateCrmDeal(id: string, tenantId: string, deal: Partial<InsertCrmDeal>): Promise<CrmDeal | undefined>;
+  deleteCrmDeal(id: string, tenantId: string): Promise<void>;
+
+  // CRM - Activities
+  getCrmActivities(tenantId: string, entityType?: string, entityId?: string): Promise<CrmActivity[]>;
+  createCrmActivity(activity: InsertCrmActivity): Promise<CrmActivity>;
+  deleteCrmActivity(id: string, tenantId: string): Promise<void>;
+
+  // CRM - Tasks
+  getCrmTasks(tenantId: string, filters?: { status?: string; assignedToId?: string; entityType?: string; entityId?: string }): Promise<CrmTask[]>;
+  getCrmTask(id: string, tenantId: string): Promise<CrmTask | undefined>;
+  createCrmTask(task: InsertCrmTask): Promise<CrmTask>;
+  updateCrmTask(id: string, tenantId: string, task: Partial<InsertCrmTask>): Promise<CrmTask | undefined>;
+  deleteCrmTask(id: string, tenantId: string): Promise<void>;
+
+  // CRM - Proposals
+  getCrmProposals(tenantId: string, filters?: { status?: string; dealId?: string }): Promise<CrmProposal[]>;
+  getCrmProposal(id: string, tenantId: string): Promise<CrmProposal | undefined>;
+  createCrmProposal(proposal: InsertCrmProposal): Promise<CrmProposal>;
+  updateCrmProposal(id: string, tenantId: string, proposal: Partial<InsertCrmProposal>): Promise<CrmProposal | undefined>;
+  deleteCrmProposal(id: string, tenantId: string): Promise<void>;
+
+  // CRM - Proposal Items
+  getCrmProposalItems(proposalId: string): Promise<CrmProposalItem[]>;
+  createCrmProposalItem(item: InsertCrmProposalItem): Promise<CrmProposalItem>;
+  updateCrmProposalItem(id: string, item: Partial<InsertCrmProposalItem>): Promise<CrmProposalItem | undefined>;
+  deleteCrmProposalItem(id: string): Promise<void>;
+  replaceProposalItems(proposalId: string, tenantId: string, items: Omit<InsertCrmProposalItem, 'proposalId' | 'tenantId'>[]): Promise<CrmProposalItem[]>;
+
+  // CRM - Dashboard Stats
+  getCrmDashboardStats(tenantId: string): Promise<{
+    totalLeads: number; newLeadsToday: number; openDeals: number; openDealsValue: number;
+    wonDealsThisMonth: number; lostDealsThisMonth: number; proposalsSent: number;
+    overdueTasks: number; myTasksToday: number;
+    leadsByStatus: Record<string, number>; leadsBySource: Record<string, number>;
+    dealsByStage: Record<string, number>; recentLeads: CrmLead[];
+  }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -837,6 +917,263 @@ export class DatabaseStorage implements IStorage {
 
   async deleteSiteStat(id: string, tenantId: string): Promise<void> {
     await db.delete(siteStats).where(and(eq(siteStats.id, id), eq(siteStats.tenantId, tenantId)));
+  }
+
+  // ── CRM Lead Sources ──────────────────────────────────────────────────────
+  async getCrmLeadSources(tenantId: string): Promise<CrmLeadSource[]> {
+    return db.select().from(crmLeadSources).where(eq(crmLeadSources.tenantId, tenantId)).orderBy(asc(crmLeadSources.displayOrder));
+  }
+  async createCrmLeadSource(source: InsertCrmLeadSource): Promise<CrmLeadSource> {
+    const [row] = await db.insert(crmLeadSources).values(source).returning();
+    return row;
+  }
+  async updateCrmLeadSource(id: string, tenantId: string, source: Partial<InsertCrmLeadSource>): Promise<CrmLeadSource | undefined> {
+    const [row] = await db.update(crmLeadSources).set(source).where(and(eq(crmLeadSources.id, id), eq(crmLeadSources.tenantId, tenantId))).returning();
+    return row;
+  }
+  async deleteCrmLeadSource(id: string, tenantId: string): Promise<void> {
+    await db.delete(crmLeadSources).where(and(eq(crmLeadSources.id, id), eq(crmLeadSources.tenantId, tenantId)));
+  }
+
+  // ── CRM Leads ─────────────────────────────────────────────────────────────
+  async getCrmLeads(tenantId: string, filters?: { status?: string; sourceId?: string; assignedToId?: string; search?: string }): Promise<CrmLead[]> {
+    let q = db.select().from(crmLeads).where(eq(crmLeads.tenantId, tenantId)).$dynamic();
+    if (filters?.status) q = q.where(and(eq(crmLeads.tenantId, tenantId), eq(crmLeads.status, filters.status)));
+    if (filters?.sourceId) q = q.where(and(eq(crmLeads.tenantId, tenantId), eq(crmLeads.sourceId, filters.sourceId)));
+    if (filters?.assignedToId) q = q.where(and(eq(crmLeads.tenantId, tenantId), eq(crmLeads.assignedToId, filters.assignedToId)));
+    return (await q.orderBy(desc(crmLeads.createdAt))).filter(r => {
+      if (!filters?.search) return true;
+      const s = filters.search.toLowerCase();
+      return (r.fullName?.toLowerCase().includes(s) || r.email?.toLowerCase().includes(s) || r.mobile?.includes(s) || r.companyName?.toLowerCase().includes(s));
+    });
+  }
+  async getCrmLead(id: string, tenantId: string): Promise<CrmLead | undefined> {
+    const [row] = await db.select().from(crmLeads).where(and(eq(crmLeads.id, id), eq(crmLeads.tenantId, tenantId)));
+    return row;
+  }
+  async createCrmLead(lead: InsertCrmLead): Promise<CrmLead> {
+    const tenantLeads = await db.select({ id: crmLeads.id }).from(crmLeads).where(eq(crmLeads.tenantId, lead.tenantId));
+    const num = `LEAD-${String(tenantLeads.length + 1).padStart(4, '0')}`;
+    const [row] = await db.insert(crmLeads).values({ ...lead, leadNumber: num }).returning();
+    return row;
+  }
+  async updateCrmLead(id: string, tenantId: string, lead: Partial<InsertCrmLead>): Promise<CrmLead | undefined> {
+    const [row] = await db.update(crmLeads).set({ ...lead, updatedAt: new Date() }).where(and(eq(crmLeads.id, id), eq(crmLeads.tenantId, tenantId))).returning();
+    return row;
+  }
+  async deleteCrmLead(id: string, tenantId: string): Promise<void> {
+    await db.delete(crmLeads).where(and(eq(crmLeads.id, id), eq(crmLeads.tenantId, tenantId)));
+  }
+  async getCrmLeadsStats(tenantId: string) {
+    const all = await db.select().from(crmLeads).where(eq(crmLeads.tenantId, tenantId));
+    const byStatus: Record<string, number> = {};
+    const bySource: Record<string, number> = {};
+    for (const l of all) {
+      byStatus[l.status] = (byStatus[l.status] || 0) + 1;
+      const src = l.sourceName || 'unknown';
+      bySource[src] = (bySource[src] || 0) + 1;
+    }
+    return {
+      total: all.length,
+      new: all.filter(l => l.status === 'new').length,
+      qualified: all.filter(l => l.status === 'qualified').length,
+      converted: all.filter(l => l.status === 'converted').length,
+      lost: all.filter(l => l.status === 'lost').length,
+      byStatus,
+      bySource,
+    };
+  }
+
+  // ── CRM Deal Pipelines ────────────────────────────────────────────────────
+  async getCrmDealPipelines(tenantId: string): Promise<CrmDealPipeline[]> {
+    return db.select().from(crmDealPipelines).where(eq(crmDealPipelines.tenantId, tenantId)).orderBy(asc(crmDealPipelines.displayOrder));
+  }
+  async getCrmDealPipeline(id: string, tenantId: string): Promise<CrmDealPipeline | undefined> {
+    const [row] = await db.select().from(crmDealPipelines).where(and(eq(crmDealPipelines.id, id), eq(crmDealPipelines.tenantId, tenantId)));
+    return row;
+  }
+  async createCrmDealPipeline(pipeline: InsertCrmDealPipeline): Promise<CrmDealPipeline> {
+    const [row] = await db.insert(crmDealPipelines).values(pipeline).returning();
+    return row;
+  }
+  async updateCrmDealPipeline(id: string, tenantId: string, pipeline: Partial<InsertCrmDealPipeline>): Promise<CrmDealPipeline | undefined> {
+    const [row] = await db.update(crmDealPipelines).set(pipeline).where(and(eq(crmDealPipelines.id, id), eq(crmDealPipelines.tenantId, tenantId))).returning();
+    return row;
+  }
+  async deleteCrmDealPipeline(id: string, tenantId: string): Promise<void> {
+    await db.delete(crmDealPipelines).where(and(eq(crmDealPipelines.id, id), eq(crmDealPipelines.tenantId, tenantId)));
+  }
+
+  // ── CRM Deal Stages ───────────────────────────────────────────────────────
+  async getCrmDealStages(tenantId: string, pipelineId?: string): Promise<CrmDealStage[]> {
+    if (pipelineId) {
+      return db.select().from(crmDealStages).where(and(eq(crmDealStages.tenantId, tenantId), eq(crmDealStages.pipelineId, pipelineId))).orderBy(asc(crmDealStages.displayOrder));
+    }
+    return db.select().from(crmDealStages).where(eq(crmDealStages.tenantId, tenantId)).orderBy(asc(crmDealStages.displayOrder));
+  }
+  async createCrmDealStage(stage: InsertCrmDealStage): Promise<CrmDealStage> {
+    const [row] = await db.insert(crmDealStages).values(stage).returning();
+    return row;
+  }
+  async updateCrmDealStage(id: string, tenantId: string, stage: Partial<InsertCrmDealStage>): Promise<CrmDealStage | undefined> {
+    const [row] = await db.update(crmDealStages).set(stage).where(and(eq(crmDealStages.id, id), eq(crmDealStages.tenantId, tenantId))).returning();
+    return row;
+  }
+  async deleteCrmDealStage(id: string, tenantId: string): Promise<void> {
+    await db.delete(crmDealStages).where(and(eq(crmDealStages.id, id), eq(crmDealStages.tenantId, tenantId)));
+  }
+
+  // ── CRM Deals ─────────────────────────────────────────────────────────────
+  async getCrmDeals(tenantId: string, filters?: { status?: string; pipelineId?: string; stageId?: string; assignedToId?: string }): Promise<CrmDeal[]> {
+    let conditions = [eq(crmDeals.tenantId, tenantId)];
+    if (filters?.status) conditions.push(eq(crmDeals.status, filters.status));
+    if (filters?.pipelineId) conditions.push(eq(crmDeals.pipelineId, filters.pipelineId));
+    if (filters?.stageId) conditions.push(eq(crmDeals.stageId, filters.stageId));
+    if (filters?.assignedToId) conditions.push(eq(crmDeals.assignedToId, filters.assignedToId));
+    return db.select().from(crmDeals).where(and(...conditions)).orderBy(desc(crmDeals.createdAt));
+  }
+  async getCrmDeal(id: string, tenantId: string): Promise<CrmDeal | undefined> {
+    const [row] = await db.select().from(crmDeals).where(and(eq(crmDeals.id, id), eq(crmDeals.tenantId, tenantId)));
+    return row;
+  }
+  async createCrmDeal(deal: InsertCrmDeal): Promise<CrmDeal> {
+    const tenantDeals = await db.select({ id: crmDeals.id }).from(crmDeals).where(eq(crmDeals.tenantId, deal.tenantId));
+    const num = `DEAL-${String(tenantDeals.length + 1).padStart(4, '0')}`;
+    const [row] = await db.insert(crmDeals).values({ ...deal, dealNumber: num }).returning();
+    return row;
+  }
+  async updateCrmDeal(id: string, tenantId: string, deal: Partial<InsertCrmDeal>): Promise<CrmDeal | undefined> {
+    const [row] = await db.update(crmDeals).set({ ...deal, updatedAt: new Date() }).where(and(eq(crmDeals.id, id), eq(crmDeals.tenantId, tenantId))).returning();
+    return row;
+  }
+  async deleteCrmDeal(id: string, tenantId: string): Promise<void> {
+    await db.delete(crmDeals).where(and(eq(crmDeals.id, id), eq(crmDeals.tenantId, tenantId)));
+  }
+
+  // ── CRM Activities ────────────────────────────────────────────────────────
+  async getCrmActivities(tenantId: string, entityType?: string, entityId?: string): Promise<CrmActivity[]> {
+    let conditions = [eq(crmActivities.tenantId, tenantId)];
+    if (entityType) conditions.push(eq(crmActivities.entityType, entityType));
+    if (entityId) conditions.push(eq(crmActivities.entityId, entityId));
+    return db.select().from(crmActivities).where(and(...conditions)).orderBy(desc(crmActivities.createdAt));
+  }
+  async createCrmActivity(activity: InsertCrmActivity): Promise<CrmActivity> {
+    const [row] = await db.insert(crmActivities).values(activity).returning();
+    return row;
+  }
+  async deleteCrmActivity(id: string, tenantId: string): Promise<void> {
+    await db.delete(crmActivities).where(and(eq(crmActivities.id, id), eq(crmActivities.tenantId, tenantId)));
+  }
+
+  // ── CRM Tasks ─────────────────────────────────────────────────────────────
+  async getCrmTasks(tenantId: string, filters?: { status?: string; assignedToId?: string; entityType?: string; entityId?: string }): Promise<CrmTask[]> {
+    let conditions = [eq(crmTasks.tenantId, tenantId)];
+    if (filters?.status) conditions.push(eq(crmTasks.status, filters.status));
+    if (filters?.assignedToId) conditions.push(eq(crmTasks.assignedToId, filters.assignedToId));
+    if (filters?.entityType) conditions.push(eq(crmTasks.entityType, filters.entityType));
+    if (filters?.entityId) conditions.push(eq(crmTasks.entityId, filters.entityId));
+    return db.select().from(crmTasks).where(and(...conditions)).orderBy(desc(crmTasks.createdAt));
+  }
+  async getCrmTask(id: string, tenantId: string): Promise<CrmTask | undefined> {
+    const [row] = await db.select().from(crmTasks).where(and(eq(crmTasks.id, id), eq(crmTasks.tenantId, tenantId)));
+    return row;
+  }
+  async createCrmTask(task: InsertCrmTask): Promise<CrmTask> {
+    const [row] = await db.insert(crmTasks).values(task).returning();
+    return row;
+  }
+  async updateCrmTask(id: string, tenantId: string, task: Partial<InsertCrmTask>): Promise<CrmTask | undefined> {
+    const [row] = await db.update(crmTasks).set({ ...task, updatedAt: new Date() }).where(and(eq(crmTasks.id, id), eq(crmTasks.tenantId, tenantId))).returning();
+    return row;
+  }
+  async deleteCrmTask(id: string, tenantId: string): Promise<void> {
+    await db.delete(crmTasks).where(and(eq(crmTasks.id, id), eq(crmTasks.tenantId, tenantId)));
+  }
+
+  // ── CRM Proposals ─────────────────────────────────────────────────────────
+  async getCrmProposals(tenantId: string, filters?: { status?: string; dealId?: string }): Promise<CrmProposal[]> {
+    let conditions = [eq(crmProposals.tenantId, tenantId)];
+    if (filters?.status) conditions.push(eq(crmProposals.status, filters.status));
+    if (filters?.dealId) conditions.push(eq(crmProposals.dealId, filters.dealId));
+    return db.select().from(crmProposals).where(and(...conditions)).orderBy(desc(crmProposals.createdAt));
+  }
+  async getCrmProposal(id: string, tenantId: string): Promise<CrmProposal | undefined> {
+    const [row] = await db.select().from(crmProposals).where(and(eq(crmProposals.id, id), eq(crmProposals.tenantId, tenantId)));
+    return row;
+  }
+  async createCrmProposal(proposal: InsertCrmProposal): Promise<CrmProposal> {
+    const all = await db.select({ id: crmProposals.id }).from(crmProposals).where(eq(crmProposals.tenantId, proposal.tenantId));
+    const num = `PROP-${String(all.length + 1).padStart(4, '0')}`;
+    const [row] = await db.insert(crmProposals).values({ ...proposal, proposalNumber: num }).returning();
+    return row;
+  }
+  async updateCrmProposal(id: string, tenantId: string, proposal: Partial<InsertCrmProposal>): Promise<CrmProposal | undefined> {
+    const [row] = await db.update(crmProposals).set({ ...proposal, updatedAt: new Date() }).where(and(eq(crmProposals.id, id), eq(crmProposals.tenantId, tenantId))).returning();
+    return row;
+  }
+  async deleteCrmProposal(id: string, tenantId: string): Promise<void> {
+    await db.delete(crmProposals).where(and(eq(crmProposals.id, id), eq(crmProposals.tenantId, tenantId)));
+  }
+
+  // ── CRM Proposal Items ────────────────────────────────────────────────────
+  async getCrmProposalItems(proposalId: string): Promise<CrmProposalItem[]> {
+    return db.select().from(crmProposalItems).where(eq(crmProposalItems.proposalId, proposalId)).orderBy(asc(crmProposalItems.displayOrder));
+  }
+  async createCrmProposalItem(item: InsertCrmProposalItem): Promise<CrmProposalItem> {
+    const [row] = await db.insert(crmProposalItems).values(item).returning();
+    return row;
+  }
+  async updateCrmProposalItem(id: string, item: Partial<InsertCrmProposalItem>): Promise<CrmProposalItem | undefined> {
+    const [row] = await db.update(crmProposalItems).set(item).where(eq(crmProposalItems.id, id)).returning();
+    return row;
+  }
+  async deleteCrmProposalItem(id: string): Promise<void> {
+    await db.delete(crmProposalItems).where(eq(crmProposalItems.id, id));
+  }
+  async replaceProposalItems(proposalId: string, tenantId: string, items: Omit<InsertCrmProposalItem, 'proposalId' | 'tenantId'>[]): Promise<CrmProposalItem[]> {
+    await db.delete(crmProposalItems).where(eq(crmProposalItems.proposalId, proposalId));
+    if (!items.length) return [];
+    const rows = await db.insert(crmProposalItems).values(items.map((it, i) => ({ ...it, proposalId, tenantId, displayOrder: i }))).returning();
+    return rows;
+  }
+
+  // ── CRM Dashboard Stats ───────────────────────────────────────────────────
+  async getCrmDashboardStats(tenantId: string) {
+    const now = new Date();
+    const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const allLeads = await db.select().from(crmLeads).where(eq(crmLeads.tenantId, tenantId));
+    const allDeals = await db.select().from(crmDeals).where(eq(crmDeals.tenantId, tenantId));
+    const allTasks = await db.select().from(crmTasks).where(eq(crmTasks.tenantId, tenantId));
+    const allProposals = await db.select().from(crmProposals).where(eq(crmProposals.tenantId, tenantId));
+    const byStatus: Record<string, number> = {};
+    const bySource: Record<string, number> = {};
+    for (const l of allLeads) {
+      byStatus[l.status] = (byStatus[l.status] || 0) + 1;
+      const src = l.sourceName || 'مباشر';
+      bySource[src] = (bySource[src] || 0) + 1;
+    }
+    const dealsByStage: Record<string, number> = {};
+    for (const d of allDeals) {
+      dealsByStage[d.stageId] = (dealsByStage[d.stageId] || 0) + 1;
+    }
+    const openDeals = allDeals.filter(d => d.status === 'open');
+    const openDealsValue = openDeals.reduce((sum, d) => sum + parseFloat(d.estimatedValue || '0'), 0);
+    return {
+      totalLeads: allLeads.length,
+      newLeadsToday: allLeads.filter(l => new Date(l.createdAt) >= startOfDay).length,
+      openDeals: openDeals.length,
+      openDealsValue,
+      wonDealsThisMonth: allDeals.filter(d => d.status === 'won' && d.wonAt && new Date(d.wonAt) >= startOfMonth).length,
+      lostDealsThisMonth: allDeals.filter(d => d.status === 'lost' && d.lostAt && new Date(d.lostAt) >= startOfMonth).length,
+      proposalsSent: allProposals.filter(p => p.status === 'sent').length,
+      overdueTasks: allTasks.filter(t => t.status === 'pending' && t.dueDate && new Date(t.dueDate) < now).length,
+      myTasksToday: allTasks.filter(t => t.status === 'pending' && t.dueDate && new Date(t.dueDate) >= startOfDay && new Date(t.dueDate) < new Date(startOfDay.getTime() + 86400000)).length,
+      leadsByStatus: byStatus,
+      leadsBySource: bySource,
+      dealsByStage,
+      recentLeads: allLeads.slice(0, 5),
+    };
   }
 }
 

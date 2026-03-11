@@ -20,11 +20,19 @@
 - ✅ Responsive design for mobile/tablet/desktop
 - ✅ Shadcn UI components throughout
 
-### 4. CRM Module - FULLY IMPLEMENTED
+### 4. Full CRM Module (HubSpot/Zoho-quality) - FULLY IMPLEMENTED
+- ✅ **CRM Dashboard**: KPI stats (leads, deals, proposals), recent activity feed, quick setup
+- ✅ **Leads**: Full CRUD, status pipeline, search/filter, lead numbers (LEAD-0001), create from website forms
+- ✅ **Lead Detail**: Activity timeline, note/call/meeting/email/WhatsApp logging, convert to deal
+- ✅ **Deals**: Kanban view + Table view, multi-pipeline support, stage drag (via select), deal value tracking
+- ✅ **Proposals**: Full proposal builder with line items, tax (15% VAT), discount, PDF-ready layout
+- ✅ **Activities**: Grouped timeline feed with type + entity filtering
 - ✅ **Companies**: List, Create, Update, Delete with status tracking (lead/prospect/client/archived)
 - ✅ **Contacts**: List, Create, Update, Delete with company linking
-- ✅ Real-time filtering and search
-- ✅ Activity history in dashboard
+- ✅ **Public Lead Capture**: POST /api/public/lead-capture (no auth) auto-creates formLead + crmLead + activity
+- ✅ **CRM Setup**: POST /api/crm/setup seeds 8 lead sources + 1 pipeline with 10 Arabic stages
+- ✅ **Auto-numbering**: LEAD-0001, DEAL-0001, PROP-0001
+- ✅ **Lead Conversion**: Lead → Contact + Company + Deal in one step
 
 ### 5. ALL Menu Modules - FULLY IMPLEMENTED
 - ✅ **Dashboard**: KPI cards, recent activity feed, quick actions

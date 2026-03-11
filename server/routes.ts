@@ -1386,7 +1386,325 @@ export async function registerRoutes(
     }
   });
 
-  // Robots.txt
+  // ============================================================================
+  // CRM API ROUTES
+  // ============================================================================
+
+  // Public lead capture (from website forms - no auth required)
+  app.post("/api/public/lead-capture", async (req, res) => {
+    try {
+      const { name, email, phone, message, service, budget, pageSource, utmSource, utmMedium, utmCampaign } = req.body;
+      if (!name) return res.status(400).json({ error: "Name is required" });
+      // Use default tenant (first available)
+      const allTenants = await storage.getAllTenants();
+      const tenant = allTenants[0];
+      if (!tenant) return res.status(404).json({ error: "Tenant not found" });
+      // Create form lead first
+      const formLead = await storage.createFormLead({ tenantId: tenant.id, formType: pageSource || 'contact', name, email, phone, message, pageSource, ipAddress: req.ip, status: 'new' });
+      // Determine source name
+      const sources = await storage.getCrmLeadSources(tenant.id);
+      const websiteSource = sources.find(s => s.name.includes('موقع') || s.name.toLowerCase().includes('website'));
+      // Auto-create CRM lead
+      const lead = await storage.createCrmLead({
+        tenantId: tenant.id, fullName: name, email, mobile: phone, message,
+        serviceInterested: service, estimatedBudget: budget,
+        sourceId: websiteSource?.id, sourceName: websiteSource?.name || 'الموقع الإلكتروني',
+        utmSource, utmMedium, utmCampaign, pageSource, ipAddress: req.ip,
+        formLeadId: formLead.id, status: 'new', priority: 'medium',
+      });
+      // Log activity
+      await storage.createCrmActivity({ tenantId: tenant.id, entityType: 'lead', entityId: lead.id, type: 'note', subject: 'تم استقبال الطلب من الموقع', details: message });
+      res.json({ success: true, lead });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // CRM Dashboard Stats
+  app.get("/api/crm/dashboard", requireAuth, async (req, res) => {
+    try {
+      const stats = await storage.getCrmDashboardStats(req.user!.tenant.id);
+      res.json(stats);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // CRM Lead Sources
+  app.get("/api/crm/lead-sources", requireAuth, async (req, res) => {
+    try { res.json(await storage.getCrmLeadSources(req.user!.tenant.id)); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.post("/api/crm/lead-sources", requireAuth, async (req, res) => {
+    try { res.json(await storage.createCrmLeadSource({ ...req.body, tenantId: req.user!.tenant.id })); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.patch("/api/crm/lead-sources/:id", requireAuth, async (req, res) => {
+    try { res.json(await storage.updateCrmLeadSource(req.params.id, req.user!.tenant.id, req.body)); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.delete("/api/crm/lead-sources/:id", requireAuth, async (req, res) => {
+    try { await storage.deleteCrmLeadSource(req.params.id, req.user!.tenant.id); res.json({ ok: true }); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // CRM Leads
+  app.get("/api/crm/leads", requireAuth, async (req, res) => {
+    try {
+      const { status, sourceId, assignedToId, search } = req.query as Record<string, string>;
+      const leads = await storage.getCrmLeads(req.user!.tenant.id, { status, sourceId, assignedToId, search });
+      res.json(leads);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.get("/api/crm/leads/stats", requireAuth, async (req, res) => {
+    try { res.json(await storage.getCrmLeadsStats(req.user!.tenant.id)); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.get("/api/crm/leads/:id", requireAuth, async (req, res) => {
+    try {
+      const lead = await storage.getCrmLead(req.params.id, req.user!.tenant.id);
+      if (!lead) return res.status(404).json({ error: "Not found" });
+      res.json(lead);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.post("/api/crm/leads", requireAuth, async (req, res) => {
+    try {
+      const lead = await storage.createCrmLead({ ...req.body, tenantId: req.user!.tenant.id, createdById: req.user!.id });
+      await storage.createCrmActivity({ tenantId: req.user!.tenant.id, entityType: 'lead', entityId: lead.id, type: 'note', subject: 'تم إنشاء العميل المحتمل', createdById: req.user!.id });
+      res.json(lead);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.patch("/api/crm/leads/:id", requireAuth, async (req, res) => {
+    try {
+      const existing = await storage.getCrmLead(req.params.id, req.user!.tenant.id);
+      const lead = await storage.updateCrmLead(req.params.id, req.user!.tenant.id, req.body);
+      if (existing && req.body.status && existing.status !== req.body.status) {
+        await storage.createCrmActivity({ tenantId: req.user!.tenant.id, entityType: 'lead', entityId: req.params.id, type: 'status_change', subject: `تغيير الحالة: ${existing.status} → ${req.body.status}`, createdById: req.user!.id });
+      }
+      res.json(lead);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.delete("/api/crm/leads/:id", requireAuth, async (req, res) => {
+    try { await storage.deleteCrmLead(req.params.id, req.user!.tenant.id); res.json({ ok: true }); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  // Convert lead to deal/contact/company
+  app.post("/api/crm/leads/:id/convert", requireAuth, async (req, res) => {
+    try {
+      const lead = await storage.getCrmLead(req.params.id, req.user!.tenant.id);
+      if (!lead) return res.status(404).json({ error: "Lead not found" });
+      const { pipelineId, stageId } = req.body;
+      // Create company if companyName exists
+      let companyId: string | undefined;
+      if (lead.companyName) {
+        const company = await storage.createCompany({ tenantId: req.user!.tenant.id, name: lead.companyName, email: lead.email, phone: lead.mobile, source: lead.sourceName || undefined, status: 'prospect', ownerId: req.user!.id });
+        companyId = company.id;
+      }
+      // Create contact
+      const contact = await storage.createContact({ tenantId: req.user!.tenant.id, name: lead.fullName, email: lead.email, phone: lead.mobile, position: lead.jobTitle, companyId, notes: lead.notes });
+      // Create deal
+      let deal;
+      if (pipelineId && stageId) {
+        deal = await storage.createCrmDeal({ tenantId: req.user!.tenant.id, title: `صفقة - ${lead.fullName}`, companyId, contactId: contact.id, leadId: lead.id, pipelineId, stageId, serviceType: lead.serviceInterested, assignedToId: lead.assignedToId, sourceId: lead.sourceId, createdById: req.user!.id, status: 'open' });
+      }
+      // Update lead as converted
+      await storage.updateCrmLead(req.params.id, req.user!.tenant.id, { status: 'converted', convertedAt: new Date(), convertedToContactId: contact.id, convertedToCompanyId: companyId, convertedToDealId: deal?.id });
+      await storage.createCrmActivity({ tenantId: req.user!.tenant.id, entityType: 'lead', entityId: lead.id, type: 'status_change', subject: 'تم تحويل العميل المحتمل إلى صفقة', createdById: req.user!.id });
+      res.json({ contact, company: companyId, deal });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // CRM Deal Pipelines
+  app.get("/api/crm/pipelines", requireAuth, async (req, res) => {
+    try { res.json(await storage.getCrmDealPipelines(req.user!.tenant.id)); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.post("/api/crm/pipelines", requireAuth, async (req, res) => {
+    try { res.json(await storage.createCrmDealPipeline({ ...req.body, tenantId: req.user!.tenant.id })); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.patch("/api/crm/pipelines/:id", requireAuth, async (req, res) => {
+    try { res.json(await storage.updateCrmDealPipeline(req.params.id, req.user!.tenant.id, req.body)); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.delete("/api/crm/pipelines/:id", requireAuth, async (req, res) => {
+    try { await storage.deleteCrmDealPipeline(req.params.id, req.user!.tenant.id); res.json({ ok: true }); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // CRM Deal Stages
+  app.get("/api/crm/stages", requireAuth, async (req, res) => {
+    try {
+      const { pipelineId } = req.query as { pipelineId?: string };
+      res.json(await storage.getCrmDealStages(req.user!.tenant.id, pipelineId));
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.post("/api/crm/stages", requireAuth, async (req, res) => {
+    try { res.json(await storage.createCrmDealStage({ ...req.body, tenantId: req.user!.tenant.id })); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.patch("/api/crm/stages/:id", requireAuth, async (req, res) => {
+    try { res.json(await storage.updateCrmDealStage(req.params.id, req.user!.tenant.id, req.body)); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.delete("/api/crm/stages/:id", requireAuth, async (req, res) => {
+    try { await storage.deleteCrmDealStage(req.params.id, req.user!.tenant.id); res.json({ ok: true }); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // CRM Deals
+  app.get("/api/crm/deals", requireAuth, async (req, res) => {
+    try {
+      const { status, pipelineId, stageId, assignedToId } = req.query as Record<string, string>;
+      res.json(await storage.getCrmDeals(req.user!.tenant.id, { status, pipelineId, stageId, assignedToId }));
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.get("/api/crm/deals/:id", requireAuth, async (req, res) => {
+    try {
+      const deal = await storage.getCrmDeal(req.params.id, req.user!.tenant.id);
+      if (!deal) return res.status(404).json({ error: "Not found" });
+      res.json(deal);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.post("/api/crm/deals", requireAuth, async (req, res) => {
+    try {
+      const deal = await storage.createCrmDeal({ ...req.body, tenantId: req.user!.tenant.id, createdById: req.user!.id });
+      await storage.createCrmActivity({ tenantId: req.user!.tenant.id, entityType: 'deal', entityId: deal.id, type: 'note', subject: 'تم إنشاء الصفقة', createdById: req.user!.id });
+      res.json(deal);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.patch("/api/crm/deals/:id", requireAuth, async (req, res) => {
+    try {
+      const existing = await storage.getCrmDeal(req.params.id, req.user!.tenant.id);
+      if (req.body.status === 'won') req.body.wonAt = new Date();
+      if (req.body.status === 'lost') req.body.lostAt = new Date();
+      const deal = await storage.updateCrmDeal(req.params.id, req.user!.tenant.id, req.body);
+      if (existing && req.body.stageId && existing.stageId !== req.body.stageId) {
+        await storage.createCrmActivity({ tenantId: req.user!.tenant.id, entityType: 'deal', entityId: req.params.id, type: 'stage_change', subject: 'تم تغيير مرحلة الصفقة', createdById: req.user!.id });
+      }
+      res.json(deal);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.delete("/api/crm/deals/:id", requireAuth, async (req, res) => {
+    try { await storage.deleteCrmDeal(req.params.id, req.user!.tenant.id); res.json({ ok: true }); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // CRM Activities
+  app.get("/api/crm/activities", requireAuth, async (req, res) => {
+    try {
+      const { entityType, entityId } = req.query as Record<string, string>;
+      res.json(await storage.getCrmActivities(req.user!.tenant.id, entityType, entityId));
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.post("/api/crm/activities", requireAuth, async (req, res) => {
+    try { res.json(await storage.createCrmActivity({ ...req.body, tenantId: req.user!.tenant.id, createdById: req.user!.id })); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.delete("/api/crm/activities/:id", requireAuth, async (req, res) => {
+    try { await storage.deleteCrmActivity(req.params.id, req.user!.tenant.id); res.json({ ok: true }); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // CRM Tasks
+  app.get("/api/crm/tasks", requireAuth, async (req, res) => {
+    try {
+      const { status, assignedToId, entityType, entityId } = req.query as Record<string, string>;
+      res.json(await storage.getCrmTasks(req.user!.tenant.id, { status, assignedToId, entityType, entityId }));
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.get("/api/crm/tasks/:id", requireAuth, async (req, res) => {
+    try {
+      const task = await storage.getCrmTask(req.params.id, req.user!.tenant.id);
+      if (!task) return res.status(404).json({ error: "Not found" });
+      res.json(task);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.post("/api/crm/tasks", requireAuth, async (req, res) => {
+    try { res.json(await storage.createCrmTask({ ...req.body, tenantId: req.user!.tenant.id, createdById: req.user!.id })); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.patch("/api/crm/tasks/:id", requireAuth, async (req, res) => {
+    try { res.json(await storage.updateCrmTask(req.params.id, req.user!.tenant.id, req.body)); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.delete("/api/crm/tasks/:id", requireAuth, async (req, res) => {
+    try { await storage.deleteCrmTask(req.params.id, req.user!.tenant.id); res.json({ ok: true }); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // CRM Proposals
+  app.get("/api/crm/proposals", requireAuth, async (req, res) => {
+    try {
+      const { status, dealId } = req.query as Record<string, string>;
+      res.json(await storage.getCrmProposals(req.user!.tenant.id, { status, dealId }));
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.get("/api/crm/proposals/:id", requireAuth, async (req, res) => {
+    try {
+      const proposal = await storage.getCrmProposal(req.params.id, req.user!.tenant.id);
+      if (!proposal) return res.status(404).json({ error: "Not found" });
+      const items = await storage.getCrmProposalItems(proposal.id);
+      res.json({ ...proposal, items });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.post("/api/crm/proposals", requireAuth, async (req, res) => {
+    try {
+      const { items, ...proposalData } = req.body;
+      const proposal = await storage.createCrmProposal({ ...proposalData, tenantId: req.user!.tenant.id, preparedById: req.user!.id });
+      if (items?.length) await storage.replaceProposalItems(proposal.id, req.user!.tenant.id, items);
+      await storage.createCrmActivity({ tenantId: req.user!.tenant.id, entityType: 'deal', entityId: proposal.dealId || proposal.leadId || proposal.id, type: 'proposal_action', subject: `تم إنشاء عرض سعر: ${proposal.proposalNumber}`, createdById: req.user!.id });
+      res.json(proposal);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.patch("/api/crm/proposals/:id", requireAuth, async (req, res) => {
+    try {
+      const { items, ...proposalData } = req.body;
+      const proposal = await storage.updateCrmProposal(req.params.id, req.user!.tenant.id, proposalData);
+      if (items !== undefined) await storage.replaceProposalItems(req.params.id, req.user!.tenant.id, items);
+      res.json(proposal);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.delete("/api/crm/proposals/:id", requireAuth, async (req, res) => {
+    try { await storage.deleteCrmProposal(req.params.id, req.user!.tenant.id); res.json({ ok: true }); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // CRM Setup - Seed default data
+  app.post("/api/crm/setup", requireAuth, async (req, res) => {
+    try {
+      const tenantId = req.user!.tenant.id;
+      const existingSources = await storage.getCrmLeadSources(tenantId);
+      if (!existingSources.length) {
+        const defaultSources = [
+          { name: 'الموقع الإلكتروني', nameEn: 'Website', color: '#6366f1', displayOrder: 0 },
+          { name: 'إعلانات جوجل', nameEn: 'Google Ads', color: '#ef4444', displayOrder: 1 },
+          { name: 'إعلانات ميتا', nameEn: 'Meta Ads', color: '#3b82f6', displayOrder: 2 },
+          { name: 'واتساب', nameEn: 'WhatsApp', color: '#22c55e', displayOrder: 3 },
+          { name: 'مكالمة هاتفية', nameEn: 'Phone Call', color: '#f59e0b', displayOrder: 4 },
+          { name: 'إحالة', nameEn: 'Referral', color: '#8b5cf6', displayOrder: 5 },
+          { name: 'مباشر', nameEn: 'Direct', color: '#64748b', displayOrder: 6 },
+          { name: 'معرض / حدث', nameEn: 'Exhibition / Event', color: '#ec4899', displayOrder: 7 },
+        ];
+        for (const src of defaultSources) await storage.createCrmLeadSource({ ...src, tenantId, isDefault: true });
+      }
+      const existingPipelines = await storage.getCrmDealPipelines(tenantId);
+      if (!existingPipelines.length) {
+        const pipeline = await storage.createCrmDealPipeline({ tenantId, name: 'خط المبيعات الرئيسي', nameEn: 'Main Sales Pipeline', isDefault: true, displayOrder: 0 });
+        const stages = [
+          { name: 'فرصة جديدة', nameEn: 'New Opportunity', color: '#6366f1', probability: 10, displayOrder: 0 },
+          { name: 'اكتشاف', nameEn: 'Discovery', color: '#8b5cf6', probability: 20, displayOrder: 1 },
+          { name: 'اجتماع مجدول', nameEn: 'Meeting Scheduled', color: '#3b82f6', probability: 30, displayOrder: 2 },
+          { name: 'جمع المتطلبات', nameEn: 'Requirement Gathering', color: '#06b6d4', probability: 40, displayOrder: 3 },
+          { name: 'تحضير العرض', nameEn: 'Proposal Drafting', color: '#f59e0b', probability: 50, displayOrder: 4 },
+          { name: 'تم إرسال العرض', nameEn: 'Proposal Sent', color: '#f97316', probability: 60, displayOrder: 5 },
+          { name: 'تفاوض', nameEn: 'Negotiation', color: '#ef4444', probability: 75, displayOrder: 6 },
+          { name: 'موافقة شفهية', nameEn: 'Verbal Approval', color: '#10b981', probability: 85, displayOrder: 7 },
+          { name: 'رابح', nameEn: 'Won', color: '#22c55e', probability: 100, isWon: true, displayOrder: 8 },
+          { name: 'خاسر', nameEn: 'Lost', color: '#94a3b8', probability: 0, isLost: true, displayOrder: 9 },
+        ];
+        for (const s of stages) await storage.createCrmDealStage({ ...s, tenantId, pipelineId: pipeline.id });
+      }
+      res.json({ ok: true, message: 'CRM setup complete' });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
   app.get("/robots.txt", (req, res) => {
     const baseUrl = `${req.protocol}://${req.get("host")}`;
     res.set("Content-Type", "text/plain");

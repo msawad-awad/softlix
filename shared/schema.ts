@@ -537,6 +537,249 @@ export type InsertSiteStat = z.infer<typeof insertSiteStatSchema>;
 export type SiteStat = typeof siteStats.$inferSelect;
 
 // ============================================================================
+// CRM - LEAD SOURCES
+// ============================================================================
+export const crmLeadSources = pgTable("crm_lead_sources", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  name: text("name").notNull(),
+  nameEn: text("name_en"),
+  color: text("color").default("#6366f1"),
+  isDefault: boolean("is_default").default(false),
+  displayOrder: integer("display_order").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertCrmLeadSourceSchema = createInsertSchema(crmLeadSources).omit({ id: true, createdAt: true });
+export type InsertCrmLeadSource = z.infer<typeof insertCrmLeadSourceSchema>;
+export type CrmLeadSource = typeof crmLeadSources.$inferSelect;
+
+// ============================================================================
+// CRM - LEADS
+// ============================================================================
+export const crmLeads = pgTable("crm_leads", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  leadNumber: text("lead_number"),
+  fullName: text("full_name").notNull(),
+  mobile: text("mobile"),
+  email: text("email"),
+  companyName: text("company_name"),
+  jobTitle: text("job_title"),
+  country: text("country"),
+  city: text("city"),
+  serviceInterested: text("service_interested"),
+  estimatedBudget: text("estimated_budget"),
+  sourceId: varchar("source_id").references(() => crmLeadSources.id),
+  sourceName: text("source_name"),
+  campaignName: text("campaign_name"),
+  utmSource: text("utm_source"),
+  utmMedium: text("utm_medium"),
+  utmCampaign: text("utm_campaign"),
+  assignedToId: varchar("assigned_to_id").references(() => users.id),
+  status: text("status").default("new").notNull(), // new, attempting_contact, contacted, qualified, unqualified, proposal_sent, negotiation, converted, lost
+  priority: text("priority").default("medium").notNull(), // low, medium, high, urgent
+  tags: jsonb("tags").default([]),
+  notes: text("notes"),
+  lastContactAt: timestamp("last_contact_at"),
+  nextFollowUpAt: timestamp("next_follow_up_at"),
+  formLeadId: varchar("form_lead_id").references(() => formLeads.id),
+  convertedAt: timestamp("converted_at"),
+  convertedToContactId: varchar("converted_to_contact_id"),
+  convertedToCompanyId: varchar("converted_to_company_id"),
+  convertedToDealId: varchar("converted_to_deal_id"),
+  pageSource: text("page_source"),
+  ipAddress: text("ip_address"),
+  message: text("message"),
+  createdById: varchar("created_by_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertCrmLeadSchema = createInsertSchema(crmLeads).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertCrmLead = z.infer<typeof insertCrmLeadSchema>;
+export type CrmLead = typeof crmLeads.$inferSelect;
+
+// ============================================================================
+// CRM - DEAL PIPELINES
+// ============================================================================
+export const crmDealPipelines = pgTable("crm_deal_pipelines", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  name: text("name").notNull(),
+  nameEn: text("name_en"),
+  isDefault: boolean("is_default").default(false),
+  displayOrder: integer("display_order").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertCrmDealPipelineSchema = createInsertSchema(crmDealPipelines).omit({ id: true, createdAt: true });
+export type InsertCrmDealPipeline = z.infer<typeof insertCrmDealPipelineSchema>;
+export type CrmDealPipeline = typeof crmDealPipelines.$inferSelect;
+
+// ============================================================================
+// CRM - DEAL STAGES
+// ============================================================================
+export const crmDealStages = pgTable("crm_deal_stages", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  pipelineId: varchar("pipeline_id").references(() => crmDealPipelines.id).notNull(),
+  name: text("name").notNull(),
+  nameEn: text("name_en"),
+  color: text("color").default("#6366f1"),
+  probability: integer("probability").default(50), // 0-100
+  displayOrder: integer("display_order").default(0),
+  isWon: boolean("is_won").default(false),
+  isLost: boolean("is_lost").default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertCrmDealStageSchema = createInsertSchema(crmDealStages).omit({ id: true, createdAt: true });
+export type InsertCrmDealStage = z.infer<typeof insertCrmDealStageSchema>;
+export type CrmDealStage = typeof crmDealStages.$inferSelect;
+
+// ============================================================================
+// CRM - DEALS
+// ============================================================================
+export const crmDeals = pgTable("crm_deals", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  dealNumber: text("deal_number"),
+  title: text("title").notNull(),
+  companyId: varchar("company_id").references(() => companies.id),
+  contactId: varchar("contact_id").references(() => contacts.id),
+  leadId: varchar("lead_id").references(() => crmLeads.id),
+  pipelineId: varchar("pipeline_id").references(() => crmDealPipelines.id).notNull(),
+  stageId: varchar("stage_id").references(() => crmDealStages.id).notNull(),
+  serviceType: text("service_type"),
+  estimatedValue: decimal("estimated_value", { precision: 12, scale: 2 }),
+  currency: text("currency").default("SAR"),
+  probability: integer("probability").default(50),
+  expectedCloseDate: timestamp("expected_close_date"),
+  assignedToId: varchar("assigned_to_id").references(() => users.id),
+  sourceId: varchar("source_id").references(() => crmLeadSources.id),
+  description: text("description"),
+  lostReason: text("lost_reason"),
+  wonAt: timestamp("won_at"),
+  lostAt: timestamp("lost_at"),
+  status: text("status").default("open").notNull(), // open, won, lost, archived
+  tags: jsonb("tags").default([]),
+  createdById: varchar("created_by_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertCrmDealSchema = createInsertSchema(crmDeals).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertCrmDeal = z.infer<typeof insertCrmDealSchema>;
+export type CrmDeal = typeof crmDeals.$inferSelect;
+
+// ============================================================================
+// CRM - ACTIVITIES (Polymorphic Timeline)
+// ============================================================================
+export const crmActivities = pgTable("crm_activities", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  entityType: text("entity_type").notNull(), // lead, contact, company, deal
+  entityId: varchar("entity_id").notNull(),
+  type: text("type").notNull(), // note, call_log, meeting_log, email_log, whatsapp_log, status_change, assignment_change, stage_change, proposal_action, manual
+  subject: text("subject"),
+  details: text("details"),
+  outcome: text("outcome"),
+  durationMinutes: integer("duration_minutes"),
+  scheduledAt: timestamp("scheduled_at"),
+  completedAt: timestamp("completed_at"),
+  createdById: varchar("created_by_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertCrmActivitySchema = createInsertSchema(crmActivities).omit({ id: true, createdAt: true });
+export type InsertCrmActivity = z.infer<typeof insertCrmActivitySchema>;
+export type CrmActivity = typeof crmActivities.$inferSelect;
+
+// ============================================================================
+// CRM - TASKS
+// ============================================================================
+export const crmTasks = pgTable("crm_tasks", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  title: text("title").notNull(),
+  type: text("type").default("task").notNull(), // call, whatsapp, email, meeting, proposal_prep, contract_followup, internal, reminder, task
+  entityType: text("entity_type"), // lead, contact, company, deal
+  entityId: varchar("entity_id"),
+  assignedToId: varchar("assigned_to_id").references(() => users.id),
+  dueDate: timestamp("due_date"),
+  priority: text("priority").default("medium").notNull(), // low, medium, high, urgent
+  status: text("status").default("pending").notNull(), // pending, in_progress, completed, cancelled
+  description: text("description"),
+  completedAt: timestamp("completed_at"),
+  reminderBefore: integer("reminder_before"), // minutes
+  createdById: varchar("created_by_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertCrmTaskSchema = createInsertSchema(crmTasks).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertCrmTask = z.infer<typeof insertCrmTaskSchema>;
+export type CrmTask = typeof crmTasks.$inferSelect;
+
+// ============================================================================
+// CRM - PROPOSALS
+// ============================================================================
+export const crmProposals = pgTable("crm_proposals", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  proposalNumber: text("proposal_number"),
+  title: text("title").notNull(),
+  companyId: varchar("company_id").references(() => companies.id),
+  contactId: varchar("contact_id").references(() => contacts.id),
+  dealId: varchar("deal_id").references(() => crmDeals.id),
+  leadId: varchar("lead_id").references(() => crmLeads.id),
+  issueDate: timestamp("issue_date").defaultNow(),
+  expiryDate: timestamp("expiry_date"),
+  currency: text("currency").default("SAR"),
+  subtotal: decimal("subtotal", { precision: 12, scale: 2 }).default("0"),
+  discountType: text("discount_type").default("fixed"), // fixed, percent
+  discountValue: decimal("discount_value", { precision: 12, scale: 2 }).default("0"),
+  taxPercent: decimal("tax_percent", { precision: 5, scale: 2 }).default("15"),
+  taxAmount: decimal("tax_amount", { precision: 12, scale: 2 }).default("0"),
+  total: decimal("total", { precision: 12, scale: 2 }).default("0"),
+  status: text("status").default("draft").notNull(), // draft, pending_approval, approved, sent, viewed, revised, accepted, rejected, expired
+  termsAndNotes: text("terms_and_notes"),
+  internalNotes: text("internal_notes"),
+  preparedById: varchar("prepared_by_id").references(() => users.id),
+  approvedById: varchar("approved_by_id").references(() => users.id),
+  sentAt: timestamp("sent_at"),
+  viewedAt: timestamp("viewed_at"),
+  acceptedAt: timestamp("accepted_at"),
+  rejectedAt: timestamp("rejected_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertCrmProposalSchema = createInsertSchema(crmProposals).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertCrmProposal = z.infer<typeof insertCrmProposalSchema>;
+export type CrmProposal = typeof crmProposals.$inferSelect;
+
+// ============================================================================
+// CRM - PROPOSAL ITEMS
+// ============================================================================
+export const crmProposalItems = pgTable("crm_proposal_items", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  proposalId: varchar("proposal_id").references(() => crmProposals.id).notNull(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  quantity: decimal("quantity", { precision: 10, scale: 2 }).default("1"),
+  unitPrice: decimal("unit_price", { precision: 12, scale: 2 }).default("0"),
+  lineTotal: decimal("line_total", { precision: 12, scale: 2 }).default("0"),
+  displayOrder: integer("display_order").default(0),
+});
+
+export const insertCrmProposalItemSchema = createInsertSchema(crmProposalItems).omit({ id: true });
+export type InsertCrmProposalItem = z.infer<typeof insertCrmProposalItemSchema>;
+export type CrmProposalItem = typeof crmProposalItems.$inferSelect;
+
+// ============================================================================
 // API Response Types
 // ============================================================================
 export type UserWithoutPassword = Omit<User, "passwordHash">;

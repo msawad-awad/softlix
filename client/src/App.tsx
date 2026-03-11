@@ -51,6 +51,13 @@ import WebsiteSiteStats from "@/pages/website/site-stats";
 import Marketing from "@/pages/marketing";
 import { useMarketingTracking } from "@/hooks/use-marketing-tracking";
 
+import CrmDashboard from "@/pages/crm/dashboard";
+import CrmLeads from "@/pages/crm/leads";
+import LeadDetail from "@/pages/crm/lead-detail";
+import CrmDeals from "@/pages/crm/deals";
+import CrmActivities from "@/pages/crm/activities";
+import CrmProposals from "@/pages/crm/proposals";
+
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
   const [location] = useLocation();
@@ -138,6 +145,14 @@ function Router() {
       <Route path="/tickets"><AdminRoute><Tickets /></AdminRoute></Route>
       <Route path="/hr"><AdminRoute><HR /></AdminRoute></Route>
       <Route path="/inventory"><AdminRoute><Inventory /></AdminRoute></Route>
+
+      {/* CRM Routes */}
+      <Route path="/crm/leads/:id"><AdminRoute><LeadDetail /></AdminRoute></Route>
+      <Route path="/crm/leads"><AdminRoute><CrmLeads /></AdminRoute></Route>
+      <Route path="/crm/deals"><AdminRoute><CrmDeals /></AdminRoute></Route>
+      <Route path="/crm/activities"><AdminRoute><CrmActivities /></AdminRoute></Route>
+      <Route path="/crm/proposals"><AdminRoute><CrmProposals /></AdminRoute></Route>
+      <Route path="/crm"><AdminRoute><CrmDashboard /></AdminRoute></Route>
 
       {/* CMS website routes */}
       <Route path="/website/branding"><AdminRoute><WebsiteBranding /></AdminRoute></Route>

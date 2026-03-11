@@ -51,7 +51,7 @@ export default function PublicContact({ lang = "ar", onLangChange }: ContactProp
     }
     setSubmitting(true);
     try {
-      const res = await fetch(`/api/public/leads${TENANT_ID ? `?tenantId=${TENANT_ID}` : ""}`, {
+      const res = await fetch(`/api/public/lead-capture${TENANT_ID ? `?tenantId=${TENANT_ID}` : ""}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, formType: "contact", pageSource: "/contact", tenantId: TENANT_ID }),
