@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>تطوير تطبيقات الجوال | Softlix</title>
+  <meta name="description" content="صفحة خدمة احترافية لتطوير تطبيقات الجوال لدى Softlix تشمل iOS و Android و Flutter وتجربة المستخدم والاختبار والجودة." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0f172a;
+      --primary-2: #111827;
+      --secondary: #2563eb;
+      --accent: #38bdf8;
+      --accent-soft: #e0f2fe;
+      --orange: #e49268;
+      --orange-soft: #fff1e9;
+      --text: #0f172a;
+      --muted: #64748b;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --line: #e2e8f0;
+      --success: #16a34a;
+      --shadow: 0 20px 50px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 30px 70px rgba(15, 23, 42, 0.13);
+      --radius: 24px;
+      --radius-sm: 18px;
+      --container: 1200px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Cairo", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+
+    .container {
+      width: min(var(--container), calc(100% - 32px));
+      margin-inline: auto;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border: none;
+      border-radius: 999px;
+      padding: 14px 24px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: .25s ease;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--secondary), var(--accent));
+      box-shadow: 0 14px 28px rgba(37, 99, 235, 0.22);
+    }
+
+    .btn-primary:hover,
+    .btn-secondary:hover,
+    .btn-dark:hover { transform: translateY(-2px); }
+
+    .btn-secondary {
+      color: var(--primary);
+      background: #fff;
+      border: 1px solid rgba(15, 23, 42, .08);
+    }
+
+    .btn-dark {
+      color: #fff;
+      background: var(--primary);
+    }
+
+    .topbar {
+      background: var(--primary);
+      color: #cbd5e1;
+      padding: 10px 0;
+      font-size: 14px;
+    }
+
+    .topbar-inner,
+    .navbar,
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .topbar-group {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(18px);
+      background: rgba(248, 250, 252, 0.88);
+      border-bottom: 1px solid rgba(226, 232, 240, .9);
+    }
+
+    .navbar {
+      min-height: 84px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--primary);
+    }
+
+    .logo-mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--secondary), var(--accent));
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 12px 25px rgba(56, 189, 248, .28);
+    }
+
+    .logo-mark::before,
+    .logo-mark::after {
+      content: "";
+      position: absolute;
+      background: rgba(255,255,255,.88);
+      border-radius: 99px;
+    }
+
+    .logo-mark::before {
+      width: 22px;
+      height: 6px;
+      top: 10px;
+      right: 8px;
+      transform: rotate(-35deg);
+    }
+
+    .logo-mark::after {
+      width: 18px;
+      height: 6px;
+      bottom: 10px;
+      left: 8px;
+      transform: rotate(-35deg);
+    }
+
+    .nav-links,
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .nav-links a {
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active { color: var(--secondary); }
+
+    .mobile-menu-btn {
+      display: none;
+      width: 46px;
+      height: 46px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .hero {
+      padding: 78px 0 42px;
+      background:
+        radial-gradient(circle at 15% 15%, rgba(228, 146, 104, .14), transparent 26%),
+        radial-gradient(circle at 85% 0%, rgba(56, 189, 248, .14), transparent 28%),
+        linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      overflow: hidden;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.02fr .98fr;
+      gap: 36px;
+      align-items: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: var(--orange-soft);
+      color: #9a4f22;
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      margin: 0 0 18px;
+      font-size: clamp(34px, 5vw, 56px);
+      line-height: 1.15;
+      letter-spacing: -.5px;
+    }
+
+    .hero p {
+      margin: 0;
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 680px;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .hero-points {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .hero-point {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,.82);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 14px 16px;
+      box-shadow: var(--shadow);
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .check {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      color: #fff;
+      background: linear-gradient(135deg, var(--secondary), var(--accent));
+      font-size: 14px;
+    }
+
+    .device-stage {
+      position: relative;
+      min-height: 560px;
+      display: grid;
+      place-items: center;
+    }
+
+    .device-bg {
+      position: absolute;
+      inset: 54px 20px 40px 20px;
+      border-radius: 34px;
+      background: linear-gradient(135deg, #fff, #eef6ff);
+      border: 1px solid rgba(226, 232, 240, .9);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .phones {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 18px;
+      transform: translateY(8px);
+    }
+
+    .phone {
+      width: 220px;
+      height: 452px;
+      background: #111827;
+      border-radius: 34px;
+      padding: 10px;
+      box-shadow: 0 25px 60px rgba(15, 23, 42, .22);
+      position: relative;
+    }
+
+    .phone.small {
+      width: 185px;
+      height: 390px;
+      transform: translateY(34px) rotate(-8deg);
+      opacity: .92;
+    }
+
+    .phone.large {
+      transform: rotate(7deg);
+    }
+
+    .phone-screen {
+      width: 100%;
+      height: 100%;
+      border-radius: 26px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #f8fbff 0%, #e0f2fe 100%);
+      padding: 16px;
+      position: relative;
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      font-weight: 800;
+      color: #334155;
+      margin-bottom: 16px;
+    }
+
+    .screen-card {
+      background: #fff;
+      border-radius: 22px;
+      border: 1px solid #e2e8f0;
+      padding: 14px;
+      box-shadow: 0 12px 25px rgba(15,23,42,.06);
+      margin-bottom: 12px;
+    }
+
+    .screen-pill {
+      display: inline-block;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .screen-title {
+      height: 12px;
+      width: 68%;
+      background: #dbeafe;
+      border-radius: 999px;
+      margin-bottom: 10px;
+    }
+
+    .screen-text {
+      height: 8px;
+      width: 100%;
+      background: #e2e8f0;
+      border-radius: 999px;
+      margin-bottom: 7px;
+    }
+
+    .screen-text.short { width: 70%; }
+
+    .screen-banner {
+      height: 110px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, var(--secondary), var(--accent));
+      margin-bottom: 12px;
+    }
+
+    .screen-buttons {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .screen-btn {
+      height: 38px;
+      border-radius: 14px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+
+    .floating-card {
+      position: absolute;
+      z-index: 3;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
+      padding: 14px 16px;
+      min-width: 180px;
+    }
+
+    .floating-card strong {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 17px;
+    }
+
+    .floating-card span {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .floating-1 { top: 34px; left: 0; }
+    .floating-2 { right: 10px; bottom: 16px; }
+
+    section { padding: 88px 0; }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+
+    .section-head h2 {
+      margin: 0 0 10px;
+      font-size: clamp(28px, 3vw, 40px);
+      line-height: 1.2;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 720px;
+      font-size: 17px;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    .metric {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 34px;
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+
+    .metric span {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .grid-3,
+    .grid-4,
+    .services-grid,
+    .benefits-grid,
+    .projects-grid,
+    .process-grid,
+    .testimonials-grid,
+    .tech-grid,
+    .contact-grid {
+      display: grid;
+      gap: 22px;
+    }
+
+    .services-grid,
+    .benefits-grid,
+    .projects-grid,
+    .testimonials-grid,
+    .tech-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .process-grid { grid-template-columns: repeat(4, 1fr); }
+    .contact-grid { grid-template-columns: .95fr 1.05fr; }
+
+    .card,
+    .service-card,
+    .benefit-card,
+    .project-card,
+    .step-card,
+    .testimonial,
+    .tech-card,
+    .contact-card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .service-card,
+    .benefit-card,
+    .step-card,
+    .testimonial,
+    .tech-card,
+    .contact-card { padding: 26px; }
+
+    .service-card:hover,
+    .benefit-card:hover,
+    .project-card:hover,
+    .testimonial:hover,
+    .tech-card:hover {
+      transform: translateY(-5px);
+      transition: .25s ease;
+    }
+
+    .icon-box {
+      width: 64px;
+      height: 64px;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #dbeafe, #e0f2fe);
+      color: var(--secondary);
+      font-size: 28px;
+      margin-bottom: 16px;
+    }
+
+    .service-card h3,
+    .benefit-card h3,
+    .tech-card h3,
+    .contact-card h3 {
+      margin: 0 0 10px;
+      font-size: 22px;
+    }
+
+    .service-card p,
+    .benefit-card p,
+    .tech-card p,
+    .contact-card p,
+    .step-card p,
+    .project-content p,
+    .testimonial p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .service-list {
+      list-style: none;
+      margin: 16px 0 0;
+      padding: 0;
+      display: grid;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .service-list li::before {
+      content: "✓";
+      color: var(--success);
+      margin-left: 8px;
+      font-weight: 900;
+    }
+
+    .highlight {
+      background: linear-gradient(180deg, #fff 0%, #f8fbff 100%);
+    }
+
+    .projects-area {
+      background: linear-gradient(135deg, #fff7f3 0%, #ffffff 55%, #f4fbff 100%);
+    }
+
+    .project-card {
+      overflow: hidden;
+    }
+
+    .project-cover {
+      height: 240px;
+      padding: 22px;
+      position: relative;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 16px;
+      color: #fff;
+      background: linear-gradient(135deg, #111827, #2563eb);
+    }
+
+    .project-cover.alt-2 { background: linear-gradient(135deg, #1f2937, #0ea5e9); }
+    .project-cover.alt-3 { background: linear-gradient(135deg, #0f172a, #e49268); }
+
+    .project-tag {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,.18);
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .device-mockup {
+      width: 112px;
+      height: 182px;
+      border-radius: 24px;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.18);
+    }
+
+    .project-content { padding: 24px; }
+
+    .project-content h3 {
+      margin: 0 0 10px;
+      font-size: 22px;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .chip {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #eff6ff;
+      color: #1d4ed8;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .step-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .step-no {
+      font-size: 44px;
+      line-height: 1;
+      font-weight: 900;
+      color: rgba(37,99,235,.12);
+      margin-bottom: 10px;
+    }
+
+    .step-card h3 {
+      margin: 0 0 10px;
+      font-size: 21px;
+    }
+
+    .tech-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      background: #eff6ff;
+      color: var(--secondary);
+      font-weight: 900;
+      margin-bottom: 14px;
+      font-size: 20px;
+    }
+
+    .testimonial .stars {
+      color: #f59e0b;
+      font-size: 18px;
+      letter-spacing: 2px;
+      margin-bottom: 14px;
+    }
+
+    .author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--secondary), var(--accent));
+    }
+
+    .author strong {
+      display: block;
+      font-size: 15px;
+    }
+
+    .author span {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .cta-box {
+      background: linear-gradient(135deg, #0f172a, #2563eb 60%, #38bdf8);
+      color: #fff;
+      border-radius: 34px;
+      padding: 42px;
+      display: grid;
+      grid-template-columns: 1.08fr .92fr;
+      gap: 24px;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .cta-box::before,
+    .cta-box::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,.08);
+    }
+
+    .cta-box::before {
+      width: 220px;
+      height: 220px;
+      left: -70px;
+      bottom: -110px;
+    }
+
+    .cta-box::after {
+      width: 190px;
+      height: 190px;
+      right: -60px;
+      top: -70px;
+    }
+
+    .cta-box h2 {
+      margin: 0 0 12px;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.2;
+    }
+
+    .cta-box p {
+      margin: 0;
+      color: rgba(255,255,255,.85);
+      font-size: 17px;
+    }
+
+    .cta-actions {
+      display: flex;
+      justify-content: flex-start;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .cta-box .btn-secondary {
+      background: rgba(255,255,255,.12);
+      border-color: rgba(255,255,255,.2);
+      color: #fff;
+    }
+
+    .contact-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: start;
+      gap: 14px;
+      padding: 16px;
+      border-radius: 18px;
+      background: #f8fafc;
+      border: 1px solid var(--line);
+    }
+
+    .contact-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: #dbeafe;
+      color: var(--secondary);
+      flex-shrink: 0;
+      font-weight: 900;
+    }
+
+    .contact-item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .contact-item span {
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    form {
+      display: grid;
+      gap: 16px;
+    }
+
+    .form-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    label {
+      font-size: 14px;
+      font-weight: 800;
+      color: #334155;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid #dbe3ee;
+      background: #fff;
+      border-radius: 16px;
+      padding: 15px 16px;
+      font-family: inherit;
+      font-size: 15px;
+      color: var(--text);
+      outline: none;
+      transition: .2s ease;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: #93c5fd;
+      box-shadow: 0 0 0 4px rgba(59,130,246,.12);
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    footer {
+      background: var(--primary);
+      color: #cbd5e1;
+      padding: 28px 0;
+      margin-top: 88px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a:hover { color: #fff; }
+
+    @media (max-width: 1100px) {
+      .hero-grid,
+      .cta-box,
+      .contact-grid,
+      .process-grid,
+      .metrics {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .hero-grid,
+      .cta-box,
+      .contact-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .services-grid,
+      .benefits-grid,
+      .projects-grid,
+      .testimonials-grid,
+      .tech-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 860px) {
+      .nav-links,
+      .nav-actions .btn-secondary { display: none; }
+      .mobile-menu-btn { display: inline-grid; place-items: center; }
+      .services-grid,
+      .benefits-grid,
+      .projects-grid,
+      .testimonials-grid,
+      .tech-grid,
+      .process-grid,
+      .metrics,
+      .form-grid-2,
+      .hero-points { grid-template-columns: 1fr; }
+      .hero { padding-top: 42px; }
+      section { padding: 70px 0; }
+      .device-stage { min-height: auto; }
+      .phones { transform: none; }
+      .phone { width: 180px; height: 370px; }
+      .phone.small { width: 150px; height: 320px; transform: translateY(22px) rotate(-6deg); }
+      .floating-card { position: static; margin-top: 14px; }
+      .section-head,
+      .footer-inner,
+      .topbar-inner { align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <div class="container topbar-inner">
+      <div class="topbar-group">
+        <span>📍 جدة، المملكة العربية السعودية</span>
+        <span>⏰ السبت - الخميس | 9:00 ص - 6:00 م</span>
+      </div>
+      <div class="topbar-group">
+        <a href="tel:+966537861534">📞 0537861534</a>
+        <a href="mailto:info@softlix.net">✉️ info@softlix.net</a>
+      </div>
+    </div>
+  </div>
+
+  <header>
+    <div class="container navbar">
+      <a class="logo" href="#">
+        <span class="logo-mark"></span>
+        <span>Softlix</span>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#hero">الرئيسية</a>
+        <a href="#services" class="active">الخدمة</a>
+        <a href="#benefits">لماذا نحن</a>
+        <a href="#projects">المشاريع</a>
+        <a href="#process">آلية العمل</a>
+        <a href="#contact">تواصل معنا</a>
+      </nav>
+
+      <div class="nav-actions">
+        <a class="btn btn-secondary" href="#projects">شاهد الأعمال</a>
+        <a class="btn btn-primary" href="#contact">اطلب عرض سعر</a>
+        <button class="mobile-menu-btn" aria-label="القائمة">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="hero">
+      <div class="container hero-grid">
+        <div>
+          <span class="eyebrow">خدمة احترافية لتطوير تطبيقات الجوال</span>
+          <h1>نطوّر تطبيقات iOS و Android بتجربة استخدام حديثة وأداء جاهز للنمو</h1>
+          <p>
+            نصمم ونبني تطبيقات جوال احترافية تساعدك على إطلاق فكرتك وتحويلها إلى منتج رقمي قوي،
+            بدءًا من التحليل وتجربة المستخدم وحتى البرمجة والاختبار والإطلاق والدعم المستمر.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#contact">ابدأ مشروع تطبيقك</a>
+            <a class="btn btn-secondary" href="#projects">شاهد مشاريع الجوال</a>
+          </div>
+
+          <div class="hero-points">
+            <div class="hero-point"><span class="check">✓</span> تطوير Native و Flutter</div>
+            <div class="hero-point"><span class="check">✓</span> تصميم UI/UX احترافي</div>
+            <div class="hero-point"><span class="check">✓</span> ربط APIs ولوحات تحكم</div>
+            <div class="hero-point"><span class="check">✓</span> اختبار جودة ونشر على المتاجر</div>
+          </div>
+        </div>
+
+        <div class="device-stage">
+          <div class="device-bg"></div>
+          <div class="phones">
+            <div class="phone small">
+              <div class="phone-screen">
+                <div class="status-bar"><span>9:41</span><span>LTE • 100%</span></div>
+                <div class="screen-card">
+                  <div class="screen-pill">Analytics</div>
+                  <div class="screen-title"></div>
+                  <div class="screen-text"></div>
+                  <div class="screen-text short"></div>
+                </div>
+                <div class="screen-banner"></div>
+                <div class="screen-card">
+                  <div class="screen-title" style="width:55%"></div>
+                  <div class="screen-text"></div>
+                  <div class="screen-buttons">
+                    <div class="screen-btn"></div>
+                    <div class="screen-btn"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="phone large">
+              <div class="phone-screen">
+                <div class="status-bar"><span>9:41</span><span>5G • 100%</span></div>
+                <div class="screen-card">
+                  <div class="screen-pill">Softlix App</div>
+                  <div class="screen-title" style="width:72%"></div>
+                  <div class="screen-text"></div>
+                  <div class="screen-text short"></div>
+                </div>
+                <div class="screen-banner"></div>
+                <div class="screen-card">
+                  <div class="screen-title" style="width:62%"></div>
+                  <div class="screen-text"></div>
+                  <div class="screen-text short"></div>
+                  <div class="screen-buttons">
+                    <div class="screen-btn"></div>
+                    <div class="screen-btn"></div>
+                  </div>
+                </div>
+                <div class="screen-card">
+                  <div class="screen-title" style="width:46%"></div>
+                  <div class="screen-text short"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="floating-card floating-1">
+            <strong>Flutter / Native</strong>
+            <span>حلول مرنة حسب نوع المشروع وميزانيته</span>
+          </div>
+
+          <div class="floating-card floating-2">
+            <strong>واجهة ترفع التفاعل</strong>
+            <span>تصميم يركز على الوضوح وسهولة الاستخدام</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">مؤشرات سريعة</span>
+            <h2>صفحة خدمة تبني الثقة بسرعة</h2>
+          </div>
+          <p>
+            هذا القسم يعطي الفريق اتجاهًا بصريًا أفضل من الصفحة الحالية، ويعرض الأرقام بشكل يرفع الاحترافية ويزيد معدل التواصل.
+          </p>
+        </div>
+
+        <div class="metrics">
+          <div class="metric"><strong>iOS</strong><span>تطوير Swift وتطبيقات أصلية</span></div>
+          <div class="metric"><strong>Android</strong><span>تطوير Kotlin/Java وتجربة متكاملة</span></div>
+          <div class="metric"><strong>Flutter</strong><span>تطبيق واحد لعدة منصات</span></div>
+          <div class="metric"><strong>QA</strong><span>اختبار وجودة قبل الإطلاق</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="highlight" id="services">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">ما الذي نقدمه</span>
+            <h2>خدمات تطوير تطبيقات الجوال بشكل منظم وواضح</h2>
+          </div>
+          <p>
+            بدل العرض التقليدي الحالي، تم تحويل الخدمة إلى بطاقات أكثر وضوحًا ليسهل على العميل فهم نطاق العمل وما الذي يمكن تقديمه فعليًا له.
+          </p>
+        </div>
+
+        <div class="services-grid">
+          <article class="service-card">
+            <div class="icon-box">🍎</div>
+            <h3>تطوير تطبيقات iOS</h3>
+            <p>تطبيقات احترافية لأجهزة Apple مع تركيز على الأداء والسلاسة وتجربة المستخدم.</p>
+            <ul class="service-list">
+              <li>Swift وتطبيقات أصلية</li>
+              <li>واجهات سلسة ومتوافقة</li>
+              <li>جاهزية للنشر على App Store</li>
+            </ul>
+          </article>
+
+          <article class="service-card">
+            <div class="icon-box">🤖</div>
+            <h3>تطوير تطبيقات Android</h3>
+            <p>تطبيقات أندرويد مصممة للنمو وسهولة الإدارة وربطها بالأنظمة الخلفية.</p>
+            <ul class="service-list">
+              <li>Kotlin / Java</li>
+              <li>أداء مستقر وسريع</li>
+              <li>جاهزية للنشر على Google Play</li>
+            </ul>
+          </article>
+
+          <article class="service-card">
+            <div class="icon-box">🧩</div>
+            <h3>تطوير Flutter</h3>
+            <p>حل مناسب للمشاريع التي تحتاج منصة واحدة تخدم iOS و Android بكفاءة.</p>
+            <ul class="service-list">
+              <li>تسريع وقت التطوير</li>
+              <li>تقليل كلفة البناء الأولية</li>
+              <li>واجهة موحدة بين المنصات</li>
+            </ul>
+          </article>
+
+          <article class="service-card">
+            <div class="icon-box">🎨</div>
+            <h3>UI/UX لتطبيقات الجوال</h3>
+            <p>تصميم تجربة استخدام مدروسة تجعل التطبيق أوضح وأسهل وأكثر إقناعًا للمستخدم النهائي.</p>
+            <ul class="service-list">
+              <li>Wireframes وتدفق المستخدم</li>
+              <li>تصميم شاشات احترافية</li>
+              <li>تحسين رحلة الاستخدام</li>
+            </ul>
+          </article>
+
+          <article class="service-card">
+            <div class="icon-box">🔌</div>
+            <h3>ربط APIs ولوحات التحكم</h3>
+            <p>ربط التطبيق مع لوحة إدارة أو نظام داخلي أو بوابات دفع أو خدمات طرف ثالث.</p>
+            <ul class="service-list">
+              <li>ربط REST APIs</li>
+              <li>تزامن البيانات والإشعارات</li>
+              <li>تكامل مع أنظمة الأعمال</li>
+            </ul>
+          </article>
+
+          <article class="service-card">
+            <div class="icon-box">🧪</div>
+            <h3>الاختبار والجودة</h3>
+            <p>اختبارات شاملة قبل الإطلاق لضمان استقرار التطبيق وتقليل المشاكل بعد النشر.</p>
+            <ul class="service-list">
+              <li>اختبار الشاشات والتدفقات</li>
+              <li>مراجعة الأداء والاستقرار</li>
+              <li>تحسينات قبل الإطلاق</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="benefits">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">لماذا Softlix</span>
+            <h2>ما الذي يميز أسلوبنا في بناء تطبيقات الجوال</h2>
+          </div>
+          <p>
+            هذا القسم بديل أقوى بكثير من الاكتفاء بسرد خدمات فقط، لأنه يوضح القيمة الفعلية التي يحصل عليها العميل من العمل معكم.
+          </p>
+        </div>
+
+        <div class="benefits-grid">
+          <article class="benefit-card">
+            <div class="icon-box">⚡</div>
+            <h3>بناء سريع ومنظم</h3>
+            <p>نعتمد على هيكلة واضحة للمشروع لتقليل الهدر وتسريع الوصول إلى نسخة قابلة للاختبار.</p>
+          </article>
+
+          <article class="benefit-card">
+            <div class="icon-box">🧠</div>
+            <h3>فهم تجاري قبل البرمجة</h3>
+            <p>لا نكتفي بالتنفيذ التقني، بل نراجع طبيعة المشروع وهدفه قبل اختيار أسلوب التطوير المناسب.</p>
+          </article>
+
+          <article class="benefit-card">
+            <div class="icon-box">📈</div>
+            <h3>جاهزية للنمو</h3>
+            <p>نراعي من البداية قابلية التطبيق للتوسع وربطه مستقبلًا مع خدمات إضافية أو أنظمة داخلية.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">التقنيات</span>
+            <h2>تقنيات مقترحة لعرضها داخل الصفحة</h2>
+          </div>
+          <p>
+            يمكن للفريق لاحقًا استبدال هذه العناصر بأيقونات فعلية أو شعارات تقنية، لكن الهيكل الحالي يوضح مكانها بطريقة مناسبة بصريًا.
+          </p>
+        </div>
+
+        <div class="tech-grid">
+          <article class="tech-card">
+            <div class="tech-icon"></div>
+            <h3>Swift</h3>
+            <p>لتطوير تطبيقات iOS الأصلية عندما يحتاج المشروع أعلى توافق وأداء.</p>
+          </article>
+          <article class="tech-card">
+            <div class="tech-icon">A</div>
+            <h3>Kotlin</h3>
+            <p>لتطوير Android الحديث بأسلوب مرن ومستقر وقابل للتوسع.</p>
+          </article>
+          <article class="tech-card">
+            <div class="tech-icon">F</div>
+            <h3>Flutter</h3>
+            <p>عندما يكون المطلوب الوصول السريع لمنصتين مع تجربة موحدة.</p>
+          </article>
+          <article class="tech-card">
+            <div class="tech-icon">🔥</div>
+            <h3>Firebase</h3>
+            <p>للإشعارات، التوثيق، التحليلات، وبعض الخدمات المساندة للتطبيقات.</p>
+          </article>
+          <article class="tech-card">
+            <div class="tech-icon">L</div>
+            <h3>Laravel API</h3>
+            <p>لبناء لوحات التحكم وواجهات البرمجة الخلفية وربط البيانات.</p>
+          </article>
+          <article class="tech-card">
+            <div class="tech-icon">N</div>
+            <h3>Node.js</h3>
+            <p>للمشاريع التي تحتاج خدمات لحظية أو APIs عالية المرونة حسب نوع الحل.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="projects-area" id="projects">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">مشاريع مرتبطة بالجوال</span>
+            <h2>عرض الأعمال بشكل أقوى من الصفحة الحالية</h2>
+          </div>
+          <p>
+            بدلاً من مشروع واحد فقط بصياغة تقليدية، هذا العرض يجعل القسم أكثر إقناعًا ويظهر تنوعًا أكبر في مستوى التنفيذ.
+          </p>
+        </div>
+
+        <div class="projects-grid">
+          <article class="project-card">
+            <div class="project-cover">
+              <span class="project-tag">تطبيق شحن وتوصيل</span>
+              <div>
+                <h3 style="margin:0 0 8px; font-size:24px;">Transfer App</h3>
+                <p style="margin:0; color:rgba(255,255,255,.82);">تطبيق للخدمات اللوجستية وربط المسافرين بالشحن</p>
+              </div>
+              <div class="device-mockup"></div>
+            </div>
+            <div class="project-content">
+              <h3>ترانسفير</h3>
+              <p>واجهة تطبيق واضحة مع تجربة استخدام موجهة لرحلة الطلب والتتبع والتفاعل مع المستخدم.</p>
+              <div class="chips">
+                <span class="chip">Mobile UI</span>
+                <span class="chip">Logistics</span>
+                <span class="chip">App Store</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-cover alt-2">
+              <span class="project-tag">طلب واستلام</span>
+              <div>
+                <h3 style="margin:0 0 8px; font-size:24px;">Estalmeni</h3>
+                <p style="margin:0; color:rgba(255,255,255,.82);">تطبيق خدمات طلب واستلام بواجهات سهلة</p>
+              </div>
+              <div class="device-mockup"></div>
+            </div>
+            <div class="project-content">
+              <h3>استلمني</h3>
+              <p>مشروع يعكس قدرة العرض على إبراز التطبيقات الاستهلاكية ذات التفاعل العالي وسهولة الاستخدام.</p>
+              <div class="chips">
+                <span class="chip">Consumer App</span>
+                <span class="chip">UX</span>
+                <span class="chip">Cross Platform</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-cover alt-3">
+              <span class="project-tag">سوبر أب / خدمات</span>
+              <div>
+                <h3 style="margin:0 0 8px; font-size:24px;">Custom Solution</h3>
+                <p style="margin:0; color:rgba(255,255,255,.82);">حل مرن لعرض تطبيقات متعددة القطاعات</p>
+              </div>
+              <div class="device-mockup"></div>
+            </div>
+            <div class="project-content">
+              <h3>مشروع مخصص</h3>
+              <p>بطاقة مرنة يمكن للفريق استبدالها بأي تطبيق حقيقي آخر ضمن أعمال Softlix في الجوال.</p>
+              <div class="chips">
+                <span class="chip">Custom App</span>
+                <span class="chip">Dashboard</span>
+                <span class="chip">API Integration</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="process">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <span class="eyebrow">كيف نعمل</span>
+            <h2>رحلة تنفيذ التطبيق من الفكرة إلى الإطلاق</h2>
+          </div>
+          <p>
+            هذا القسم يزيد من وضوح الخدمة ويمنح العميل صورة عملية عن الخطوات، وهو عنصر مفقود تقريبًا في الص

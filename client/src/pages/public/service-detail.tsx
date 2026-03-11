@@ -1,28 +1,128 @@
 import { useRoute, Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { PublicNavbar } from "@/components/public/navbar";
-import { PublicFooter } from "@/components/public/footer";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import {
-  ArrowLeft, ArrowRight, CheckCircle2, Smartphone, Globe, Server, TrendingUp,
-  Palette, FileText, ShoppingCart, LayoutDashboard, Lightbulb, ExternalLink,
-  Phone, Mail, Send, Star, Code2, Loader2
-} from "lucide-react";
-import type { Service, Project } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
+import type { Service, Project } from "@shared/schema";
 
-const ICON_MAP: Record<string, any> = {
-  Smartphone, Globe, Server, TrendingUp, Palette, FileText,
-  ShoppingCart, LayoutDashboard, Lightbulb, Code2, Star
+const TENANT_ID = (import.meta.env.VITE_TENANT_ID as string) || "";
+
+const PROJECT_COLORS = [
+  "linear-gradient(135deg, #111827, #2563eb)",
+  "linear-gradient(135deg, #1f2937, #0ea5e9)",
+  "linear-gradient(135deg, #0f172a, #e49268)",
+  "linear-gradient(135deg, #0f172a, #7c3aed)",
+  "linear-gradient(135deg, #111827, #059669)",
+  "linear-gradient(135deg, #1e293b, #dc2626)",
+];
+
+const PROCESS_STEPS = [
+  { num: "01", titleAr: "فهم المتطلبات", titleEn: "Understanding Requirements", descAr: "تحليل النشاط، الهدف، الجمهور المستهدف، ونطاق المشروع بشكل واضح ومنظم.", descEn: "Analyzing the business, goal, target audience, and project scope clearly." },
+  { num: "02", titleAr: "التصميم والهيكلة", titleEn: "Design & Structure", descAr: "وضع Wireframe ثم واجهات احترافية تعكس الهوية وتدعم تجربة المستخدم.", descEn: "Creating wireframes then professional interfaces reflecting the identity." },
+  { num: "03", titleAr: "التطوير والربط", titleEn: "Development & Integration", descAr: "برمجة الواجهة والخلفية وربط الخدمات والأنظمة الخارجية حسب الحاجة.", descEn: "Programming frontend and backend and connecting services as needed." },
+  { num: "04", titleAr: "الإطلاق والتحسين", titleEn: "Launch & Improvement", descAr: "اختبارات نهائية، نشر المشروع، ومتابعة الأداء بعد الإطلاق.", descEn: "Final tests, project deployment, and performance monitoring after launch." },
+];
+
+const TESTIMONIALS = [
+  { stars: 5, quoteAr: "تم تنفيذ المشروع بشكل احترافي جداً، وكان هناك فهم واضح للمتطلبات مع جودة عالية في التصميم والتنفيذ.", quoteEn: "The project was executed very professionally with clear understanding and high quality.", nameAr: "محمد العتيبي", nameEn: "Mohammed Al-Otaibi", roleAr: "مدير تنفيذي", roleEn: "Executive Director", initial: "م" },
+  { stars: 5, quoteAr: "أكثر ما أعجبنا هو تنظيم العمل وسرعة الاستجابة، إضافة إلى أن الواجهة النهائية كانت أفضل من المتوقع.", quoteEn: "What impressed us most was the work organization and the final interface exceeded expectations.", nameAr: "سارة الشهري", nameEn: "Sara Al-Shahri", roleAr: "صاحبة متجر إلكتروني", roleEn: "E-commerce Store Owner", initial: "س" },
+  { stars: 5, quoteAr: "تم بناء النظام بما يتناسب مع احتياجنا الفعلي، مع مرونة في التطوير المستقبلي ودعم فني ممتاز.", quoteEn: "The system was built to suit our actual needs with excellent technical support.", nameAr: "أحمد الزهراني", nameEn: "Ahmed Al-Zahrani", roleAr: "مدير عمليات", roleEn: "Operations Manager", initial: "أ" },
+];
+
+// Per-service config: metrics, sub-services, benefits, technologies
+const SERVICE_CONFIG: Record<string, any> = {
+  "mobile-app-development": {
+    eyebrowAr: "خدمة احترافية لتطوير تطبيقات الجوال",
+    eyebrowEn: "Professional Mobile App Development",
+    heroPointsAr: ["تطوير Native و Flutter", "تصميم UI/UX احترافي", "ربط APIs ولوحات تحكم", "اختبار جودة ونشر على المتاجر"],
+    heroPointsEn: ["Native & Flutter Development", "Professional UI/UX Design", "APIs & Dashboard Integration", "QA Testing & Store Publishing"],
+    metrics: [{ strong: "iOS", spanAr: "تطوير Swift وتطبيقات أصلية", spanEn: "Swift & native iOS apps" }, { strong: "Android", spanAr: "تطوير Kotlin/Java", spanEn: "Kotlin/Java development" }, { strong: "Flutter", spanAr: "تطبيق واحد لعدة منصات", spanEn: "One app for all platforms" }, { strong: "QA", spanAr: "اختبار وجودة قبل الإطلاق", spanEn: "Testing & quality before launch" }],
+    subServicesAr: [
+      { icon: "🍎", title: "تطوير تطبيقات iOS", desc: "تطبيقات احترافية لأجهزة Apple مع تركيز على الأداء والسلاسة.", features: ["Swift وتطبيقات أصلية", "واجهات سلسة ومتوافقة", "جاهزية للنشر على App Store"] },
+      { icon: "🤖", title: "تطوير تطبيقات Android", desc: "تطبيقات أندرويد مصممة للنمو وسهولة الإدارة وربطها بالأنظمة الخلفية.", features: ["Kotlin / Java", "أداء مستقر وسريع", "جاهزية للنشر على Google Play"] },
+      { icon: "🧩", title: "تطوير Flutter", desc: "حل مناسب للمشاريع التي تحتاج منصة واحدة تخدم iOS و Android بكفاءة.", features: ["تسريع وقت التطوير", "تقليل كلفة البناء الأولية", "واجهة موحدة بين المنصات"] },
+      { icon: "🎨", title: "UI/UX لتطبيقات الجوال", desc: "تصميم تجربة استخدام مدروسة تجعل التطبيق أوضح وأسهل وأكثر إقناعاً.", features: ["Wireframes وتدفق المستخدم", "تصميم شاشات احترافية", "تحسين رحلة الاستخدام"] },
+      { icon: "🔌", title: "ربط APIs ولوحات التحكم", desc: "ربط التطبيق مع لوحة إدارة أو نظام داخلي أو بوابات دفع.", features: ["ربط REST APIs", "تزامن البيانات والإشعارات", "تكامل مع أنظمة الأعمال"] },
+      { icon: "🧪", title: "الاختبار والجودة", desc: "اختبارات شاملة قبل الإطلاق لضمان استقرار التطبيق.", features: ["اختبار الشاشات والتدفقات", "مراجعة الأداء والاستقرار", "تحسينات قبل الإطلاق"] },
+    ],
+    subServicesEn: [
+      { icon: "🍎", title: "iOS App Development", desc: "Professional Apple device apps focusing on performance and smoothness.", features: ["Swift & native apps", "Smooth compatible interfaces", "Ready for App Store"] },
+      { icon: "🤖", title: "Android App Development", desc: "Android apps designed for growth and easy management with backend integration.", features: ["Kotlin / Java", "Stable and fast performance", "Ready for Google Play"] },
+      { icon: "🧩", title: "Flutter Development", desc: "Suitable solution for projects needing one platform serving both iOS and Android.", features: ["Faster development time", "Reduced initial build cost", "Unified interface across platforms"] },
+      { icon: "🎨", title: "Mobile UI/UX Design", desc: "Thoughtful user experience design making the app clearer and easier to use.", features: ["Wireframes & user flow", "Professional screen design", "Improved usage journey"] },
+      { icon: "🔌", title: "APIs & Dashboard Integration", desc: "Connecting the app with admin panel, internal systems, or payment gateways.", features: ["REST APIs integration", "Data sync & notifications", "Integration with business systems"] },
+      { icon: "🧪", title: "Testing & Quality", desc: "Comprehensive pre-launch testing to ensure app stability.", features: ["Screen & flow testing", "Performance & stability review", "Pre-launch improvements"] },
+    ],
+    benefitsAr: [
+      { icon: "⚡", title: "بناء سريع ومنظم", desc: "نعتمد على هيكلة واضحة للمشروع لتقليل الهدر وتسريع الوصول إلى نسخة قابلة للاختبار." },
+      { icon: "🧠", title: "فهم تجاري قبل البرمجة", desc: "لا نكتفي بالتنفيذ التقني، بل نراجع طبيعة المشروع وهدفه قبل اختيار أسلوب التطوير المناسب." },
+      { icon: "📈", title: "جاهزية للنمو", desc: "نراعي من البداية قابلية التطبيق للتوسع وربطه مستقبلاً مع خدمات إضافية أو أنظمة داخلية." },
+    ],
+    benefitsEn: [
+      { icon: "⚡", title: "Fast & Organized Build", desc: "We use a clear project structure to reduce waste and speed up reaching a testable version." },
+      { icon: "🧠", title: "Business Understanding Before Coding", desc: "We don't just execute technically; we review the project nature and goal before choosing the right approach." },
+      { icon: "📈", title: "Growth Ready", desc: "We consider from the start the app's ability to scale and connect with additional services or internal systems." },
+    ],
+    technologiesAr: [
+      { icon: "", label: "Swift", desc: "لتطوير تطبيقات iOS الأصلية عندما يحتاج المشروع أعلى توافق وأداء." },
+      { icon: "A", label: "Kotlin", desc: "لتطوير Android الحديث بأسلوب مرن ومستقر وقابل للتوسع." },
+      { icon: "F", label: "Flutter", desc: "عندما يكون المطلوب الوصول السريع لمنصتين مع تجربة موحدة." },
+      { icon: "🔥", label: "Firebase", desc: "للإشعارات، التوثيق، التحليلات، وبعض الخدمات المساندة للتطبيقات." },
+      { icon: "L", label: "Laravel API", desc: "لبناء لوحات التحكم وواجهات البرمجة الخلفية وربط البيانات." },
+      { icon: "N", label: "Node.js", desc: "للمشاريع التي تحتاج خدمات لحظية أو APIs عالية المرونة." },
+    ],
+    technologiesEn: [
+      { icon: "", label: "Swift", desc: "For native iOS app development when the project needs top compatibility and performance." },
+      { icon: "A", label: "Kotlin", desc: "For modern Android development in a flexible, stable, and scalable style." },
+      { icon: "F", label: "Flutter", desc: "When fast access to both platforms with a unified experience is needed." },
+      { icon: "🔥", label: "Firebase", desc: "For notifications, authentication, analytics, and supporting services." },
+      { icon: "L", label: "Laravel API", desc: "For building admin panels, backend programming interfaces, and data integration." },
+      { icon: "N", label: "Node.js", desc: "For projects needing real-time services or highly flexible APIs." },
+    ],
+  },
 };
+
+// Default config for any service
+const DEFAULT_CONFIG = (service: Service, isAr: boolean) => ({
+  eyebrowAr: `خدمة ${service.title}`,
+  eyebrowEn: `${service.titleEn || service.title} Service`,
+  heroPointsAr: ["جودة عالية في التنفيذ", "فريق متخصص ومحترف", "دعم فني مستمر", "التزام بالمواعيد والجودة"],
+  heroPointsEn: ["High execution quality", "Specialized professional team", "Continuous technical support", "On-time delivery"],
+  metrics: [
+    { strong: "5+", spanAr: "سنوات خبرة", spanEn: "Years experience" },
+    { strong: "150+", spanAr: "مشروع منجز", spanEn: "Projects completed" },
+    { strong: "50+", spanAr: "عميل راضٍ", spanEn: "Happy clients" },
+    { strong: "24/7", spanAr: "دعم فني", spanEn: "Technical support" },
+  ],
+  subServicesAr: [],
+  subServicesEn: [],
+  benefitsAr: [
+    { icon: "⚡", title: "تنفيذ سريع ومنظم", desc: "نعتمد على هيكلة واضحة للمشروع لتقليل الهدر وتسريع التسليم." },
+    { icon: "🧠", title: "فهم احتياجاتك أولاً", desc: "نراجع طبيعة مشروعك وهدفه قبل اختيار أسلوب التنفيذ المناسب." },
+    { icon: "📈", title: "نتائج قابلة للقياس", desc: "نركز على النتائج الحقيقية والتأثير الفعلي على نشاطك التجاري." },
+  ],
+  benefitsEn: [
+    { icon: "⚡", title: "Fast & Organized Execution", desc: "We use a clear structure to reduce waste and accelerate delivery." },
+    { icon: "🧠", title: "Understanding Your Needs First", desc: "We review your project nature and goal before choosing the right approach." },
+    { icon: "📈", title: "Measurable Results", desc: "We focus on real results and actual impact on your business." },
+  ],
+  technologiesAr: [] as any[],
+  technologiesEn: [] as any[],
+});
+
+interface ServiceDetailProps {
+  lang?: "ar" | "en";
+  onLangChange?: (lang: "ar" | "en") => void;
+}
+
+interface LeadForm {
+  name: string;
+  company: string;
+  email: string;
+  phone: string;
+  message: string;
+}
 
 const CATEGORY_MAP: Record<string, string> = {
   "mobile-app-development": "mobile-app",
@@ -36,25 +136,10 @@ const CATEGORY_MAP: Record<string, string> = {
   "technical-consulting": "consulting",
 };
 
-const requestSchema = z.object({
-  name: z.string().min(2, "الاسم مطلوب"),
-  phone: z.string().min(9, "رقم الجوال مطلوب"),
-  email: z.string().email("البريد الإلكتروني غير صحيح").optional().or(z.literal("")),
-  message: z.string().min(10, "يرجى وصف طلبك (10 أحرف على الأقل)"),
-});
-
-type RequestForm = z.infer<typeof requestSchema>;
-
-interface ServiceDetailProps {
-  lang?: "ar" | "en";
-  onLangChange?: (lang: "ar" | "en") => void;
-}
-
 export default function ServiceDetail({ lang = "ar", onLangChange }: ServiceDetailProps) {
   const [, params] = useRoute("/services/:slug");
   const slug = params?.slug || "";
   const isAr = lang === "ar";
-  const Arrow = isAr ? ArrowLeft : ArrowRight;
   const { toast } = useToast();
 
   const { data: service, isLoading } = useQuery<Service>({
@@ -63,70 +148,58 @@ export default function ServiceDetail({ lang = "ar", onLangChange }: ServiceDeta
 
   const relatedCategory = CATEGORY_MAP[slug] || slug;
   const { data: allProjects } = useQuery<Project[]>({
-    queryKey: ["/api/public/projects"],
+    queryKey: ["/api/public/projects", TENANT_ID],
   });
 
-  const relatedProjects = (allProjects || []).filter(
-    (p) => p.category === relatedCategory || p.category === slug
-  ).slice(0, 3);
+  const relatedProjects = (allProjects || [])
+    .filter(p => p.category === relatedCategory || p.category === slug)
+    .slice(0, 3);
 
-  const form = useForm<RequestForm>({
-    resolver: zodResolver(requestSchema),
-    defaultValues: { name: "", phone: "", email: "", message: "" },
-  });
+  const { register, handleSubmit, reset, formState: { errors } } = useForm<LeadForm>();
 
-  const submitMutation = useMutation({
-    mutationFn: async (data: RequestForm) => {
-      return apiRequest("POST", "/api/public/leads", {
-        ...data,
-        formType: "service-request",
-        pageSource: `/services/${slug}`,
-        serviceSlug: slug,
-      });
-    },
+  const leadMutation = useMutation({
+    mutationFn: (data: LeadForm) =>
+      apiRequest("POST", "/api/public/leads", {
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+        message: `الشركة: ${data.company || "-"}\n\nتفاصيل الطلب من صفحة خدمة ${slug}:\n${data.message}`,
+        source: `service-${slug}`,
+      }),
     onSuccess: () => {
-      toast({
-        title: isAr ? "تم الإرسال بنجاح!" : "Sent Successfully!",
-        description: isAr
-          ? "سيتواصل معك فريقنا في أقرب وقت"
-          : "Our team will contact you as soon as possible",
-      });
-      form.reset();
+      toast({ title: isAr ? "تم إرسال طلبك ✓" : "Request sent ✓", description: isAr ? "سنتواصل معك قريباً" : "We will contact you soon" });
+      reset();
     },
     onError: () => {
-      toast({
-        title: isAr ? "حدث خطأ" : "Error",
-        description: isAr ? "يرجى المحاولة مجدداً" : "Please try again",
-        variant: "destructive",
-      });
+      toast({ title: isAr ? "حدث خطأ" : "Error occurred", variant: "destructive" });
     },
   });
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-950" dir={isAr ? "rtl" : "ltr"}>
+      <div dir={isAr ? "rtl" : "ltr"} style={{ fontFamily: "'Cairo', sans-serif", minHeight: "100vh", background: "#f8fafc" }}>
         <PublicNavbar lang={lang} onLangChange={onLangChange} />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh" }}>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ width: 48, height: 48, border: "4px solid #dbeafe", borderTopColor: "#2563eb", borderRadius: "50%", animation: "spin 0.8s linear infinite", marginInline: "auto" }} />
+            <p style={{ marginTop: 16, color: "#64748b", fontWeight: 700 }}>{isAr ? "جاري التحميل..." : "Loading..."}</p>
+          </div>
         </div>
-        <PublicFooter lang={lang} />
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
 
   if (!service) {
     return (
-      <div className="min-h-screen bg-white dark:bg-gray-950" dir={isAr ? "rtl" : "ltr"}>
+      <div dir={isAr ? "rtl" : "ltr"} style={{ fontFamily: "'Cairo', sans-serif", minHeight: "100vh", background: "#f8fafc" }}>
         <PublicNavbar lang={lang} onLangChange={onLangChange} />
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-4">
-            {isAr ? "الخدمة غير موجودة" : "Service Not Found"}
-          </h1>
-          <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
-            <Link href="/services">{isAr ? "عودة للخدمات" : "Back to Services"}</Link>
-          </Button>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "60vh", textAlign: "center", padding: "0 16px" }}>
+          <h1 style={{ fontSize: 32, fontWeight: 900, color: "#0f172a", marginBottom: 16 }}>{isAr ? "الخدمة غير موجودة" : "Service Not Found"}</h1>
+          <a href="/services" style={{ display: "inline-flex", borderRadius: 999, padding: "12px 24px", background: "linear-gradient(135deg,#2563eb,#38bdf8)", color: "#fff", textDecoration: "none", fontWeight: 700 }}>
+            {isAr ? "عودة للخدمات" : "Back to Services"}
+          </a>
         </div>
-        <PublicFooter lang={lang} />
       </div>
     );
   }
@@ -135,347 +208,554 @@ export default function ServiceDetail({ lang = "ar", onLangChange }: ServiceDeta
   const shortDesc = isAr ? service.shortDescription : (service.shortDescriptionEn || service.shortDescription);
   const fullDesc = isAr ? service.fullDescription : (service.fullDescriptionEn || service.fullDescription);
   const features: string[] = Array.isArray(service.features) ? service.features : [];
-  const IconComp = ICON_MAP[service.iconName || "Globe"] || Globe;
+
+  const cfg = SERVICE_CONFIG[slug] || DEFAULT_CONFIG(service, isAr);
+  const eyebrow = isAr ? cfg.eyebrowAr : cfg.eyebrowEn;
+  const heroPoints = isAr ? cfg.heroPointsAr : cfg.heroPointsEn;
+  const metrics = cfg.metrics;
+  const subServices = isAr ? cfg.subServicesAr : cfg.subServicesEn;
+  const benefits = isAr ? cfg.benefitsAr : cfg.benefitsEn;
+  const technologies = isAr ? cfg.technologiesAr : cfg.technologiesEn;
+
+  const isMobile = slug === "mobile-app-development";
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-950" dir={isAr ? "rtl" : "ltr"}>
+    <div dir={isAr ? "rtl" : "ltr"} style={{ fontFamily: "'Cairo', sans-serif", background: "#f8fafc", color: "#0f172a", lineHeight: 1.7 }}>
       <PublicNavbar lang={lang} onLangChange={onLangChange} />
 
-      {/* Breadcrumb */}
-      <div className="pt-20 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center gap-2 text-sm text-gray-500">
-          <Link href="/" className="hover:text-blue-600 transition-colors">{isAr ? "الرئيسية" : "Home"}</Link>
+      {/* ── Breadcrumb ── */}
+      <div style={{ background: "#fff", borderBottom: "1px solid #e2e8f0", padding: "12px 0" }}>
+        <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto", display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: "#64748b" }}>
+          <a href="/" style={{ color: "#64748b", textDecoration: "none" }} onMouseEnter={e => (e.currentTarget.style.color = "#2563eb")} onMouseLeave={e => (e.currentTarget.style.color = "#64748b")}>{isAr ? "الرئيسية" : "Home"}</a>
           <span>/</span>
-          <Link href="/services" className="hover:text-blue-600 transition-colors">{isAr ? "الخدمات" : "Services"}</Link>
+          <a href="/services" style={{ color: "#64748b", textDecoration: "none" }} onMouseEnter={e => (e.currentTarget.style.color = "#2563eb")} onMouseLeave={e => (e.currentTarget.style.color = "#64748b")}>{isAr ? "الخدمات" : "Services"}</a>
           <span>/</span>
-          <span className="text-gray-900 dark:text-white font-medium">{title}</span>
+          <span style={{ color: "#0f172a", fontWeight: 700 }}>{title}</span>
         </div>
       </div>
 
-      {/* Hero */}
-      <section className="py-20 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white relative overflow-hidden">
-        <div className="absolute inset-0 bg-grid-white/[0.03]" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <div>
-              <Badge className="mb-5 bg-blue-500/20 text-blue-300 border-blue-500/30 text-sm">
-                {isAr ? "خدمة متخصصة" : "Specialized Service"}
-              </Badge>
-              <h1 className="text-4xl md:text-5xl font-black mb-5 leading-tight">{title}</h1>
-              <p className="text-lg text-gray-300 leading-relaxed mb-8">{shortDesc}</p>
-              <div className="flex flex-wrap gap-3">
-                <Button
-                  size="lg"
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
-                  onClick={() => document.getElementById("request-form")?.scrollIntoView({ behavior: "smooth" })}
-                  data-testid="button-request-service-hero"
-                >
-                  {isAr ? "اطلب الخدمة الآن" : "Request Service Now"}
-                  <Arrow className="w-4 h-4 mx-2" />
-                </Button>
-                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10" asChild>
-                  <a href="tel:+966500000000">
-                    <Phone className="w-4 h-4 mx-2" />
-                    {isAr ? "اتصل بنا" : "Call Us"}
-                  </a>
-                </Button>
-              </div>
-            </div>
-            <div className="flex justify-center">
-              <div className="w-48 h-48 rounded-3xl bg-gradient-to-br from-blue-500/30 to-purple-600/30 border border-white/10 flex items-center justify-center backdrop-blur-sm">
-                <IconComp className="w-24 h-24 text-blue-300" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      {/* ── Hero ── */}
+      <section style={{
+        padding: "78px 0 42px",
+        background: "radial-gradient(circle at 15% 15%, rgba(228,146,104,0.14), transparent 26%), radial-gradient(circle at 85% 0%, rgba(56,189,248,0.14), transparent 28%), linear-gradient(180deg,#ffffff 0%,#f8fbff 100%)",
+        overflow: "hidden",
+      }}>
+        <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1.02fr 0.98fr", gap: 36, alignItems: "center" }} className="hero-grid-responsive">
 
-      {/* Full Description */}
-      <section className="py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-3 gap-12">
-            <div className="lg:col-span-2">
-              <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-5">
-                {isAr ? "تفاصيل الخدمة" : "Service Details"}
-              </h2>
-              <div className="prose prose-gray dark:prose-invert max-w-none">
-                {fullDesc?.split("\n").map((para, i) => para.trim() && (
-                  <p key={i} className="text-gray-600 dark:text-gray-400 leading-relaxed mb-4">{para}</p>
+            {/* Left: Text */}
+            <div>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 999, background: "#fff1e9", color: "#9a4f22", fontSize: 14, fontWeight: 800, marginBottom: 18 }}>
+                {eyebrow}
+              </span>
+              <h1 style={{ margin: "0 0 18px", fontSize: "clamp(34px, 5vw, 56px)", lineHeight: 1.15, letterSpacing: -0.5, fontWeight: 800 }}>
+                {title}
+              </h1>
+              <p style={{ margin: 0, fontSize: 18, color: "#64748b", maxWidth: 680 }}>{shortDesc}</p>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", marginTop: 28 }}>
+                <a href="#contact-section" style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 24px", fontSize: 15, fontWeight: 800, background: "linear-gradient(135deg,#2563eb,#38bdf8)", color: "#fff", boxShadow: "0 14px 28px rgba(37,99,235,0.22)", textDecoration: "none", border: 0 }} data-testid="btn-hero-request">
+                  {isAr ? "ابدأ مشروعك معنا" : "Start Your Project"}
+                </a>
+                <a href="#projects-section" style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 24px", fontSize: 15, fontWeight: 700, background: "#fff", color: "#0f172a", border: "1px solid rgba(15,23,42,0.08)", textDecoration: "none" }} data-testid="btn-hero-projects">
+                  {isAr ? "شاهد مشاريعنا" : "View Our Projects"}
+                </a>
+              </div>
+
+              {/* Hero Points */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginTop: 28 }} className="grid-2-responsive">
+                {heroPoints.map((p: string, i: number) => (
+                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(255,255,255,0.82)", border: "1px solid #e2e8f0", borderRadius: 18, padding: "14px 16px", boxShadow: "0 20px 50px rgba(15,23,42,0.08)", fontWeight: 700, color: "#334155" }}>
+                    <span style={{ width: 28, height: 28, borderRadius: "50%", display: "grid", placeItems: "center", flexShrink: 0, color: "#fff", background: "linear-gradient(135deg,#2563eb,#38bdf8)", fontSize: 14 }}>✓</span>
+                    {p}
+                  </div>
                 ))}
               </div>
+            </div>
 
-              {features.length > 0 && (
-                <div className="mt-8">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                    {isAr ? "ما يشمله" : "What's Included"}
-                  </h3>
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    {features.map((feat: any, i: number) => (
-                      <div key={i} className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-xl">
-                        <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                        <span className="text-sm text-gray-700 dark:text-gray-300">
-                          {typeof feat === "string" ? feat : (isAr ? feat.ar : feat.en)}
-                        </span>
+            {/* Right: Visual */}
+            <div style={{ position: "relative", minHeight: 560, display: "grid", placeItems: "center" }} className="hide-mobile">
+              {/* Background card */}
+              <div style={{ position: "absolute", inset: "54px 20px 40px", borderRadius: 34, background: "linear-gradient(135deg,#fff,#eef6ff)", border: "1px solid rgba(226,232,240,0.9)", boxShadow: "0 30px 70px rgba(15,23,42,0.13)" }} />
+
+              {/* Phone mockups */}
+              {isMobile ? (
+                <div style={{ position: "relative", zIndex: 2, display: "flex", alignItems: "center", justifyContent: "center", gap: 18, transform: "translateY(8px)" }}>
+                  {/* Small phone */}
+                  <div style={{ width: 185, height: 390, background: "#111827", borderRadius: 34, padding: 10, boxShadow: "0 25px 60px rgba(15,23,42,0.22)", transform: "translateY(34px) rotate(-8deg)", opacity: 0.92, flexShrink: 0 }}>
+                    <div style={{ width: "100%", height: "100%", borderRadius: 26, overflow: "hidden", background: "linear-gradient(180deg,#f8fbff,#e0f2fe)", padding: 16, position: "relative" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, fontWeight: 800, color: "#334155", marginBottom: 16 }}><span>9:41</span><span>LTE • 100%</span></div>
+                      <div style={{ background: "#fff", borderRadius: 22, border: "1px solid #e2e8f0", padding: 14, marginBottom: 12 }}>
+                        <span style={{ display: "inline-block", background: "#eff6ff", color: "#1d4ed8", borderRadius: 999, padding: "6px 10px", fontSize: 11, fontWeight: 800, marginBottom: 10 }}>Analytics</span>
+                        <div style={{ height: 12, width: "68%", background: "#dbeafe", borderRadius: 999, marginBottom: 10 }} />
+                        <div style={{ height: 8, width: "100%", background: "#e2e8f0", borderRadius: 999, marginBottom: 7 }} />
+                        <div style={{ height: 8, width: "70%", background: "#e2e8f0", borderRadius: 999 }} />
+                      </div>
+                      <div style={{ height: 110, borderRadius: 18, background: "linear-gradient(135deg,#2563eb,#38bdf8)", marginBottom: 12 }} />
+                    </div>
+                  </div>
+
+                  {/* Large phone */}
+                  <div style={{ width: 220, height: 452, background: "#111827", borderRadius: 34, padding: 10, boxShadow: "0 25px 60px rgba(15,23,42,0.22)", transform: "rotate(7deg)", flexShrink: 0 }}>
+                    <div style={{ width: "100%", height: "100%", borderRadius: 26, overflow: "hidden", background: "linear-gradient(180deg,#f8fbff,#e0f2fe)", padding: 16, position: "relative" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, fontWeight: 800, color: "#334155", marginBottom: 16 }}><span>9:41</span><span>5G • 100%</span></div>
+                      <div style={{ background: "#fff", borderRadius: 22, border: "1px solid #e2e8f0", padding: 14, marginBottom: 12 }}>
+                        <span style={{ display: "inline-block", background: "#eff6ff", color: "#1d4ed8", borderRadius: 999, padding: "6px 10px", fontSize: 11, fontWeight: 800, marginBottom: 10 }}>Softlix App</span>
+                        <div style={{ height: 12, width: "72%", background: "#dbeafe", borderRadius: 999, marginBottom: 10 }} />
+                        <div style={{ height: 8, width: "100%", background: "#e2e8f0", borderRadius: 999, marginBottom: 7 }} />
+                      </div>
+                      <div style={{ height: 110, borderRadius: 18, background: "linear-gradient(135deg,#2563eb,#38bdf8)", marginBottom: 12 }} />
+                      <div style={{ background: "#fff", borderRadius: 22, border: "1px solid #e2e8f0", padding: 14 }}>
+                        <div style={{ height: 12, width: "62%", background: "#dbeafe", borderRadius: 999, marginBottom: 10 }} />
+                        <div style={{ height: 8, width: "100%", background: "#e2e8f0", borderRadius: 999, marginBottom: 7 }} />
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 12 }}>
+                          <div style={{ height: 38, borderRadius: 14, background: "#f8fafc", border: "1px solid #e2e8f0" }} />
+                          <div style={{ height: 38, borderRadius: 14, background: "#f8fafc", border: "1px solid #e2e8f0" }} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* Generic service visual - dashboard */
+                <div style={{ position: "relative", zIndex: 2, background: "linear-gradient(180deg,#0f172a,#111827)", borderRadius: 30, padding: 20, boxShadow: "0 35px 90px rgba(15,23,42,0.18)", color: "#fff", border: "1px solid rgba(255,255,255,0.08)", width: "90%" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
+                    <strong style={{ fontSize: 18 }}>{isAr ? "لوحة تحكم" : "Dashboard"}</strong>
+                    <div style={{ display: "flex", gap: 7 }}>
+                      <span style={{ width: 11, height: 11, borderRadius: "50%", display: "inline-block", background: "#f87171" }} />
+                      <span style={{ width: 11, height: 11, borderRadius: "50%", display: "inline-block", background: "#fbbf24" }} />
+                      <span style={{ width: 11, height: 11, borderRadius: "50%", display: "inline-block", background: "#34d399" }} />
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "end", gap: 10, minHeight: 160, marginBottom: 16 }}>
+                    {[45, 62, 38, 78, 55, 92].map((h, i) => (
+                      <div key={i} style={{ flex: 1, background: "linear-gradient(180deg,#38bdf8,#2563eb)", borderRadius: "16px 16px 8px 8px", height: `${h}%` }} />
+                    ))}
+                  </div>
+                  <div style={{ display: "grid", gap: 10 }}>
+                    {[isAr ? "العملاء النشطون" : "Active Clients", isAr ? "المشاريع المكتملة" : "Completed Projects"].map((label, i) => (
+                      <div key={i} style={{ background: "rgba(255,255,255,0.05)", borderRadius: 16, padding: 14, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span style={{ color: "#cbd5e1", fontSize: 13 }}>{label}</span>
+                        <strong style={{ color: "#fff" }}>{i === 0 ? "1,284" : "320"}</strong>
                       </div>
                     ))}
                   </div>
                 </div>
               )}
-            </div>
 
-            {/* Sidebar */}
-            <div className="space-y-5">
-              {/* Quick Contact Card */}
-              <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-2xl p-6 text-white">
-                <h3 className="text-lg font-bold mb-3">
-                  {isAr ? "تحتاج مساعدة؟" : "Need Help?"}
-                </h3>
-                <p className="text-blue-100 text-sm mb-4">
-                  {isAr ? "فريقنا متاح لمساعدتك في الاختيار والتخطيط" : "Our team is available to help you choose and plan"}
-                </p>
-                <div className="space-y-2">
-                  <a href="tel:+966500000000" className="flex items-center gap-2 text-sm hover:text-blue-200 transition-colors">
-                    <Phone className="w-4 h-4" />
-                    <span dir="ltr">+966 50 000 0000</span>
-                  </a>
-                  <a href="mailto:info@softlix.net" className="flex items-center gap-2 text-sm hover:text-blue-200 transition-colors">
-                    <Mail className="w-4 h-4" />
-                    <span>info@softlix.net</span>
-                  </a>
-                </div>
+              {/* Floating cards */}
+              <div style={{ position: "absolute", background: "#fff", color: "#0f172a", borderRadius: 20, padding: "14px 16px", boxShadow: "0 20px 50px rgba(15,23,42,0.08)", border: "1px solid #e2e8f0", minWidth: 180, zIndex: 3, ...(isAr ? { right: -10 } : { left: -10 }), top: 30 }}>
+                <strong style={{ display: "block", fontSize: 17, marginBottom: 4 }}>{isAr ? "Flutter / Native" : "Flutter / Native"}</strong>
+                <span style={{ color: "#64748b", fontSize: 13, fontWeight: 700 }}>{isAr ? "حلول مرنة حسب المشروع" : "Flexible solutions per project"}</span>
               </div>
-
-              {/* Why Us */}
-              <div className="bg-gray-50 dark:bg-gray-900 rounded-2xl p-6">
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
-                  {isAr ? "لماذا سوفتلكس؟" : "Why Softlix?"}
-                </h3>
-                <ul className="space-y-3">
-                  {[
-                    { ar: "خبرة أكثر من 5 سنوات", en: "5+ years of experience" },
-                    { ar: "فريق متخصص ومحترف", en: "Specialized professional team" },
-                    { ar: "دعم فني مستمر", en: "Continuous technical support" },
-                    { ar: "أسعار تنافسية", en: "Competitive pricing" },
-                    { ar: "التزام بالمواعيد", en: "On-time delivery" },
-                  ].map((item, i) => (
-                    <li key={i} className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-                      <CheckCircle2 className="w-4 h-4 text-green-500 flex-shrink-0" />
-                      {isAr ? item.ar : item.en}
-                    </li>
-                  ))}
-                </ul>
+              <div style={{ position: "absolute", background: "#fff", color: "#0f172a", borderRadius: 20, padding: "14px 16px", boxShadow: "0 20px 50px rgba(15,23,42,0.08)", border: "1px solid #e2e8f0", minWidth: 180, zIndex: 3, ...(isAr ? { left: 4 } : { right: 4 }), bottom: 20 }}>
+                <strong style={{ display: "block", fontSize: 17, marginBottom: 4 }}>{isAr ? "واجهة ترفع التفاعل" : "Interface that boosts engagement"}</strong>
+                <span style={{ color: "#64748b", fontSize: 13, fontWeight: 700 }}>{isAr ? "تصميم يركز على الوضوح" : "Design focused on clarity"}</span>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Related Projects */}
-      {relatedProjects.length > 0 && (
-        <section className="py-16 bg-gray-50 dark:bg-gray-900">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <Badge className="mb-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800">
-                {isAr ? "نماذج من أعمالنا" : "Work Samples"}
-              </Badge>
-              <h2 className="text-3xl font-black text-gray-900 dark:text-white">
-                {isAr ? "مشاريع نفذناها في هذا المجال" : "Projects We Delivered in This Field"}
+      {/* ── Metrics ── */}
+      <section style={{ padding: "70px 0" }}>
+        <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
+          <div style={{ display: "flex", alignItems: "end", justifyContent: "space-between", gap: 24, marginBottom: 32, flexWrap: "wrap" }}>
+            <div>
+              <span style={{ display: "inline-flex", background: "#fff1e9", color: "#9a4f22", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 12 }}>
+                {isAr ? "مؤشرات سريعة" : "Quick Metrics"}
+              </span>
+              <h2 style={{ margin: "0 0 10px", fontSize: "clamp(28px,3vw,40px)", lineHeight: 1.2, fontWeight: 800 }}>
+                {isAr ? "خدمة تبني الثقة بسرعة" : "A Service That Builds Trust Quickly"}
               </h2>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {relatedProjects.map((project) => (
-                <div
-                  key={project.id}
-                  className="bg-white dark:bg-gray-950 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 hover:shadow-lg transition-shadow"
-                  data-testid={`card-project-${project.id}`}
-                >
-                  {project.thumbnailUrl ? (
-                    <img src={project.thumbnailUrl} alt={project.title} className="w-full h-48 object-cover" />
-                  ) : (
-                    <div className="h-48 bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-                      <IconComp className="w-16 h-16 text-white/40" />
-                    </div>
-                  )}
-                  <div className="p-5">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">
-                      {isAr ? project.title : (project.titleEn || project.title)}
-                    </h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
-                      {isAr ? project.description : (project.descriptionEn || project.description)}
-                    </p>
-                    {Array.isArray(project.technologies) && project.technologies.length > 0 && (
-                      <div className="flex flex-wrap gap-1.5 mb-4">
-                        {(project.technologies as string[]).slice(0, 3).map((tech: string, i: number) => (
-                          <Badge key={i} variant="secondary" className="text-xs">{tech}</Badge>
-                        ))}
-                      </div>
-                    )}
-                    <Link
-                      href={`/projects/${project.slug}`}
-                      className="flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400 font-medium hover:underline"
-                      data-testid={`link-project-detail-${project.id}`}
-                    >
-                      {isAr ? "عرض التفاصيل" : "View Details"}
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
-                </div>
-              ))}
+            <p style={{ margin: 0, maxWidth: 720, color: "#64748b", fontSize: 17 }}>
+              {isAr ? "أرقام تعكس تجربتنا وقدرتنا على التنفيذ الاحترافي لمختلف الأنشطة التجارية." : "Numbers that reflect our experience and ability to professionally execute for various businesses."}
+            </p>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 18 }} className="stats-grid-responsive">
+            {metrics.map((m: any, i: number) => (
+              <div key={i} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 22, padding: 24, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", textAlign: "center" }}>
+                <strong style={{ display: "block", fontSize: 34, lineHeight: 1.1, marginBottom: 8, color: "#0f172a" }}>{m.strong}</strong>
+                <span style={{ color: "#64748b", fontSize: 14, fontWeight: 700 }}>{isAr ? m.spanAr : m.spanEn}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Sub-Services (What We Offer) ── */}
+      {subServices.length > 0 && (
+        <section style={{ padding: "88px 0", background: "linear-gradient(180deg,#fff,#f8fbff)" }} id="services-section">
+          <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
+            <div style={{ display: "flex", alignItems: "end", justifyContent: "space-between", gap: 24, marginBottom: 32, flexWrap: "wrap" }}>
+              <div>
+                <span style={{ display: "inline-flex", background: "#fff1e9", color: "#9a4f22", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 12 }}>
+                  {isAr ? "ما الذي نقدمه" : "What We Offer"}
+                </span>
+                <h2 style={{ margin: "0 0 10px", fontSize: "clamp(28px,3vw,40px)", lineHeight: 1.2, fontWeight: 800 }}>
+                  {isAr ? `خدمات ${service.title} بشكل منظم وواضح` : `${service.titleEn || service.title} Services – Organized & Clear`}
+                </h2>
+              </div>
+              <p style={{ margin: 0, maxWidth: 720, color: "#64748b", fontSize: 17 }}>
+                {isAr ? "نقدم مجموعة متكاملة من الخدمات الفرعية لتغطية كل جانب من جوانب احتياجاتك." : "We offer a comprehensive set of sub-services to cover every aspect of your needs."}
+              </p>
             </div>
-            <div className="text-center mt-8">
-              <Button asChild variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20">
-                <Link href="/projects">
-                  {isAr ? "عرض كل مشاريعنا" : "View All Our Projects"}
-                  <Arrow className="w-4 h-4 mx-2" />
-                </Link>
-              </Button>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 22 }} className="services-grid-responsive">
+              {subServices.map((s: any, i: number) => (
+                <article key={i} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 24, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 26, transition: "0.25s ease" }}
+                  onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-5px)")}
+                  onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}>
+                  <div style={{ width: 64, height: 64, borderRadius: 20, display: "grid", placeItems: "center", background: "linear-gradient(135deg,#dbeafe,#e0f2fe)", color: "#2563eb", fontSize: 28, marginBottom: 16 }}>{s.icon}</div>
+                  <h3 style={{ margin: "0 0 10px", fontSize: 22, fontWeight: 800, color: "#0f172a" }}>{s.title}</h3>
+                  <p style={{ margin: "0 0 16px", color: "#64748b" }}>{s.desc}</p>
+                  <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 10, color: "#334155", fontWeight: 700, fontSize: 14 }}>
+                    {s.features.map((f: string, fi: number) => (
+                      <li key={fi} style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span style={{ color: "#16a34a", fontWeight: 900 }}>✓</span> {f}
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
             </div>
           </div>
         </section>
       )}
 
-      {/* Request Form */}
-      <section id="request-form" className="py-16">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10">
-            <Badge className="mb-3 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800">
-              {isAr ? "اطلب الخدمة" : "Request Service"}
-            </Badge>
-            <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-3">
-              {isAr ? `اطلب خدمة: ${title}` : `Request Service: ${title}`}
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400">
-              {isAr
-                ? "أرسل لنا تفاصيل مشروعك وسيتواصل معك أحد متخصصينا خلال 24 ساعة"
-                : "Send us your project details and one of our specialists will contact you within 24 hours"}
+      {/* ── Full Description (if no sub-services) ── */}
+      {subServices.length === 0 && fullDesc && (
+        <section style={{ padding: "88px 0", background: "linear-gradient(180deg,#fff,#f8fbff)" }}>
+          <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 40, alignItems: "start" }} className="hero-grid-responsive">
+              <div>
+                <span style={{ display: "inline-flex", background: "#fff1e9", color: "#9a4f22", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 18 }}>
+                  {isAr ? "تفاصيل الخدمة" : "Service Details"}
+                </span>
+                <h2 style={{ margin: "0 0 18px", fontSize: "clamp(28px,3vw,40px)", fontWeight: 800, lineHeight: 1.2 }}>{title}</h2>
+                {fullDesc.split("\n").map((para, i) => para.trim() && (
+                  <p key={i} style={{ color: "#64748b", marginBottom: 16 }}>{para}</p>
+                ))}
+              </div>
+              <div>
+                {features.length > 0 && (
+                  <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 24, padding: 26, boxShadow: "0 20px 50px rgba(15,23,42,0.08)" }}>
+                    <h3 style={{ margin: "0 0 16px", fontSize: 20, fontWeight: 800 }}>{isAr ? "ما يشمله" : "What's Included"}</h3>
+                    <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 12 }}>
+                      {features.map((f: any, i: number) => (
+                        <li key={i} style={{ display: "flex", alignItems: "center", gap: 10, color: "#334155", fontWeight: 700 }}>
+                          <span style={{ color: "#16a34a", fontWeight: 900 }}>✓</span>
+                          {typeof f === "string" ? f : (isAr ? f.ar : f.en)}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Benefits (Why Softlix) ── */}
+      <section style={{ padding: "88px 0" }}>
+        <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
+          <div style={{ display: "flex", alignItems: "end", justifyContent: "space-between", gap: 24, marginBottom: 32, flexWrap: "wrap" }}>
+            <div>
+              <span style={{ display: "inline-flex", background: "#e0f2fe", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 12 }}>
+                {isAr ? "لماذا Softlix" : "Why Softlix"}
+              </span>
+              <h2 style={{ margin: "0 0 10px", fontSize: "clamp(28px,3vw,40px)", lineHeight: 1.2, fontWeight: 800 }}>
+                {isAr ? "ما الذي يميز أسلوبنا في التنفيذ" : "What Sets Our Execution Style Apart"}
+              </h2>
+            </div>
+            <p style={{ margin: 0, maxWidth: 720, color: "#64748b", fontSize: 17 }}>
+              {isAr ? "نوضح القيمة الفعلية التي يحصل عليها العميل من العمل معنا، وليس مجرد سرد الخدمات." : "We show the real value clients get from working with us, not just listing services."}
+            </p>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 22 }} className="features-grid-responsive">
+            {benefits.map((b: any, i: number) => (
+              <article key={i} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 24, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 26, transition: "0.25s ease" }}
+                onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-5px)")}
+                onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}>
+                <div style={{ width: 64, height: 64, borderRadius: 20, display: "grid", placeItems: "center", background: "linear-gradient(135deg,#dbeafe,#e0f2fe)", fontSize: 28, marginBottom: 16 }}>{b.icon}</div>
+                <h3 style={{ margin: "0 0 10px", fontSize: 22, fontWeight: 800 }}>{b.title}</h3>
+                <p style={{ margin: 0, color: "#64748b" }}>{b.desc}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Technologies ── */}
+      {technologies.length > 0 && (
+        <section style={{ padding: "88px 0", background: "linear-gradient(180deg,#fff,#f8fbff)" }}>
+          <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
+            <div style={{ display: "flex", alignItems: "end", justifyContent: "space-between", gap: 24, marginBottom: 32, flexWrap: "wrap" }}>
+              <div>
+                <span style={{ display: "inline-flex", background: "#fff1e9", color: "#9a4f22", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 12 }}>
+                  {isAr ? "التقنيات" : "Technologies"}
+                </span>
+                <h2 style={{ margin: "0 0 10px", fontSize: "clamp(28px,3vw,40px)", lineHeight: 1.2, fontWeight: 800 }}>
+                  {isAr ? "تقنيات نعتمدها في تنفيذ مشاريعنا" : "Technologies We Use in Our Projects"}
+                </h2>
+              </div>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 22 }} className="features-grid-responsive">
+              {technologies.map((t: any, i: number) => (
+                <article key={i} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 24, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 26, transition: "0.25s ease" }}
+                  onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-5px)")}
+                  onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}>
+                  <div style={{ width: 52, height: 52, borderRadius: 16, display: "grid", placeItems: "center", background: "#eff6ff", color: "#2563eb", fontWeight: 900, marginBottom: 14, fontSize: 20 }}>{t.icon || t.label[0]}</div>
+                  <h3 style={{ margin: "0 0 10px", fontSize: 22, fontWeight: 800 }}>{t.label}</h3>
+                  <p style={{ margin: 0, color: "#64748b" }}>{t.desc}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Related Projects ── */}
+      <section id="projects-section" style={{ padding: "88px 0", background: relatedProjects.length > 0 ? "linear-gradient(135deg,#fff7f3,#ffffff 55%,#f4fbff)" : "transparent" }}>
+        <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
+          <div style={{ display: "flex", alignItems: "end", justifyContent: "space-between", gap: 24, marginBottom: 32, flexWrap: "wrap" }}>
+            <div>
+              <span style={{ display: "inline-flex", background: "#fff1e9", color: "#9a4f22", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 12 }}>
+                {isAr ? "مشاريع مرتبطة" : "Related Projects"}
+              </span>
+              <h2 style={{ margin: "0 0 10px", fontSize: "clamp(28px,3vw,40px)", lineHeight: 1.2, fontWeight: 800 }}>
+                {isAr ? "نماذج من أعمالنا في هذا المجال" : "Samples from Our Work in This Field"}
+              </h2>
+            </div>
+            <p style={{ margin: 0, maxWidth: 720, color: "#64748b", fontSize: 17 }}>
+              {isAr ? "أعمال حقيقية تعكس مستوى التنفيذ وتنوع الحلول التي نقدمها للعملاء." : "Real work that reflects our execution quality and variety of solutions we provide."}
             </p>
           </div>
 
-          <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-xl border border-gray-100 dark:border-gray-800 p-8">
-            <Form {...form}>
-              <form
-                onSubmit={form.handleSubmit((data) => submitMutation.mutate(data))}
-                className="space-y-5"
-                data-testid="form-service-request"
-              >
-                <div className="grid sm:grid-cols-2 gap-5">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{isAr ? "الاسم الكامل *" : "Full Name *"}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder={isAr ? "أحمد محمد" : "John Doe"}
-                            data-testid="input-name"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="phone"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>{isAr ? "رقم الجوال *" : "Phone Number *"}</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder={isAr ? "05xxxxxxxx" : "+966 5x xxx xxxx"}
-                            data-testid="input-phone"
-                            dir="ltr"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{isAr ? "البريد الإلكتروني (اختياري)" : "Email (Optional)"}</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="example@domain.com"
-                          data-testid="input-email"
-                          dir="ltr"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="message"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{isAr ? "تفاصيل طلبك *" : "Request Details *"}</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          placeholder={isAr
-                            ? `صِف ما تحتاجه من خدمة ${title}...`
-                            : `Describe what you need from ${title} service...`}
-                          className="min-h-[120px]"
-                          data-testid="textarea-message"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+          {relatedProjects.length > 0 ? (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 22 }} className="projects-grid-responsive">
+              {relatedProjects.map((project, i) => (
+                <a key={project.id} href={`/projects/${project.slug}`} style={{ textDecoration: "none" }} data-testid={`card-project-${project.id}`}>
+                  <article style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 24, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", overflow: "hidden", transition: "0.25s ease" }}
+                    onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-5px)")}
+                    onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}>
+                    <div style={{ height: 240, padding: 22, position: "relative", background: project.thumbnailUrl ? undefined : PROJECT_COLORS[i % PROJECT_COLORS.length], color: "#fff", display: "flex", alignItems: "end", justifyContent: "space-between", gap: 16 }}>
+                      {project.thumbnailUrl && <img src={project.thumbnailUrl} alt={project.title} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />}
+                      {!project.thumbnailUrl && <>
+                        <span style={{ position: "absolute", top: 18, insetInlineEnd: 18, background: "rgba(255,255,255,0.14)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.18)", borderRadius: 999, padding: "8px 12px", fontSize: 13, fontWeight: 800 }}>
+                          {project.category || "App"}
+                        </span>
+                        <div style={{ zIndex: 2 }}>
+                          <h3 style={{ margin: "0 0 8px", fontSize: 24, fontWeight: 800 }}>{isAr ? project.title : (project.titleEn || project.title)}</h3>
+                          <p style={{ margin: 0, color: "rgba(255,255,255,0.82)", fontSize: 14 }}>{project.clientName || ""}</p>
+                        </div>
+                        <div style={{ width: 112, height: 182, borderRadius: 24, background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.18)", flexShrink: 0 }} />
+                      </>}
+                    </div>
+                    <div style={{ padding: 24 }}>
+                      {project.thumbnailUrl && <h3 style={{ margin: "0 0 8px", fontSize: 22, fontWeight: 800, color: "#0f172a" }}>{isAr ? project.title : (project.titleEn || project.title)}</h3>}
+                      <p style={{ margin: "0 0 16px", color: "#64748b" }}>{isAr ? project.description : (project.descriptionEn || project.description)}</p>
+                      {Array.isArray(project.technologies) && project.technologies.length > 0 && (
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
+                          {(project.technologies as string[]).slice(0, 3).map((t, ti) => (
+                            <span key={ti} style={{ padding: "8px 12px", borderRadius: 999, background: "#eff6ff", color: "#1d4ed8", fontSize: 13, fontWeight: 800 }}>{t}</span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </article>
+                </a>
+              ))}
+            </div>
+          ) : (
+            <div style={{ textAlign: "center", padding: "40px 0", color: "#64748b" }}>
+              <p>{isAr ? "سيتم إضافة مشاريع قريباً" : "Projects will be added soon"}</p>
+            </div>
+          )}
 
-                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 text-sm text-blue-700 dark:text-blue-300">
-                  {isAr
-                    ? "✅ سيتم التواصل معك خلال 24 ساعة عمل — معلوماتك محفوظة وخاصة"
-                    : "✅ We will contact you within 24 business hours — your information is safe and private"}
-                </div>
+          {relatedProjects.length > 0 && (
+            <div style={{ textAlign: "center", marginTop: 32 }}>
+              <a href="/projects" style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 28px", fontSize: 15, fontWeight: 700, background: "#fff", color: "#0f172a", border: "1px solid rgba(15,23,42,0.1)", textDecoration: "none" }}>
+                {isAr ? "عرض جميع المشاريع" : "View All Projects"}
+              </a>
+            </div>
+          )}
+        </div>
+      </section>
 
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                  disabled={submitMutation.isPending}
-                  data-testid="button-submit-request"
-                >
-                  {submitMutation.isPending ? (
-                    <Loader2 className="w-4 h-4 animate-spin mx-2" />
-                  ) : (
-                    <Send className="w-4 h-4 mx-2" />
-                  )}
-                  {isAr ? "إرسال الطلب" : "Send Request"}
-                </Button>
-              </form>
-            </Form>
+      {/* ── Process ── */}
+      <section style={{ padding: "88px 0" }}>
+        <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
+          <div style={{ display: "flex", alignItems: "end", justifyContent: "space-between", gap: 24, marginBottom: 32, flexWrap: "wrap" }}>
+            <div>
+              <span style={{ display: "inline-flex", background: "#e0f2fe", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 12 }}>
+                {isAr ? "كيف نعمل" : "How We Work"}
+              </span>
+              <h2 style={{ margin: "0 0 10px", fontSize: "clamp(28px,3vw,40px)", lineHeight: 1.2, fontWeight: 800 }}>
+                {isAr ? "رحلة التنفيذ من الفكرة إلى الإطلاق" : "Execution Journey from Idea to Launch"}
+              </h2>
+            </div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20 }} className="process-grid-responsive">
+            {PROCESS_STEPS.map((step, i) => (
+              <article key={i} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 22, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 24, position: "relative", overflow: "hidden" }}>
+                <div style={{ fontSize: 44, lineHeight: 1, fontWeight: 900, color: "rgba(37,99,235,0.12)", marginBottom: 10 }}>{step.num}</div>
+                <h3 style={{ margin: "0 0 10px", fontSize: 21, fontWeight: 800 }}>{isAr ? step.titleAr : step.titleEn}</h3>
+                <p style={{ margin: 0, color: "#64748b" }}>{isAr ? step.descAr : step.descEn}</p>
+              </article>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Other Services */}
-      <section className="py-12 bg-gray-50 dark:bg-gray-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
-            {isAr ? "خدماتنا الأخرى" : "Our Other Services"}
-          </h3>
-          <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
-            <Link href="/services">
-              {isAr ? "عرض جميع الخدمات" : "View All Services"}
-              <Arrow className="w-4 h-4 mx-2" />
-            </Link>
-          </Button>
+      {/* ── Testimonials ── */}
+      <section style={{ padding: "88px 0", background: "linear-gradient(180deg,#fff,#f8fbff)" }}>
+        <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
+          <div style={{ marginBottom: 32 }}>
+            <span style={{ display: "inline-flex", background: "#e0f2fe", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 12 }}>
+              {isAr ? "آراء العملاء" : "Client Testimonials"}
+            </span>
+            <h2 style={{ margin: "0 0 10px", fontSize: "clamp(28px,3vw,40px)", lineHeight: 1.2, fontWeight: 800 }}>
+              {isAr ? "انطباع يعزز الموثوقية" : "Impressions That Build Trust"}
+            </h2>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 22 }} className="testimonials-grid-responsive">
+            {TESTIMONIALS.map((t, i) => (
+              <article key={i} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 24, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 28, transition: "0.25s ease" }}
+                onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-5px)")}
+                onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}>
+                <div style={{ color: "#f59e0b", fontSize: 18, letterSpacing: 2, marginBottom: 14 }}>{"★".repeat(t.stars)}</div>
+                <p style={{ margin: "0 0 18px", color: "#334155", fontSize: 16 }}>{isAr ? t.quoteAr : t.quoteEn}</p>
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,#2563eb,#38bdf8)", color: "#fff", display: "grid", placeItems: "center", fontWeight: 800, flexShrink: 0 }}>{t.initial}</div>
+                  <div>
+                    <strong style={{ display: "block", fontSize: 15 }}>{isAr ? t.nameAr : t.nameEn}</strong>
+                    <span style={{ fontSize: 13, color: "#64748b" }}>{isAr ? t.roleAr : t.roleEn}</span>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
         </div>
       </section>
 
-      <PublicFooter lang={lang} />
+      {/* ── CTA Box ── */}
+      <section style={{ padding: "0 0 88px" }}>
+        <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
+          <div style={{ background: "linear-gradient(135deg,#0f172a,#2563eb 60%,#38bdf8)", color: "#fff", borderRadius: 34, padding: 42, display: "grid", gridTemplateColumns: "1.08fr 0.92fr", gap: 24, alignItems: "center", position: "relative", overflow: "hidden", boxShadow: "0 30px 70px rgba(15,23,42,0.13)" }} className="cta-grid-responsive">
+            <div style={{ position: "absolute", width: 220, height: 220, borderRadius: "50%", background: "rgba(255,255,255,0.08)", left: -70, bottom: -110 }} />
+            <div style={{ position: "absolute", width: 190, height: 190, borderRadius: "50%", background: "rgba(255,255,255,0.08)", right: -60, top: -70 }} />
+            <div style={{ position: "relative" }}>
+              <h2 style={{ margin: "0 0 12px", fontSize: "clamp(28px,4vw,42px)", lineHeight: 1.2, fontWeight: 800 }}>
+                {isAr ? "جاهز لتحويل فكرتك إلى واقع رقمي احترافي؟" : "Ready to Turn Your Idea into a Professional Digital Reality?"}
+              </h2>
+              <p style={{ margin: 0, color: "rgba(255,255,255,0.85)", fontSize: 17 }}>
+                {isAr ? "ابدأ معنا بخطة واضحة وتصميم يعكس قيمة مشروعك." : "Start with a clear plan and design that reflects your project's value."}
+              </p>
+            </div>
+            <div style={{ display: "flex", justifyContent: "flex-start", gap: 14, flexWrap: "wrap", position: "relative" }}>
+              <a href="#contact-section" style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 24px", fontSize: 15, fontWeight: 800, background: "linear-gradient(135deg,#2563eb,#38bdf8)", color: "#fff", boxShadow: "0 14px 28px rgba(37,99,235,0.22)", textDecoration: "none", border: 0 }}>
+                {isAr ? "اطلب عرض سعر" : "Request a Quote"}
+              </a>
+              <a href="/services" style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 24px", fontSize: 15, fontWeight: 700, background: "rgba(255,255,255,0.12)", color: "#fff", border: "1px solid rgba(255,255,255,0.2)", textDecoration: "none" }}>
+                {isAr ? "استكشف الخدمات" : "Explore Services"}
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Contact Form ── */}
+      <section id="contact-section" style={{ padding: "88px 0" }}>
+        <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "0.95fr 1.05fr", gap: 24 }} className="contact-grid-responsive">
+            {/* Info */}
+            <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 24, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 28 }}>
+              <span style={{ display: "inline-flex", background: "#e0f2fe", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 18 }}>
+                {isAr ? "تواصل معنا" : "Contact Us"}
+              </span>
+              <h3 style={{ margin: "0 0 12px", fontSize: 28, fontWeight: 800 }}>{isAr ? "دعنا نناقش مشروعك" : "Let's Discuss Your Project"}</h3>
+              <p style={{ margin: "0 0 24px", color: "#64748b" }}>
+                {isAr ? `اطلب خدمة ${service.title} وسيتواصل معك فريقنا المتخصص في أقرب وقت.` : `Request ${service.titleEn || service.title} and our team will contact you soon.`}
+              </p>
+              <div style={{ display: "grid", gap: 14 }}>
+                {[
+                  { icon: "📞", titleAr: "رقم الهاتف", titleEn: "Phone", value: "0537861534", href: "tel:0537861534" },
+                  { icon: "✉️", titleAr: "البريد الإلكتروني", titleEn: "Email", value: "info@softlix.net", href: "mailto:info@softlix.net" },
+                  { icon: "📍", titleAr: "الموقع", titleEn: "Location", value: isAr ? "جدة، المملكة العربية السعودية" : "Jeddah, Saudi Arabia", href: undefined },
+                  { icon: "⏰", titleAr: "أوقات العمل", titleEn: "Working Hours", value: isAr ? "السبت - الخميس | 9:00 ص - 6:00 م" : "Sat - Thu | 9:00 AM - 6:00 PM", href: undefined },
+                ].map((item, i) => (
+                  <div key={i} style={{ display: "flex", gap: 14, alignItems: "start", padding: 16, borderRadius: 18, background: "#f8fafc", border: "1px solid #e2e8f0" }}>
+                    <div style={{ width: 44, height: 44, borderRadius: 14, display: "grid", placeItems: "center", background: "#dbeafe", fontSize: 20, flexShrink: 0 }}>{item.icon}</div>
+                    <div>
+                      <strong style={{ display: "block", marginBottom: 4, fontSize: 15 }}>{isAr ? item.titleAr : item.titleEn}</strong>
+                      {item.href ? <a href={item.href} style={{ color: "#64748b", fontSize: 14, textDecoration: "none" }}>{item.value}</a> : <span style={{ color: "#64748b", fontSize: 14 }}>{item.value}</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Form */}
+            <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 24, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 28 }}>
+              <span style={{ display: "inline-flex", background: "#e0f2fe", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 18 }}>
+                {isAr ? "نموذج الطلب" : "Request Form"}
+              </span>
+              <form onSubmit={handleSubmit(data => leadMutation.mutate(data))} style={{ display: "grid", gap: 16 }} data-testid="form-service-request">
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="grid-2-responsive">
+                  <div style={{ display: "grid", gap: 8 }}>
+                    <label style={{ fontSize: 14, fontWeight: 800, color: "#334155" }}>{isAr ? "الاسم الكامل *" : "Full Name *"}</label>
+                    <input {...register("name", { required: true })} type="text" placeholder={isAr ? "اكتب اسمك" : "Your name"} style={{ border: "1px solid #dbe3ee", background: "#fff", borderRadius: 16, padding: "15px 16px", fontFamily: "inherit", fontSize: 15, color: "#0f172a", outline: "none" }} data-testid="input-name" />
+                    {errors.name && <span style={{ color: "#ef4444", fontSize: 13 }}>{isAr ? "الاسم مطلوب" : "Name is required"}</span>}
+                  </div>
+                  <div style={{ display: "grid", gap: 8 }}>
+                    <label style={{ fontSize: 14, fontWeight: 800, color: "#334155" }}>{isAr ? "اسم الشركة" : "Company"}</label>
+                    <input {...register("company")} type="text" placeholder={isAr ? "اسم الشركة" : "Company name"} style={{ border: "1px solid #dbe3ee", background: "#fff", borderRadius: 16, padding: "15px 16px", fontFamily: "inherit", fontSize: 15, color: "#0f172a", outline: "none" }} data-testid="input-company" />
+                  </div>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="grid-2-responsive">
+                  <div style={{ display: "grid", gap: 8 }}>
+                    <label style={{ fontSize: 14, fontWeight: 800, color: "#334155" }}>{isAr ? "البريد الإلكتروني *" : "Email *"}</label>
+                    <input {...register("email", { required: true })} type="email" placeholder="name@example.com" style={{ border: "1px solid #dbe3ee", background: "#fff", borderRadius: 16, padding: "15px 16px", fontFamily: "inherit", fontSize: 15, color: "#0f172a", outline: "none" }} data-testid="input-email" />
+                  </div>
+                  <div style={{ display: "grid", gap: 8 }}>
+                    <label style={{ fontSize: 14, fontWeight: 800, color: "#334155" }}>{isAr ? "رقم الهاتف" : "Phone"}</label>
+                    <input {...register("phone")} type="tel" placeholder="05xxxxxxxx" style={{ border: "1px solid #dbe3ee", background: "#fff", borderRadius: 16, padding: "15px 16px", fontFamily: "inherit", fontSize: 15, color: "#0f172a", outline: "none" }} data-testid="input-phone" />
+                  </div>
+                </div>
+                <div style={{ display: "grid", gap: 8 }}>
+                  <label style={{ fontSize: 14, fontWeight: 800, color: "#334155" }}>{isAr ? "تفاصيل طلبك *" : "Request Details *"}</label>
+                  <textarea {...register("message")} placeholder={isAr ? `صِف ما تحتاجه من خدمة ${service.title}...` : `Describe what you need from ${service.titleEn || service.title}...`} style={{ border: "1px solid #dbe3ee", background: "#fff", borderRadius: 16, padding: "15px 16px", fontFamily: "inherit", fontSize: 15, color: "#0f172a", outline: "none", minHeight: 150, resize: "vertical" }} data-testid="textarea-message" />
+                </div>
+                <div style={{ background: "#eff6ff", borderRadius: 16, padding: "14px 16px", fontSize: 14, color: "#1d4ed8", fontWeight: 700 }}>
+                  ✅ {isAr ? "سيتم التواصل معك خلال 24 ساعة عمل — معلوماتك محفوظة وخاصة" : "We will contact you within 24 business hours — your info is safe and private"}
+                </div>
+                <div>
+                  <button type="submit" disabled={leadMutation.isPending} style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 32px", fontSize: 15, fontWeight: 800, cursor: "pointer", background: "linear-gradient(135deg,#2563eb,#38bdf8)", color: "#fff", boxShadow: "0 14px 28px rgba(37,99,235,0.22)", border: 0, opacity: leadMutation.isPending ? 0.7 : 1 }} data-testid="btn-submit-request">
+                    {leadMutation.isPending ? (isAr ? "جاري الإرسال..." : "Sending...") : (isAr ? "إرسال الطلب" : "Send Request")}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer style={{ background: "#0f172a", color: "#cbd5e1", padding: "28px 0", marginTop: 88 }}>
+        <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto", display: "flex", justifyContent: "space-between", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+          <div>© {new Date().getFullYear()} Softlix. {isAr ? "جميع الحقوق محفوظة." : "All rights reserved."}</div>
+          <div style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+            {[{ href: "/", labelAr: "الرئيسية", labelEn: "Home" }, { href: "/services", labelAr: "الخدمات", labelEn: "Services" }, { href: "/projects", labelAr: "الأعمال", labelEn: "Projects" }].map(l => (
+              <a key={l.href} href={l.href} style={{ color: "#cbd5e1", textDecoration: "none", fontSize: 14 }}>{isAr ? l.labelAr : l.labelEn}</a>
+            ))}
+          </div>
+        </div>
+      </footer>
+
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
