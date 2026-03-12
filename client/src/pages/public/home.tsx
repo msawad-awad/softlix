@@ -205,7 +205,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
             </div>
 
             {/* Right: Dashboard mockup */}
-            <div style={{ position: "relative" }}>
+            <div style={{ position: "relative" }} className="home-hero-right">
               <div style={{ background: "linear-gradient(180deg,#0f172a 0%,#111827 100%)", borderRadius: 30, padding: 20, boxShadow: "0 35px 90px rgba(15,23,42,0.18)", color: "#fff", border: "1px solid rgba(255,255,255,0.08)" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18, gap: 16 }}>
                   <div>
@@ -253,11 +253,11 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
               </div>
 
               {/* Floating badges */}
-              <div style={{ position: "absolute", background: "#fff", color: "#0f172a", borderRadius: 20, padding: "14px 16px", boxShadow: "0 20px 50px rgba(15,23,42,0.08)", border: "1px solid #e2e8f0", minWidth: 180, ...(isAr ? { right: -12 } : { left: -12 }), top: 28 }}>
+              <div className="hero-badge" style={{ position: "absolute", background: "#fff", color: "#0f172a", borderRadius: 20, padding: "14px 16px", boxShadow: "0 20px 50px rgba(15,23,42,0.08)", border: "1px solid #e2e8f0", minWidth: 180, ...(isAr ? { right: -12 } : { left: -12 }), top: 28 }}>
                 <strong style={{ display: "block", fontSize: 18, lineHeight: 1.2 }}>{isAr ? "واجهات حديثة" : "Modern Interfaces"}</strong>
                 <span style={{ color: "#64748b", fontSize: 13, fontWeight: 700 }}>{isAr ? "تصميم يرفع الثقة ويزيد التحويل" : "Design that builds trust & increases conversion"}</span>
               </div>
-              <div style={{ position: "absolute", background: "#fff", color: "#0f172a", borderRadius: 20, padding: "14px 16px", boxShadow: "0 20px 50px rgba(15,23,42,0.08)", border: "1px solid #e2e8f0", minWidth: 180, ...(isAr ? { left: -16 } : { right: -16 }), bottom: 28 }}>
+              <div className="hero-badge" style={{ position: "absolute", background: "#fff", color: "#0f172a", borderRadius: 20, padding: "14px 16px", boxShadow: "0 20px 50px rgba(15,23,42,0.08)", border: "1px solid #e2e8f0", minWidth: 180, ...(isAr ? { left: -16 } : { right: -16 }), bottom: 28 }}>
                 <strong style={{ display: "block", fontSize: 18, lineHeight: 1.2 }}>{isAr ? "أنظمة قابلة للتوسع" : "Scalable Systems"}</strong>
                 <span style={{ color: "#64748b", fontSize: 13, fontWeight: 700 }}>{isAr ? "جاهزة للنمو والربط والتطوير المستقبلي" : "Ready for growth, integration & future development"}</span>
               </div>
@@ -599,6 +599,44 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
       </section>
 
       <PublicFooter lang={lang} />
+
+      <style>{`
+        /* ── Home page responsive grid breakpoints ── */
+
+        /* Tablet: collapse hero + CTA to 1 col, 2-col grids */
+        @media (max-width: 1100px) {
+          .hero-grid-responsive { grid-template-columns: 1fr !important; }
+          .cta-grid-responsive  { grid-template-columns: 1fr !important; }
+          .services-grid-responsive  { grid-template-columns: repeat(2, 1fr) !important; }
+          .projects-grid-responsive  { grid-template-columns: repeat(2, 1fr) !important; }
+          .features-grid-responsive  { grid-template-columns: repeat(2, 1fr) !important; }
+          .testimonials-grid-responsive { grid-template-columns: repeat(2, 1fr) !important; }
+          .process-grid-responsive   { grid-template-columns: repeat(2, 1fr) !important; }
+          .logo-cloud-responsive     { grid-template-columns: repeat(3, 1fr) !important; }
+          .stats-grid-responsive     { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+
+        /* Mobile: everything becomes 1 col; hide decorative dashboard */
+        @media (max-width: 700px) {
+          .hero-grid-responsive,
+          .cta-grid-responsive,
+          .services-grid-responsive,
+          .projects-grid-responsive,
+          .features-grid-responsive,
+          .testimonials-grid-responsive { grid-template-columns: 1fr !important; }
+          .process-grid-responsive   { grid-template-columns: repeat(2, 1fr) !important; }
+          .logo-cloud-responsive     { grid-template-columns: repeat(2, 1fr) !important; }
+          .stats-grid-responsive     { grid-template-columns: repeat(2, 1fr) !important; }
+          .grid-2-responsive         { grid-template-columns: 1fr !important; }
+
+          /* Hide decorative right dashboard & floating badges on small screens */
+          .home-hero-right { display: none !important; }
+          .hero-badge      { display: none !important; }
+
+          /* Tighten section padding */
+          section { padding-top: 52px !important; padding-bottom: 52px !important; }
+        }
+      `}</style>
     </div>
   );
 }

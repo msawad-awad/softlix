@@ -442,11 +442,11 @@ export default function PublicProjects({ lang = "ar", onLangChange, slug: slugPr
               </div>
 
               {/* Floating notes */}
-              <div style={{ position: "absolute", left: 0, top: 80, width: 216, ...glassCard, borderRadius: 22, padding: 18, zIndex: 3 }}>
+              <div className="proj-floater" style={{ position: "absolute", left: 0, top: 80, width: 216, ...glassCard, borderRadius: 22, padding: 18, zIndex: 3 }}>
                 <strong style={{ display: "block", fontSize: "1.28rem", marginBottom: 8 }}>{isAr ? "تصميم + وظيفة" : "Design + Function"}</strong>
                 <p style={{ margin: 0, color: "#5f6b7d", fontSize: ".9rem", lineHeight: 1.75 }}>{isAr ? "نعرض المشاريع باعتبارها حلولاً مكتملة لا مجرد لقطات واجهات." : "We present projects as complete solutions, not just interface screenshots."}</p>
               </div>
-              <div style={{ position: "absolute", right: 0, bottom: 54, width: 232, ...glassCard, borderRadius: 22, padding: 18, zIndex: 3 }}>
+              <div className="proj-floater" style={{ position: "absolute", right: 0, bottom: 54, width: 232, ...glassCard, borderRadius: 22, padding: 18, zIndex: 3 }}>
                 <strong style={{ display: "block", fontSize: "1.28rem", marginBottom: 8 }}>{isAr ? "تنوع قطاعات" : "Sector Diversity"}</strong>
                 <p style={{ margin: 0, color: "#5f6b7d", fontSize: ".9rem", lineHeight: 1.75 }}>{isAr ? "من الخدمات واللوجستيات وحتى الإعلانات والتسوق والمنصات المتخصصة." : "From services and logistics to advertising, shopping, and specialized platforms."}</p>
               </div>
@@ -639,16 +639,18 @@ export default function PublicProjects({ lang = "ar", onLangChange, slug: slugPr
 
       <style>{`
         @media (max-width: 1180px) {
-          .proj-hero-grid { grid-template-columns: 1fr !important; }
-          .proj-cta-grid { grid-template-columns: 1fr !important; }
+          .proj-hero-grid  { grid-template-columns: 1fr !important; }
+          .proj-cta-grid   { grid-template-columns: 1fr !important; }
           .proj-cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
-          .proj-4col-grid { grid-template-columns: repeat(2, 1fr) !important; }
-          .proj-visual { min-height: 560px !important; }
+          .proj-4col-grid  { grid-template-columns: repeat(2, 1fr) !important; }
+          .proj-visual     { min-height: 460px !important; }
+          .proj-floater    { display: none !important; }
         }
         @media (max-width: 760px) {
-          .proj-hero-grid, .proj-cta-grid { grid-template-columns: 1fr !important; }
+          .proj-hero-grid, .proj-cta-grid   { grid-template-columns: 1fr !important; }
           .proj-cards-grid, .proj-4col-grid { grid-template-columns: 1fr !important; }
-          .proj-visual { min-height: auto !important; }
+          .proj-visual  { display: none !important; }
+          .proj-floater { display: none !important; }
         }
       `}</style>
     </div>

@@ -51,15 +51,15 @@ export function PublicNavbar({ lang = "ar", onLangChange }: NavbarProps) {
   return (
     <div dir={isAr ? "rtl" : "ltr"} style={{ fontFamily: "'Cairo', sans-serif" }}>
       {/* ── Topbar ── */}
-      <div style={{ background: "#0f172a", color: "#cbd5e1", fontSize: 14, padding: "10px 0" }}>
-        <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
-          <div style={{ display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
+      <div className="pub-topbar" style={{ background: "#0f172a", color: "#cbd5e1", fontSize: 14, padding: "10px 0" }}>
+        <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
+          <div style={{ display: "flex", gap: 18, alignItems: "center" }}>
             <span>📍 {isAr ? cityAr : cityEn}</span>
-            <span>⏰ {isAr ? workingHoursAr : workingHoursEn}</span>
+            <span className="topbar-hours">⏰ {isAr ? workingHoursAr : workingHoursEn}</span>
           </div>
-          <div style={{ display: "flex", gap: 18, alignItems: "center", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: 18, alignItems: "center" }}>
             <a href={`tel:${phone}`} style={{ color: "#cbd5e1", textDecoration: "none" }}>📞 {phone}</a>
-            <a href={`mailto:${email}`} style={{ color: "#cbd5e1", textDecoration: "none" }}>✉️ {email}</a>
+            <a href={`mailto:${email}`} className="topbar-email" style={{ color: "#cbd5e1", textDecoration: "none" }}>✉️ {email}</a>
             <button
               onClick={() => onLangChange?.(isAr ? "en" : "ar")}
               style={{ background: "transparent", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 6, color: "#cbd5e1", cursor: "pointer", padding: "2px 10px", fontSize: 13, fontFamily: "inherit" }}
@@ -199,6 +199,13 @@ export function PublicNavbar({ lang = "ar", onLangChange }: NavbarProps) {
         @media (max-width: 860px) {
           .hide-mobile { display: none !important; }
           .show-mobile { display: inline-flex !important; }
+        }
+        @media (max-width: 768px) {
+          .pub-topbar    { display: none !important; }
+        }
+        @media (max-width: 520px) {
+          .topbar-hours { display: none !important; }
+          .topbar-email { display: none !important; }
         }
       `}</style>
     </div>

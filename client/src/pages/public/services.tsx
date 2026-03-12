@@ -288,11 +288,11 @@ export default function PublicServices({ lang = "ar", onLangChange }: ServicesPr
               </div>
 
               {/* Floating notes */}
-              <div style={{ position: "absolute", left: 0, top: 80, width: 210, ...glassCard, borderRadius: 22, padding: 18, zIndex: 3 }}>
+              <div className="svc-floater" style={{ position: "absolute", left: 0, top: 80, width: 210, ...glassCard, borderRadius: 22, padding: 18, zIndex: 3 }}>
                 <strong style={{ display: "block", fontSize: "1.15rem", marginBottom: 6 }}>{isAr ? "تسليم سريع" : "Fast Delivery"}</strong>
                 <p style={{ margin: 0, color: "#5f6b7d", fontSize: ".88rem", lineHeight: 1.7 }}>{isAr ? "من التصور إلى الإطلاق في أقصر وقت ممكن." : "From concept to launch in the shortest time possible."}</p>
               </div>
-              <div style={{ position: "absolute", right: 0, bottom: 50, width: 228, ...glassCard, borderRadius: 22, padding: 18, zIndex: 3 }}>
+              <div className="svc-floater" style={{ position: "absolute", right: 0, bottom: 50, width: 228, ...glassCard, borderRadius: 22, padding: 18, zIndex: 3 }}>
                 <strong style={{ display: "block", fontSize: "1.15rem", marginBottom: 6 }}>{isAr ? "شريك تقني حقيقي" : "Real Tech Partner"}</strong>
                 <p style={{ margin: 0, color: "#5f6b7d", fontSize: ".88rem", lineHeight: 1.7 }}>{isAr ? "نعمل معك كامتداد لفريقك وليس كمورد خارجي." : "We work with you as an extension of your team, not an outside vendor."}</p>
               </div>
@@ -426,16 +426,18 @@ export default function PublicServices({ lang = "ar", onLangChange }: ServicesPr
 
       <style>{`
         @media (max-width: 1100px) {
-          .svc-hero-grid { grid-template-columns: 1fr !important; }
-          .svc-cta-grid { grid-template-columns: 1fr !important; }
+          .svc-hero-grid  { grid-template-columns: 1fr !important; }
+          .svc-cta-grid   { grid-template-columns: 1fr !important; }
           .svc-cards-grid { grid-template-columns: repeat(2, 1fr) !important; }
-          .svc-4col-grid { grid-template-columns: repeat(2, 1fr) !important; }
-          .svc-visual { min-height: 520px !important; }
+          .svc-4col-grid  { grid-template-columns: repeat(2, 1fr) !important; }
+          .svc-visual     { min-height: 460px !important; }
+          .svc-floater    { display: none !important; }
         }
         @media (max-width: 700px) {
-          .svc-hero-grid, .svc-cta-grid { grid-template-columns: 1fr !important; }
+          .svc-hero-grid, .svc-cta-grid  { grid-template-columns: 1fr !important; }
           .svc-cards-grid, .svc-4col-grid { grid-template-columns: 1fr !important; }
-          .svc-visual { min-height: auto !important; }
+          .svc-visual  { display: none !important; }
+          .svc-floater { display: none !important; }
         }
       `}</style>
     </div>
