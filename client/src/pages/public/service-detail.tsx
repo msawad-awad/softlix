@@ -346,6 +346,7 @@ const DEFAULT_CONFIG = (service: Service, isAr: boolean) => ({
 interface ServiceDetailProps {
   lang?: "ar" | "en";
   onLangChange?: (lang: "ar" | "en") => void;
+  slug?: string;
 }
 
 interface LeadForm {
@@ -368,9 +369,9 @@ const CATEGORY_MAP: Record<string, string> = {
   "technical-consulting": "consulting",
 };
 
-export default function ServiceDetail({ lang = "ar", onLangChange }: ServiceDetailProps) {
+export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugProp }: ServiceDetailProps) {
   const [, params] = useRoute("/services/:slug");
-  const slug = params?.slug || "";
+  const slug = slugProp || params?.slug || "";
   const isAr = lang === "ar";
   const { toast } = useToast();
 

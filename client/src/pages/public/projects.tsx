@@ -106,6 +106,7 @@ const COVER_GRADIENTS = [
 interface ProjectsProps {
   lang?: "ar" | "en";
   onLangChange?: (lang: "ar" | "en") => void;
+  slug?: string;
 }
 
 const glassCard: React.CSSProperties = {
@@ -293,9 +294,13 @@ function ProjectDetail({ slug, lang = "ar", onLangChange }: { slug: string } & P
   );
 }
 
-export default function PublicProjects({ lang = "ar", onLangChange }: ProjectsProps) {
+export default function PublicProjects({ lang = "ar", onLangChange, slug: slugProp }: ProjectsProps) {
   const isAr = lang === "ar";
-  const [match, params] = useRoute("/projects/:slug");
+  const [matchNew, paramsNew] = useRoute("/projects/:slug");
+  const [matchOld, paramsOld] = useRoute("/porjects/:slug");
+  const match = matchNew || matchOld;
+  const routeSlug = paramsNew?.slug || paramsOld?.slug;
+  const effectiveSlug = slugProp || routeSlug;
   const [activeCategory, setActiveCategory] = useState("all");
 
   useSEO({
@@ -307,7 +312,7 @@ export default function PublicProjects({ lang = "ar", onLangChange }: ProjectsPr
 
   const { data: apiProjects } = useQuery<Project[]>({
     queryKey: ["/api/public/projects", TENANT_ID],
-    enabled: !match,
+    enabled: !effectiveSlug,
   });
 
   const displayProjects = apiProjects && apiProjects.length > 0 ? apiProjects as any[] : DEFAULT_PROJECTS;
@@ -315,8 +320,8 @@ export default function PublicProjects({ lang = "ar", onLangChange }: ProjectsPr
     ? displayProjects
     : displayProjects.filter((p: any) => p.category === activeCategory);
 
-  if (match && params?.slug) {
-    return <ProjectDetail slug={params.slug} lang={lang} onLangChange={onLangChange} />;
+  if (effectiveSlug) {
+    return <ProjectDetail slug={effectiveSlug} lang={lang} onLangChange={onLangChange} />;
   }
 
   return (

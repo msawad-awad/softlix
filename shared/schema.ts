@@ -263,6 +263,7 @@ export const blogPosts = pgTable("blog_posts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
   categoryId: varchar("category_id").references(() => blogCategories.id),
+  category: text("category"),
   title: text("title").notNull(),
   titleEn: text("title_en"),
   slug: text("slug").notNull(),
@@ -273,6 +274,7 @@ export const blogPosts = pgTable("blog_posts", {
   featuredImageUrl: text("featured_image_url"),
   seoTitle: text("seo_title"),
   seoDescription: text("seo_description"),
+  readTime: integer("read_time").default(5),
   status: text("status").default("draft").notNull(), // published, draft
   publishedAt: timestamp("published_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),

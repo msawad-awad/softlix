@@ -107,7 +107,7 @@ function PostCard({ post, lang }: { post: any; lang: "ar" | "en" }) {
   const COVER_GRADIENT = `linear-gradient(135deg, rgba(229,146,105,.18), rgba(130,183,53,.22))`;
 
   return (
-    <Link href={`/blog/${post.slug}`} style={{ textDecoration: "none", color: "inherit" }} data-testid={`card-post-${post.id}`}>
+    <Link href={`/${post.slug}`} style={{ textDecoration: "none", color: "inherit" }} data-testid={`card-post-${post.id}`}>
       <article style={{
         borderRadius: 28, overflow: "hidden", background: SURFACE,
         border: `1px solid ${LINE}`, boxShadow: "0 14px 40px rgba(15,23,42,.06)",
@@ -162,11 +162,11 @@ function PostCard({ post, lang }: { post: any; lang: "ar" | "en" }) {
 /* ──────────────────────────────────────────────────────── */
 /* Blog List Page                                           */
 /* ──────────────────────────────────────────────────────── */
-interface BlogProps { lang?: "ar" | "en"; onLangChange?: (lang: "ar" | "en") => void; }
+interface BlogProps { lang?: "ar" | "en"; onLangChange?: (lang: "ar" | "en") => void; initialCategory?: string; }
 
-function BlogList({ lang = "ar", onLangChange }: BlogProps) {
+function BlogList({ lang = "ar", onLangChange, initialCategory }: BlogProps) {
   const isAr = lang === "ar";
-  const [activeCategory, setActiveCategory] = useState("الكل");
+  const [activeCategory, setActiveCategory] = useState(initialCategory || "الكل");
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
 
@@ -348,7 +348,7 @@ function BlogList({ lang = "ar", onLangChange }: BlogProps) {
                 <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 0 }}>
                   {recentPosts.map((p, idx) => (
                     <li key={p.id}>
-                      <Link href={`/blog/${p.slug}`} style={{ display: "block", color: "#334155", fontWeight: 700, padding: "8px 0", borderBottom: idx < recentPosts.length - 1 ? `1px solid rgba(15,23,42,.06)` : "none", fontSize: ".92rem", textDecoration: "none" }}>
+                      <Link href={`/${p.slug}`} style={{ display: "block", color: "#334155", fontWeight: 700, padding: "8px 0", borderBottom: idx < recentPosts.length - 1 ? `1px solid rgba(15,23,42,.06)` : "none", fontSize: ".92rem", textDecoration: "none" }}>
                         {p.title}
                       </Link>
                     </li>
@@ -646,7 +646,7 @@ function BlogDetail({ slug, lang = "ar", onLangChange }: { slug: string } & Blog
                     const rpExcerpt = isAr ? rp.excerpt : ((rp as any).excerptEn || rp.excerpt);
                     const rpDate = rp.publishedAt ? new Date(rp.publishedAt) : null;
                     return (
-                      <Link key={rp.id} href={`/blog/${rp.slug}`} style={{ textDecoration: "none", color: "inherit" }}>
+                      <Link key={rp.id} href={`/${rp.slug}`} style={{ textDecoration: "none", color: "inherit" }}>
                         <div style={{ background: SURFACE, border: `1px solid ${LINE}`, borderRadius: 22, overflow: "hidden", transition: "transform .25s, box-shadow .25s", cursor: "pointer" }}
                           onMouseEnter={e => { (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)"; (e.currentTarget as HTMLElement).style.boxShadow = "0 20px 50px rgba(15,23,42,.1)"; }}
                           onMouseLeave={e => { (e.currentTarget as HTMLElement).style.transform = ""; (e.currentTarget as HTMLElement).style.boxShadow = ""; }}>
@@ -737,7 +737,7 @@ function BlogDetail({ slug, lang = "ar", onLangChange }: { slug: string } & Blog
               <ul style={{ margin: 0, padding: 0, listStyle: "none", display: "grid", gap: 0 }}>
                 {DEFAULT_POSTS.slice(0, 4).map((rp, idx) => (
                   <li key={rp.id}>
-                    <Link href={`/blog/${rp.slug}`} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 0", borderBottom: idx < 3 ? `1px solid rgba(15,23,42,.06)` : "none", textDecoration: "none" }}>
+                    <Link href={`/${rp.slug}`} style={{ display: "flex", alignItems: "flex-start", gap: 10, padding: "10px 0", borderBottom: idx < 3 ? `1px solid rgba(15,23,42,.06)` : "none", textDecoration: "none" }}>
                       <div style={{ width: 36, height: 36, borderRadius: 10, background: `linear-gradient(135deg, rgba(229,146,105,.18), rgba(130,183,53,.14))`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: 2 }}>
                         <BookOpen size={14} color={BRAND} />
                       </div>
@@ -783,4 +783,14 @@ export default function PublicBlog({ lang = "ar", onLangChange }: BlogProps) {
   const [match, params] = useRoute("/blog/:slug");
   if (match && params?.slug) return <BlogDetail slug={params.slug} lang={lang} onLangChange={onLangChange} />;
   return <BlogList lang={lang} onLangChange={onLangChange} />;
+}
+
+/* Root-level blog post: /:slug → used for Arabic slugs from old site */
+export function BlogPostPage({ slug, lang = "ar", onLangChange }: { slug: string } & BlogProps) {
+  return <BlogDetail slug={slug} lang={lang} onLangChange={onLangChange} />;
+}
+
+/* Category page: /category/:cat → filtered blog list */
+export function CategoryPage({ category, lang = "ar", onLangChange }: { category: string } & BlogProps) {
+  return <BlogList lang={lang} onLangChange={onLangChange} initialCategory={category} />;
 }

@@ -31,7 +31,7 @@ import PublicAbout from "@/pages/public/about";
 import PublicServices from "@/pages/public/services";
 import ServiceDetail from "@/pages/public/service-detail";
 import PublicProjects from "@/pages/public/projects";
-import PublicBlog from "@/pages/public/blog";
+import PublicBlog, { BlogPostPage, CategoryPage } from "@/pages/public/blog";
 import PublicContact from "@/pages/public/contact";
 
 import WebsiteOverview from "@/pages/website/index";
@@ -112,14 +112,35 @@ function PublicSite() {
   return (
     <Switch>
       <Route path="/about"><PublicAbout {...p} /></Route>
+      <Route path="/about/"><PublicAbout {...p} /></Route>
       <Route path="/services/:slug"><ServiceDetail {...p} /></Route>
       <Route path="/services"><PublicServices {...p} /></Route>
+      {/* Old WordPress URL: /porjects/ (with WordPress typo for SEO) */}
+      <Route path="/porjects/:slug">{(params) => <PublicProjects {...p} slug={params.slug} />}</Route>
+      <Route path="/porjects"><PublicProjects {...p} /></Route>
       <Route path="/projects/:slug"><PublicProjects {...p} /></Route>
       <Route path="/projects"><PublicProjects {...p} /></Route>
       <Route path="/blog/:slug"><PublicBlog {...p} /></Route>
       <Route path="/blog"><PublicBlog {...p} /></Route>
+      {/* Old WordPress URL: /contact-us/ */}
+      <Route path="/contact-us"><PublicContact {...p} /></Route>
+      <Route path="/contact-us/"><PublicContact {...p} /></Route>
       <Route path="/contact"><PublicContact {...p} /></Route>
+      {/* Category pages: /category/{cat}/ */}
+      <Route path="/category/:cat">{(params) => <CategoryPage {...p} category={decodeURIComponent(params.cat)} />}</Route>
+      {/* Service-specific old WordPress URLs */}
+      <Route path="/mobile-app-development"><ServiceDetail {...p} slug="mobile-app-development" /></Route>
+      <Route path="/mobile-app-development/"><ServiceDetail {...p} slug="mobile-app-development" /></Route>
+      <Route path="/content-management-and-designs"><ServiceDetail {...p} slug="content-management-and-designs" /></Route>
+      <Route path="/content-management-and-designs/"><ServiceDetail {...p} slug="content-management-and-designs" /></Route>
+      <Route path="/software-services"><ServiceDetail {...p} slug="software-services" /></Route>
+      <Route path="/technical-consulting"><ServiceDetail {...p} slug="technical-consulting" /></Route>
+      <Route path="/product-e-commerce"><ServiceDetail {...p} slug="product-e-commerce" /></Route>
+      <Route path="/web-programming"><ServiceDetail {...p} slug="web-programming" /></Route>
+      <Route path="/digital-marketing"><ServiceDetail {...p} slug="digital-marketing" /></Route>
       <Route path="/"><PublicHome {...p} /></Route>
+      {/* Root-level blog post catch-all: /{arabic-slug}/ */}
+      <Route path="/:slug">{(params) => <BlogPostPage {...p} slug={decodeURIComponent(params.slug)} />}</Route>
       <Route component={NotFound} />
     </Switch>
   );
@@ -180,16 +201,38 @@ function Router() {
       <Route path="/website"><AdminRoute><WebsiteOverview /></AdminRoute></Route>
       <Route path="/marketing"><AdminRoute><Marketing /></AdminRoute></Route>
 
-      {/* Public website - catch all remaining paths */}
+      {/* Public website routes */}
       <Route path="/about"><PublicSite /></Route>
+      <Route path="/about/"><PublicSite /></Route>
       <Route path="/services/:slug"><PublicSite /></Route>
       <Route path="/services"><PublicSite /></Route>
+      {/* Projects: /projects/ and /porjects/ (WordPress typo preserved for SEO) */}
       <Route path="/projects/:slug"><PublicSite /></Route>
       <Route path="/projects"><PublicSite /></Route>
+      <Route path="/porjects/:slug"><PublicSite /></Route>
+      <Route path="/porjects"><PublicSite /></Route>
       <Route path="/blog/:slug"><PublicSite /></Route>
       <Route path="/blog"><PublicSite /></Route>
+      {/* Contact: /contact and /contact-us/ (old WordPress URL) */}
       <Route path="/contact"><PublicSite /></Route>
+      <Route path="/contact-us"><PublicSite /></Route>
+      <Route path="/contact-us/"><PublicSite /></Route>
+      {/* Category pages */}
+      <Route path="/category/:cat"><PublicSite /></Route>
+      {/* Old service-specific WordPress URLs */}
+      <Route path="/mobile-app-development"><PublicSite /></Route>
+      <Route path="/mobile-app-development/"><PublicSite /></Route>
+      <Route path="/content-management-and-designs"><PublicSite /></Route>
+      <Route path="/content-management-and-designs/"><PublicSite /></Route>
+      <Route path="/software-services"><PublicSite /></Route>
+      <Route path="/technical-consulting"><PublicSite /></Route>
+      <Route path="/product-e-commerce"><PublicSite /></Route>
+      <Route path="/web-programming"><PublicSite /></Route>
+      <Route path="/digital-marketing"><PublicSite /></Route>
+      {/* Home */}
       <Route path="/"><PublicSite /></Route>
+      {/* Root-level slug catch-all (blog posts, old Arabic URLs) - must be last */}
+      <Route path="/:slug"><PublicSite /></Route>
 
       <Route component={NotFound} />
     </Switch>

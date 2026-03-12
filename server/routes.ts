@@ -1404,18 +1404,49 @@ export async function registerRoutes(
   app.get("/sitemap.xml", async (req, res) => {
     try {
       const baseUrl = `${req.protocol}://${req.get("host")}`;
+      const tenantId = await resolvePublicTenantId(req);
+
       const staticPages = [
         { loc: "/", priority: "1.0", changefreq: "weekly" },
-        { loc: "/about", priority: "0.8", changefreq: "monthly" },
+        { loc: "/about/", priority: "0.8", changefreq: "monthly" },
         { loc: "/services", priority: "0.9", changefreq: "weekly" },
-        { loc: "/projects", priority: "0.8", changefreq: "weekly" },
-        { loc: "/blog", priority: "0.7", changefreq: "daily" },
-        { loc: "/contact", priority: "0.8", changefreq: "monthly" },
+        { loc: "/porjects/", priority: "0.8", changefreq: "weekly" },
+        { loc: "/blog/", priority: "0.7", changefreq: "daily" },
+        { loc: "/contact-us/", priority: "0.8", changefreq: "monthly" },
+        // Old service pages preserved for SEO
+        { loc: "/mobile-app-development/", priority: "0.8", changefreq: "monthly" },
+        { loc: "/content-management-and-designs/", priority: "0.7", changefreq: "monthly" },
+        { loc: "/software-services/", priority: "0.7", changefreq: "monthly" },
+        { loc: "/technical-consulting/", priority: "0.7", changefreq: "monthly" },
+        { loc: "/digital-marketing/", priority: "0.7", changefreq: "monthly" },
+        // Category pages
+        { loc: "/category/برمجة/", priority: "0.5", changefreq: "weekly" },
+        { loc: "/category/تصميم/", priority: "0.5", changefreq: "weekly" },
+        { loc: "/category/تواصل-إجتماعي/", priority: "0.5", changefreq: "weekly" },
       ];
 
       let urls = staticPages.map(p =>
         `  <url>\n    <loc>${baseUrl}${p.loc}</loc>\n    <changefreq>${p.changefreq}</changefreq>\n    <priority>${p.priority}</priority>\n  </url>`
       ).join("\n");
+
+      // Add blog posts at root level (/{slug}/)
+      if (tenantId) {
+        const posts = await storage.getBlogPosts(tenantId);
+        const publishedPosts = posts.filter(p => p.status === "published");
+        const postUrls = publishedPosts.map(p => {
+          const lastmod = p.publishedAt ? new Date(p.publishedAt).toISOString().split("T")[0] : "";
+          return `  <url>\n    <loc>${baseUrl}/${encodeURIComponent(p.slug)}/</loc>\n    <changefreq>weekly</changefreq>\n    <priority>0.7</priority>${lastmod ? `\n    <lastmod>${lastmod}</lastmod>` : ""}\n  </url>`;
+        }).join("\n");
+        if (postUrls) urls += "\n" + postUrls;
+
+        // Add project pages at /porjects/{slug}/
+        const projects = await storage.getProjects(tenantId);
+        const publishedProjects = projects.filter((p: any) => p.status === "published");
+        const projectUrls = publishedProjects.map((p: any) =>
+          `  <url>\n    <loc>${baseUrl}/porjects/${encodeURIComponent(p.slug)}/</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>`
+        ).join("\n");
+        if (projectUrls) urls += "\n" + projectUrls;
+      }
 
       const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`;
       res.set("Content-Type", "application/xml");
@@ -2003,7 +2034,8 @@ export async function registerRoutes(
       return next();
     }
     try {
-      const allRedirects = await storage.getRedirects("default");
+      const tenantId = await resolvePublicTenantId(req);
+      const allRedirects = tenantId ? await storage.getRedirects(tenantId) : [];
       const match = allRedirects.find(r => r.isActive && (r.fromUrl === path || r.fromUrl === path + "/"));
       if (match) {
         await storage.incrementRedirectHit(match.id);

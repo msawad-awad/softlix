@@ -92,9 +92,22 @@
 - Data testids on all interactive elements
 - Proper error handling throughout
 
+## 🌐 Content Migration & SEO URL Preservation
+- ✅ **93 blog posts** scraped from softlixagency.com with Arabic slugs matching old WordPress URLs
+- ✅ **Root-level blog URLs**: All posts served at `/{slug}` (not `/blog/{slug}`) matching old site structure
+- ✅ **WordPress typo preserved**: `/porjects/` (not `/projects/`) maintained for SEO
+- ✅ **Old service URLs**: `/mobile-app-development/`, `/digital-marketing/`, etc. served with correct content
+- ✅ **Category pages**: `/category/{cat}` with Arabic category names
+- ✅ **Contact alias**: `/contact-us/` as alias for `/contact`
+- ✅ **Dynamic sitemap.xml**: 113 URLs including all blog posts at root-level + projects at `/porjects/`
+- ✅ **DB redirect middleware**: Express checks redirects table via `resolvePublicTenantId`
+- ✅ **Blog categories**: تواصل إجتماعي (38), برمجة (24), غير مصنف (20), تصميم (11)
+- ✅ **Railway DB**: All 93 posts + schema pushed to Railway PostgreSQL
+
 ## 🎯 System Ready for Production
-- Admin credentials configured
-- Database fully seeded
+- Admin credentials configured: `info@softlix.net` / `123456`
+- tenantId: `f5d13ee7-6388-410e-8631-c1ccf191ecc3`
+- Database fully seeded (local + Railway)
 - All pages routable and functional
 - RTL/LTR switching working
 - Dark mode toggle functional
