@@ -140,6 +140,10 @@ function ProjectDetail({ slug, lang = "ar", onLangChange }: { slug: string } & P
     description: isAr ? (proj?.description || "") : (proj?.descriptionEn || proj?.description || ""),
     image: proj?.thumbnailUrl || undefined,
     type: "article",
+    lang,
+    keywords: isAr
+      ? `${proj?.title || ""}, سوفتلكس، أعمالنا، مشاريع`
+      : `${proj?.titleEn || proj?.title || ""}, Softlix, portfolio, projects`,
   });
 
   if (isLoading) {
@@ -484,6 +488,10 @@ export default function PublicProjects({ lang = "ar", onLangChange, slug: slugPr
     description: isAr
       ? "اكتشف مجموعة مشاريع Softlix في تطبيقات الجوال والمنصات الرقمية وحلول الأعمال"
       : "Discover Softlix's portfolio of mobile apps, digital platforms and business solutions",
+    lang,
+    keywords: isAr
+      ? "مشاريع، أعمال، سوفتلكس، تطبيقات، مواقع، برمجة"
+      : "projects, portfolio, Softlix, apps, websites, programming",
   });
 
   const { data: apiProjects } = useQuery<Project[]>({

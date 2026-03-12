@@ -27,6 +27,10 @@ export default function PublicContact({ lang = "ar", onLangChange }: ContactProp
     description: isAr
       ? "تواصل مع فريق Softlix لمناقشة مشروعك. نحن في جدة، المملكة العربية السعودية - متاحون السبت إلى الخميس."
       : "Contact the Softlix team to discuss your project. We're in Jeddah, Saudi Arabia - available Saturday to Thursday.",
+    lang,
+    keywords: isAr
+      ? "تواصل، سوفتلكس، جدة، المملكة العربية السعودية، مشروع، استشارة"
+      : "contact, Softlix, Jeddah, Saudi Arabia, project, consulting",
   });
   const { toast } = useToast();
   const [submitting, setSubmitting] = useState(false);

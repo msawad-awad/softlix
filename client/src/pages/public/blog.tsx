@@ -171,10 +171,14 @@ function BlogList({ lang = "ar", onLangChange, initialCategory }: BlogProps) {
   const [searchInput, setSearchInput] = useState("");
 
   useSEO({
-    title: isAr ? "المدونة | Softlix" : "Blog | Softlix",
+    title: isAr ? "المدونة" : "Blog",
     description: isAr
       ? "مقالات ومحتوى تقني وتسويقي يساعدك على النمو والتطور في عالم الأعمال الرقمية"
       : "Technical and marketing articles that help you grow in the digital business world",
+    lang,
+    keywords: isAr
+      ? "مدونة، تقنية، تسويق رقمي، برمجة، سوفتلكس، مقالات"
+      : "blog, tech, digital marketing, programming, Softlix, articles",
   });
 
   const { data: rawPosts } = useQuery<BlogPost[]>({ queryKey: ["/api/public/blog", TENANT_ID] });
@@ -449,6 +453,12 @@ function BlogDetail({ slug, lang = "ar", onLangChange }: { slug: string } & Blog
   useSEO({
     title: isAr ? (displayPost?.title || "مقال") : ((displayPost as any)?.titleEn || displayPost?.title || "Article"),
     description: isAr ? (displayPost?.excerpt || "") : ((displayPost as any)?.excerptEn || displayPost?.excerpt || ""),
+    image: (displayPost as any)?.featuredImage || undefined,
+    type: "article",
+    lang,
+    keywords: isAr
+      ? `${displayPost?.title || ""}, سوفتلكس، مدونة، تقنية`
+      : `${(displayPost as any)?.titleEn || ""}, Softlix, blog, tech`,
   });
 
   const CONTAINER_WIDE: React.CSSProperties = { width: "min(1180px, calc(100% - 32px))", marginInline: "auto" };

@@ -390,13 +390,17 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
 
   useSEO({
     title: isAr
-      ? (service?.title || service?.seoTitle || slug)
+      ? (service?.seoTitle || service?.title || slug)
       : ((service as any)?.titleEn || service?.title || service?.seoTitle || slug),
     description: isAr
-      ? (service?.shortDescription || service?.seoDescription || "")
+      ? (service?.seoDescription || service?.shortDescription || "")
       : ((service as any)?.shortDescriptionEn || service?.shortDescription || ""),
     image: service?.imageUrl || undefined,
     type: "article",
+    lang,
+    keywords: isAr
+      ? `${service?.title || ""}, خدمات سوفتلكس، برمجة، تقنية`
+      : `${(service as any)?.titleEn || service?.title || ""}, Softlix services, tech`,
   });
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<LeadForm>();

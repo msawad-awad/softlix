@@ -1446,6 +1446,14 @@ export async function registerRoutes(
           `  <url>\n    <loc>${baseUrl}/porjects/${encodeURIComponent(p.slug)}/</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>`
         ).join("\n");
         if (projectUrls) urls += "\n" + projectUrls;
+
+        // Add service pages at /services/{slug}/
+        const services = await storage.getServices(tenantId);
+        const publishedServices = services.filter((s: any) => s.status === "published");
+        const serviceUrls = publishedServices.map((s: any) =>
+          `  <url>\n    <loc>${baseUrl}/services/${encodeURIComponent(s.slug)}/</loc>\n    <changefreq>monthly</changefreq>\n    <priority>0.8</priority>\n  </url>`
+        ).join("\n");
+        if (serviceUrls) urls += "\n" + serviceUrls;
       }
 
       const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`;
@@ -2084,7 +2092,17 @@ export async function registerRoutes(
     try {
       const tenantId = await resolvePublicTenantId(req);
       const allRedirects = tenantId ? await storage.getRedirects(tenantId) : [];
-      const match = allRedirects.find(r => r.isActive && (r.fromUrl === path || r.fromUrl === path + "/"));
+      const match = allRedirects.find(r => {
+        if (!r.isActive) return false;
+        // Exact match - only skip if destination is same as source (self-redirect)
+        if (r.fromUrl === path) return r.toUrl !== path;
+        // Match with trailing slash appended to current path
+        // Only redirect if destination differs from current path (prevent loops)
+        if (r.fromUrl === path + "/") {
+          return r.toUrl !== path && r.toUrl !== path + "/";
+        }
+        return false;
+      });
       if (match) {
         await storage.incrementRedirectHit(match.id);
         return res.redirect(match.statusCode || 301, match.toUrl);

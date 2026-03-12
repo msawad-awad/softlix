@@ -81,6 +81,10 @@ export default function PublicAbout({ lang = "ar", onLangChange }: AboutProps) {
     description: isAr
       ? "Softlix - شركة تقنية متخصصة في بناء التطبيقات والمنصات الرقمية وتقديم حلول الأعمال للسوق السعودي والخليجي."
       : "Softlix - A tech company specializing in building apps, digital platforms and business solutions for the Saudi and Gulf market.",
+    lang,
+    keywords: isAr
+      ? "سوفتلكس، عن الشركة، تقنية، برمجة، جدة، فريق"
+      : "Softlix, about us, tech company, Jeddah, team",
   });
 
   const { data: pageSections } = useQuery<any>({ queryKey: ["/api/public/page-sections/about"] });

@@ -99,10 +99,15 @@
 - ✅ **Old service URLs**: `/mobile-app-development/`, `/digital-marketing/`, etc. served with correct content
 - ✅ **Category pages**: `/category/{cat}` with Arabic category names
 - ✅ **Contact alias**: `/contact-us/` as alias for `/contact`
-- ✅ **Dynamic sitemap.xml**: 113 URLs including all blog posts at root-level + projects at `/porjects/`
-- ✅ **DB redirect middleware**: Express checks redirects table via `resolvePublicTenantId`
+- ✅ **Dynamic sitemap.xml**: 122+ URLs including blog posts + projects + all 9 service pages
+- ✅ **DB redirect middleware**: Loop-safe redirect middleware in Express (prevents infinite redirect loops)
 - ✅ **Blog categories**: تواصل إجتماعي (38), برمجة (24), غير مصنف (20), تصميم (11)
 - ✅ **Railway DB**: All 93 posts + schema pushed to Railway PostgreSQL
+- ✅ **Enhanced useSEO hook**: canonical URL, og:url, twitter:card, twitter:title, twitter:description, keywords, lang tag
+- ✅ **Dynamic SEO**: All 8 public pages use useSEO with page-specific title, description, keywords, lang
+- ✅ **Home page**: Pulls siteNameAr/siteNameEn + siteDescAr/siteDescEn from site settings for SEO
+- ✅ **robots.txt**: index/follow, disallow /api/, sitemap reference
+- ✅ **index.html**: Base meta robots, og:locale (ar_SA + en_US), twitter:card, twitter:site defaults
 
 ## 🎯 System Ready for Production
 - Admin credentials configured: `info@softlix.net` / `123456`

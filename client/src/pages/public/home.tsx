@@ -72,12 +72,6 @@ interface LeadForm {
 
 export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
   const isAr = lang === "ar";
-  useSEO({
-    title: isAr ? "شريكك التقني المتكامل" : "Your Complete Tech Partner",
-    description: isAr
-      ? "Softlix - شريكك التقني المتكامل في برمجة التطبيقات والتسويق الرقمي. نحوّل أفكارك إلى منتجات رقمية ناجحة."
-      : "Softlix - Your complete tech partner in app development and digital marketing. We turn your ideas into successful digital products.",
-  });
   const { toast } = useToast();
 
   const { data: services } = useQuery<Service[]>({ queryKey: ["/api/public/services", TENANT_ID] });
@@ -88,6 +82,21 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
   const { data: testimonialsData } = useQuery<any[]>({ queryKey: ["/api/public/testimonials"] });
   const { data: whyUsData } = useQuery<any[]>({ queryKey: ["/api/public/why-us"] });
   const { data: pageSections } = useQuery<any>({ queryKey: ["/api/public/page-sections/home"] });
+  const { data: siteSettings } = useQuery<any>({ queryKey: ["/api/public/site-settings"] });
+
+  useSEO({
+    title: isAr
+      ? (siteSettings?.siteDescAr ? "شريكك التقني المتكامل" : "شريكك التقني المتكامل")
+      : "Your Complete Tech Partner",
+    description: isAr
+      ? (siteSettings?.siteDescAr || "Softlix - شريكك التقني المتكامل في برمجة التطبيقات والتسويق الرقمي. نحوّل أفكارك إلى منتجات رقمية ناجحة.")
+      : (siteSettings?.siteDescEn || "Softlix - Your complete tech partner in app development and digital marketing. We turn your ideas into successful digital products."),
+    siteName: isAr ? (siteSettings?.siteNameAr || "Softlix") : (siteSettings?.siteNameEn || "Softlix"),
+    lang,
+    keywords: isAr
+      ? "تطبيقات، مواقع، CRM، ERP، تسويق رقمي، برمجة، جدة، سوفتلكس"
+      : "apps, websites, CRM, ERP, digital marketing, software, Jeddah, Softlix",
+  });
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<LeadForm>();
 

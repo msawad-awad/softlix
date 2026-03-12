@@ -132,6 +132,10 @@ export default function PublicServices({ lang = "ar", onLangChange }: ServicesPr
     description: isAr
       ? "Softlix تقدم خدمات برمجة التطبيقات، تصميم المواقع، التسويق الرقمي، وتطوير المنصات الرقمية للأعمال."
       : "Softlix provides app development, web design, digital marketing, and digital platform development services for businesses.",
+    lang,
+    keywords: isAr
+      ? "خدمات سوفتلكس، برمجة تطبيقات، تصميم مواقع، تسويق رقمي، CRM، ERP"
+      : "Softlix services, app development, web design, digital marketing, CRM, ERP",
   });
 
   const { data: apiServices } = useQuery<Service[]>({
