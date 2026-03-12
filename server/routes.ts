@@ -1488,6 +1488,54 @@ export async function registerRoutes(
     } catch (e: any) { res.status(500).json({ error: e.message }); }
   });
 
+  // Public booking - create consultation request (no auth)
+  app.post("/api/public/bookings", async (req, res) => {
+    try {
+      const { name, email, phone, serviceType, preferredDate, preferredTime, notes } = req.body;
+      if (!name || !phone) return res.status(400).json({ error: "Name and phone are required" });
+      const allTenants = await storage.getAllTenants();
+      const tenant = allTenants[0];
+      if (!tenant) return res.status(404).json({ error: "Tenant not found" });
+      const booking = await storage.createBooking({ tenantId: tenant.id, name, email, phone, serviceType, preferredDate, preferredTime, notes, source: "website" });
+      // Also create CRM lead
+      const sources = await storage.getCrmLeadSources(tenant.id);
+      const websiteSource = sources.find(s => s.name.includes('موقع') || s.name.toLowerCase().includes('website'));
+      const lead = await storage.createCrmLead({
+        tenantId: tenant.id, fullName: name, email, mobile: phone,
+        message: `طلب استشارة - ${serviceType || "غير محدد"}\n${preferredDate ? `التاريخ المفضل: ${preferredDate}` : ""}\n${preferredTime ? `الوقت المفضل: ${preferredTime}` : ""}\n${notes || ""}`,
+        serviceInterested: serviceType, sourceId: websiteSource?.id, sourceName: websiteSource?.name || 'الموقع الإلكتروني',
+        pageSource: "booking-widget", status: "new", priority: "high",
+      });
+      await storage.createCrmActivity({ tenantId: tenant.id, entityType: "lead", entityId: lead.id, type: "note", subject: "طلب استشارة جديد من الموقع", details: `${name} - ${phone}` });
+      res.json({ success: true, booking });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // Admin: list bookings
+  app.get("/api/cms/bookings", requireAuth, async (req, res) => {
+    try {
+      const rows = await storage.getBookings(req.user!.tenantId);
+      res.json(rows);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // Admin: update booking status
+  app.patch("/api/cms/bookings/:id", requireAuth, async (req, res) => {
+    try {
+      const row = await storage.updateBooking(req.params.id, req.user!.tenantId, req.body);
+      if (!row) return res.status(404).json({ message: "Not found" });
+      res.json(row);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // Admin: delete booking
+  app.delete("/api/cms/bookings/:id", requireAuth, async (req, res) => {
+    try {
+      await storage.deleteBooking(req.params.id, req.user!.tenantId);
+      res.json({ success: true });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
   // CRM Dashboard Stats
   app.get("/api/crm/dashboard", requireAuth, async (req, res) => {
     try {

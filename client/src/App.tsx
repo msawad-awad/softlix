@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Switch, Route, useLocation, Redirect } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -41,6 +42,7 @@ import WebsiteBlog from "@/pages/website/blog";
 import WebsiteLeads from "@/pages/website/leads";
 import WebsiteClients from "@/pages/website/clients";
 import WebsiteRedirects from "@/pages/website/redirects";
+import WebsiteBookings from "@/pages/website/bookings";
 import WebsiteBranding from "@/pages/website/branding";
 import WebsiteHomeContent from "@/pages/website/home-content";
 import WebsiteAboutContent from "@/pages/website/about-content";
@@ -50,6 +52,8 @@ import WebsiteWhyUs from "@/pages/website/why-us";
 import WebsiteSiteStats from "@/pages/website/site-stats";
 import Marketing from "@/pages/marketing";
 import { useMarketingTracking } from "@/hooks/use-marketing-tracking";
+import { FloatingContactWidget, ExitIntentPopup, AnnouncementBar } from "@/components/public/marketing-widgets";
+import { BookingModal } from "@/components/public/booking-modal";
 
 import CrmDashboard from "@/pages/crm/dashboard";
 import CrmLeads from "@/pages/crm/leads";
@@ -107,10 +111,18 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
 
 function PublicSite() {
   const [lang, setLang] = useState<"ar" | "en">("ar");
+  const [bookingOpen, setBookingOpen] = useState(false);
   const p = { lang, onLangChange: setLang };
   useMarketingTracking();
+
+  /* Fetch whatsapp from site settings */
+  const { data: settings } = useQuery<any>({ queryKey: ["/api/public/site-settings"] });
+  const waUrl = settings?.socialWhatsapp || "https://wa.me/966537861534";
+
   return (
-    <Switch>
+    <>
+      <AnnouncementBar lang={lang} onBookingClick={() => setBookingOpen(true)} />
+      <Switch>
       <Route path="/about"><PublicAbout {...p} /></Route>
       <Route path="/about/"><PublicAbout {...p} /></Route>
       <Route path="/services/:slug"><ServiceDetail {...p} /></Route>
@@ -143,6 +155,11 @@ function PublicSite() {
       <Route path="/:slug">{(params) => <BlogPostPage {...p} slug={decodeURIComponent(params.slug)} />}</Route>
       <Route component={NotFound} />
     </Switch>
+
+      <FloatingContactWidget lang={lang} whatsappUrl={waUrl} onBookingClick={() => setBookingOpen(true)} />
+      <ExitIntentPopup lang={lang} onBookingClick={() => setBookingOpen(true)} />
+      <BookingModal open={bookingOpen} onClose={() => setBookingOpen(false)} lang={lang} />
+    </>
   );
 }
 
@@ -196,6 +213,7 @@ function Router() {
       <Route path="/website/projects"><AdminRoute><WebsiteProjects /></AdminRoute></Route>
       <Route path="/website/blog"><AdminRoute><WebsiteBlog /></AdminRoute></Route>
       <Route path="/website/leads"><AdminRoute><WebsiteLeads /></AdminRoute></Route>
+      <Route path="/website/bookings"><AdminRoute><WebsiteBookings /></AdminRoute></Route>
       <Route path="/website/clients"><AdminRoute><WebsiteClients /></AdminRoute></Route>
       <Route path="/website/redirects"><AdminRoute><WebsiteRedirects /></AdminRoute></Route>
       <Route path="/website"><AdminRoute><WebsiteOverview /></AdminRoute></Route>

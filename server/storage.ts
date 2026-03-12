@@ -1,12 +1,13 @@
 import {
   tenants, users, subscriptions, companies, contacts, activityLog, sessions,
   services, projects, blogCategories, blogPosts, siteClients, redirects,
-  marketingSettings, formLeads,
+  marketingSettings, formLeads, bookings,
   siteSettings, pageSections, testimonials, processSteps, whyUsItems,
   aboutValues, aboutTimeline, siteStats,
   crmLeadSources, crmLeads, crmDealPipelines, crmDealStages, crmDeals,
   crmActivities, crmTasks, crmProposals, crmProposalItems,
   integrationSettings, crmAttachments, crmProposalTokens,
+  type Booking, type InsertBooking,
   type IntegrationSettings, type CrmAttachment,
   type Tenant, type InsertTenant,
   type User, type InsertUser,
@@ -1251,6 +1252,25 @@ export class DatabaseStorage implements IStorage {
     if (!proposal) return null;
     const items = await db.select().from(crmProposalItems).where(eq(crmProposalItems.proposalId, proposal.id));
     return { ...proposal, items };
+  }
+
+  // ── Bookings ──────────────────────────────────────────────────────────────
+  async createBooking(data: InsertBooking): Promise<Booking> {
+    const [row] = await db.insert(bookings).values(data).returning();
+    return row;
+  }
+
+  async getBookings(tenantId: string): Promise<Booking[]> {
+    return db.select().from(bookings).where(eq(bookings.tenantId, tenantId)).orderBy(desc(bookings.createdAt));
+  }
+
+  async updateBooking(id: string, tenantId: string, data: Partial<InsertBooking>): Promise<Booking | null> {
+    const [row] = await db.update(bookings).set(data).where(and(eq(bookings.id, id), eq(bookings.tenantId, tenantId))).returning();
+    return row || null;
+  }
+
+  async deleteBooking(id: string, tenantId: string): Promise<void> {
+    await db.delete(bookings).where(and(eq(bookings.id, id), eq(bookings.tenantId, tenantId)));
   }
 }
 

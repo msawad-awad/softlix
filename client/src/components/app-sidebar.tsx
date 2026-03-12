@@ -13,6 +13,7 @@ import {
   Settings,
   LogOut,
   ChevronDown,
+  CalendarCheck,
   Zap,
   Globe,
   Layers,
@@ -137,6 +138,7 @@ export function AppSidebar() {
     { title: "العملاء", url: "/website/clients", icon: Users2 },
     { title: "التحويلات", url: "/website/redirects", icon: Link2 },
     { title: "العملاء المحتملون", url: "/website/leads", icon: Inbox },
+    { title: "طلبات الاستشارة", url: "/website/bookings", icon: CalendarCheck },
   ];
 
   const getInitials = (name: string) => {

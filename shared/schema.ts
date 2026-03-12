@@ -829,6 +829,28 @@ export type InsertCrmProposalItem = z.infer<typeof insertCrmProposalItemSchema>;
 export type CrmProposalItem = typeof crmProposalItems.$inferSelect;
 
 // ============================================================================
+// Bookings (Consultation Scheduling)
+// ============================================================================
+export const bookings = pgTable("bookings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  name: text("name").notNull(),
+  email: text("email"),
+  phone: text("phone").notNull(),
+  serviceType: text("service_type"),
+  preferredDate: text("preferred_date"),
+  preferredTime: text("preferred_time"),
+  notes: text("notes"),
+  status: text("status").default("pending").notNull(), // pending, confirmed, cancelled
+  source: text("source").default("website"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertBookingSchema = createInsertSchema(bookings).omit({ id: true, createdAt: true });
+export type InsertBooking = z.infer<typeof insertBookingSchema>;
+export type Booking = typeof bookings.$inferSelect;
+
+// ============================================================================
 // API Response Types
 // ============================================================================
 export type UserWithoutPassword = Omit<User, "passwordHash">;
