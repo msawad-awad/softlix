@@ -144,7 +144,7 @@ function ProjectDetail({ slug, lang = "ar", onLangChange }: { slug: string } & P
 
   if (isLoading) {
     return (
-      <div style={{ minHeight: "100vh", fontFamily: "'Cairo', system-ui, sans-serif", background: "#f8fafc" }} dir={isAr ? "rtl" : "ltr"}>
+      <div style={{ minHeight: "100vh", fontFamily: "'Cairo', system-ui, sans-serif", background: "#f5f7fb" }} dir={isAr ? "rtl" : "ltr"}>
         <PublicNavbar lang={lang} onLangChange={onLangChange} />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh" }}>
           <div style={{ width: 44, height: 44, borderRadius: "50%", border: "4px solid #e59269", borderTopColor: "transparent", animation: "spin 0.8s linear infinite" }} />
@@ -157,7 +157,7 @@ function ProjectDetail({ slug, lang = "ar", onLangChange }: { slug: string } & P
 
   if (!proj) {
     return (
-      <div style={{ minHeight: "100vh", fontFamily: "'Cairo', system-ui, sans-serif", background: "#f8fafc" }} dir={isAr ? "rtl" : "ltr"}>
+      <div style={{ minHeight: "100vh", fontFamily: "'Cairo', system-ui, sans-serif", background: "#f5f7fb" }} dir={isAr ? "rtl" : "ltr"}>
         <PublicNavbar lang={lang} onLangChange={onLangChange} />
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "60vh", gap: 20 }}>
           <div style={{ fontSize: 64 }}>📂</div>
@@ -174,106 +174,272 @@ function ProjectDetail({ slug, lang = "ar", onLangChange }: { slug: string } & P
   const badge = isAr ? (proj.badge || proj.category) : (proj.badgeEn || proj.badge || proj.category);
   const tags: string[] = proj.tags || proj.technologies || [];
   const client = proj.clientName || proj.client || "";
+  const images: string[] = (proj.images || []).filter(Boolean);
+
+  /* Derive feature cards from tech stack + generic project highlights */
+  const TECH_ICONS: Record<string, string> = {
+    flutter: "📱", "react native": "📱", ios: "🍎", android: "🤖",
+    "node.js": "⚙️", nodejs: "⚙️", express: "⚙️",
+    postgresql: "🗄️", mongodb: "🗄️", mysql: "🗄️", firebase: "🔥",
+    "google maps": "🗺️", stripe: "💳", paytabs: "💳", socket: "🔌",
+    "ui/ux": "🎨", design: "🎨", branding: "🎨",
+    dashboard: "📊", erp: "🏢", crm: "🤝",
+  };
+  const featureCards = tags.length > 0
+    ? tags.slice(0, 6).map((t: string) => {
+        const key = t.toLowerCase();
+        const icon = Object.entries(TECH_ICONS).find(([k]) => key.includes(k))?.[1] || "⚡";
+        return { icon, titleAr: t, titleEn: t, descAr: `تقنية ${t} مستخدمة في تطوير وبناء المنتج.`, descEn: `${t} technology used in the product's development and build.` };
+      })
+    : [
+        { icon: "📱", titleAr: "تجربة مستخدم سلسة", titleEn: "Smooth User Experience", descAr: "واجهات بسيطة وسريعة تجعل التفاعل مع المنتج تجربة ممتعة.", descEn: "Simple, fast interfaces that make every interaction a pleasant experience." },
+        { icon: "⚙️", titleAr: "بنية تقنية متينة", titleEn: "Solid Technical Architecture", descAr: "هيكل برمجي قابل للتوسع ومبني على أفضل الممارسات الحديثة.", descEn: "Scalable architecture built on modern best practices." },
+        { icon: "🚀", titleAr: "أداء عالي وسرعة", titleEn: "High Performance & Speed", descAr: "تحسينات أداء شاملة تضمن تجربة سريعة على جميع الأجهزة.", descEn: "Comprehensive performance optimizations ensuring a fast experience on all devices." },
+      ];
 
   return (
-    <div style={{ minHeight: "100vh", fontFamily: "'Cairo', system-ui, sans-serif", background: "linear-gradient(180deg, #fff 0%, #f8fafc 100%)", color: "#0f172a" }} dir={isAr ? "rtl" : "ltr"}>
+    <div
+      style={{ minHeight: "100vh", fontFamily: "'Cairo', system-ui, sans-serif", background: "#f5f7fb", color: "#172033", lineHeight: 1.9 }}
+      dir={isAr ? "rtl" : "ltr"}
+    >
       <PublicNavbar lang={lang} onLangChange={onLangChange} />
 
-      {/* Hero */}
-      <section style={{ paddingTop: 88 }}>
-        <div style={{ background: "linear-gradient(135deg, #0f172a 0%, #1a2742 60%, #0f172a 100%)", color: "#fff", padding: "56px 0 72px" }}>
-          <div style={{ width: "min(1100px, calc(100% - 32px))", marginInline: "auto" }}>
-            <Link href="/projects" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "rgba(255,255,255,0.6)", fontSize: 14, textDecoration: "none", marginBottom: 28, fontWeight: 500 }}>
-              <Arrow size={16} />
-              {isAr ? "العودة للمشاريع" : "Back to Projects"}
-            </Link>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 24, alignItems: "start" }} className="proj-detail-header">
-              <div>
-                {badge && (
-                  <span style={{ display: "inline-block", background: "rgba(229,146,105,0.2)", color: "#f4a975", borderRadius: 999, padding: "4px 16px", fontSize: 13, fontWeight: 700, marginBottom: 18 }}>{badge}</span>
+      {/* ── HERO ── */}
+      <section style={{
+        position: "relative", overflow: "hidden", color: "#fff", padding: "110px 0 80px",
+        background: "radial-gradient(circle at 15% 20%, rgba(255,255,255,.14), transparent 22%), radial-gradient(circle at 82% 25%, rgba(255,255,255,.10), transparent 18%), linear-gradient(135deg, #cb7147 0%, #e59269 45%, #f2b090 100%)"
+      }}>
+        {/* fade-to-bg at bottom */}
+        <div style={{ position: "absolute", inset: "auto 0 0 0", height: 100, background: "linear-gradient(to top, #f5f7fb, transparent)", pointerEvents: "none" }} />
+
+        <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto", position: "relative", zIndex: 2 }}>
+          {/* Breadcrumb */}
+          <Link href="/projects" style={{ display: "inline-flex", alignItems: "center", gap: 6, color: "rgba(255,255,255,.75)", fontSize: 14, textDecoration: "none", marginBottom: 32, fontWeight: 600 }}>
+            <Arrow size={16} />
+            {isAr ? "العودة إلى المشاريع" : "Back to Projects"}
+          </Link>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1.1fr .9fr", gap: 50, alignItems: "center" }} className="pd-hero-grid">
+            {/* Left: text */}
+            <div>
+              {badge && (
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,.18)", border: "1px solid rgba(255,255,255,.3)", color: "#fff", borderRadius: 999, padding: "8px 18px", fontSize: 14, fontWeight: 700, marginBottom: 20 }}>
+                  {badge}
+                </span>
+              )}
+              <h1 style={{ fontSize: "clamp(2.2rem, 5vw, 3.8rem)", lineHeight: 1.15, fontWeight: 900, margin: "0 0 18px" }}>{title}</h1>
+              {client && (
+                <p style={{ color: "rgba(255,255,255,.75)", fontSize: 15, fontWeight: 700, margin: "0 0 14px" }}>
+                  {isAr ? "العميل:" : "Client:"} <span style={{ color: "#fff" }}>{client}</span>
+                </p>
+              )}
+              <p style={{ fontSize: "1.1rem", color: "rgba(255,255,255,.92)", margin: "0 0 28px", maxWidth: "65ch" }}>{desc}</p>
+
+              <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
+                <Link href="/contact"
+                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "14px 26px", borderRadius: 14, fontWeight: 800, background: "#fff", color: "#cb7147", boxShadow: "0 10px 30px rgba(0,0,0,.12)", textDecoration: "none" }}
+                  data-testid="btn-pd-contact">
+                  {isAr ? "اطلب مشروعاً مشابهاً" : "Request a Similar Project"}
+                </Link>
+                {proj.projectUrl && (
+                  <a href={proj.projectUrl} target="_blank" rel="noopener noreferrer"
+                    style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 26px", borderRadius: 14, fontWeight: 800, background: "rgba(255,255,255,.12)", border: "1px solid rgba(255,255,255,.3)", color: "#fff", textDecoration: "none", backdropFilter: "blur(8px)" }}>
+                    <ExternalLink size={15} />
+                    {isAr ? "زيارة المشروع" : "Visit Project"}
+                  </a>
                 )}
-                <h1 style={{ fontSize: "clamp(2rem, 4.5vw, 3.5rem)", fontWeight: 900, lineHeight: 1.15, margin: "0 0 20px" }}>{title}</h1>
-                {client && (
-                  <p style={{ color: "rgba(255,255,255,0.55)", fontSize: 14, fontWeight: 600, margin: "0 0 16px" }}>
-                    {isAr ? "العميل:" : "Client:"} <span style={{ color: "rgba(255,255,255,0.85)" }}>{client}</span>
-                  </p>
-                )}
-                <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "1.1rem", lineHeight: 1.75, maxWidth: "65ch", margin: 0 }}>{desc}</p>
               </div>
-              {proj.projectUrl && (
-                <a href={proj.projectUrl} target="_blank" rel="noopener noreferrer"
-                  style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 22px", borderRadius: 14, background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", color: "#fff", fontWeight: 700, textDecoration: "none", whiteSpace: "nowrap" }}>
-                  <ExternalLink size={16} />
-                  {isAr ? "زيارة المشروع" : "Visit Project"}
-                </a>
+
+              {/* Stat chips */}
+              {(client || tags.length > 0) && (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14, marginTop: 36 }} className="pd-stats-grid">
+                  {[
+                    { labelAr: "العميل", labelEn: "Client", value: client || "—" },
+                    { labelAr: "التصنيف", labelEn: "Category", value: badge || "—" },
+                    { labelAr: "التقنيات", labelEn: "Tech Stack", value: `${tags.length}+` },
+                  ].map((s, i) => (
+                    <div key={i} style={{ background: "rgba(255,255,255,.12)", border: "1px solid rgba(255,255,255,.18)", backdropFilter: "blur(10px)", borderRadius: 18, padding: "16px 18px" }}>
+                      <strong style={{ display: "block", fontSize: "1.1rem", fontWeight: 900, marginBottom: 4 }}>{s.value}</strong>
+                      <span style={{ fontSize: 13, color: "rgba(255,255,255,.82)" }}>{isAr ? s.labelAr : s.labelEn}</span>
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
-            {tags.length > 0 && (
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 28 }}>
-                {tags.map((tag, i) => (
-                  <span key={i} style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "rgba(255,255,255,0.8)", borderRadius: 999, padding: "4px 14px", fontSize: 13, fontWeight: 600 }}>{tag}</span>
-                ))}
+
+            {/* Right: phone mockup */}
+            <div style={{ position: "relative" }} className="pd-visual">
+              <div style={{ maxWidth: 380, marginInline: "auto" }}>
+                <div style={{ background: "rgba(255,255,255,.16)", border: "1px solid rgba(255,255,255,.22)", borderRadius: 32, padding: 16, boxShadow: "0 30px 80px rgba(0,0,0,.18)", backdropFilter: "blur(10px)" }}>
+                  {proj.thumbnailUrl ? (
+                    <img
+                      src={proj.thumbnailUrl}
+                      alt={title}
+                      style={{ borderRadius: 22, width: "100%", aspectRatio: "10/16", objectFit: "cover", display: "block" }}
+                      onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+                    />
+                  ) : (
+                    <div style={{ borderRadius: 22, width: "100%", aspectRatio: "10/16", background: "rgba(255,255,255,.12)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16 }}>
+                      <div style={{ fontSize: 56 }}>📱</div>
+                      <span style={{ color: "rgba(255,255,255,.75)", fontWeight: 700, fontSize: 15 }}>{title}</span>
+                    </div>
+                  )}
+                </div>
               </div>
-            )}
+
+              {/* Floating cards */}
+              {client && (
+                <div className="pd-float" style={{ position: "absolute", background: "#fff", color: "#172033", borderRadius: 18, boxShadow: "0 18px 45px rgba(19,33,68,.10)", padding: "14px 18px", minWidth: 170, ...(isAr ? { right: -24 } : { left: -24 }), top: "14%" }}>
+                  <small style={{ color: "#6b7280", display: "block", marginBottom: 5, fontWeight: 700, fontSize: 12 }}>{isAr ? "اسم العميل" : "Client Name"}</small>
+                  <strong style={{ fontSize: 16, fontWeight: 800 }}>{client}</strong>
+                </div>
+              )}
+              {tags.length > 0 && (
+                <div className="pd-float" style={{ position: "absolute", background: "#fff", color: "#172033", borderRadius: 18, boxShadow: "0 18px 45px rgba(19,33,68,.10)", padding: "14px 18px", minWidth: 170, ...(isAr ? { left: -20 } : { right: -20 }), bottom: "14%" }}>
+                  <small style={{ color: "#6b7280", display: "block", marginBottom: 5, fontWeight: 700, fontSize: 12 }}>{isAr ? "التقنية" : "Tech Stack"}</small>
+                  <strong style={{ fontSize: 15, fontWeight: 800 }}>{tags.slice(0, 2).join(" · ")}</strong>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Project Image */}
-      {proj.thumbnailUrl && (
-        <div style={{ width: "min(1100px, calc(100% - 32px))", marginInline: "auto", marginTop: -28, position: "relative", zIndex: 10 }}>
-          <img
-            src={proj.thumbnailUrl}
-            alt={title}
-            style={{ width: "100%", borderRadius: 24, objectFit: "cover", maxHeight: 500, boxShadow: "0 24px 60px rgba(15,23,42,0.16)", display: "block" }}
-            onError={e => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-          />
+      {/* ── OVERVIEW ── */}
+      <section style={{ padding: "88px 0" }}>
+        <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 28, alignItems: "stretch" }} className="pd-overview-grid">
+            {/* Left: description */}
+            <div style={{ background: "#fff", border: "1px solid #e8edf5", borderRadius: 24, padding: 34, boxShadow: "0 18px 45px rgba(19,33,68,.07)" }}>
+              <h3 style={{ margin: "0 0 14px", fontSize: "1.6rem", lineHeight: 1.4, fontWeight: 900, color: "#172033" }}>
+                {isAr ? "عن هذا المشروع" : "About This Project"}
+              </h3>
+              {proj.content ? (
+                <div style={{ color: "#6b7280", fontSize: "1rem", lineHeight: 1.9 }}
+                  dangerouslySetInnerHTML={{ __html: isAr ? proj.content : (proj.contentEn || proj.content) }} />
+              ) : (
+                <p style={{ margin: 0, color: "#6b7280", fontSize: "1.05rem" }}>{desc}</p>
+              )}
+              {tags.length > 0 && (
+                <ul style={{ margin: "22px 0 0", padding: 0, listStyle: "none", display: "grid", gap: 14 }}>
+                  {tags.map((t: string, i: number) => (
+                    <li key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start", fontWeight: 700, color: "#172033" }}>
+                      <span style={{ width: 10, height: 10, marginTop: 9, borderRadius: "50%", background: "#e59269", flexShrink: 0, display: "inline-block" }} />
+                      {t}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {/* Right: project meta */}
+            <div style={{ display: "grid", gap: 18, alignContent: "start" }}>
+              {[
+                { icon: "💼", labelAr: "العميل", labelEn: "Client", value: client },
+                { icon: "🏷️", labelAr: "التصنيف", labelEn: "Category", value: badge },
+                { icon: "🛠️", labelAr: "التقنيات المستخدمة", labelEn: "Technologies Used", value: tags.join(" · ") },
+                { icon: "📅", labelAr: "تاريخ الإطلاق", labelEn: "Launch Date", value: proj.createdAt ? new Date(proj.createdAt).toLocaleDateString(isAr ? "ar-SA" : "en-US", { year: "numeric", month: "long" }) : "" },
+              ].filter(item => item.value).map((item, i) => (
+                <div key={i} style={{ background: "#fff", border: "1px solid #e8edf5", borderRadius: 20, padding: "22px 26px", boxShadow: "0 18px 45px rgba(19,33,68,.07)", display: "flex", alignItems: "center", gap: 18 }}>
+                  <div style={{ width: 52, height: 52, borderRadius: 16, background: "linear-gradient(135deg, rgba(229,146,105,.15), rgba(203,113,71,.08))", display: "grid", placeItems: "center", fontSize: 22, flexShrink: 0 }}>{item.icon}</div>
+                  <div>
+                    <div style={{ fontSize: 13, color: "#6b7280", fontWeight: 700, marginBottom: 4 }}>{isAr ? item.labelAr : item.labelEn}</div>
+                    <div style={{ fontSize: "1rem", fontWeight: 800, color: "#172033" }}>{item.value}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
+      </section>
+
+      {/* ── FEATURES (Tech Stack) ── */}
+      {featureCards.length > 0 && (
+        <section style={{ padding: "0 0 88px" }}>
+          <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
+            <div style={{ maxWidth: 700, marginInline: "auto", textAlign: "center", marginBottom: 40 }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(229,146,105,.10)", color: "#cb7147", border: "1px solid rgba(229,146,105,.2)", padding: "10px 18px", borderRadius: 999, fontWeight: 700, fontSize: 14 }}>
+                {isAr ? "التقنيات والمميزات" : "Features & Technologies"}
+              </span>
+              <h2 style={{ fontSize: "clamp(1.7rem, 3vw, 2.5rem)", lineHeight: 1.3, margin: "16px 0 12px", fontWeight: 900 }}>
+                {isAr ? "ما يميز هذا المنتج تقنياً" : "What Makes This Product Stand Out"}
+              </h2>
+              <p style={{ margin: 0, color: "#6b7280", fontSize: "1.05rem" }}>
+                {isAr ? "كل تقنية وأداة في هذا المشروع تم اختيارها لتحقيق أفضل تجربة ممكنة للمستخدم النهائي." : "Every technology and tool in this project was chosen to deliver the best possible experience to the end user."}
+              </p>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }} className="pd-features-grid">
+              {featureCards.map((f, i) => (
+                <div key={i}
+                  style={{ background: "#fff", border: "1px solid #e8edf5", borderRadius: 22, padding: 28, boxShadow: "0 18px 45px rgba(19,33,68,.07)", transition: ".25s ease", cursor: "default" }}
+                  onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-4px)")}
+                  onMouseLeave={e => (e.currentTarget.style.transform = "")}>
+                  <div style={{ width: 58, height: 58, borderRadius: 18, background: "linear-gradient(135deg, rgba(229,146,105,.18), rgba(203,113,71,.10))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, marginBottom: 18 }}>
+                    {f.icon}
+                  </div>
+                  <h3 style={{ margin: "0 0 10px", fontSize: "1.15rem", fontWeight: 900 }}>{isAr ? f.titleAr : f.titleEn}</h3>
+                  <p style={{ margin: 0, color: "#6b7280", fontSize: ".95rem" }}>{isAr ? f.descAr : f.descEn}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
       )}
 
-      {/* Description Detail */}
-      <section style={{ padding: "60px 0 80px" }}>
-        <div style={{ width: "min(900px, calc(100% - 32px))", marginInline: "auto" }}>
-          {proj.content && (
-            <div
-              className="prose prose-lg dark:prose-invert max-w-none"
-              style={{ color: "#1e293b", lineHeight: 1.9, fontSize: "1.07rem" }}
-              dangerouslySetInnerHTML={{ __html: isAr ? proj.content : (proj.contentEn || proj.content) }}
-            />
-          )}
+      {/* ── SHOWCASE (images) ── */}
+      {images.length > 0 && (
+        <section style={{ padding: "88px 0", background: "#eef3fa" }}>
+          <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
+            <div style={{ maxWidth: 700, marginInline: "auto", textAlign: "center", marginBottom: 40 }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(229,146,105,.10)", color: "#cb7147", border: "1px solid rgba(229,146,105,.2)", padding: "10px 18px", borderRadius: 999, fontWeight: 700, fontSize: 14 }}>
+                {isAr ? "شاشات المشروع" : "Project Screenshots"}
+              </span>
+              <h2 style={{ fontSize: "clamp(1.7rem, 3vw, 2.5rem)", lineHeight: 1.3, margin: "16px 0 12px", fontWeight: 900 }}>
+                {isAr ? "عرض بصري منظم لواجهات التطبيق" : "Visual Overview of the App Interfaces"}
+              </h2>
+            </div>
 
-          {/* About Project */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginTop: 48 }} className="proj-detail-grid">
-            {[
-              { icon: "💼", labelAr: "العميل", labelEn: "Client", value: client },
-              { icon: "🏷️", labelAr: "التصنيف", labelEn: "Category", value: badge },
-              { icon: "🛠️", labelAr: "التقنيات", labelEn: "Technologies", value: tags.join(" · ") },
-              { icon: "📅", labelAr: "تاريخ الإطلاق", labelEn: "Launch Date", value: proj.createdAt ? new Date(proj.createdAt).toLocaleDateString(isAr ? "ar-SA" : "en-US", { year: "numeric", month: "long" }) : "" },
-            ].filter(item => item.value).map((item, i) => (
-              <div key={i} style={{ ...glassCard, borderRadius: 20, padding: 22 }}>
-                <div style={{ fontSize: "1.6rem", marginBottom: 8 }}>{item.icon}</div>
-                <div style={{ fontSize: ".88rem", color: "#64748b", fontWeight: 700, marginBottom: 4 }}>{isAr ? item.labelAr : item.labelEn}</div>
-                <div style={{ fontSize: "1.05rem", fontWeight: 800, color: "#0f172a" }}>{item.value}</div>
+            <div style={{ display: "grid", gridTemplateColumns: "1.1fr .9fr", gap: 24, alignItems: "start" }} className="pd-showcase-grid">
+              <div style={{ background: "#fff", border: "1px solid #e8edf5", borderRadius: 26, padding: 16, boxShadow: "0 18px 45px rgba(19,33,68,.07)" }}>
+                <img src={images[0]} alt={`${title} screenshot 1`} style={{ borderRadius: 18, width: "100%", aspectRatio: "16/11", objectFit: "cover", display: "block" }} />
               </div>
-            ))}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }} className="pd-mini-grid">
+                {images.slice(1, 5).map((img, i) => (
+                  <div key={i} style={{ background: "#fff", border: "1px solid #e8edf5", borderRadius: 20, padding: 12, boxShadow: "0 18px 45px rgba(19,33,68,.07)" }}>
+                    <img src={img} alt={`${title} screenshot ${i + 2}`} style={{ borderRadius: 14, width: "100%", aspectRatio: "1/1", objectFit: "cover", display: "block" }} />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
+        </section>
+      )}
 
-          {/* CTA */}
-          <div style={{ marginTop: 64, padding: 40, borderRadius: 28, background: "linear-gradient(135deg, #222933, #323c4b)", color: "#fff", textAlign: "center", position: "relative", overflow: "hidden" }}>
-            <div style={{ position: "absolute", width: 280, height: 280, borderRadius: "50%", background: "rgba(255,255,255,.05)", insetInlineEnd: -80, top: -120, pointerEvents: "none" }} />
+      {/* ── CTA ── */}
+      <section style={{ padding: "88px 0" }}>
+        <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
+          <div style={{ background: "linear-gradient(135deg, #1b2331 0%, #2c3a4f 100%)", color: "#fff", borderRadius: 32, padding: "60px 40px", textAlign: "center", boxShadow: "0 30px 80px rgba(16,24,40,.18)", position: "relative", overflow: "hidden" }}>
+            <div style={{ position: "absolute", width: 340, height: 340, borderRadius: "50%", background: "rgba(255,255,255,.04)", insetInlineEnd: -100, top: -120, pointerEvents: "none" }} />
+            <div style={{ position: "absolute", width: 240, height: 240, borderRadius: "50%", background: "rgba(255,255,255,.04)", insetInlineStart: -60, bottom: -100, pointerEvents: "none" }} />
             <div style={{ position: "relative", zIndex: 1 }}>
-              <h3 style={{ fontSize: "clamp(1.5rem, 3vw, 2.2rem)", fontWeight: 900, margin: "0 0 14px" }}>
-                {isAr ? "هل لديك فكرة مشابهة؟" : "Have a Similar Idea?"}
-              </h3>
-              <p style={{ color: "rgba(255,255,255,0.75)", margin: "0 0 28px", maxWidth: "52ch", marginInline: "auto" }}>
-                {isAr ? "نبني منتجات رقمية بمستوى عالمي مع تجربة تنفيذ احترافية ونتائج قابلة للقياس." : "We build digital products at a global level with professional execution and measurable results."}
+              <h2 style={{ margin: "0 0 14px", fontSize: "clamp(1.7rem, 3.5vw, 2.8rem)", lineHeight: 1.3, fontWeight: 900 }}>
+                {isAr ? "هل تريد مشروعاً بنفس هذا المستوى؟" : "Want a Project at This Level?"}
+              </h2>
+              <p style={{ margin: "0 auto 32px", maxWidth: 680, color: "rgba(255,255,255,.82)", fontSize: "1.05rem" }}>
+                {isAr
+                  ? "نحول فكرتك إلى منتج رقمي احترافي يعكس قيمة مشروعك ويحقق نتائج فعلية قابلة للقياس."
+                  : "We turn your idea into a professional digital product that reflects your project's value and achieves measurable results."}
               </p>
               <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
-                <Link href="/contact" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 50, padding: "0 28px", borderRadius: 999, fontWeight: 800, background: "linear-gradient(135deg, #e59269, #cb7147)", color: "#fff", boxShadow: "0 14px 30px rgba(229,146,105,.28)", textDecoration: "none" }}>
-                  {isAr ? "ابدأ مشروعك الآن" : "Start Your Project Now"}
+                <Link href="/contact"
+                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 52, padding: "0 32px", borderRadius: 14, fontWeight: 800, background: "#e59269", color: "#fff", boxShadow: "0 14px 30px rgba(229,146,105,.28)", textDecoration: "none" }}
+                  data-testid="btn-pd-cta">
+                  {isAr ? "اطلب تنفيذ مشروعك" : "Request Your Project"}
                 </Link>
-                <Link href="/projects" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 50, padding: "0 28px", borderRadius: 999, fontWeight: 800, color: "#fff", border: "1px solid rgba(255,255,255,.25)", background: "rgba(255,255,255,.08)", textDecoration: "none" }}>
-                  {isAr ? "مشاريع أخرى" : "Other Projects"}
+                <Link href="/projects"
+                  style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 52, padding: "0 32px", borderRadius: 14, fontWeight: 800, color: "#fff", border: "1px solid rgba(255,255,255,.25)", background: "rgba(255,255,255,.08)", textDecoration: "none" }}>
+                  {isAr ? "تصفح المشاريع الأخرى" : "Browse Other Projects"}
                 </Link>
               </div>
             </div>
@@ -285,9 +451,19 @@ function ProjectDetail({ slug, lang = "ar", onLangChange }: { slug: string } & P
 
       <style>{`
         @keyframes spin { to { transform: rotate(360deg); } }
-        @media (max-width: 760px) {
-          .proj-detail-header { grid-template-columns: 1fr !important; }
-          .proj-detail-grid { grid-template-columns: 1fr !important; }
+        @media (max-width: 1100px) {
+          .pd-hero-grid     { grid-template-columns: 1fr !important; }
+          .pd-overview-grid { grid-template-columns: 1fr !important; }
+          .pd-showcase-grid { grid-template-columns: 1fr !important; }
+          .pd-features-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .pd-visual        { display: none !important; }
+          .pd-float         { display: none !important; }
+          .pd-stats-grid    { grid-template-columns: repeat(2, 1fr) !important; }
+        }
+        @media (max-width: 700px) {
+          .pd-features-grid { grid-template-columns: 1fr !important; }
+          .pd-mini-grid     { grid-template-columns: 1fr 1fr !important; }
+          .pd-stats-grid    { grid-template-columns: 1fr 1fr !important; }
         }
       `}</style>
     </div>
