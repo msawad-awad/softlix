@@ -187,7 +187,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
               <span style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#e0f2fe", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 700, marginBottom: 18 }}>
                 {heroBadge}
               </span>
-              <h1 style={{ margin: "0 0 18px", fontSize: "clamp(34px, 5vw, 58px)", lineHeight: 1.15, letterSpacing: -0.5, color: "#0f172a", fontWeight: 800 }}>
+              <h1 style={{ margin: "0 0 18px", fontSize: "clamp(26px, 3.5vw, 42px)", lineHeight: 1.15, letterSpacing: -0.5, color: "#0f172a", fontWeight: 800 }}>
                 {heroTitle}
               </h1>
               <p style={{ margin: 0, fontSize: 18, color: "#64748b", maxWidth: 680 }}>

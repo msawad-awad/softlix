@@ -208,7 +208,7 @@ function BlogList({ lang = "ar", onLangChange, initialCategory }: BlogProps) {
               <span style={{ width: 10, height: 10, borderRadius: "50%", background: `linear-gradient(135deg,${BRAND},${ACCENT})`, flexShrink: 0 }} />
               Blog / Insights / Articles
             </div>
-            <h1 style={{ margin: 0, fontSize: "clamp(2.3rem, 5vw, 4.7rem)", lineHeight: 1.05, fontWeight: 900, letterSpacing: "-.03em", maxWidth: "11ch", color: TEXT }}>
+            <h1 style={{ margin: 0, fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", lineHeight: 1.1, fontWeight: 900, letterSpacing: "-.03em", maxWidth: "11ch", color: TEXT }}>
               مدونة Softlix للمحتوى التقني والتجاري الحديث
             </h1>
             <p style={{ margin: "20px 0 0", fontSize: "1.05rem", color: MUTED, maxWidth: "63ch" }}>

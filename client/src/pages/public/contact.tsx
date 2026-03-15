@@ -81,8 +81,8 @@ export default function PublicContact({ lang = "ar", onLangChange }: ContactProp
       <section className="pt-28 pb-16 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 text-white">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <Badge className="mb-4 bg-blue-600/20 text-blue-300 border-blue-600/30">{isAr ? "نحن هنا" : "We're Here"}</Badge>
-          <h1 className="text-5xl font-black mb-5">{isAr ? "تواصل معنا" : "Contact Us"}</h1>
-          <p className="text-xl text-gray-300 leading-relaxed">
+          <h1 className="text-3xl sm:text-4xl font-black mb-5">{isAr ? "تواصل معنا" : "Contact Us"}</h1>
+          <p className="text-lg sm:text-xl text-gray-300 leading-relaxed">
             {isAr ? "يسعد سوفتلكس دائماً مساعدة عملائنا. سواء كنت عميلاً أو لا، سنبذل قصارى جهدنا لمساعدتك" : "Softlix is always happy to help our clients. Whether you're a client or not, we'll do our best to help you"}
           </p>
         </div>

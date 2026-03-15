@@ -231,7 +231,7 @@ function ProjectDetail({ slug, lang = "ar", onLangChange }: { slug: string } & P
                   {badge}
                 </span>
               )}
-              <h1 style={{ fontSize: "clamp(2.2rem, 5vw, 3.8rem)", lineHeight: 1.15, fontWeight: 900, margin: "0 0 18px" }}>{title}</h1>
+              <h1 style={{ fontSize: "clamp(1.7rem, 3.5vw, 2.6rem)", lineHeight: 1.15, fontWeight: 900, margin: "0 0 18px" }}>{title}</h1>
               {client && (
                 <p style={{ color: "rgba(255,255,255,.75)", fontSize: 15, fontWeight: 700, margin: "0 0 14px" }}>
                   {isAr ? "العميل:" : "Client:"} <span style={{ color: "#fff" }}>{client}</span>
@@ -537,7 +537,7 @@ export default function PublicProjects({ lang = "ar", onLangChange, slug: slugPr
                 Portfolio / Case Studies
               </span>
 
-              <h1 style={{ margin: 0, fontSize: "clamp(2.4rem, 5vw, 4.8rem)", lineHeight: 1.06, fontWeight: 900, letterSpacing: "-.03em", maxWidth: "10ch" }}>
+              <h1 style={{ margin: 0, fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", lineHeight: 1.1, fontWeight: 900, letterSpacing: "-.03em", maxWidth: "10ch" }}>
                 {isAr ? "مشاريع رقمية صُممت لتخدم السوق الحقيقي لا العرض فقط" : "Digital Projects Designed to Serve the Real Market, Not Just Display"}
               </h1>
 

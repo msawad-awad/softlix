@@ -184,7 +184,7 @@ export default function PublicServices({ lang = "ar", onLangChange }: ServicesPr
                 {isAr ? "ما نقدمه لك" : "What We Offer You"}
               </span>
 
-              <h1 style={{ margin: 0, fontSize: "clamp(2.4rem, 5vw, 4.8rem)", lineHeight: 1.06, fontWeight: 900, letterSpacing: "-.03em", maxWidth: "12ch" }}>
+              <h1 style={{ margin: 0, fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", lineHeight: 1.1, fontWeight: 900, letterSpacing: "-.03em", maxWidth: "12ch" }}>
                 {isAr ? "خدمات تقنية متكاملة تبني أعمالك الرقمية" : "Integrated Technical Services That Build Your Digital Business"}
               </h1>
 

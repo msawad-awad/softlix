@@ -139,7 +139,7 @@ export default function PublicAbout({ lang = "ar", onLangChange }: AboutProps) {
                 {isAr ? "شركة تقنية تبني منصات تقود النمو" : "A tech company building growth-leading platforms"}
               </span>
 
-              <h1 style={{ margin: 0, fontSize: "clamp(2.4rem, 5vw, 4.2rem)", lineHeight: 1.08, letterSpacing: "-.03em", fontWeight: 900, maxWidth: "11ch" }}>
+              <h1 style={{ margin: 0, fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", lineHeight: 1.12, letterSpacing: "-.03em", fontWeight: 900, maxWidth: "11ch" }}>
                 {isAr ? "نحوّل الأفكار الجريئة إلى منتجات رقمية تُحدث فرقاً حقيقياً" : "We Transform Bold Ideas into Digital Products That Make a Real Difference"}
               </h1>
 

@@ -506,7 +506,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
               <span style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "8px 14px", borderRadius: 999, background: theme.eyebrowBg, color: theme.eyebrowColor, fontSize: 14, fontWeight: 800, marginBottom: 18 }}>
                 {eyebrow}
               </span>
-              <h1 style={{ margin: "0 0 18px", fontSize: "clamp(34px, 5vw, 56px)", lineHeight: 1.15, letterSpacing: -0.5, fontWeight: 800 }}>
+              <h1 style={{ margin: "0 0 18px", fontSize: "clamp(26px, 3.5vw, 42px)", lineHeight: 1.15, letterSpacing: -0.5, fontWeight: 800 }}>
                 {title}
               </h1>
               <p style={{ margin: 0, fontSize: 18, color: "#64748b", maxWidth: 680 }}>{shortDesc}</p>
