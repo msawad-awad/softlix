@@ -1083,6 +1083,121 @@ export async function registerRoutes(
   });
 
   // =========================================================================
+  // NEWSLETTER SUBSCRIBERS
+  // =========================================================================
+
+  // Public: subscribe
+  app.post("/api/public/newsletter/subscribe", async (req, res) => {
+    try {
+      const hostname = req.hostname;
+      const tenant = await storage.getTenantBySlug("softlix");
+      if (!tenant) return res.status(404).json({ message: "Tenant not found" });
+      const { email, name, source } = req.body;
+      if (!email) return res.status(400).json({ message: "البريد الإلكتروني مطلوب" });
+      const existing = await storage.getNewsletterSubscriberByEmail(email, tenant.id);
+      if (existing) {
+        if (existing.status === "unsubscribed") {
+          await storage.updateNewsletterSubscriber(existing.id, tenant.id, { status: "active" });
+          return res.json({ success: true, message: "تم إعادة اشتراكك بنجاح" });
+        }
+        return res.json({ success: true, message: "أنت مشترك بالفعل" });
+      }
+      await storage.addNewsletterSubscriber({ tenantId: tenant.id, email, name: name || null, source: source || "website", status: "active" });
+      res.json({ success: true, message: "تم الاشتراك بنجاح! شكراً لك" });
+    } catch (error) {
+      console.error("Newsletter subscribe error:", error);
+      res.status(500).json({ message: "حدث خطأ، يرجى المحاولة لاحقاً" });
+    }
+  });
+
+  // Admin: list subscribers
+  app.get("/api/marketing/newsletter", requireAuth, async (req, res) => {
+    try {
+      const subs = await storage.getNewsletterSubscribers(req.user!.tenantId);
+      res.json(subs);
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Admin: delete subscriber
+  app.delete("/api/marketing/newsletter/:id", requireAuth, async (req, res) => {
+    try {
+      await storage.deleteNewsletterSubscriber(req.params.id, req.user!.tenantId);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Admin: update subscriber status
+  app.patch("/api/marketing/newsletter/:id", requireAuth, async (req, res) => {
+    try {
+      const sub = await storage.updateNewsletterSubscriber(req.params.id, req.user!.tenantId, req.body);
+      res.json(sub);
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // =========================================================================
+  // PRICING PLANS
+  // =========================================================================
+
+  // Public: get active plans
+  app.get("/api/public/pricing", async (req, res) => {
+    try {
+      const hostname = req.hostname;
+      const tenant = await storage.getTenantBySlug("softlix");
+      if (!tenant) return res.status(404).json({ message: "Tenant not found" });
+      const plans = await storage.getPricingPlans(tenant.id);
+      res.json(plans.filter(p => p.isActive));
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Admin: list plans
+  app.get("/api/marketing/pricing", requireAuth, async (req, res) => {
+    try {
+      const plans = await storage.getPricingPlans(req.user!.tenantId);
+      res.json(plans);
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Admin: create plan
+  app.post("/api/marketing/pricing", requireAuth, async (req, res) => {
+    try {
+      const plan = await storage.createPricingPlan({ ...req.body, tenantId: req.user!.tenantId });
+      res.json(plan);
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Admin: update plan
+  app.put("/api/marketing/pricing/:id", requireAuth, async (req, res) => {
+    try {
+      const plan = await storage.updatePricingPlan(req.params.id, req.user!.tenantId, req.body);
+      res.json(plan);
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // Admin: delete plan
+  app.delete("/api/marketing/pricing/:id", requireAuth, async (req, res) => {
+    try {
+      await storage.deletePricingPlan(req.params.id, req.user!.tenantId);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // =========================================================================
   // FORM LEADS (Protected)
   // =========================================================================
 

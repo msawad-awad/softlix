@@ -335,12 +335,82 @@ export const marketingSettings = pgTable("marketing_settings", {
   linkedinInsightId: text("linkedin_insight_id"),
   customHeadScript: text("custom_head_script"),
   customBodyScript: text("custom_body_script"),
+  // WhatsApp Widget
+  whatsappEnabled: boolean("whatsapp_enabled").default(false),
+  whatsappNumber: text("whatsapp_number"),
+  whatsappMessage: text("whatsapp_message"),
+  whatsappPosition: text("whatsapp_position").default("bottom-right"),
+  // Exit Intent Popup
+  exitIntentEnabled: boolean("exit_intent_enabled").default(false),
+  exitIntentTitleAr: text("exit_intent_title_ar"),
+  exitIntentTitleEn: text("exit_intent_title_en"),
+  exitIntentSubtitleAr: text("exit_intent_subtitle_ar"),
+  exitIntentSubtitleEn: text("exit_intent_subtitle_en"),
+  exitIntentButtonAr: text("exit_intent_button_ar"),
+  exitIntentButtonEn: text("exit_intent_button_en"),
+  exitIntentButtonUrl: text("exit_intent_button_url"),
+  exitIntentDelay: integer("exit_intent_delay").default(3),
+  // Social Proof Toast
+  socialProofEnabled: boolean("social_proof_enabled").default(false),
+  socialProofInterval: integer("social_proof_interval").default(8),
+  // Newsletter
+  newsletterEnabled: boolean("newsletter_enabled").default(false),
+  newsletterTitleAr: text("newsletter_title_ar"),
+  newsletterTitleEn: text("newsletter_title_en"),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
 export const insertMarketingSettingsSchema = createInsertSchema(marketingSettings).omit({ id: true, updatedAt: true });
 export type InsertMarketingSettings = z.infer<typeof insertMarketingSettingsSchema>;
 export type MarketingSettings = typeof marketingSettings.$inferSelect;
+
+// ============================================================================
+// MARKETING - NEWSLETTER SUBSCRIBERS
+// ============================================================================
+export const newsletterSubscribers = pgTable("newsletter_subscribers", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  email: text("email").notNull(),
+  name: text("name"),
+  source: text("source").default("website"),
+  status: text("status").default("active").notNull(), // active, unsubscribed
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertNewsletterSubscriberSchema = createInsertSchema(newsletterSubscribers).omit({ id: true, createdAt: true });
+export type InsertNewsletterSubscriber = z.infer<typeof insertNewsletterSubscriberSchema>;
+export type NewsletterSubscriber = typeof newsletterSubscribers.$inferSelect;
+
+// ============================================================================
+// MARKETING - PRICING PLANS
+// ============================================================================
+export const pricingPlans = pgTable("pricing_plans", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  nameAr: text("name_ar").notNull(),
+  nameEn: text("name_en").notNull(),
+  descAr: text("desc_ar"),
+  descEn: text("desc_en"),
+  price: text("price").notNull(),
+  currency: text("currency").default("SAR"),
+  period: text("period").default("month"), // month, year, one-time
+  featuresAr: text("features_ar").array(),
+  featuresEn: text("features_en").array(),
+  isPopular: boolean("is_popular").default(false),
+  isActive: boolean("is_active").default(true),
+  ctaTextAr: text("cta_text_ar"),
+  ctaTextEn: text("cta_text_en"),
+  ctaUrl: text("cta_url"),
+  badgeAr: text("badge_ar"),
+  badgeEn: text("badge_en"),
+  color: text("color").default("blue"),
+  displayOrder: integer("display_order").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertPricingPlanSchema = createInsertSchema(pricingPlans).omit({ id: true, createdAt: true });
+export type InsertPricingPlan = z.infer<typeof insertPricingPlanSchema>;
+export type PricingPlan = typeof pricingPlans.$inferSelect;
 
 // ============================================================================
 // WEBSITE - FORM LEADS

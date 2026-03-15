@@ -51,8 +51,12 @@ import WebsiteProcessSteps from "@/pages/website/process-steps";
 import WebsiteWhyUs from "@/pages/website/why-us";
 import WebsiteSiteStats from "@/pages/website/site-stats";
 import Marketing from "@/pages/marketing";
+import MarketingNewsletter from "@/pages/marketing/newsletter";
+import MarketingPricing from "@/pages/marketing/pricing";
+import PublicPricing from "@/pages/public/pricing";
 import { useMarketingTracking } from "@/hooks/use-marketing-tracking";
-import { FloatingContactWidget, ExitIntentPopup, AnnouncementBar } from "@/components/public/marketing-widgets";
+import { FloatingContactWidget, ExitIntentPopup, AnnouncementBar, SocialProofToast } from "@/components/public/marketing-widgets";
+import type { MarketingSettings } from "@shared/schema";
 import { BookingModal } from "@/components/public/booking-modal";
 
 import CrmDashboard from "@/pages/crm/dashboard";
@@ -115,9 +119,9 @@ function PublicSite() {
   const p = { lang, onLangChange: setLang };
   useMarketingTracking();
 
-  /* Fetch whatsapp from site settings */
-  const { data: settings } = useQuery<any>({ queryKey: ["/api/public/site-settings"] });
-  const waUrl = settings?.socialWhatsapp || "https://wa.me/966537861534";
+  const { data: siteSettings } = useQuery<any>({ queryKey: ["/api/public/site-settings"] });
+  const { data: mktSettings } = useQuery<MarketingSettings>({ queryKey: ["/api/public/marketing-settings"] });
+  const waUrl = siteSettings?.socialWhatsapp || (mktSettings?.whatsappNumber ? `https://wa.me/${mktSettings.whatsappNumber.replace(/\D/g,"")}` : "https://wa.me/966537861534");
 
   return (
     <>
@@ -138,6 +142,7 @@ function PublicSite() {
       <Route path="/contact-us"><PublicContact {...p} /></Route>
       <Route path="/contact-us/"><PublicContact {...p} /></Route>
       <Route path="/contact"><PublicContact {...p} /></Route>
+      <Route path="/pricing"><PublicPricing lang={lang} /></Route>
       {/* Category pages: /category/{cat}/ */}
       <Route path="/category/:cat">{(params) => <CategoryPage {...p} category={decodeURIComponent(params.cat)} />}</Route>
       {/* Service-specific old WordPress URLs */}
@@ -156,8 +161,9 @@ function PublicSite() {
       <Route component={NotFound} />
     </Switch>
 
-      <FloatingContactWidget lang={lang} whatsappUrl={waUrl} onBookingClick={() => setBookingOpen(true)} />
-      <ExitIntentPopup lang={lang} onBookingClick={() => setBookingOpen(true)} />
+      <FloatingContactWidget lang={lang} whatsappUrl={waUrl} onBookingClick={() => setBookingOpen(true)} settings={mktSettings} />
+      <ExitIntentPopup lang={lang} onBookingClick={() => setBookingOpen(true)} settings={mktSettings} />
+      <SocialProofToast lang={lang} settings={mktSettings} />
       <BookingModal open={bookingOpen} onClose={() => setBookingOpen(false)} lang={lang} />
     </>
   );
@@ -217,6 +223,8 @@ function Router() {
       <Route path="/website/clients"><AdminRoute><WebsiteClients /></AdminRoute></Route>
       <Route path="/website/redirects"><AdminRoute><WebsiteRedirects /></AdminRoute></Route>
       <Route path="/website"><AdminRoute><WebsiteOverview /></AdminRoute></Route>
+      <Route path="/marketing/newsletter"><AdminRoute><MarketingNewsletter /></AdminRoute></Route>
+      <Route path="/marketing/pricing"><AdminRoute><MarketingPricing /></AdminRoute></Route>
       <Route path="/marketing"><AdminRoute><Marketing /></AdminRoute></Route>
 
       {/* Public website routes */}
@@ -235,6 +243,8 @@ function Router() {
       <Route path="/contact"><PublicSite /></Route>
       <Route path="/contact-us"><PublicSite /></Route>
       <Route path="/contact-us/"><PublicSite /></Route>
+      {/* Public pricing page */}
+      <Route path="/pricing"><PublicSite /></Route>
       {/* Category pages */}
       <Route path="/category/:cat"><PublicSite /></Route>
       {/* Old service-specific WordPress URLs */}

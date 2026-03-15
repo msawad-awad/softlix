@@ -69,7 +69,13 @@
 - ✅ **Dynamic SEO**: `useSEO` hook sets page `<title>` + `<meta description>` on all public pages
 - ✅ **Arabic/English**: All public pages bilingual with lang toggle
 - ✅ **CMS Dashboard**: `/website/*` - manage services, projects, blog, clients, redirects, leads
-- ✅ **Marketing Tracking**: `/marketing` - GTM, Meta Pixel, GA4, TikTok, Snapchat, LinkedIn injection
+- ✅ **Marketing Module**: `/marketing` — إعدادات التتبع + WhatsApp Widget + Exit Intent Popup + Social Proof + Newsletter toggle
+- ✅ **Newsletter Admin**: `/marketing/newsletter` — قائمة المشتركين + بحث + تصدير CSV + حذف
+- ✅ **Pricing Plans Admin**: `/marketing/pricing` — إنشاء وتعديل وحذف باقات الأسعار + ترتيب + تفعيل/إيقاف
+- ✅ **Public Pricing Page**: `/pricing` — صفحة عامة لعرض الباقات المفعّلة
+- ✅ **Sidebar Marketing**: قسم "التسويق" collapsible مع روابط فرعية (الإعدادات، النشرة البريدية، باقات الأسعار)
+- ✅ **Public Newsletter Subscribe**: `POST /api/public/newsletter/subscribe` — اشتراك عام بدون auth
+- ✅ **Marketing Widgets**: WhatsApp floating button, Exit Intent Popup, Social Proof Toasts, Newsletter Footer section — كلها API-driven من إعدادات التسويق
 - ✅ **Lead Capture**: Contact form at `/contact` saves to DB with status tracking
 - ✅ **SEO**: `/sitemap.xml` and `/robots.txt` auto-generated
 - ✅ **DB Redirects**: Middleware-driven 301/302 redirects from DB table

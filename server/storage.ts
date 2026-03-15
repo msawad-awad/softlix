@@ -2,11 +2,14 @@ import {
   tenants, users, subscriptions, companies, contacts, activityLog, sessions,
   services, projects, blogCategories, blogPosts, siteClients, redirects,
   marketingSettings, formLeads, bookings,
+  newsletterSubscribers, pricingPlans,
   siteSettings, pageSections, testimonials, processSteps, whyUsItems,
   aboutValues, aboutTimeline, siteStats,
   crmLeadSources, crmLeads, crmDealPipelines, crmDealStages, crmDeals,
   crmActivities, crmTasks, crmProposals, crmProposalItems,
   integrationSettings, crmAttachments, crmProposalTokens,
+  type NewsletterSubscriber, type InsertNewsletterSubscriber,
+  type PricingPlan, type InsertPricingPlan,
   type Booking, type InsertBooking,
   type IntegrationSettings, type CrmAttachment,
   type Tenant, type InsertTenant,
@@ -144,6 +147,19 @@ export interface IStorage {
   // Marketing Settings
   getMarketingSettings(tenantId: string): Promise<MarketingSettings | undefined>;
   upsertMarketingSettings(tenantId: string, settings: Partial<InsertMarketingSettings>): Promise<MarketingSettings>;
+
+  // Newsletter Subscribers
+  getNewsletterSubscribers(tenantId: string): Promise<NewsletterSubscriber[]>;
+  addNewsletterSubscriber(sub: InsertNewsletterSubscriber): Promise<NewsletterSubscriber>;
+  updateNewsletterSubscriber(id: string, tenantId: string, data: Partial<InsertNewsletterSubscriber>): Promise<NewsletterSubscriber | undefined>;
+  deleteNewsletterSubscriber(id: string, tenantId: string): Promise<void>;
+  getNewsletterSubscriberByEmail(email: string, tenantId: string): Promise<NewsletterSubscriber | undefined>;
+
+  // Pricing Plans
+  getPricingPlans(tenantId: string): Promise<PricingPlan[]>;
+  createPricingPlan(plan: InsertPricingPlan): Promise<PricingPlan>;
+  updatePricingPlan(id: string, tenantId: string, plan: Partial<InsertPricingPlan>): Promise<PricingPlan | undefined>;
+  deletePricingPlan(id: string, tenantId: string): Promise<void>;
 
   // Form Leads
   getFormLeads(tenantId: string): Promise<FormLead[]>;
@@ -685,6 +701,64 @@ export class DatabaseStorage implements IStorage {
         .returning();
       return created;
     }
+  }
+
+  // ============================================================
+  // NEWSLETTER SUBSCRIBERS
+  // ============================================================
+  async getNewsletterSubscribers(tenantId: string): Promise<NewsletterSubscriber[]> {
+    return db.select().from(newsletterSubscribers)
+      .where(eq(newsletterSubscribers.tenantId, tenantId))
+      .orderBy(desc(newsletterSubscribers.createdAt));
+  }
+
+  async addNewsletterSubscriber(sub: InsertNewsletterSubscriber): Promise<NewsletterSubscriber> {
+    const [record] = await db.insert(newsletterSubscribers).values(sub).returning();
+    return record;
+  }
+
+  async updateNewsletterSubscriber(id: string, tenantId: string, data: Partial<InsertNewsletterSubscriber>): Promise<NewsletterSubscriber | undefined> {
+    const [record] = await db.update(newsletterSubscribers)
+      .set(data)
+      .where(and(eq(newsletterSubscribers.id, id), eq(newsletterSubscribers.tenantId, tenantId)))
+      .returning();
+    return record || undefined;
+  }
+
+  async deleteNewsletterSubscriber(id: string, tenantId: string): Promise<void> {
+    await db.delete(newsletterSubscribers).where(and(eq(newsletterSubscribers.id, id), eq(newsletterSubscribers.tenantId, tenantId)));
+  }
+
+  async getNewsletterSubscriberByEmail(email: string, tenantId: string): Promise<NewsletterSubscriber | undefined> {
+    const [record] = await db.select().from(newsletterSubscribers)
+      .where(and(eq(newsletterSubscribers.email, email), eq(newsletterSubscribers.tenantId, tenantId)));
+    return record || undefined;
+  }
+
+  // ============================================================
+  // PRICING PLANS
+  // ============================================================
+  async getPricingPlans(tenantId: string): Promise<PricingPlan[]> {
+    return db.select().from(pricingPlans)
+      .where(eq(pricingPlans.tenantId, tenantId))
+      .orderBy(asc(pricingPlans.displayOrder));
+  }
+
+  async createPricingPlan(plan: InsertPricingPlan): Promise<PricingPlan> {
+    const [record] = await db.insert(pricingPlans).values(plan).returning();
+    return record;
+  }
+
+  async updatePricingPlan(id: string, tenantId: string, plan: Partial<InsertPricingPlan>): Promise<PricingPlan | undefined> {
+    const [record] = await db.update(pricingPlans)
+      .set(plan)
+      .where(and(eq(pricingPlans.id, id), eq(pricingPlans.tenantId, tenantId)))
+      .returning();
+    return record || undefined;
+  }
+
+  async deletePricingPlan(id: string, tenantId: string): Promise<void> {
+    await db.delete(pricingPlans).where(and(eq(pricingPlans.id, id), eq(pricingPlans.tenantId, tenantId)));
   }
 
   // ============================================================

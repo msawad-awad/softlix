@@ -32,6 +32,9 @@ import {
   TrendingUp,
   Activity,
   Target,
+  Mail,
+  DollarSign,
+  SlidersHorizontal,
 } from "lucide-react";
 import {
   Sidebar,
@@ -294,18 +297,45 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton
-                  asChild
-                  isActive={isActive("/marketing")}
-                  tooltip="التسويق والتتبع"
-                >
-                  <Link href="/marketing" data-testid="nav-marketing">
-                    <Megaphone className={isRTL ? "ml-2" : "mr-2"} />
-                    <span>التسويق والتتبع</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              <Collapsible defaultOpen={location.startsWith("/marketing")}>
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton isActive={location.startsWith("/marketing")} tooltip="التسويق">
+                      <Megaphone className={isRTL ? "ml-2" : "mr-2"} />
+                      <span>التسويق</span>
+                      <ChevronDown className="mr-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton asChild isActive={isActive("/marketing") && !location.includes("newsletter") && !location.includes("pricing")}>
+                          <Link href="/marketing" data-testid="nav-marketing-settings">
+                            <SlidersHorizontal size={14} className={isRTL ? "ml-1.5" : "mr-1.5"} />
+                            إعدادات التتبع والويدجت
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton asChild isActive={isActive("/marketing/newsletter")}>
+                          <Link href="/marketing/newsletter" data-testid="nav-marketing-newsletter">
+                            <Mail size={14} className={isRTL ? "ml-1.5" : "mr-1.5"} />
+                            النشرة البريدية
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton asChild isActive={isActive("/marketing/pricing")}>
+                          <Link href="/marketing/pricing" data-testid="nav-marketing-pricing">
+                            <DollarSign size={14} className={isRTL ? "ml-1.5" : "mr-1.5"} />
+                            باقات الأسعار
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

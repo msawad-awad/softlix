@@ -1,6 +1,10 @@
 import { Link } from "wouter";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { SiWhatsapp, SiLinkedin, SiInstagram, SiX } from "react-icons/si";
+import { Bell, CheckCircle } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import type { MarketingSettings } from "@shared/schema";
 
 interface FooterProps {
   lang?: "ar" | "en";
@@ -54,8 +58,29 @@ const dotIcon: React.CSSProperties = {
 
 export function PublicFooter({ lang = "ar" }: FooterProps) {
   const isAr = lang === "ar";
+  const { toast } = useToast();
+  const [nlEmail, setNlEmail] = useState("");
+  const [nlSending, setNlSending] = useState(false);
+  const [nlDone, setNlDone] = useState(false);
 
   const { data: settings } = useQuery<any>({ queryKey: ["/api/public/site-settings"] });
+  const { data: mktSettings } = useQuery<MarketingSettings>({ queryKey: ["/api/public/marketing-settings"] });
+
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!nlEmail) return;
+    setNlSending(true);
+    try {
+      const res = await fetch("/api/public/newsletter/subscribe", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: nlEmail, source: "footer" }),
+      });
+      const data = await res.json();
+      setNlDone(true);
+      toast({ title: data.message || (isAr ? "تم الاشتراك بنجاح!" : "Subscribed!") });
+    } catch { toast({ title: isAr ? "خطأ" : "Error", variant: "destructive" }); }
+    finally { setNlSending(false); }
+  };
 
   const siteName = settings?.siteNameAr || "softlix";
   const siteNameEn = settings?.siteNameEn || "softlix";
@@ -240,6 +265,43 @@ export function PublicFooter({ lang = "ar" }: FooterProps) {
           </div>
         </div>
       </div>
+
+      {/* Newsletter Section */}
+      {mktSettings?.newsletterEnabled && (
+        <div style={{ borderTop: "1px solid rgba(255,255,255,.08)", marginTop: 40, paddingTop: 40 }}>
+          <div style={{ width: "min(1280px, calc(100% - 32px))", marginInline: "auto" }}>
+            <div style={{ background: "linear-gradient(135deg, rgba(229,146,105,.12), rgba(203,113,71,.08))", borderRadius: 20, padding: "32px 28px", border: "1px solid rgba(229,146,105,.2)", display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 20, fontFamily: "'Cairo', system-ui, sans-serif" }}>
+              <div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                  <Bell size={20} color="#e59269" />
+                  <h3 style={{ margin: 0, color: "#fff", fontWeight: 900, fontSize: "1.1rem" }}>
+                    {isAr ? (mktSettings.newsletterTitleAr || "اشترك في النشرة البريدية") : (mktSettings.newsletterTitleEn || "Subscribe to Our Newsletter")}
+                  </h3>
+                </div>
+                <p style={{ margin: 0, color: "rgba(255,255,255,.5)", fontSize: ".88rem" }}>
+                  {isAr ? "ابق على اطلاع بآخر الأخبار والعروض" : "Stay updated with our latest news and offers"}
+                </p>
+              </div>
+              {nlDone ? (
+                <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#22c55e", fontWeight: 800 }}>
+                  <CheckCircle size={20} />
+                  {isAr ? "تم الاشتراك!" : "Subscribed!"}
+                </div>
+              ) : (
+                <form onSubmit={handleNewsletterSubmit} style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                  <input value={nlEmail} onChange={e => setNlEmail(e.target.value)} type="email" required
+                    placeholder={isAr ? "بريدك الإلكتروني..." : "Your email..."}
+                    style={{ padding: "11px 16px", borderRadius: 10, border: "1px solid rgba(255,255,255,.15)", background: "rgba(255,255,255,.08)", color: "#fff", fontFamily: "inherit", fontSize: 14, outline: "none", minWidth: 220 }} />
+                  <button type="submit" disabled={nlSending}
+                    style={{ padding: "11px 22px", borderRadius: 10, background: "linear-gradient(135deg, #e59269, #cb7147)", border: "none", color: "#fff", fontWeight: 800, fontSize: 14, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap" }}>
+                    {nlSending ? "..." : (isAr ? "اشترك" : "Subscribe")}
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Bottom bar */}
       <div style={{ borderTop: "1px solid rgba(255,255,255,.06)", marginTop: 48 }}>
