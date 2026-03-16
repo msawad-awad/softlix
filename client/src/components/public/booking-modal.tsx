@@ -62,7 +62,7 @@ export function BookingModal({ open, onClose, lang = "ar" }: BookingModalProps) 
   const set = (key: keyof typeof form) => (val: string) => setForm(p => ({ ...p, [key]: val }));
 
   const canNext1 = form.serviceType.length > 0;
-  const canNext2 = form.preferredDate.length > 0 && form.preferredTime.length > 0;
+  const canNext2 = true; // date/time are optional — user can always proceed
   const canSubmit = form.name.length > 0 && form.phone.length > 0;
 
   const handleSubmit = async () => {
@@ -191,14 +191,14 @@ export function BookingModal({ open, onClose, lang = "ar" }: BookingModalProps) 
           ) : step === 2 ? (
             <>
               <h3 style={{ margin: "0 0 4px", fontWeight: 900, fontSize: 17 }}>{isAr ? "متى تفضل الاستشارة؟" : "When do you prefer the consultation?"}</h3>
-              <p style={{ margin: "0 0 20px", color: "#64748b", fontSize: 13 }}>{isAr ? "اختر التاريخ والوقت المناسبين" : "Choose a convenient date and time"}</p>
+              <p style={{ margin: "0 0 20px", color: "#64748b", fontSize: 13 }}>{isAr ? "اختياري — يمكنك المتابعة بدون تحديد موعد" : "Optional — you can continue without selecting a date"}</p>
 
               <div style={{ marginBottom: 20 }}>
                 <label style={labelStyle}>
                   <Calendar size={14} style={{ display: "inline", verticalAlign: "middle", marginLeft: 6 }} />
                   {isAr ? "التاريخ" : "Date"}
                 </label>
-                <input type="date" min={minDate} value={form.preferredDate} onChange={e => set("preferredDate")(e.target.value)}
+                <input data-testid="input-booking-date" type="date" min={minDate} value={form.preferredDate} onChange={e => set("preferredDate")(e.target.value)}
                   style={inputStyle} />
               </div>
 
@@ -211,7 +211,7 @@ export function BookingModal({ open, onClose, lang = "ar" }: BookingModalProps) 
                   {TIME_SLOTS.map(t => {
                     const sel = form.preferredTime === t;
                     return (
-                      <button key={t} onClick={() => set("preferredTime")(t)}
+                      <button key={t} data-testid={`btn-timeslot-${t.replace(/\s/g, "-")}`} onClick={() => set("preferredTime")(t)}
                         style={{ padding: "10px 6px", borderRadius: 12, border: `2px solid ${sel ? "#e59269" : "#e2e8f0"}`, background: sel ? "rgba(229,146,105,.08)" : "#fff", color: sel ? "#cb7147" : "#475569", fontWeight: sel ? 800 : 600, fontSize: 13, cursor: "pointer", fontFamily: "inherit", transition: ".2s" }}>
                         {t}
                       </button>
@@ -228,12 +228,12 @@ export function BookingModal({ open, onClose, lang = "ar" }: BookingModalProps) 
               <div style={{ display: "grid", gap: 14 }}>
                 <div>
                   <label style={labelStyle}><User size={13} style={{ display: "inline", verticalAlign: "middle", marginLeft: 5 }} />{isAr ? "الاسم الكريم *" : "Full Name *"}</label>
-                  <input value={form.name} onChange={e => set("name")(e.target.value)} placeholder={isAr ? "محمد عبدالله" : "John Smith"} required style={inputStyle}
+                  <input data-testid="input-booking-name" value={form.name} onChange={e => set("name")(e.target.value)} placeholder={isAr ? "محمد عبدالله" : "John Smith"} required style={inputStyle}
                     onFocus={e => (e.target.style.borderColor = "#e59269")} onBlur={e => (e.target.style.borderColor = "#e2e8f0")} />
                 </div>
                 <div>
                   <label style={labelStyle}><Phone size={13} style={{ display: "inline", verticalAlign: "middle", marginLeft: 5 }} />{isAr ? "رقم الجوال *" : "Phone Number *"}</label>
-                  <input value={form.phone} onChange={e => set("phone")(e.target.value)} placeholder="+966 5X XXX XXXX" required type="tel" style={inputStyle}
+                  <input data-testid="input-booking-phone" value={form.phone} onChange={e => set("phone")(e.target.value)} placeholder="+966 5X XXX XXXX" required type="tel" style={inputStyle}
                     onFocus={e => (e.target.style.borderColor = "#e59269")} onBlur={e => (e.target.style.borderColor = "#e2e8f0")} />
                 </div>
                 <div>
@@ -280,7 +280,7 @@ export function BookingModal({ open, onClose, lang = "ar" }: BookingModalProps) 
                 {isAr ? "التالي" : "Next"} →
               </button>
             ) : (
-              <button onClick={handleSubmit} disabled={!canSubmit || sending}
+              <button data-testid="btn-booking-submit" onClick={handleSubmit} disabled={!canSubmit || sending}
                 style={{ padding: "11px 28px", borderRadius: 12, background: canSubmit ? "linear-gradient(135deg, #e59269, #cb7147)" : "#e2e8f0", border: "none", color: canSubmit ? "#fff" : "#94a3b8", fontWeight: 800, fontSize: 15, cursor: canSubmit ? "pointer" : "not-allowed", fontFamily: "inherit", transition: ".2s" }}>
                 {sending ? (isAr ? "جاري الحجز..." : "Booking...") : (isAr ? "تأكيد الحجز" : "Confirm Booking")}
               </button>

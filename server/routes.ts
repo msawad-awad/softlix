@@ -1588,27 +1588,54 @@ export async function registerRoutes(
     try {
       const { name, email, phone, message, service, budget, pageSource, utmSource, utmMedium, utmCampaign } = req.body;
       if (!name) return res.status(400).json({ error: "Name is required" });
-      // Use default tenant (first available)
-      const allTenants = await storage.getAllTenants();
-      const tenant = allTenants[0];
+
+      // Resolve tenant: try slug first, fallback to first tenant
+      let tenant = await storage.getTenantBySlug("softlix");
+      if (!tenant) {
+        const allTenants = await storage.getAllTenants();
+        tenant = allTenants[0];
+      }
       if (!tenant) return res.status(404).json({ error: "Tenant not found" });
-      // Create form lead first
-      const formLead = await storage.createFormLead({ tenantId: tenant.id, formType: pageSource || 'contact', name, email, phone, message, pageSource, ipAddress: req.ip, status: 'new' });
-      // Determine source name
-      const sources = await storage.getCrmLeadSources(tenant.id);
-      const websiteSource = sources.find(s => s.name.includes('موقع') || s.name.toLowerCase().includes('website'));
-      // Auto-create CRM lead
-      const lead = await storage.createCrmLead({
-        tenantId: tenant.id, fullName: name, email, mobile: phone, message,
-        serviceInterested: service, estimatedBudget: budget,
-        sourceId: websiteSource?.id, sourceName: websiteSource?.name || 'الموقع الإلكتروني',
-        utmSource, utmMedium, utmCampaign, pageSource, ipAddress: req.ip,
-        formLeadId: formLead.id, status: 'new', priority: 'medium',
+
+      // Create form lead first (primary operation)
+      const formLead = await storage.createFormLead({
+        tenantId: tenant.id, formType: pageSource || 'contact',
+        name, email: email || null, phone: phone || null,
+        message: message || null, pageSource: pageSource || null,
+        ipAddress: req.ip || null, status: 'new',
       });
-      // Log activity
-      await storage.createCrmActivity({ tenantId: tenant.id, entityType: 'lead', entityId: lead.id, type: 'note', subject: 'تم استقبال الطلب من الموقع', details: message });
-      res.json({ success: true, lead });
-    } catch (e: any) { res.status(500).json({ error: e.message }); }
+
+      // Create CRM lead + activity (secondary — non-fatal)
+      let lead = null;
+      try {
+        const sources = await storage.getCrmLeadSources(tenant.id);
+        const websiteSource = sources.find(s => s.name.includes('موقع') || s.name.toLowerCase().includes('website'));
+        lead = await storage.createCrmLead({
+          tenantId: tenant.id, fullName: name,
+          email: email || null, mobile: phone || null,
+          message: message || null,
+          serviceInterested: service || null, estimatedBudget: budget || null,
+          sourceId: websiteSource?.id || null,
+          sourceName: websiteSource?.name || 'الموقع الإلكتروني',
+          utmSource: utmSource || null, utmMedium: utmMedium || null,
+          utmCampaign: utmCampaign || null, pageSource: pageSource || null,
+          ipAddress: req.ip || null,
+          formLeadId: formLead.id, status: 'new', priority: 'medium',
+        });
+        await storage.createCrmActivity({
+          tenantId: tenant.id, entityType: 'lead', entityId: lead.id,
+          type: 'note', subject: 'تم استقبال الطلب من الموقع',
+          details: message || name,
+        });
+      } catch (crmErr: any) {
+        console.error("[lead-capture] CRM ops failed (non-fatal):", crmErr.message);
+      }
+
+      res.json({ success: true, lead: lead || formLead });
+    } catch (e: any) {
+      console.error("[lead-capture] Error:", e.message);
+      res.status(500).json({ error: e.message });
+    }
   });
 
   // Public booking - create consultation request (no auth)
@@ -1616,22 +1643,53 @@ export async function registerRoutes(
     try {
       const { name, email, phone, serviceType, preferredDate, preferredTime, notes } = req.body;
       if (!name || !phone) return res.status(400).json({ error: "Name and phone are required" });
-      const allTenants = await storage.getAllTenants();
-      const tenant = allTenants[0];
+
+      // Resolve tenant: try slug first, fallback to first tenant
+      let tenant = await storage.getTenantBySlug("softlix");
+      if (!tenant) {
+        const allTenants = await storage.getAllTenants();
+        tenant = allTenants[0];
+      }
       if (!tenant) return res.status(404).json({ error: "Tenant not found" });
-      const booking = await storage.createBooking({ tenantId: tenant.id, name, email, phone, serviceType, preferredDate, preferredTime, notes, source: "website" });
-      // Also create CRM lead
-      const sources = await storage.getCrmLeadSources(tenant.id);
-      const websiteSource = sources.find(s => s.name.includes('موقع') || s.name.toLowerCase().includes('website'));
-      const lead = await storage.createCrmLead({
-        tenantId: tenant.id, fullName: name, email, mobile: phone,
-        message: `طلب استشارة - ${serviceType || "غير محدد"}\n${preferredDate ? `التاريخ المفضل: ${preferredDate}` : ""}\n${preferredTime ? `الوقت المفضل: ${preferredTime}` : ""}\n${notes || ""}`,
-        serviceInterested: serviceType, sourceId: websiteSource?.id, sourceName: websiteSource?.name || 'الموقع الإلكتروني',
-        pageSource: "booking-widget", status: "new", priority: "high",
+
+      // Create the booking (primary operation)
+      const booking = await storage.createBooking({
+        tenantId: tenant.id, name,
+        email: email || null, phone,
+        serviceType: serviceType || null,
+        preferredDate: preferredDate || null,
+        preferredTime: preferredTime || null,
+        notes: notes || null,
+        source: "website",
       });
-      await storage.createCrmActivity({ tenantId: tenant.id, entityType: "lead", entityId: lead.id, type: "note", subject: "طلب استشارة جديد من الموقع", details: `${name} - ${phone}` });
+
+      // Create CRM lead + activity (secondary — non-fatal)
+      try {
+        const sources = await storage.getCrmLeadSources(tenant.id);
+        const websiteSource = sources.find(s => s.name.includes('موقع') || s.name.toLowerCase().includes('website'));
+        const lead = await storage.createCrmLead({
+          tenantId: tenant.id, fullName: name,
+          email: email || null, mobile: phone,
+          message: `طلب استشارة - ${serviceType || "غير محدد"}\n${preferredDate ? `التاريخ المفضل: ${preferredDate}` : ""}\n${preferredTime ? `الوقت المفضل: ${preferredTime}` : ""}\n${notes || ""}`,
+          serviceInterested: serviceType || null,
+          sourceId: websiteSource?.id || null,
+          sourceName: websiteSource?.name || 'الموقع الإلكتروني',
+          pageSource: "booking-widget", status: "new", priority: "high",
+        });
+        await storage.createCrmActivity({
+          tenantId: tenant.id, entityType: "lead", entityId: lead.id,
+          type: "note", subject: "طلب استشارة جديد من الموقع",
+          details: `${name} - ${phone}`,
+        });
+      } catch (crmErr: any) {
+        console.error("[booking] CRM ops failed (non-fatal):", crmErr.message);
+      }
+
       res.json({ success: true, booking });
-    } catch (e: any) { res.status(500).json({ error: e.message }); }
+    } catch (e: any) {
+      console.error("[booking] Error:", e.message);
+      res.status(500).json({ error: e.message });
+    }
   });
 
   // Admin: list bookings
