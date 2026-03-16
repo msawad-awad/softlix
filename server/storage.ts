@@ -64,6 +64,10 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByEmail(email: string, tenantId?: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  getTeamUsers(tenantId: string): Promise<User[]>;
+  updateUser(id: string, tenantId: string, update: Partial<Pick<User, "name"|"email"|"phone"|"role"|"status"|"permissions">>): Promise<User | undefined>;
+  deleteUser(id: string, tenantId: string): Promise<void>;
+  updateUserPassword(id: string, tenantId: string, passwordHash: string): Promise<void>;
   
   // Sessions
   getSession(id: string): Promise<Session | undefined>;
@@ -76,14 +80,14 @@ export interface IStorage {
   createSubscription(subscription: InsertSubscription): Promise<Subscription>;
   
   // Companies
-  getCompanies(tenantId: string): Promise<Company[]>;
+  getCompanies(tenantId: string, userId?: string): Promise<Company[]>;
   getCompany(id: string, tenantId: string): Promise<Company | undefined>;
   createCompany(company: InsertCompany): Promise<Company>;
   updateCompany(id: string, tenantId: string, company: Partial<InsertCompany>): Promise<Company | undefined>;
   deleteCompany(id: string, tenantId: string): Promise<void>;
   
   // Contacts
-  getContacts(tenantId: string): Promise<Contact[]>;
+  getContacts(tenantId: string, userId?: string): Promise<Contact[]>;
   getContact(id: string, tenantId: string): Promise<Contact | undefined>;
   createContact(contact: InsertContact): Promise<Contact>;
   updateContact(id: string, tenantId: string, contact: Partial<InsertContact>): Promise<Contact | undefined>;
@@ -263,7 +267,7 @@ export interface IStorage {
   deleteCrmTask(id: string, tenantId: string): Promise<void>;
 
   // CRM - Proposals
-  getCrmProposals(tenantId: string, filters?: { status?: string; dealId?: string }): Promise<CrmProposal[]>;
+  getCrmProposals(tenantId: string, filters?: { status?: string; dealId?: string; userId?: string }): Promise<CrmProposal[]>;
   getCrmProposal(id: string, tenantId: string): Promise<CrmProposal | undefined>;
   createCrmProposal(proposal: InsertCrmProposal): Promise<CrmProposal>;
   updateCrmProposal(id: string, tenantId: string, proposal: Partial<InsertCrmProposal>): Promise<CrmProposal | undefined>;
@@ -356,6 +360,23 @@ export class DatabaseStorage implements IStorage {
     return user;
   }
 
+  async getTeamUsers(tenantId: string): Promise<User[]> {
+    return db.select().from(users).where(eq(users.tenantId, tenantId)).orderBy(users.createdAt);
+  }
+
+  async updateUser(id: string, tenantId: string, update: Partial<Pick<User, "name"|"email"|"phone"|"role"|"status"|"permissions">>): Promise<User | undefined> {
+    const [user] = await db.update(users).set(update).where(and(eq(users.id, id), eq(users.tenantId, tenantId))).returning();
+    return user || undefined;
+  }
+
+  async deleteUser(id: string, tenantId: string): Promise<void> {
+    await db.delete(users).where(and(eq(users.id, id), eq(users.tenantId, tenantId)));
+  }
+
+  async updateUserPassword(id: string, tenantId: string, passwordHash: string): Promise<void> {
+    await db.update(users).set({ passwordHash }).where(and(eq(users.id, id), eq(users.tenantId, tenantId)));
+  }
+
   // Sessions
   async getSession(id: string): Promise<Session | undefined> {
     const [session] = await db.select().from(sessions).where(eq(sessions.id, id));
@@ -387,7 +408,10 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Companies
-  async getCompanies(tenantId: string): Promise<Company[]> {
+  async getCompanies(tenantId: string, userId?: string): Promise<Company[]> {
+    if (userId) {
+      return db.select().from(companies).where(and(eq(companies.tenantId, tenantId), eq(companies.ownerId, userId))).orderBy(desc(companies.createdAt));
+    }
     return db.select().from(companies).where(eq(companies.tenantId, tenantId)).orderBy(desc(companies.createdAt));
   }
 
@@ -416,7 +440,7 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Contacts
-  async getContacts(tenantId: string): Promise<Contact[]> {
+  async getContacts(tenantId: string, _userId?: string): Promise<Contact[]> {
     return db.select().from(contacts).where(eq(contacts.tenantId, tenantId)).orderBy(desc(contacts.createdAt));
   }
 
@@ -1199,10 +1223,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   // ── CRM Proposals ─────────────────────────────────────────────────────────
-  async getCrmProposals(tenantId: string, filters?: { status?: string; dealId?: string }): Promise<CrmProposal[]> {
+  async getCrmProposals(tenantId: string, filters?: { status?: string; dealId?: string; userId?: string }): Promise<CrmProposal[]> {
     let conditions = [eq(crmProposals.tenantId, tenantId)];
     if (filters?.status) conditions.push(eq(crmProposals.status, filters.status));
     if (filters?.dealId) conditions.push(eq(crmProposals.dealId, filters.dealId));
+    if (filters?.userId) conditions.push(eq(crmProposals.createdById, filters.userId));
     return db.select().from(crmProposals).where(and(...conditions)).orderBy(desc(crmProposals.createdAt));
   }
   async getCrmProposal(id: string, tenantId: string): Promise<CrmProposal | undefined> {

@@ -1,4 +1,4 @@
-# Softlix Business OS - Complete Status (with Website CMS + Integrations + Full CRM)
+# Softlix Business OS - Complete Status (with Website CMS + Integrations + Full CRM + RBAC)
 
 ## ✅ All Core Requirements - COMPLETED
 
@@ -7,6 +7,18 @@
 - ✅ Session-based authentication with bcrypt hashing
 - ✅ Auto-creation of 15-day trial subscriptions
 - ✅ Activity logging for all operations
+- ✅ **RBAC System**: Role-based access control with permissions array per user
+  - Roles: admin, manager, sales, support, accountant, user
+  - Permissions: dashboard, crm, proposals, website, marketing, settings, team, google_import
+  - Data isolation: admin/manager see all data; other roles see only their own records
+  - Default permissions automatically assigned per role
+- ✅ **Team Management** (`/settings/users`): Full CRUD for team members
+  - Create users with role, permissions, password
+  - Edit name/email/role/permissions
+  - Toggle account active/inactive
+  - Reset password for any user
+  - Delete users (except self)
+  - Permissions-based sidebar visibility
 
 ### 2. Internationalization (i18n)
 - ✅ Full Arabic (RTL) & English (LTR) support

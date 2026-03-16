@@ -139,6 +139,21 @@ async function requireAuth(req: Request, res: Response, next: NextFunction) {
   next();
 }
 
+// Helper - does the user have elevated role (sees all data)
+function isPrivileged(user: Express.User): boolean {
+  return user.role === "admin" || user.role === "manager";
+}
+
+// Default permissions by role
+const DEFAULT_PERMISSIONS: Record<string, string[]> = {
+  admin: ["dashboard","crm","proposals","website","marketing","settings","team","google_import"],
+  manager: ["dashboard","crm","proposals","website","marketing","settings","team","google_import"],
+  sales: ["dashboard","crm","proposals","google_import"],
+  support: ["dashboard","crm"],
+  accountant: ["dashboard","proposals"],
+  user: ["dashboard"],
+};
+
 // Helper to create slug from company name
 function createSlug(name: string): string {
   return name
@@ -339,7 +354,8 @@ export async function registerRoutes(
   
   app.get("/api/companies", requireAuth, async (req, res) => {
     try {
-      const companies = await storage.getCompanies(req.user!.tenantId);
+      const userId = isPrivileged(req.user!) ? undefined : req.user!.id;
+      const companies = await storage.getCompanies(req.user!.tenantId, userId);
       res.json(companies);
     } catch (error) {
       console.error("Get companies error:", error);
@@ -1952,7 +1968,8 @@ export async function registerRoutes(
   app.get("/api/crm/proposals", requireAuth, async (req, res) => {
     try {
       const { status, dealId } = req.query as Record<string, string>;
-      res.json(await storage.getCrmProposals(req.user!.tenant.id, { status, dealId }));
+      const userId = isPrivileged(req.user!) ? undefined : req.user!.id;
+      res.json(await storage.getCrmProposals(req.user!.tenant.id, { status, dealId, userId }));
     } catch (e: any) { res.status(500).json({ error: e.message }); }
   });
   app.get("/api/crm/proposals/:id", requireAuth, async (req, res) => {
@@ -2489,6 +2506,83 @@ export async function registerRoutes(
     } catch (e: any) {
       res.status(500).json({ message: e.message });
     }
+  });
+
+  // ============================================================================
+  // TEAM / USER MANAGEMENT ROUTES (admin/manager only for write ops)
+  // ============================================================================
+
+  app.get("/api/users", requireAuth, async (req, res) => {
+    try {
+      const teamUsers = await storage.getTeamUsers(req.user!.tenantId);
+      const safe = teamUsers.map(u => ({
+        id: u.id,
+        name: u.name,
+        email: u.email,
+        phone: u.phone,
+        role: u.role,
+        status: u.status,
+        permissions: u.permissions,
+        locale: u.locale,
+        createdAt: u.createdAt,
+        avatarUrl: u.avatarUrl,
+      }));
+      res.json(safe);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.post("/api/users", requireAuth, async (req, res) => {
+    if (!isPrivileged(req.user!)) return res.status(403).json({ error: "Forbidden" });
+    try {
+      const { name, email, password, role, phone, permissions } = req.body;
+      if (!name || !email || !password || !role) return res.status(400).json({ error: "Missing required fields" });
+      const existing = await storage.getUserByEmail(email, req.user!.tenantId);
+      if (existing) return res.status(400).json({ error: "Email already in use" });
+      const passwordHash = await bcrypt.hash(password, 10);
+      const defaultPerms = DEFAULT_PERMISSIONS[role] ?? ["dashboard"];
+      const user = await storage.createUser({
+        tenantId: req.user!.tenantId,
+        name,
+        email,
+        phone: phone || null,
+        passwordHash,
+        role,
+        status: "active",
+        locale: req.user!.locale || "ar",
+        permissions: permissions ?? defaultPerms,
+      });
+      res.json({ id: user.id, name: user.name, email: user.email, role: user.role, status: user.status, permissions: user.permissions });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.patch("/api/users/:id", requireAuth, async (req, res) => {
+    if (!isPrivileged(req.user!)) return res.status(403).json({ error: "Forbidden" });
+    try {
+      const { name, email, phone, role, status, permissions, password } = req.body;
+      const update: Record<string, any> = {};
+      if (name !== undefined) update.name = name;
+      if (email !== undefined) update.email = email;
+      if (phone !== undefined) update.phone = phone;
+      if (role !== undefined) update.role = role;
+      if (status !== undefined) update.status = status;
+      if (permissions !== undefined) update.permissions = permissions;
+      const updated = await storage.updateUser(req.params.id, req.user!.tenantId, update);
+      if (!updated) return res.status(404).json({ error: "User not found" });
+      if (password) {
+        const hash = await bcrypt.hash(password, 10);
+        await storage.updateUserPassword(req.params.id, req.user!.tenantId, hash);
+      }
+      res.json({ id: updated.id, name: updated.name, email: updated.email, role: updated.role, status: updated.status, permissions: updated.permissions });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.delete("/api/users/:id", requireAuth, async (req, res) => {
+    if (!isPrivileged(req.user!)) return res.status(403).json({ error: "Forbidden" });
+    if (req.params.id === req.user!.id) return res.status(400).json({ error: "Cannot delete yourself" });
+    try {
+      await storage.deleteUser(req.params.id, req.user!.tenantId);
+      res.json({ ok: true });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
   });
 
   // ============================================================================

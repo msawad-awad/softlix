@@ -36,6 +36,7 @@ import {
   DollarSign,
   SlidersHorizontal,
   MapPin,
+  UsersRound,
 } from "lucide-react";
 import {
   Sidebar,
@@ -70,11 +71,20 @@ export function AppSidebar() {
 
   const isActive = (path: string) => location === path || location.startsWith(path + "/");
 
+  // Permissions helper
+  const perms: string[] = user?.permissions ?? [];
+  const hasPermission = (key: string) => {
+    // admin/manager see everything regardless of stored permissions
+    if (user?.role === "admin" || user?.role === "manager") return true;
+    return perms.includes(key);
+  };
+
   const mainMenuItems = [
     {
       title: t("nav.dashboard"),
       url: "/dashboard",
       icon: LayoutDashboard,
+      perm: "dashboard",
     },
   ];
 
@@ -82,50 +92,20 @@ export function AppSidebar() {
     { title: "لوحة تحكم CRM", url: "/crm", icon: Target },
     { title: "العملاء المحتملون", url: "/crm/leads", icon: Inbox },
     { title: "الصفقات", url: "/crm/deals", icon: TrendingUp },
-    { title: "عروض الأسعار", url: "/crm/proposals", icon: FileText },
+    { title: "عروض الأسعار", url: "/crm/proposals", icon: FileText, perm: "proposals" },
     { title: "سجل الأنشطة", url: "/crm/activities", icon: Activity },
-    { title: "استيراد من جوجل", url: "/crm/google-import", icon: MapPin },
+    { title: "استيراد من جوجل", url: "/crm/google-import", icon: MapPin, perm: "google_import" },
     { title: t("nav.companies"), url: "/companies", icon: Building2 },
     { title: t("nav.contacts"), url: "/contacts", icon: Users },
   ];
 
   const moduleItems = [
-    {
-      title: t("nav.quotes"),
-      url: "/quotes",
-      icon: FileText,
-      disabled: true,
-    },
-    {
-      title: t("nav.tasks"),
-      url: "/tasks",
-      icon: CheckSquare,
-      disabled: true,
-    },
-    {
-      title: t("nav.tickets"),
-      url: "/tickets",
-      icon: TicketCheck,
-      disabled: true,
-    },
-    {
-      title: t("nav.hr"),
-      url: "/hr",
-      icon: UserCog,
-      disabled: true,
-    },
-    {
-      title: t("nav.inventory"),
-      url: "/inventory",
-      icon: Package,
-      disabled: true,
-    },
-    {
-      title: t("nav.accounting"),
-      url: "/accounting",
-      icon: Calculator,
-      disabled: true,
-    },
+    { title: t("nav.quotes"), url: "/quotes", icon: FileText, disabled: true },
+    { title: t("nav.tasks"), url: "/tasks", icon: CheckSquare, disabled: true },
+    { title: t("nav.tickets"), url: "/tickets", icon: TicketCheck, disabled: true },
+    { title: t("nav.hr"), url: "/hr", icon: UserCog, disabled: true },
+    { title: t("nav.inventory"), url: "/inventory", icon: Package, disabled: true },
+    { title: t("nav.accounting"), url: "/accounting", icon: Calculator, disabled: true },
   ];
 
   const websiteItems = [
@@ -182,10 +162,11 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
+        {/* Dashboard */}
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainMenuItems.map((item) => (
+              {mainMenuItems.filter(i => hasPermission(i.perm)).map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
@@ -203,28 +184,34 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarGroupLabel>{t("nav.crm")}</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {crmItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={isActive(item.url)}
-                    tooltip={item.title}
-                  >
-                    <Link href={item.url} data-testid={`nav-${item.url.slice(1)}`}>
-                      <item.icon className={isRTL ? "ml-2" : "mr-2"} />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {/* CRM */}
+        {hasPermission("crm") && (
+          <SidebarGroup>
+            <SidebarGroupLabel>{t("nav.crm")}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {crmItems
+                  .filter(i => !i.perm || hasPermission(i.perm))
+                  .map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <SidebarMenuButton
+                        asChild
+                        isActive={isActive(item.url)}
+                        tooltip={item.title}
+                      >
+                        <Link href={item.url} data-testid={`nav-${item.url.slice(1).replace(/\//g, "-")}`}>
+                          <item.icon className={isRTL ? "ml-2" : "mr-2"} />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
 
+        {/* Modules (coming soon) */}
         <SidebarGroup>
           <Collapsible defaultOpen className="group/collapsible">
             <SidebarGroupLabel asChild>
@@ -263,84 +250,88 @@ export function AppSidebar() {
           </Collapsible>
         </SidebarGroup>
 
-        {/* Website CMS Section */}
-        <SidebarGroup>
-          <Collapsible defaultOpen className="group/collapsible">
-            <SidebarGroupLabel asChild>
-              <CollapsibleTrigger className="flex w-full items-center justify-between">
-                <span>الموقع الإلكتروني</span>
-                <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180" />
-              </CollapsibleTrigger>
-            </SidebarGroupLabel>
-            <CollapsibleContent>
-              <SidebarGroupContent>
-                <SidebarMenu>
-                  {websiteItems.map((item) => (
-                    <SidebarMenuItem key={item.url}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={isActive(item.url)}
-                        tooltip={item.title}
-                      >
-                        <Link href={item.url} data-testid={`nav-${item.url.slice(1).replace(/\//g, "-")}`}>
-                          <item.icon className={isRTL ? "ml-2" : "mr-2"} />
-                          <span>{item.title}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-              </SidebarGroupContent>
-            </CollapsibleContent>
-          </Collapsible>
-        </SidebarGroup>
+        {/* Website CMS */}
+        {hasPermission("website") && (
+          <SidebarGroup>
+            <Collapsible defaultOpen className="group/collapsible">
+              <SidebarGroupLabel asChild>
+                <CollapsibleTrigger className="flex w-full items-center justify-between">
+                  <span>الموقع الإلكتروني</span>
+                  <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180" />
+                </CollapsibleTrigger>
+              </SidebarGroupLabel>
+              <CollapsibleContent>
+                <SidebarGroupContent>
+                  <SidebarMenu>
+                    {websiteItems.map((item) => (
+                      <SidebarMenuItem key={item.url}>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={isActive(item.url)}
+                          tooltip={item.title}
+                        >
+                          <Link href={item.url} data-testid={`nav-${item.url.slice(1).replace(/\//g, "-")}`}>
+                            <item.icon className={isRTL ? "ml-2" : "mr-2"} />
+                            <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    ))}
+                  </SidebarMenu>
+                </SidebarGroupContent>
+              </CollapsibleContent>
+            </Collapsible>
+          </SidebarGroup>
+        )}
 
-        {/* Marketing Section */}
-        <SidebarGroup>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <Collapsible defaultOpen={location.startsWith("/marketing")}>
-                <SidebarMenuItem>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuButton isActive={location.startsWith("/marketing")} tooltip="التسويق">
-                      <Megaphone className={isRTL ? "ml-2" : "mr-2"} />
-                      <span>التسويق</span>
-                      <ChevronDown className="mr-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <SidebarMenuSub>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild isActive={isActive("/marketing") && !location.includes("newsletter") && !location.includes("pricing")}>
-                          <Link href="/marketing" data-testid="nav-marketing-settings">
-                            <SlidersHorizontal size={14} className={isRTL ? "ml-1.5" : "mr-1.5"} />
-                            إعدادات التتبع والويدجت
-                          </Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild isActive={isActive("/marketing/newsletter")}>
-                          <Link href="/marketing/newsletter" data-testid="nav-marketing-newsletter">
-                            <Mail size={14} className={isRTL ? "ml-1.5" : "mr-1.5"} />
-                            النشرة البريدية
-                          </Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                      <SidebarMenuSubItem>
-                        <SidebarMenuSubButton asChild isActive={isActive("/marketing/pricing")}>
-                          <Link href="/marketing/pricing" data-testid="nav-marketing-pricing">
-                            <DollarSign size={14} className={isRTL ? "ml-1.5" : "mr-1.5"} />
-                            باقات الأسعار
-                          </Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    </SidebarMenuSub>
-                  </CollapsibleContent>
-                </SidebarMenuItem>
-              </Collapsible>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {/* Marketing */}
+        {hasPermission("marketing") && (
+          <SidebarGroup>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <Collapsible defaultOpen={location.startsWith("/marketing")}>
+                  <SidebarMenuItem>
+                    <CollapsibleTrigger asChild>
+                      <SidebarMenuButton isActive={location.startsWith("/marketing")} tooltip="التسويق">
+                        <Megaphone className={isRTL ? "ml-2" : "mr-2"} />
+                        <span>التسويق</span>
+                        <ChevronDown className="mr-auto h-4 w-4 transition-transform group-data-[state=open]:rotate-180" />
+                      </SidebarMenuButton>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent>
+                      <SidebarMenuSub>
+                        <SidebarMenuSubItem>
+                          <SidebarMenuSubButton asChild isActive={isActive("/marketing") && !location.includes("newsletter") && !location.includes("pricing")}>
+                            <Link href="/marketing" data-testid="nav-marketing-settings">
+                              <SlidersHorizontal size={14} className={isRTL ? "ml-1.5" : "mr-1.5"} />
+                              إعدادات التتبع والويدجت
+                            </Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                        <SidebarMenuSubItem>
+                          <SidebarMenuSubButton asChild isActive={isActive("/marketing/newsletter")}>
+                            <Link href="/marketing/newsletter" data-testid="nav-marketing-newsletter">
+                              <Mail size={14} className={isRTL ? "ml-1.5" : "mr-1.5"} />
+                              النشرة البريدية
+                            </Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                        <SidebarMenuSubItem>
+                          <SidebarMenuSubButton asChild isActive={isActive("/marketing/pricing")}>
+                            <Link href="/marketing/pricing" data-testid="nav-marketing-pricing">
+                              <DollarSign size={14} className={isRTL ? "ml-1.5" : "mr-1.5"} />
+                              باقات الأسعار
+                            </Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      </SidebarMenuSub>
+                    </CollapsibleContent>
+                  </SidebarMenuItem>
+                </Collapsible>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter className="p-2">
@@ -364,30 +355,48 @@ export function AppSidebar() {
         )}
 
         <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              isActive={isActive("/settings") && !isActive("/settings/integrations")}
-              tooltip={t("nav.settings")}
-            >
-              <Link href="/settings" data-testid="nav-settings">
-                <Settings className={isRTL ? "ml-2" : "mr-2"} />
-                <span>{t("nav.settings")}</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              asChild
-              isActive={isActive("/settings/integrations")}
-              tooltip="التكاملات"
-            >
-              <Link href="/settings/integrations" data-testid="nav-integrations">
-                <Zap className={isRTL ? "ml-2" : "mr-2"} />
-                <span>التكاملات</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
+          {hasPermission("settings") && (
+            <>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive("/settings") && !isActive("/settings/integrations") && !isActive("/settings/users")}
+                  tooltip={t("nav.settings")}
+                >
+                  <Link href="/settings" data-testid="nav-settings">
+                    <Settings className={isRTL ? "ml-2" : "mr-2"} />
+                    <span>{t("nav.settings")}</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  asChild
+                  isActive={isActive("/settings/integrations")}
+                  tooltip="التكاملات"
+                >
+                  <Link href="/settings/integrations" data-testid="nav-integrations">
+                    <Zap className={isRTL ? "ml-2" : "mr-2"} />
+                    <span>التكاملات</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </>
+          )}
+          {hasPermission("team") && (
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                isActive={isActive("/settings/users")}
+                tooltip="إدارة الفريق"
+              >
+                <Link href="/settings/users" data-testid="nav-team-users">
+                  <UsersRound className={isRTL ? "ml-2" : "mr-2"} />
+                  <span>إدارة الفريق</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
         </SidebarMenu>
 
         <div className="flex items-center gap-3 p-2 rounded-lg hover-elevate">

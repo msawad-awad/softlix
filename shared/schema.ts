@@ -36,6 +36,7 @@ export const users = pgTable("users", {
   status: text("status").default("active").notNull(), // active, inactive
   locale: text("locale").default("ar").notNull(), // ar, en
   avatarUrl: text("avatar_url"),
+  permissions: text("permissions").array().default([]), // ["dashboard","crm","proposals","website","marketing","settings","team","google_import"]
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
