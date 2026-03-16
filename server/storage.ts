@@ -8,6 +8,9 @@ import {
   crmLeadSources, crmLeads, crmDealPipelines, crmDealStages, crmDeals,
   crmActivities, crmTasks, crmProposals, crmProposalItems,
   integrationSettings, crmAttachments, crmProposalTokens,
+  proposalTemplates, googleImportBuffer,
+  type ProposalTemplate, type InsertProposalTemplate,
+  type GoogleImportBuffer, type InsertGoogleImportBuffer,
   type NewsletterSubscriber, type InsertNewsletterSubscriber,
   type PricingPlan, type InsertPricingPlan,
   type Booking, type InsertBooking,
@@ -271,6 +274,21 @@ export interface IStorage {
   updateCrmProposalItem(id: string, item: Partial<InsertCrmProposalItem>): Promise<CrmProposalItem | undefined>;
   deleteCrmProposalItem(id: string): Promise<void>;
   replaceProposalItems(proposalId: string, tenantId: string, items: Omit<InsertCrmProposalItem, 'proposalId' | 'tenantId'>[]): Promise<CrmProposalItem[]>;
+
+  // Proposal Templates
+  getProposalTemplates(tenantId: string): Promise<ProposalTemplate[]>;
+  getProposalTemplate(id: string, tenantId: string): Promise<ProposalTemplate | undefined>;
+  createProposalTemplate(data: InsertProposalTemplate): Promise<ProposalTemplate>;
+  updateProposalTemplate(id: string, tenantId: string, data: Partial<InsertProposalTemplate>): Promise<ProposalTemplate | undefined>;
+  deleteProposalTemplate(id: string, tenantId: string): Promise<void>;
+  seedDefaultProposalTemplates(tenantId: string): Promise<void>;
+
+  // Google Import Buffer
+  getGoogleImportBuffer(tenantId: string): Promise<GoogleImportBuffer[]>;
+  createGoogleImportBufferItem(data: InsertGoogleImportBuffer): Promise<GoogleImportBuffer>;
+  updateGoogleImportBufferItem(id: string, tenantId: string, data: Partial<InsertGoogleImportBuffer>): Promise<GoogleImportBuffer | undefined>;
+  deleteGoogleImportBufferItem(id: string, tenantId: string): Promise<void>;
+  clearGoogleImportBuffer(tenantId: string): Promise<void>;
 
   // CRM - Dashboard Stats
   getCrmDashboardStats(tenantId: string): Promise<{
@@ -1326,6 +1344,99 @@ export class DatabaseStorage implements IStorage {
     if (!proposal) return null;
     const items = await db.select().from(crmProposalItems).where(eq(crmProposalItems.proposalId, proposal.id));
     return { ...proposal, items };
+  }
+
+  // ── Proposal Templates ────────────────────────────────────────────────────
+  async getProposalTemplates(tenantId: string): Promise<ProposalTemplate[]> {
+    return db.select().from(proposalTemplates).where(eq(proposalTemplates.tenantId, tenantId)).orderBy(asc(proposalTemplates.displayOrder));
+  }
+  async getProposalTemplate(id: string, tenantId: string): Promise<ProposalTemplate | undefined> {
+    const [row] = await db.select().from(proposalTemplates).where(and(eq(proposalTemplates.id, id), eq(proposalTemplates.tenantId, tenantId)));
+    return row;
+  }
+  async createProposalTemplate(data: InsertProposalTemplate): Promise<ProposalTemplate> {
+    const [row] = await db.insert(proposalTemplates).values(data).returning();
+    return row;
+  }
+  async updateProposalTemplate(id: string, tenantId: string, data: Partial<InsertProposalTemplate>): Promise<ProposalTemplate | undefined> {
+    const [row] = await db.update(proposalTemplates).set({ ...data, updatedAt: new Date() }).where(and(eq(proposalTemplates.id, id), eq(proposalTemplates.tenantId, tenantId))).returning();
+    return row;
+  }
+  async deleteProposalTemplate(id: string, tenantId: string): Promise<void> {
+    await db.delete(proposalTemplates).where(and(eq(proposalTemplates.id, id), eq(proposalTemplates.tenantId, tenantId)));
+  }
+  async seedDefaultProposalTemplates(tenantId: string): Promise<void> {
+    const existing = await this.getProposalTemplates(tenantId);
+    if (existing.length > 0) return;
+    const defaults = [
+      {
+        tenantId, name: "تطبيق جوال", nameEn: "Mobile App", category: "mobile-app",
+        defaultValidity: 14, defaultTaxPercent: "15",
+        defaultTerms: "• صلاحية العرض 14 يوماً من تاريخه\n• يتم تسليم المشروع خلال 90 يوم عمل\n• الدفع: 40% مقدم، 40% عند التسليم، 20% بعد التشغيل\n• يشمل صيانة مجانية 3 أشهر بعد الإطلاق",
+        items: [
+          { title: "تصميم UI/UX", description: "تصميم شاشات التطبيق وتجربة المستخدم", quantity: "1", unitPrice: "5000" },
+          { title: "تطوير الواجهة الأمامية", description: "Flutter / React Native", quantity: "1", unitPrice: "15000" },
+          { title: "تطوير الخادم والـ API", description: "Node.js + PostgreSQL", quantity: "1", unitPrice: "10000" },
+          { title: "الاختبار والنشر", description: "نشر على App Store و Google Play", quantity: "1", unitPrice: "3000" },
+        ],
+        displayOrder: 0, isDefault: true,
+      },
+      {
+        tenantId, name: "موقع ويب", nameEn: "Website", category: "web-platform",
+        defaultValidity: 14, defaultTaxPercent: "15",
+        defaultTerms: "• صلاحية العرض 14 يوماً\n• التسليم خلال 30-45 يوم عمل\n• الدفع: 50% مقدم، 50% عند التسليم\n• تدريب مجاني على لوحة التحكم",
+        items: [
+          { title: "تصميم الموقع", description: "تصميم احترافي متجاوب مع جميع الأجهزة", quantity: "1", unitPrice: "3000" },
+          { title: "تطوير الموقع", description: "React.js / Next.js", quantity: "1", unitPrice: "7000" },
+          { title: "لوحة تحكم CMS", description: "إدارة المحتوى بسهولة", quantity: "1", unitPrice: "2000" },
+          { title: "الاستضافة والنطاق (سنة)", description: "استضافة سحابية سريعة", quantity: "1", unitPrice: "1000" },
+        ],
+        displayOrder: 1,
+      },
+      {
+        tenantId, name: "نظام ERP / إدارة", nameEn: "ERP System", category: "erp",
+        defaultValidity: 21, defaultTaxPercent: "15",
+        defaultTerms: "• صلاحية العرض 21 يوماً\n• التسليم خلال 60-120 يوم حسب الحجم\n• الدفع: 30% مقدم، 40% منتصف المشروع، 30% عند التسليم\n• دعم فني 6 أشهر مجاناً",
+        items: [
+          { title: "تحليل المتطلبات", description: "دراسة العمليات وإعداد المواصفات", quantity: "1", unitPrice: "5000" },
+          { title: "تطوير النظام", description: "نظام متكامل مع قاعدة البيانات", quantity: "1", unitPrice: "30000" },
+          { title: "التكامل مع الأنظمة الخارجية", description: "API & Integrations", quantity: "1", unitPrice: "8000" },
+          { title: "التدريب والتوثيق", description: "تدريب الفريق وإعداد الدليل", quantity: "1", unitPrice: "3000" },
+        ],
+        displayOrder: 2,
+      },
+      {
+        tenantId, name: "خدمات تسويقية", nameEn: "Marketing Services", category: "marketing",
+        defaultValidity: 7, defaultTaxPercent: "15",
+        defaultTerms: "• صلاحية العرض 7 أيام\n• الدفع شهري مقدم\n• إشعار إيقاف الخدمة قبل 30 يوم",
+        items: [
+          { title: "إدارة حسابات التواصل الاجتماعي", description: "إنشاء ونشر المحتوى (شهرياً)", quantity: "1", unitPrice: "3000" },
+          { title: "إعلانات جوجل", description: "إدارة حملات Google Ads", quantity: "1", unitPrice: "2000" },
+          { title: "إنتاج المحتوى المرئي", description: "تصميم بوستات وفيديو موشن", quantity: "4", unitPrice: "500" },
+        ],
+        displayOrder: 3,
+      },
+    ];
+    for (const t of defaults) await this.createProposalTemplate(t as any);
+  }
+
+  // ── Google Import Buffer ──────────────────────────────────────────────────
+  async getGoogleImportBuffer(tenantId: string): Promise<GoogleImportBuffer[]> {
+    return db.select().from(googleImportBuffer).where(eq(googleImportBuffer.tenantId, tenantId)).orderBy(desc(googleImportBuffer.createdAt));
+  }
+  async createGoogleImportBufferItem(data: InsertGoogleImportBuffer): Promise<GoogleImportBuffer> {
+    const [row] = await db.insert(googleImportBuffer).values(data).returning();
+    return row;
+  }
+  async updateGoogleImportBufferItem(id: string, tenantId: string, data: Partial<InsertGoogleImportBuffer>): Promise<GoogleImportBuffer | undefined> {
+    const [row] = await db.update(googleImportBuffer).set(data).where(and(eq(googleImportBuffer.id, id), eq(googleImportBuffer.tenantId, tenantId))).returning();
+    return row;
+  }
+  async deleteGoogleImportBufferItem(id: string, tenantId: string): Promise<void> {
+    await db.delete(googleImportBuffer).where(and(eq(googleImportBuffer.id, id), eq(googleImportBuffer.tenantId, tenantId)));
+  }
+  async clearGoogleImportBuffer(tenantId: string): Promise<void> {
+    await db.delete(googleImportBuffer).where(and(eq(googleImportBuffer.tenantId, tenantId), eq(googleImportBuffer.status, "pending")));
   }
 
   // ── Bookings ──────────────────────────────────────────────────────────────

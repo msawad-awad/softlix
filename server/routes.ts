@@ -2146,6 +2146,145 @@ export async function registerRoutes(
   });
 
   // ============================================================================
+  // PROPOSAL TEMPLATES ROUTES
+  // ============================================================================
+  app.get("/api/crm/proposal-templates", requireAuth, async (req: Request, res: Response) => {
+    try {
+      await storage.seedDefaultProposalTemplates(req.user!.tenantId);
+      const templates = await storage.getProposalTemplates(req.user!.tenantId);
+      res.json(templates);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.post("/api/crm/proposal-templates", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const template = await storage.createProposalTemplate({ ...req.body, tenantId: req.user!.tenantId });
+      res.json(template);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.patch("/api/crm/proposal-templates/:id", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const template = await storage.updateProposalTemplate(req.params.id, req.user!.tenantId, req.body);
+      res.json(template);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.delete("/api/crm/proposal-templates/:id", requireAuth, async (req: Request, res: Response) => {
+    try {
+      await storage.deleteProposalTemplate(req.params.id, req.user!.tenantId);
+      res.json({ ok: true });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // ============================================================================
+  // GOOGLE PLACES IMPORT ROUTES
+  // ============================================================================
+  app.get("/api/crm/google-import/search", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { keywords, city } = req.query as Record<string, string>;
+      if (!keywords) return res.status(400).json({ error: "keywords مطلوبة" });
+
+      const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.GOOGLE_API_KEY;
+      if (!apiKey) return res.status(400).json({ error: "مفتاح Google Maps API غير مُعرَّف. يرجى إضافة GOOGLE_MAPS_API_KEY في إعدادات المتغيرات." });
+
+      const query = encodeURIComponent(`${keywords} ${city || ''} المملكة العربية السعودية`.trim());
+      const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${query}&key=${apiKey}&language=ar`;
+
+      const resp = await fetch(url);
+      const data = await resp.json() as any;
+
+      if (data.status !== "OK" && data.status !== "ZERO_RESULTS") {
+        return res.status(400).json({ error: `Google API error: ${data.status} - ${data.error_message || ''}` });
+      }
+
+      const results = (data.results || []).map((place: any) => ({
+        googlePlaceId: place.place_id,
+        name: place.name,
+        address: place.formatted_address,
+        lat: place.geometry?.location?.lat,
+        lng: place.geometry?.location?.lng,
+        rating: place.rating,
+        reviewCount: place.user_ratings_total,
+        types: (place.types || []).join(","),
+        businessStatus: place.business_status,
+      }));
+
+      res.json({ results, nextPageToken: data.next_page_token });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.get("/api/crm/google-import/place-details/:placeId", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.GOOGLE_API_KEY;
+      if (!apiKey) return res.status(400).json({ error: "مفتاح Google Maps API غير مُعرَّف" });
+
+      const fields = "name,formatted_address,formatted_phone_number,international_phone_number,website,url,rating,user_ratings_total,types,business_status";
+      const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${req.params.placeId}&key=${apiKey}&language=ar&fields=${fields}`;
+
+      const resp = await fetch(url);
+      const data = await resp.json() as any;
+      if (data.status !== "OK") return res.status(404).json({ error: "Place not found" });
+      res.json(data.result);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.get("/api/crm/google-import/buffer", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const items = await storage.getGoogleImportBuffer(req.user!.tenantId);
+      res.json(items);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.post("/api/crm/google-import/buffer", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const item = await storage.createGoogleImportBufferItem({ ...req.body, tenantId: req.user!.tenantId, createdBy: req.user!.id });
+      res.json(item);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.post("/api/crm/google-import/import-company", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { bufferId, name, address, phone, website, city, industry } = req.body;
+      const tenantId = req.user!.tenantId;
+
+      const company = await storage.createCompany({
+        tenantId, name, address: address || "", phone: phone || "",
+        website: website || "", city: city || "", industry: industry || "other",
+        status: "prospect", assignedTo: req.user!.id,
+      });
+
+      if (bufferId) {
+        await storage.updateGoogleImportBufferItem(bufferId, tenantId, {
+          status: "imported", importedCompanyId: company.id,
+        });
+      }
+
+      await storage.createActivityLog({
+        tenantId, userId: req.user!.id,
+        entityType: "company", entityId: company.id,
+        action: "created", description: `تم استيراد الشركة "${name}" من Google Maps`,
+      });
+
+      res.json({ ok: true, company });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.delete("/api/crm/google-import/buffer/:id", requireAuth, async (req: Request, res: Response) => {
+    try {
+      await storage.deleteGoogleImportBufferItem(req.params.id, req.user!.tenantId);
+      res.json({ ok: true });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.delete("/api/crm/google-import/buffer", requireAuth, async (req: Request, res: Response) => {
+    try {
+      await storage.clearGoogleImportBuffer(req.user!.tenantId);
+      res.json({ ok: true });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // ============================================================================
   // CRM ATTACHMENTS ROUTES
   // ============================================================================
   app.get("/api/crm/attachments", requireAuth, async (req: Request, res: Response) => {

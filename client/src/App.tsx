@@ -67,6 +67,7 @@ import CrmDeals from "@/pages/crm/deals";
 import CrmActivities from "@/pages/crm/activities";
 import CrmProposals from "@/pages/crm/proposals";
 import { ProposalPreviewById, ProposalPublicView } from "@/pages/crm/proposal-preview";
+import GoogleImport from "@/pages/crm/google-import";
 import IntegrationsSettings from "@/pages/settings/integrations";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -201,6 +202,7 @@ function Router() {
       <Route path="/crm/activities"><AdminRoute><CrmActivities /></AdminRoute></Route>
       <Route path="/crm/proposals/:id/preview"><AdminRoute><ProposalPreviewById /></AdminRoute></Route>
       <Route path="/crm/proposals"><AdminRoute><CrmProposals /></AdminRoute></Route>
+      <Route path="/crm/google-import"><AdminRoute><GoogleImport /></AdminRoute></Route>
       <Route path="/crm"><AdminRoute><CrmDashboard /></AdminRoute></Route>
 
       {/* Integrations Settings */}

@@ -35,6 +35,7 @@ import {
   Mail,
   DollarSign,
   SlidersHorizontal,
+  MapPin,
 } from "lucide-react";
 import {
   Sidebar,
@@ -83,6 +84,7 @@ export function AppSidebar() {
     { title: "الصفقات", url: "/crm/deals", icon: TrendingUp },
     { title: "عروض الأسعار", url: "/crm/proposals", icon: FileText },
     { title: "سجل الأنشطة", url: "/crm/activities", icon: Activity },
+    { title: "استيراد من جوجل", url: "/crm/google-import", icon: MapPin },
     { title: t("nav.companies"), url: "/companies", icon: Building2 },
     { title: t("nav.contacts"), url: "/contacts", icon: Users },
   ];

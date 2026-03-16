@@ -901,6 +901,57 @@ export type InsertCrmProposalItem = z.infer<typeof insertCrmProposalItemSchema>;
 export type CrmProposalItem = typeof crmProposalItems.$inferSelect;
 
 // ============================================================================
+// PROPOSAL TEMPLATES - قوالب عروض الأسعار
+// ============================================================================
+export const proposalTemplates = pgTable("proposal_templates", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  name: text("name").notNull(),
+  nameEn: text("name_en"),
+  category: text("category").default("general"), // mobile-app, web-platform, erp, marketing, general
+  defaultTerms: text("default_terms"),
+  defaultValidity: integer("default_validity").default(14), // days
+  defaultTaxPercent: decimal("default_tax_percent", { precision: 5, scale: 2 }).default("15"),
+  items: jsonb("items").default([]), // array of { title, description, quantity, unitPrice }
+  isDefault: boolean("is_default").default(false),
+  displayOrder: integer("display_order").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertProposalTemplateSchema = createInsertSchema(proposalTemplates).omit({ id: true, createdAt: true, updatedAt: true });
+export type InsertProposalTemplate = z.infer<typeof insertProposalTemplateSchema>;
+export type ProposalTemplate = typeof proposalTemplates.$inferSelect;
+
+// ============================================================================
+// GOOGLE IMPORT BUFFER - استيراد العملاء من Google
+// ============================================================================
+export const googleImportBuffer = pgTable("google_import_buffer", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  googlePlaceId: text("google_place_id").notNull(),
+  name: text("name").notNull(),
+  address: text("address"),
+  phone: text("phone"),
+  website: text("website"),
+  lat: decimal("lat", { precision: 10, scale: 6 }),
+  lng: decimal("lng", { precision: 10, scale: 6 }),
+  rating: decimal("rating", { precision: 3, scale: 1 }),
+  reviewCount: integer("review_count"),
+  types: text("types"),
+  googleUrl: text("google_url"),
+  businessStatus: text("business_status"),
+  status: text("status").default("pending").notNull(), // pending, imported, skipped
+  importedCompanyId: varchar("imported_company_id").references(() => companies.id),
+  createdBy: varchar("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertGoogleImportBufferSchema = createInsertSchema(googleImportBuffer).omit({ id: true, createdAt: true });
+export type InsertGoogleImportBuffer = z.infer<typeof insertGoogleImportBufferSchema>;
+export type GoogleImportBuffer = typeof googleImportBuffer.$inferSelect;
+
+// ============================================================================
 // Bookings (Consultation Scheduling)
 // ============================================================================
 export const bookings = pgTable("bookings", {
