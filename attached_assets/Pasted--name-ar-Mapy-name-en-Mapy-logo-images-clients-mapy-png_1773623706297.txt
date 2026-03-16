@@ -1,0 +1,86 @@
+[
+  {
+    "name_ar": "Mapy",
+    "name_en": "Mapy",
+    "logo": "/images/clients/mapy.png",
+    "type": "Mobile Application"
+  },
+  {
+    "name_ar": "الاتحاد السعودي للغوص",
+    "name_en": "Saudi Water Sports & Diving Federation",
+    "logo": "/images/clients/saudi-diving.png",
+    "type": "Government Organization"
+  },
+  {
+    "name_ar": "شركة تمكين الدولية",
+    "name_en": "Tamkeen International Company",
+    "logo": "/images/clients/tamkeen.png",
+    "type": "Company"
+  },
+  {
+    "name_ar": "وريف للتطوير والاستثمار العقاري",
+    "name_en": "Wareef Real Estate Development",
+    "logo": "/images/clients/wareef.png",
+    "type": "Real Estate Company"
+  },
+  {
+    "name_ar": "جمعية كسائك إحسان",
+    "name_en": "Kasaek Ehsan Charity",
+    "logo": "/images/clients/kasaek.png",
+    "type": "Charity"
+  },
+  {
+    "name_ar": "مجموعة المحامي خالد العبدلي",
+    "name_en": "Khalid Al Abdali Law Group",
+    "logo": "/images/clients/alabdali.png",
+    "type": "Law Firm"
+  },
+  {
+    "name_ar": "شركة ريادة الأولى المحدودة",
+    "name_en": "Reyada Al Oula Company",
+    "logo": "/images/clients/reyadah.png",
+    "type": "Company"
+  },
+  {
+    "name_ar": "جمعية إخوانكم",
+    "name_en": "Ikhwanukum Charity",
+    "logo": "/images/clients/ikhwanukum.png",
+    "type": "Charity"
+  },
+  {
+    "name_ar": "الجمعية العربية السعودية للفنون",
+    "name_en": "Saudi Arabian Society for Arts",
+    "logo": "/images/clients/saudi-arts.png",
+    "type": "Cultural Organization"
+  },
+  {
+    "name_ar": "الجمعية العربية السعودية لبيت الشباب",
+    "name_en": "Saudi Youth Hostel Association",
+    "logo": "/images/clients/youth-hostel.png",
+    "type": "Association"
+  },
+  {
+    "name_ar": "تطبيق ريسيرفا",
+    "name_en": "Reserva App",
+    "logo": "/images/clients/reserva.png",
+    "type": "Mobile App"
+  },
+  {
+    "name_ar": "تطبيق غزير",
+    "name_en": "Ghazeer App",
+    "logo": "/images/clients/ghazeer.png",
+    "type": "Mobile App"
+  },
+  {
+    "name_ar": "تطبيق تبارك",
+    "name_en": "Tabarak App",
+    "logo": "/images/clients/tabarak.png",
+    "type": "Mobile App"
+  },
+  {
+    "name_ar": "شركة نبع الخليج للسيارات",
+    "name_en": "Nabaa Al Khaleej Cars",
+    "logo": "/images/clients/nabaa.png",
+    "type": "Automotive Company"
+  }
+]
