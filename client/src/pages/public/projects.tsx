@@ -77,6 +77,8 @@ const CATEGORIES = [
   { value: "all", labelAr: "الكل", labelEn: "All" },
   { value: "mobile-app", labelAr: "تطبيقات الجوال", labelEn: "Mobile Apps" },
   { value: "web", labelAr: "منصات الويب", labelEn: "Web Platforms" },
+  { value: "erp-system", labelAr: "أنظمة ERP", labelEn: "ERP Systems" },
+  { value: "ecommerce", labelAr: "التجارة الإلكترونية", labelEn: "E-Commerce" },
   { value: "logistics", labelAr: "اللوجستيات", labelEn: "Logistics" },
 ];
 
@@ -502,7 +504,10 @@ export default function PublicProjects({ lang = "ar", onLangChange, slug: slugPr
   const displayProjects = apiProjects && apiProjects.length > 0 ? apiProjects as any[] : DEFAULT_PROJECTS;
   const filtered = activeCategory === "all"
     ? displayProjects
-    : displayProjects.filter((p: any) => p.category === activeCategory);
+    : displayProjects.filter((p: any) => {
+        if (activeCategory === "web") return p.category === "web" || p.category === "web-platform";
+        return p.category === activeCategory;
+      });
 
   if (effectiveSlug) {
     return <ProjectDetail slug={effectiveSlug} lang={lang} onLangChange={onLangChange} />;
