@@ -25,7 +25,21 @@
 - ✅ **Leads**: Full CRUD, status pipeline, search/filter, lead numbers (LEAD-0001), create from website forms
 - ✅ **Lead Detail**: Activity timeline, note/call/meeting/email/WhatsApp logging, convert to deal
 - ✅ **Deals**: Kanban view + Table view, multi-pipeline support, stage drag (via select), deal value tracking
-- ✅ **Proposals**: Full proposal builder with line items, tax (15% VAT), discount, PDF-ready layout
+- ✅ **Proposals**: Enterprise proposal builder with 12 features:
+  - Auto-save to localStorage every 2s with draft restore
+  - 4-step wizard: client info → template+items → pricing+terms → review
+  - Template preview dialog before applying (with full details + items list)
+  - Section grouping per line item (sectionName field)
+  - Optional items (isOptional flag, shown separately, not counted in total)
+  - Service library picker modal (12 default services seeded per tenant)
+  - Dynamic template variables {{company_name}}, {{date}}, {{validity_days}}
+  - Approval workflow: discount >20% → auto-set to pending_approval with warning
+  - Payment schedule builder: add milestones (label, %, dueDate)
+  - Expiry notifications: banner at top for proposals expiring in ≤7 days
+  - Clone proposal: POST /api/crm/proposals/:id/clone
+  - Analytics: view count badge on list, incremented on every public token view
+  - Digital signature in public view: text input → API → accepted status
+  - Public view shows sections, optional items, payment schedule, signature block
 - ✅ **Activities**: Grouped timeline feed with type + entity filtering
 - ✅ **Companies**: List, Create, Update, Delete with status tracking (lead/prospect/client/archived)
 - ✅ **Contacts**: List, Create, Update, Delete with company linking

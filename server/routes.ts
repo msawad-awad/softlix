@@ -1965,17 +1965,42 @@ export async function registerRoutes(
   });
   app.post("/api/crm/proposals", requireAuth, async (req, res) => {
     try {
-      const { items, ...proposalData } = req.body;
-      const proposal = await storage.createCrmProposal({ ...proposalData, tenantId: req.user!.tenant.id, preparedById: req.user!.id });
+      const { items, paymentSchedule, expiryDate, ...proposalData } = req.body;
+      // Coerce empty strings to null for FK columns
+      const toNull = (v: any) => (v === "" || v === undefined ? null : v);
+      const cleanData: any = {
+        ...proposalData,
+        tenantId: req.user!.tenant.id,
+        preparedById: req.user!.id,
+        paymentSchedule: paymentSchedule || [],
+        expiryDate: expiryDate ? new Date(expiryDate) : null,
+        companyId: toNull(proposalData.companyId),
+        contactId: toNull(proposalData.contactId),
+        dealId: toNull(proposalData.dealId),
+      };
+      const proposal = await storage.createCrmProposal(cleanData);
       if (items?.length) await storage.replaceProposalItems(proposal.id, req.user!.tenant.id, items);
-      await storage.createCrmActivity({ tenantId: req.user!.tenant.id, entityType: 'deal', entityId: proposal.dealId || proposal.leadId || proposal.id, type: 'proposal_action', subject: `تم إنشاء عرض سعر: ${proposal.proposalNumber}`, createdById: req.user!.id });
+      try {
+        await storage.createCrmActivity({ tenantId: req.user!.tenant.id, entityType: 'deal', entityId: proposal.dealId || proposal.id, type: 'proposal_action', subject: `تم إنشاء عرض سعر: ${proposal.proposalNumber}`, createdById: req.user!.id });
+      } catch { /* non-critical */ }
       res.json(proposal);
     } catch (e: any) { res.status(500).json({ error: e.message }); }
   });
   app.patch("/api/crm/proposals/:id", requireAuth, async (req, res) => {
     try {
-      const { items, ...proposalData } = req.body;
-      const proposal = await storage.updateCrmProposal(req.params.id, req.user!.tenant.id, proposalData);
+      const { items, paymentSchedule, expiryDate, ...proposalData } = req.body;
+      const toNull = (v: any) => (v === "" || v === undefined ? null : v);
+      const cleanData: any = {
+        ...proposalData,
+        companyId: proposalData.companyId !== undefined ? toNull(proposalData.companyId) : undefined,
+        contactId: proposalData.contactId !== undefined ? toNull(proposalData.contactId) : undefined,
+        dealId: proposalData.dealId !== undefined ? toNull(proposalData.dealId) : undefined,
+        paymentSchedule: paymentSchedule !== undefined ? paymentSchedule : undefined,
+        expiryDate: expiryDate !== undefined ? (expiryDate ? new Date(expiryDate) : null) : undefined,
+      };
+      // Remove undefined keys
+      Object.keys(cleanData).forEach(k => cleanData[k] === undefined && delete cleanData[k]);
+      const proposal = await storage.updateCrmProposal(req.params.id, req.user!.tenant.id, cleanData);
       if (items !== undefined) await storage.replaceProposalItems(req.params.id, req.user!.tenant.id, items);
       res.json(proposal);
     } catch (e: any) { res.status(500).json({ error: e.message }); }
@@ -2138,11 +2163,79 @@ export async function registerRoutes(
   app.get("/api/public/proposal/:token", async (req: Request, res: Response) => {
     const proposal = await storage.getProposalByToken(req.params.token);
     if (!proposal) return res.status(404).json({ message: "العرض غير موجود أو انتهت صلاحيته" });
-    // Update status to viewed if it was sent
     if (proposal.status === "sent") {
       await storage.updateCrmProposal(proposal.tenantId, proposal.id, { status: "viewed", viewedAt: new Date() });
     }
-    res.json(proposal);
+    await storage.incrementProposalViewCount(proposal.id, proposal.tenantId);
+    res.json({ ...proposal, status: proposal.status === "sent" ? "viewed" : proposal.status });
+  });
+
+  // Public proposal client accept/reject
+  app.post("/api/public/proposal/:token/respond", async (req: Request, res: Response) => {
+    try {
+      const proposal = await storage.getProposalByToken(req.params.token);
+      if (!proposal) return res.status(404).json({ message: "العرض غير موجود" });
+      const { action } = req.body as { action: "accepted" | "rejected" };
+      if (!["accepted", "rejected"].includes(action)) return res.status(400).json({ message: "action غير صالح" });
+      const updates: any = { status: action, updatedAt: new Date() };
+      if (action === "accepted") updates.acceptedAt = new Date();
+      if (action === "rejected") updates.rejectedAt = new Date();
+      await storage.updateCrmProposal(proposal.tenantId, proposal.id, updates);
+      res.json({ ok: true });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // Digital signature on public view
+  app.post("/api/public/proposal/:token/sign", async (req: Request, res: Response) => {
+    try {
+      const proposal = await storage.getProposalByToken(req.params.token);
+      if (!proposal) return res.status(404).json({ message: "العرض غير موجود" });
+      if (proposal.status === "accepted") return res.status(400).json({ message: "تم توقيع هذا العرض مسبقاً" });
+      const { signature } = req.body as { signature: string };
+      if (!signature?.trim()) return res.status(400).json({ message: "يرجى إدخال اسمك كتوقيع" });
+      const updated = await storage.signProposal(proposal.id, proposal.tenantId, signature);
+      res.json({ ok: true, signedAt: updated?.signedAt, status: "accepted" });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // ============================================================================
+  // SERVICE LIBRARY ROUTES
+  // ============================================================================
+  app.get("/api/crm/service-library", requireAuth, async (req: Request, res: Response) => {
+    try {
+      await storage.seedDefaultServiceLibrary(req.user!.tenantId);
+      const items = await storage.getServiceLibrary(req.user!.tenantId);
+      res.json(items);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.post("/api/crm/service-library", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const item = await storage.createServiceLibraryItem({ ...req.body, tenantId: req.user!.tenantId });
+      res.json(item);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.patch("/api/crm/service-library/:id", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const item = await storage.updateServiceLibraryItem(req.params.id, req.user!.tenantId, req.body);
+      res.json(item);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.delete("/api/crm/service-library/:id", requireAuth, async (req: Request, res: Response) => {
+    try {
+      await storage.deleteServiceLibraryItem(req.params.id, req.user!.tenantId);
+      res.json({ ok: true });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // Clone proposal
+  app.post("/api/crm/proposals/:id/clone", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const cloned = await storage.cloneProposal(req.params.id, req.user!.tenantId);
+      res.json(cloned);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
   });
 
   // ============================================================================

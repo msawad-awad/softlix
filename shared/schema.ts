@@ -826,6 +826,10 @@ export const crmProposals = pgTable("crm_proposals", {
   viewedAt: timestamp("viewed_at"),
   acceptedAt: timestamp("accepted_at"),
   rejectedAt: timestamp("rejected_at"),
+  viewCount: integer("view_count").default(0),
+  paymentSchedule: jsonb("payment_schedule").default([]),
+  clientSignature: text("client_signature"),
+  signedAt: timestamp("signed_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
@@ -847,6 +851,8 @@ export const crmProposalItems = pgTable("crm_proposal_items", {
   unitPrice: decimal("unit_price", { precision: 12, scale: 2 }).default("0"),
   lineTotal: decimal("line_total", { precision: 12, scale: 2 }).default("0"),
   displayOrder: integer("display_order").default(0),
+  sectionName: text("section_name"),
+  isOptional: boolean("is_optional").default(false),
 });
 
 // ============================================================================
@@ -972,6 +978,26 @@ export const bookings = pgTable("bookings", {
 export const insertBookingSchema = createInsertSchema(bookings).omit({ id: true, createdAt: true });
 export type InsertBooking = z.infer<typeof insertBookingSchema>;
 export type Booking = typeof bookings.$inferSelect;
+
+// ============================================================================
+// SERVICE LIBRARY - مكتبة الخدمات الجاهزة
+// ============================================================================
+export const serviceLibrary = pgTable("service_library", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  title: text("title").notNull(),
+  description: text("description"),
+  unitPrice: decimal("unit_price", { precision: 12, scale: 2 }).default("0"),
+  unit: text("unit").default("item"), // item, hr, day, month, page
+  category: text("category").default("general"),
+  displayOrder: integer("display_order").default(0),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertServiceLibrarySchema = createInsertSchema(serviceLibrary).omit({ id: true, createdAt: true });
+export type InsertServiceLibraryItem = z.infer<typeof insertServiceLibrarySchema>;
+export type ServiceLibraryItem = typeof serviceLibrary.$inferSelect;
 
 // ============================================================================
 // API Response Types

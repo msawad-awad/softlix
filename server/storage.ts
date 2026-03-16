@@ -8,9 +8,10 @@ import {
   crmLeadSources, crmLeads, crmDealPipelines, crmDealStages, crmDeals,
   crmActivities, crmTasks, crmProposals, crmProposalItems,
   integrationSettings, crmAttachments, crmProposalTokens,
-  proposalTemplates, googleImportBuffer,
+  proposalTemplates, googleImportBuffer, serviceLibrary,
   type ProposalTemplate, type InsertProposalTemplate,
   type GoogleImportBuffer, type InsertGoogleImportBuffer,
+  type ServiceLibraryItem, type InsertServiceLibraryItem,
   type NewsletterSubscriber, type InsertNewsletterSubscriber,
   type PricingPlan, type InsertPricingPlan,
   type Booking, type InsertBooking,
@@ -289,6 +290,18 @@ export interface IStorage {
   updateGoogleImportBufferItem(id: string, tenantId: string, data: Partial<InsertGoogleImportBuffer>): Promise<GoogleImportBuffer | undefined>;
   deleteGoogleImportBufferItem(id: string, tenantId: string): Promise<void>;
   clearGoogleImportBuffer(tenantId: string): Promise<void>;
+
+  // Service Library
+  getServiceLibrary(tenantId: string): Promise<ServiceLibraryItem[]>;
+  createServiceLibraryItem(data: InsertServiceLibraryItem): Promise<ServiceLibraryItem>;
+  updateServiceLibraryItem(id: string, tenantId: string, data: Partial<InsertServiceLibraryItem>): Promise<ServiceLibraryItem | undefined>;
+  deleteServiceLibraryItem(id: string, tenantId: string): Promise<void>;
+  seedDefaultServiceLibrary(tenantId: string): Promise<void>;
+
+  // Proposal extras
+  cloneProposal(id: string, tenantId: string): Promise<CrmProposal>;
+  signProposal(proposalId: string, tenantId: string, signature: string): Promise<CrmProposal | undefined>;
+  incrementProposalViewCount(id: string, tenantId: string): Promise<void>;
 
   // CRM - Dashboard Stats
   getCrmDashboardStats(tenantId: string): Promise<{
@@ -1437,6 +1450,88 @@ export class DatabaseStorage implements IStorage {
   }
   async clearGoogleImportBuffer(tenantId: string): Promise<void> {
     await db.delete(googleImportBuffer).where(and(eq(googleImportBuffer.tenantId, tenantId), eq(googleImportBuffer.status, "pending")));
+  }
+
+  // ── Service Library ───────────────────────────────────────────────────────
+  async getServiceLibrary(tenantId: string): Promise<ServiceLibraryItem[]> {
+    return db.select().from(serviceLibrary).where(and(eq(serviceLibrary.tenantId, tenantId), eq(serviceLibrary.isActive, true))).orderBy(asc(serviceLibrary.displayOrder));
+  }
+  async createServiceLibraryItem(data: InsertServiceLibraryItem): Promise<ServiceLibraryItem> {
+    const [row] = await db.insert(serviceLibrary).values(data).returning();
+    return row;
+  }
+  async updateServiceLibraryItem(id: string, tenantId: string, data: Partial<InsertServiceLibraryItem>): Promise<ServiceLibraryItem | undefined> {
+    const [row] = await db.update(serviceLibrary).set(data).where(and(eq(serviceLibrary.id, id), eq(serviceLibrary.tenantId, tenantId))).returning();
+    return row;
+  }
+  async deleteServiceLibraryItem(id: string, tenantId: string): Promise<void> {
+    await db.update(serviceLibrary).set({ isActive: false }).where(and(eq(serviceLibrary.id, id), eq(serviceLibrary.tenantId, tenantId)));
+  }
+  async seedDefaultServiceLibrary(tenantId: string): Promise<void> {
+    const existing = await this.getServiceLibrary(tenantId);
+    if (existing.length > 0) return;
+    const defaults = [
+      { tenantId, title: "تصميم UI/UX", description: "تصميم شاشات وتجربة المستخدم", unitPrice: "5000", unit: "item", category: "design", displayOrder: 0 },
+      { tenantId, title: "تطوير تطبيق Flutter", description: "تطبيق جوال iOS + Android", unitPrice: "15000", unit: "item", category: "mobile", displayOrder: 1 },
+      { tenantId, title: "تطوير واجهة React", description: "واجهة أمامية React.js أو Next.js", unitPrice: "8000", unit: "item", category: "web", displayOrder: 2 },
+      { tenantId, title: "تطوير Backend Node.js", description: "API وقاعدة بيانات PostgreSQL", unitPrice: "10000", unit: "item", category: "backend", displayOrder: 3 },
+      { tenantId, title: "استضافة سحابية (شهرياً)", description: "استضافة على AWS أو GCP", unitPrice: "500", unit: "month", category: "hosting", displayOrder: 4 },
+      { tenantId, title: "نشر على متاجر التطبيقات", description: "App Store + Google Play", unitPrice: "2000", unit: "item", category: "deployment", displayOrder: 5 },
+      { tenantId, title: "إدارة سوشيال ميديا (شهرياً)", description: "إنشاء ونشر المحتوى + تقارير", unitPrice: "3000", unit: "month", category: "marketing", displayOrder: 6 },
+      { tenantId, title: "إعلانات Google Ads (شهرياً)", description: "إدارة حملات جوجل الإعلانية", unitPrice: "2000", unit: "month", category: "marketing", displayOrder: 7 },
+      { tenantId, title: "تصميم هوية بصرية", description: "شعار + دليل الهوية البصرية", unitPrice: "4000", unit: "item", category: "design", displayOrder: 8 },
+      { tenantId, title: "تدريب وتوثيق", description: "تدريب الفريق وإعداد الدليل التشغيلي", unitPrice: "2000", unit: "item", category: "training", displayOrder: 9 },
+      { tenantId, title: "صيانة وحماية (شهرياً)", description: "متابعة الأداء + تحديثات الأمان", unitPrice: "1000", unit: "month", category: "maintenance", displayOrder: 10 },
+      { tenantId, title: "ساعة استشارة تقنية", description: "جلسة استشارية مع المختصين", unitPrice: "500", unit: "hr", category: "consulting", displayOrder: 11 },
+    ];
+    for (const item of defaults) await this.createServiceLibraryItem(item as any);
+  }
+
+  // ── Proposal Extras ───────────────────────────────────────────────────────
+  async cloneProposal(id: string, tenantId: string): Promise<CrmProposal> {
+    const original = await this.getCrmProposal(id, tenantId);
+    if (!original) throw new Error("Proposal not found");
+
+    const count = await db.select({ c: sql<number>`count(*)` }).from(crmProposals).where(eq(crmProposals.tenantId, tenantId));
+    const num = (Number(count[0]?.c) || 0) + 1;
+    const proposalNumber = `QT-${String(num).padStart(4, "0")}`;
+
+    const [cloned] = await db.insert(crmProposals).values({
+      tenantId, proposalNumber, title: `نسخة من: ${original.title}`,
+      companyId: original.companyId, contactId: original.contactId, dealId: original.dealId,
+      currency: original.currency, discountType: original.discountType,
+      discountValue: original.discountValue, taxPercent: original.taxPercent,
+      taxAmount: original.taxAmount, subtotal: original.subtotal, total: original.total,
+      termsAndNotes: original.termsAndNotes, internalNotes: original.internalNotes,
+      paymentSchedule: original.paymentSchedule as any,
+      status: "draft", preparedById: original.preparedById,
+    }).returning();
+
+    const originalItems = await db.select().from(crmProposalItems).where(eq(crmProposalItems.proposalId, id));
+    for (const item of originalItems) {
+      await db.insert(crmProposalItems).values({
+        proposalId: cloned.id, tenantId,
+        title: item.title, description: item.description,
+        quantity: item.quantity, unitPrice: item.unitPrice, lineTotal: item.lineTotal,
+        displayOrder: item.displayOrder, sectionName: item.sectionName, isOptional: item.isOptional,
+      });
+    }
+    return cloned;
+  }
+
+  async signProposal(proposalId: string, tenantId: string, signature: string): Promise<CrmProposal | undefined> {
+    const [row] = await db.update(crmProposals).set({
+      clientSignature: signature, signedAt: new Date(),
+      status: "accepted", acceptedAt: new Date(), updatedAt: new Date(),
+    }).where(and(eq(crmProposals.id, proposalId), eq(crmProposals.tenantId, tenantId))).returning();
+    return row;
+  }
+
+  async incrementProposalViewCount(id: string, tenantId: string): Promise<void> {
+    await db.update(crmProposals).set({
+      viewCount: sql`coalesce(${crmProposals.viewCount}, 0) + 1`,
+      viewedAt: new Date(), updatedAt: new Date(),
+    }).where(and(eq(crmProposals.id, id), eq(crmProposals.tenantId, tenantId)));
   }
 
   // ── Bookings ──────────────────────────────────────────────────────────────
