@@ -71,7 +71,7 @@ export default function GoogleImport() {
   const qc = useQueryClient();
 
   const [keywords, setKeywords] = useState("");
-  const [city, setCity] = useState("");
+  const [city, setCity] = useState("all");
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
@@ -131,7 +131,7 @@ export default function GoogleImport() {
     setSearchResults([]);
     try {
       const params = new URLSearchParams({ keywords: keywords.trim() });
-      if (city) params.set("city", city);
+      if (city && city !== "all") params.set("city", city);
       const res = await apiRequest("GET", `/api/crm/google-import/search?${params}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "خطأ في البحث");
@@ -190,7 +190,7 @@ export default function GoogleImport() {
                 <Select value={city} onValueChange={setCity}>
                   <SelectTrigger data-testid="select-city"><SelectValue placeholder="أي مدينة" /></SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">أي مدينة</SelectItem>
+                    <SelectItem value="all">أي مدينة</SelectItem>
                     {SAUDI_CITIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
                   </SelectContent>
                 </Select>
