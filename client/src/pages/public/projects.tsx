@@ -497,7 +497,13 @@ export default function PublicProjects({ lang = "ar", onLangChange, slug: slugPr
   });
 
   const { data: apiProjects } = useQuery<Project[]>({
-    queryKey: ["/api/public/projects", TENANT_ID],
+    queryKey: ["/api/public/projects"],
+    queryFn: async () => {
+      const url = TENANT_ID ? `/api/public/projects?tenantId=${TENANT_ID}` : "/api/public/projects";
+      const res = await fetch(url, { credentials: "include" });
+      if (!res.ok) return [];
+      return res.json();
+    },
     enabled: !effectiveSlug,
   });
 
