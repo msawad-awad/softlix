@@ -2342,13 +2342,14 @@ export async function registerRoutes(
 
   app.post("/api/crm/google-import/import-company", requireAuth, async (req: Request, res: Response) => {
     try {
-      const { bufferId, name, address, phone, website, city, industry } = req.body;
+      const { bufferId, name, address, phone, website, city, industry, notes } = req.body;
       const tenantId = req.user!.tenantId;
 
       const company = await storage.createCompany({
-        tenantId, name, address: address || "", phone: phone || "",
-        website: website || "", city: city || "", industry: industry || "other",
-        status: "prospect", assignedTo: req.user!.id,
+        tenantId, name, address: address || null, phone: phone || null,
+        website: website || null, city: city || null, industry: industry || "other",
+        status: "prospect", ownerId: req.user!.id,
+        notes: notes || null, source: "google_maps",
       });
 
       if (bufferId) {

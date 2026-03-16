@@ -8,10 +8,11 @@ import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import {
   Search, MapPin, Phone, Globe, Star, Loader2, Plus, CheckCircle,
-  Trash2, Download, AlertCircle, Building2, X, RefreshCw,
+  Trash2, Download, AlertCircle, Building2, X, Info,
 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 
 const SAUDI_CITIES = [
   "الرياض", "جدة", "مكة المكرمة", "المدينة المنورة", "الدمام",
@@ -43,8 +44,6 @@ interface SearchResult {
   reviewCount?: number;
   types?: string;
   businessStatus?: string;
-  phone?: string;
-  website?: string;
 }
 
 interface BufferItem {
@@ -58,12 +57,18 @@ interface BufferItem {
   importedCompanyId?: string;
   googlePlaceId?: string;
   rating?: string;
+  reviewCount?: number;
 }
 
 interface ImportDialogData {
   item: BufferItem;
   industry: string;
   city: string;
+  name: string;
+  phone: string;
+  website: string;
+  address: string;
+  notes: string;
 }
 
 export default function GoogleImport() {
@@ -75,7 +80,7 @@ export default function GoogleImport() {
   const [searchResults, setSearchResults] = useState<SearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const [addedIds, setAddedIds] = useState<Set<string>>(new Set());
-
+  const [loadingPlaceId, setLoadingPlaceId] = useState<string | null>(null);
   const [importDialog, setImportDialog] = useState<ImportDialogData | null>(null);
 
   const { data: buffer = [], isLoading: bufferLoading } = useQuery<BufferItem[]>({
@@ -115,7 +120,7 @@ export default function GoogleImport() {
       apiRequest("POST", "/api/crm/google-import/import-company", data).then((r) => r.json()),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["/api/crm/google-import/buffer"] });
-      qc.invalidateQueries({ queryKey: ["/api/companies"] });
+      qc.invalidateQueries({ queryKey: ["/api/crm/companies"] });
       setImportDialog(null);
       toast({ title: "تم استيراد الشركة بنجاح في CRM" });
     },
@@ -144,8 +149,63 @@ export default function GoogleImport() {
     }
   };
 
+  const handleAddToBuffer = async (result: SearchResult) => {
+    setLoadingPlaceId(result.googlePlaceId);
+    try {
+      let phone = "";
+      let website = "";
+      try {
+        const detailRes = await apiRequest("GET", `/api/crm/google-import/place-details/${result.googlePlaceId}`);
+        if (detailRes.ok) {
+          const detail = await detailRes.json();
+          phone = detail.formatted_phone_number || detail.international_phone_number || "";
+          website = detail.website || "";
+        }
+      } catch {
+        // Place details optional - continue without them
+      }
+      addToBufferMutation.mutate({
+        googlePlaceId: result.googlePlaceId,
+        name: result.name,
+        address: result.address,
+        phone,
+        website,
+        lat: result.lat?.toString(),
+        lng: result.lng?.toString(),
+        rating: result.rating?.toString(),
+        reviewCount: result.reviewCount,
+        types: result.types,
+        status: "pending",
+      });
+    } catch {
+      toast({ title: "خطأ في الإضافة", variant: "destructive" });
+    } finally {
+      setLoadingPlaceId(null);
+    }
+  };
+
+  const detectCityFromAddress = (address: string): string => {
+    const found = SAUDI_CITIES.find((c) => address.includes(c));
+    return found || "الرياض";
+  };
+
   const openImportDialog = (item: BufferItem) => {
-    setImportDialog({ item, industry: "other", city: item.city || "" });
+    const detectedCity = item.city || detectCityFromAddress(item.address || "") || "الرياض";
+    const notes = [
+      item.rating ? `تقييم Google: ${item.rating} نجوم` : "",
+      item.reviewCount ? `عدد التقييمات: ${item.reviewCount?.toLocaleString()}` : "",
+    ].filter(Boolean).join("\n");
+
+    setImportDialog({
+      item,
+      industry: "other",
+      city: detectedCity,
+      name: item.name,
+      phone: item.phone || "",
+      website: item.website || "",
+      address: item.address || "",
+      notes,
+    });
   };
 
   const pendingBuffer = (buffer as BufferItem[]).filter((b) => b.status === "pending");
@@ -153,7 +213,6 @@ export default function GoogleImport() {
 
   return (
     <div className="space-y-6" dir="rtl">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">استيراد من Google Maps</h1>
@@ -169,7 +228,6 @@ export default function GoogleImport() {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* LEFT: Search Panel */}
         <div className="lg:col-span-3 space-y-4">
-          {/* Search Form */}
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
             <h2 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <Search className="h-5 w-5 text-blue-600" /> البحث في Google Maps
@@ -181,7 +239,7 @@ export default function GoogleImport() {
                   value={keywords}
                   onChange={(e) => setKeywords(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  placeholder="مثال: شركات تقنية، مطاعم، عيادات طب أسنان..."
+                  placeholder="مثال: صيدليات، مطاعم، عيادات طب أسنان..."
                   data-testid="input-search-keywords"
                 />
               </div>
@@ -202,19 +260,11 @@ export default function GoogleImport() {
             </Button>
           </div>
 
-          {/* API Key Warning */}
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-3">
-            <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-semibold text-amber-800">تنبيه: مفتاح Google Maps API مطلوب</p>
-              <p className="text-xs text-amber-700 mt-0.5">
-                يتطلب هذا الميزة إضافة <code className="bg-amber-100 px-1 rounded">GOOGLE_MAPS_API_KEY</code> في إعدادات المتغيرات البيئية.
-                يمكنك الحصول عليه من <a href="https://console.cloud.google.com" target="_blank" rel="noopener noreferrer" className="underline font-medium">Google Cloud Console</a>.
-              </p>
-            </div>
+          <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 flex gap-2 items-start">
+            <Info className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
+            <p className="text-xs text-blue-700">عند الضغط على <strong>إضافة</strong> سيتم جلب رقم الهاتف والموقع الإلكتروني تلقائياً من Google.</p>
           </div>
 
-          {/* Search Results */}
           {searchResults.length > 0 && (
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="px-5 py-3 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
@@ -226,6 +276,7 @@ export default function GoogleImport() {
               <div className="divide-y divide-gray-50 max-h-[500px] overflow-y-auto">
                 {searchResults.map((result) => {
                   const isAdded = addedIds.has(result.googlePlaceId) || (buffer as BufferItem[]).some((b) => b.googlePlaceId === result.googlePlaceId);
+                  const isLoading = loadingPlaceId === result.googlePlaceId;
                   return (
                     <div key={result.googlePlaceId} className="p-4 hover:bg-gray-50/60 transition-colors flex gap-3" data-testid={`result-${result.googlePlaceId}`}>
                       <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
@@ -256,22 +307,13 @@ export default function GoogleImport() {
                           <Button
                             size="sm"
                             variant={isAdded ? "outline" : "default"}
-                            disabled={isAdded || addToBufferMutation.isPending}
-                            onClick={() => addToBufferMutation.mutate({
-                              googlePlaceId: result.googlePlaceId,
-                              name: result.name,
-                              address: result.address,
-                              lat: result.lat?.toString(),
-                              lng: result.lng?.toString(),
-                              rating: result.rating?.toString(),
-                              reviewCount: result.reviewCount,
-                              types: result.types,
-                              status: "pending",
-                            })}
+                            disabled={isAdded || isLoading || addToBufferMutation.isPending}
+                            onClick={() => !isAdded && handleAddToBuffer(result)}
                             className={`flex-shrink-0 h-8 text-xs gap-1 ${!isAdded ? "bg-blue-600 hover:bg-blue-700" : ""}`}
                             data-testid={`btn-add-${result.googlePlaceId}`}
                           >
-                            {isAdded ? <><CheckCircle className="h-3 w-3" /> مضافة</> : <><Plus className="h-3 w-3" /> إضافة</>}
+                            {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : isAdded ? <CheckCircle className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
+                            {isLoading ? "جاري الجلب..." : isAdded ? "مضافة" : "إضافة"}
                           </Button>
                         </div>
                       </div>
@@ -307,15 +349,21 @@ export default function GoogleImport() {
                 <p className="text-xs text-gray-400 mt-1">ابحث واضف شركات من اليسار</p>
               </div>
             ) : (
-              <div className="divide-y divide-gray-50 max-h-[400px] overflow-y-auto">
+              <div className="divide-y divide-gray-50 max-h-[450px] overflow-y-auto">
                 {pendingBuffer.map((item) => (
                   <div key={item.id} className="p-3 hover:bg-gray-50/60 transition-colors" data-testid={`buffer-item-${item.id}`}>
                     <div className="flex items-start gap-2">
                       <div className="flex-1 min-w-0">
                         <p className="font-semibold text-sm text-gray-900 truncate">{item.name}</p>
-                        {item.address && <p className="text-xs text-gray-400 truncate mt-0.5">{item.address}</p>}
-                        {item.phone && <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5"><Phone className="h-3 w-3" />{item.phone}</p>}
-                        {item.website && <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5 truncate"><Globe className="h-3 w-3" />{item.website}</p>}
+                        {item.address && <p className="text-xs text-gray-400 truncate mt-0.5 flex items-center gap-1"><MapPin className="h-3 w-3 flex-shrink-0" />{item.address}</p>}
+                        {item.phone && <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5"><Phone className="h-3 w-3 text-green-500" />{item.phone}</p>}
+                        {item.website && <p className="text-xs text-blue-500 flex items-center gap-1 mt-0.5 truncate"><Globe className="h-3 w-3 flex-shrink-0" />{item.website}</p>}
+                        {item.rating && (
+                          <p className="text-xs text-amber-600 flex items-center gap-0.5 mt-0.5">
+                            <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                            {item.rating}
+                          </p>
+                        )}
                       </div>
                       <div className="flex flex-col gap-1 flex-shrink-0">
                         <Button size="sm" variant="default" className="h-7 text-xs gap-1 bg-green-600 hover:bg-green-700 px-2" onClick={() => openImportDialog(item)} data-testid={`btn-import-${item.id}`}>
@@ -332,7 +380,6 @@ export default function GoogleImport() {
             )}
           </div>
 
-          {/* Already imported */}
           {importedBuffer.length > 0 && (
             <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
               <div className="px-5 py-3 border-b border-gray-50 bg-green-50/50">
@@ -359,46 +406,109 @@ export default function GoogleImport() {
 
       {/* Import Dialog */}
       <Dialog open={!!importDialog} onOpenChange={(open) => !open && setImportDialog(null)}>
-        <DialogContent dir="rtl" className="max-w-md">
+        <DialogContent dir="rtl" className="max-w-lg">
           <DialogHeader><DialogTitle className="text-right">استيراد إلى CRM</DialogTitle></DialogHeader>
           {importDialog && (
-            <div className="space-y-4">
+            <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
               <div className="bg-blue-50 rounded-xl p-3 border border-blue-100">
-                <p className="font-semibold text-gray-900 text-sm">{importDialog.item.name}</p>
-                {importDialog.item.address && <p className="text-xs text-gray-500 mt-0.5">{importDialog.item.address}</p>}
+                <p className="text-xs text-blue-600 font-semibold mb-1">بيانات من Google Maps</p>
+                {importDialog.item.rating && (
+                  <p className="text-xs text-amber-600 flex items-center gap-1">
+                    <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                    {importDialog.item.rating} ({importDialog.item.reviewCount?.toLocaleString() || 0} تقييم)
+                  </p>
+                )}
               </div>
+
               <div>
-                <Label className="text-sm mb-1.5 block">القطاع / الصناعة</Label>
-                <Select value={importDialog.industry} onValueChange={(v) => setImportDialog((d) => d ? { ...d, industry: v } : d)}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {INDUSTRIES.map((i) => <SelectItem key={i.value} value={i.value}>{i.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                <Label className="text-sm mb-1.5 block">اسم الشركة *</Label>
+                <Input
+                  value={importDialog.name}
+                  onChange={(e) => setImportDialog((d) => d ? { ...d, name: e.target.value } : d)}
+                  data-testid="input-import-name"
+                />
               </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label className="text-sm mb-1.5 block">المدينة</Label>
+                  <Select
+                    value={importDialog.city || "الرياض"}
+                    onValueChange={(v) => setImportDialog((d) => d ? { ...d, city: v } : d)}
+                  >
+                    <SelectTrigger data-testid="select-import-city"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {SAUDI_CITIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label className="text-sm mb-1.5 block">القطاع</Label>
+                  <Select value={importDialog.industry} onValueChange={(v) => setImportDialog((d) => d ? { ...d, industry: v } : d)}>
+                    <SelectTrigger data-testid="select-import-industry"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {INDUSTRIES.map((i) => <SelectItem key={i.value} value={i.value}>{i.label}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
               <div>
-                <Label className="text-sm mb-1.5 block">المدينة</Label>
-                <Select value={importDialog.city} onValueChange={(v) => setImportDialog((d) => d ? { ...d, city: v } : d)}>
-                  <SelectTrigger><SelectValue placeholder="اختر المدينة..." /></SelectTrigger>
-                  <SelectContent>
-                    {SAUDI_CITIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+                <Label className="text-sm mb-1.5 block">رقم الهاتف</Label>
+                <Input
+                  value={importDialog.phone}
+                  onChange={(e) => setImportDialog((d) => d ? { ...d, phone: e.target.value } : d)}
+                  placeholder="+966 5x xxx xxxx"
+                  data-testid="input-import-phone"
+                />
               </div>
+
+              <div>
+                <Label className="text-sm mb-1.5 block">الموقع الإلكتروني</Label>
+                <Input
+                  value={importDialog.website}
+                  onChange={(e) => setImportDialog((d) => d ? { ...d, website: e.target.value } : d)}
+                  placeholder="https://..."
+                  data-testid="input-import-website"
+                />
+              </div>
+
+              <div>
+                <Label className="text-sm mb-1.5 block">العنوان</Label>
+                <Input
+                  value={importDialog.address}
+                  onChange={(e) => setImportDialog((d) => d ? { ...d, address: e.target.value } : d)}
+                  data-testid="input-import-address"
+                />
+              </div>
+
+              {importDialog.notes && (
+                <div>
+                  <Label className="text-sm mb-1.5 block">ملاحظات</Label>
+                  <Textarea
+                    value={importDialog.notes}
+                    onChange={(e) => setImportDialog((d) => d ? { ...d, notes: e.target.value } : d)}
+                    rows={2}
+                    className="text-xs"
+                    data-testid="textarea-import-notes"
+                  />
+                </div>
+              )}
             </div>
           )}
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setImportDialog(null)}>إلغاء</Button>
             <Button
-              disabled={importCompanyMutation.isPending}
+              disabled={importCompanyMutation.isPending || !importDialog?.name?.trim()}
               onClick={() => importDialog && importCompanyMutation.mutate({
                 bufferId: importDialog.item.id,
-                name: importDialog.item.name,
-                address: importDialog.item.address || "",
-                phone: importDialog.item.phone || "",
-                website: importDialog.item.website || "",
+                name: importDialog.name.trim(),
+                address: importDialog.address,
+                phone: importDialog.phone,
+                website: importDialog.website,
                 city: importDialog.city,
                 industry: importDialog.industry,
+                notes: importDialog.notes,
               })}
               className="gap-2 bg-green-600 hover:bg-green-700"
               data-testid="btn-confirm-import"
