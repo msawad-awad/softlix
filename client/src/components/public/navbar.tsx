@@ -44,6 +44,7 @@ export function PublicNavbar({ lang = "ar", onLangChange }: NavbarProps) {
     { label: isAr ? "الرئيسية" : "Home", href: "/" },
     { label: isAr ? "من نحن" : "About", href: "/about" },
     { label: isAr ? "المشاريع" : "Projects", href: "/projects" },
+    { label: isAr ? "عملاؤنا" : "Clients", href: "/clients" },
     { label: isAr ? "المدونة" : "Blog", href: "/blog" },
     { label: isAr ? "تواصل معنا" : "Contact", href: "/contact" },
   ];

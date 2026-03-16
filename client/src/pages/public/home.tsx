@@ -419,9 +419,13 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
           {/* Client logos */}
           {clients && clients.length > 0 && (
             <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 16, marginTop: 28 }} className="logo-cloud-responsive">
-              {clients.slice(0, 6).map((c: any, i: number) => (
-                <div key={i} style={{ minHeight: 84, background: "#fff", border: "1px solid #e2e8f0", borderRadius: 18, display: "grid", placeItems: "center", fontWeight: 800, color: "#334155", boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: "0 12px", textAlign: "center", fontSize: 13 }}>
-                  {c.name ?? c.nameAr ?? c}
+              {clients.slice(0, 12).map((c: any, i: number) => (
+                <div key={i} style={{ minHeight: 84, background: "#fff", border: "1px solid #e2e8f0", borderRadius: 18, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6, boxShadow: "0 20px 50px rgba(15,23,42,0.06)", padding: "12px", textAlign: "center" }}>
+                  {c.logoUrl ? (
+                    <img src={c.logoUrl} alt={c.name} style={{ maxHeight: 44, maxWidth: "100%", objectFit: "contain", filter: "grayscale(15%)" }} />
+                  ) : (
+                    <span style={{ fontWeight: 800, color: "#334155", fontSize: 12, lineHeight: 1.3 }}>{c.name}</span>
+                  )}
                 </div>
               ))}
             </div>

@@ -34,6 +34,7 @@ import ServiceDetail from "@/pages/public/service-detail";
 import PublicProjects from "@/pages/public/projects";
 import PublicBlog, { BlogPostPage, CategoryPage } from "@/pages/public/blog";
 import PublicContact from "@/pages/public/contact";
+import PublicClients from "@/pages/public/clients";
 
 import WebsiteOverview from "@/pages/website/index";
 import WebsiteServices from "@/pages/website/services";
@@ -143,6 +144,7 @@ function PublicSite() {
       <Route path="/contact-us/"><PublicContact {...p} /></Route>
       <Route path="/contact"><PublicContact {...p} /></Route>
       <Route path="/pricing"><PublicPricing lang={lang} /></Route>
+      <Route path="/clients"><PublicClients {...p} /></Route>
       {/* Category pages: /category/{cat}/ */}
       <Route path="/category/:cat">{(params) => <CategoryPage {...p} category={decodeURIComponent(params.cat)} />}</Route>
       {/* Service-specific old WordPress URLs */}
