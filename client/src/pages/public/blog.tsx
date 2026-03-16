@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useRoute } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { PublicNavbar } from "@/components/public/navbar";
@@ -9,6 +9,17 @@ import type { BlogPost } from "@shared/schema";
 import { useSEO } from "@/hooks/use-seo";
 
 const TENANT_ID = (import.meta.env.VITE_TENANT_ID as string) || "";
+
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" ? window.innerWidth <= breakpoint : false);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth <= breakpoint);
+    window.addEventListener("resize", handler);
+    handler();
+    return () => window.removeEventListener("resize", handler);
+  }, [breakpoint]);
+  return isMobile;
+}
 
 const BRAND = "#e59269";
 const BRAND_DARK = "#cb7147";
@@ -166,6 +177,7 @@ interface BlogProps { lang?: "ar" | "en"; onLangChange?: (lang: "ar" | "en") => 
 
 function BlogList({ lang = "ar", onLangChange, initialCategory }: BlogProps) {
   const isAr = lang === "ar";
+  const isMobile = useIsMobile();
   const [activeCategory, setActiveCategory] = useState(initialCategory || "الكل");
   const [search, setSearch] = useState("");
   const [searchInput, setSearchInput] = useState("");
@@ -194,93 +206,122 @@ function BlogList({ lang = "ar", onLangChange, initialCategory }: BlogProps) {
 
   const CONTAINER: React.CSSProperties = { width: "min(1280px, calc(100% - 32px))", marginInline: "auto" };
 
+  const heroGrid: React.CSSProperties = isMobile
+    ? { display: "grid", gridTemplateColumns: "1fr", gap: 28, alignItems: "center" }
+    : { display: "grid", gridTemplateColumns: "1.08fr .92fr", gap: 28, alignItems: "center" };
+
+  const articlesLayout: React.CSSProperties = isMobile
+    ? { display: "grid", gridTemplateColumns: "1fr", gap: 24, alignItems: "start" }
+    : { display: "grid", gridTemplateColumns: "minmax(0,1fr) 320px", gap: 24, alignItems: "start" };
+
+  const postsGrid: React.CSSProperties = isMobile
+    ? { display: "grid", gridTemplateColumns: "1fr", gap: 20 }
+    : { display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 20 };
+
+  const sidebarStyle: React.CSSProperties = isMobile
+    ? { display: "grid", gap: 18, position: "static" }
+    : { display: "grid", gap: 18, position: "sticky", top: 110 };
+
+  const catsGrid: React.CSSProperties = isMobile
+    ? { display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 18 }
+    : { display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 18 };
+
+  const newsletterGrid: React.CSSProperties = isMobile
+    ? { display: "grid", gridTemplateColumns: "1fr", gap: 20, position: "relative", zIndex: 1 }
+    : { display: "grid", gridTemplateColumns: "1.1fr .9fr", gap: 20, alignItems: "center", position: "relative", zIndex: 1 };
+
+  const statsGrid: React.CSSProperties = {
+    display: "grid",
+    gridTemplateColumns: "repeat(3,1fr)",
+    gap: 14,
+    marginTop: 28,
+  };
+
   return (
-    <div dir="rtl" style={{ fontFamily: "'Cairo', system-ui, sans-serif", color: TEXT, lineHeight: 1.8, minHeight: "100vh", ...GRADIENT_BG }}>
+    <div dir="rtl" style={{ fontFamily: "'Cairo', system-ui, sans-serif", color: TEXT, lineHeight: 1.8, minHeight: "100vh", overflowX: "hidden", ...GRADIENT_BG }}>
       <PublicNavbar lang={lang} onLangChange={onLangChange} />
 
       {/* ── HERO ── */}
-      <section style={{ padding: "54px 0 28px", overflow: "hidden" }}>
-        <div style={{ ...CONTAINER, display: "grid", gridTemplateColumns: "1.08fr .92fr", gap: 28, alignItems: "center" }}>
-
-          {/* Left col */}
-          <div>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "8px 14px", borderRadius: 999, background: "rgba(255,255,255,.78)", border: `1px solid ${LINE}`, boxShadow: "0 10px 28px rgba(15,23,42,.05)", color: "#334155", fontSize: ".92rem", fontWeight: 800, marginBottom: 20 }}>
-              <span style={{ width: 10, height: 10, borderRadius: "50%", background: `linear-gradient(135deg,${BRAND},${ACCENT})`, flexShrink: 0 }} />
-              Blog / Insights / Articles
-            </div>
-            <h1 style={{ margin: 0, fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", lineHeight: 1.1, fontWeight: 900, letterSpacing: "-.03em", maxWidth: "11ch", color: TEXT }}>
-              مدونة Softlix للمحتوى التقني والتجاري الحديث
-            </h1>
-            <p style={{ margin: "20px 0 0", fontSize: "1.05rem", color: MUTED, maxWidth: "63ch" }}>
-              استكشف مقالاتنا حول برمجة التطبيقات، تصميم المواقع، الهوية البصرية، التحول الرقمي، والتقنيات التي تساعد الشركات على النمو في السوق السعودي والخليجي.
-            </p>
-            <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: 28 }}>
-              <a href="#articles" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 50, padding: "0 22px", borderRadius: 999, border: "1px solid transparent", fontWeight: 800, color: "#fff", background: `linear-gradient(135deg,${BRAND},${BRAND_DARK})`, boxShadow: `0 14px 30px rgba(229,146,105,.26)` }}>ابدأ القراءة</a>
-              <a href="#categories" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 50, padding: "0 22px", borderRadius: 999, border: `1px solid ${LINE}`, fontWeight: 800, background: "rgba(255,255,255,.82)", color: TEXT }}>استعرض التصنيفات</a>
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14, marginTop: 28 }}>
-              {[{ v: `${allPosts.length}+`, l: "مقالة متخصصة" }, { v: "4", l: "تصنيفات رئيسية" }, { v: "2025", l: "أحدث المقالات" }].map(s => (
-                <div key={s.l} style={{ background: "rgba(255,255,255,.8)", border: `1px solid rgba(15,23,42,.06)`, borderRadius: 22, padding: 18, boxShadow: "0 12px 40px rgba(15,23,42,.05)" }}>
-                  <strong style={{ display: "block", fontSize: "1.8rem", lineHeight: 1, marginBottom: 8, color: TEXT }}>{s.v}</strong>
-                  <span style={{ color: MUTED, fontSize: ".92rem", fontWeight: 700 }}>{s.l}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Right col – decorative showcase */}
-          <div style={{ position: "relative", minHeight: 590 }}>
-            <div style={{ position: "absolute", inset: "24px 0 0 42px", borderRadius: 34, overflow: "hidden", background: "linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.78))", border: "1px solid rgba(255,255,255,.8)", boxShadow: SHADOW }}>
-              {/* Window dots */}
-              <div style={{ display: "flex", gap: 8, padding: "18px 20px 0" }}>
-                {[0, 1, 2].map(i => <span key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: "rgba(15,23,42,.18)" }} />)}
+      <section style={{ padding: "54px 0 28px" }}>
+        <div style={CONTAINER}>
+          <div style={heroGrid}>
+            {/* Left col */}
+            <div>
+              <div style={{ display: "inline-flex", alignItems: "center", gap: 10, padding: "8px 14px", borderRadius: 999, background: "rgba(255,255,255,.78)", border: `1px solid ${LINE}`, boxShadow: "0 10px 28px rgba(15,23,42,.05)", color: "#334155", fontSize: ".92rem", fontWeight: 800, marginBottom: 20 }}>
+                <span style={{ width: 10, height: 10, borderRadius: "50%", background: `linear-gradient(135deg,${BRAND},${ACCENT})`, flexShrink: 0 }} />
+                Blog / Insights / Articles
               </div>
-              {/* Showcase grid */}
-              <div style={{ padding: 18, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                {/* Col 1 */}
-                <div style={{ borderRadius: 24, padding: 18, display: "grid", gap: 14, background: SURFACE, border: `1px solid ${LINE}`, boxShadow: "0 14px 40px rgba(15,23,42,.06)" }}>
-                  <div style={{ borderRadius: 20, minHeight: 140, overflow: "hidden", color: "#fff", padding: 18, background: `linear-gradient(135deg, rgba(34,41,51,.95), rgba(60,72,88,.92))`, position: "relative" }}>
-                    <div style={{ position: "absolute", width: 180, height: 180, borderRadius: "50%", left: -30, bottom: -90, background: "rgba(255,255,255,.08)" }} />
-                    <strong style={{ display: "block", fontSize: "1.1rem", lineHeight: 1.25, maxWidth: "11ch" }}>Content designed to inform and convert</strong>
-                    <span style={{ display: "inline-flex", marginTop: 10, color: "rgba(255,255,255,.78)", fontSize: ".84rem", fontWeight: 700 }}>Programming • Design • Strategy</span>
+              <h1 style={{ margin: 0, fontSize: "clamp(1.8rem, 3.5vw, 2.8rem)", lineHeight: 1.1, fontWeight: 900, letterSpacing: "-.03em", maxWidth: "18ch", color: TEXT }}>
+                مدونة Softlix للمحتوى التقني والتجاري الحديث
+              </h1>
+              <p style={{ margin: "20px 0 0", fontSize: "1.05rem", color: MUTED }}>
+                استكشف مقالاتنا حول برمجة التطبيقات، تصميم المواقع، الهوية البصرية، والتقنيات التي تساعد الشركات على النمو.
+              </p>
+              <div style={{ display: "flex", gap: 14, flexWrap: "wrap", marginTop: 28 }}>
+                <a href="#articles" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 50, padding: "0 22px", borderRadius: 999, border: "1px solid transparent", fontWeight: 800, color: "#fff", background: `linear-gradient(135deg,${BRAND},${BRAND_DARK})`, boxShadow: `0 14px 30px rgba(229,146,105,.26)` }}>ابدأ القراءة</a>
+                <a href="#categories" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", minHeight: 50, padding: "0 22px", borderRadius: 999, border: `1px solid ${LINE}`, fontWeight: 800, background: "rgba(255,255,255,.82)", color: TEXT }}>استعرض التصنيفات</a>
+              </div>
+              <div style={statsGrid}>
+                {[{ v: `${allPosts.length}+`, l: "مقالة متخصصة" }, { v: "4", l: "تصنيفات رئيسية" }, { v: "2025", l: "أحدث المقالات" }].map(s => (
+                  <div key={s.l} style={{ background: "rgba(255,255,255,.8)", border: `1px solid rgba(15,23,42,.06)`, borderRadius: 22, padding: 18, boxShadow: "0 12px 40px rgba(15,23,42,.05)" }}>
+                    <strong style={{ display: "block", fontSize: "1.8rem", lineHeight: 1, marginBottom: 8, color: TEXT }}>{s.v}</strong>
+                    <span style={{ color: MUTED, fontSize: ".92rem", fontWeight: 700 }}>{s.l}</span>
                   </div>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                    {[["Tech", "برمجة وتقنية"], ["UI/UX", "تصميم وتجربة"], ["SEO", "محتوى قابل للاكتشاف"], ["Growth", "قيمة للأعمال"]].map(([a, b]) => (
-                      <div key={a} style={{ borderRadius: 16, padding: 12, background: SURFACE, border: `1px solid ${LINE}`, boxShadow: "0 8px 24px rgba(15,23,42,.05)" }}>
-                        <strong style={{ display: "block", fontSize: "1rem", marginBottom: 4, color: TEXT }}>{a}</strong>
-                        <span style={{ color: MUTED, fontSize: ".82rem", fontWeight: 700 }}>{b}</span>
+                ))}
+              </div>
+            </div>
+
+            {/* Right col – decorative showcase (hidden on mobile) */}
+            {!isMobile && (
+              <div style={{ position: "relative", minHeight: 590 }}>
+                <div style={{ position: "absolute", inset: "24px 0 0 42px", borderRadius: 34, overflow: "hidden", background: "linear-gradient(180deg, rgba(255,255,255,.95), rgba(255,255,255,.78))", border: "1px solid rgba(255,255,255,.8)", boxShadow: SHADOW }}>
+                  <div style={{ display: "flex", gap: 8, padding: "18px 20px 0" }}>
+                    {[0, 1, 2].map(i => <span key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: "rgba(15,23,42,.18)" }} />)}
+                  </div>
+                  <div style={{ padding: 18, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                    <div style={{ borderRadius: 24, padding: 18, display: "grid", gap: 14, background: SURFACE, border: `1px solid ${LINE}`, boxShadow: "0 14px 40px rgba(15,23,42,.06)" }}>
+                      <div style={{ borderRadius: 20, minHeight: 140, overflow: "hidden", color: "#fff", padding: 18, background: `linear-gradient(135deg, rgba(34,41,51,.95), rgba(60,72,88,.92))`, position: "relative" }}>
+                        <div style={{ position: "absolute", width: 180, height: 180, borderRadius: "50%", left: -30, bottom: -90, background: "rgba(255,255,255,.08)" }} />
+                        <strong style={{ display: "block", fontSize: "1.1rem", lineHeight: 1.25, maxWidth: "11ch" }}>Content designed to inform and convert</strong>
+                        <span style={{ display: "inline-flex", marginTop: 10, color: "rgba(255,255,255,.78)", fontSize: ".84rem", fontWeight: 700 }}>Programming • Design • Strategy</span>
                       </div>
-                    ))}
-                  </div>
-                </div>
-                {/* Col 2 */}
-                <div style={{ borderRadius: 24, padding: 18, display: "grid", gap: 12, background: SURFACE, border: `1px solid ${LINE}`, boxShadow: "0 14px 40px rgba(15,23,42,.06)", alignContent: "start" }}>
-                  <strong style={{ fontSize: "1rem", color: TEXT }}>توزيع المحتوى</strong>
-                  <div style={{ display: "grid", gap: 10 }}>
-                    {[90, 82, 76, 68].map((w, i) => (
-                      <div key={i} style={{ height: 10, borderRadius: 999, background: "rgba(15,23,42,.06)", overflow: "hidden" }}>
-                        <div style={{ height: "100%", width: `${w}%`, borderRadius: 999, background: `linear-gradient(90deg,${BRAND},${ACCENT})` }} />
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                        {[["Tech", "برمجة وتقنية"], ["UI/UX", "تصميم وتجربة"], ["SEO", "محتوى قابل للاكتشاف"], ["Growth", "قيمة للأعمال"]].map(([a, b]) => (
+                          <div key={a} style={{ borderRadius: 16, padding: 12, background: SURFACE, border: `1px solid ${LINE}`, boxShadow: "0 8px 24px rgba(15,23,42,.05)" }}>
+                            <strong style={{ display: "block", fontSize: "1rem", marginBottom: 4, color: TEXT }}>{a}</strong>
+                            <span style={{ color: MUTED, fontSize: ".82rem", fontWeight: 700 }}>{b}</span>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                  {[["مقالات حديثة", "محتوى جديد موجه لأصحاب الأعمال والعملاء المحتملين"], ["قيمة حقيقية", "شرح تقني وتجاري بلغة واضحة واحترافية"]].map(([t, d]) => (
-                    <div key={t} style={{ borderRadius: 16, padding: 12, background: SURFACE, border: `1px solid ${LINE}`, boxShadow: "0 8px 24px rgba(15,23,42,.05)" }}>
-                      <strong style={{ display: "block", fontSize: "1rem", marginBottom: 4, color: TEXT }}>{t}</strong>
-                      <span style={{ color: MUTED, fontSize: ".82rem", fontWeight: 700 }}>{d}</span>
                     </div>
-                  ))}
+                    <div style={{ borderRadius: 24, padding: 18, display: "grid", gap: 12, background: SURFACE, border: `1px solid ${LINE}`, boxShadow: "0 14px 40px rgba(15,23,42,.06)", alignContent: "start" }}>
+                      <strong style={{ fontSize: "1rem", color: TEXT }}>توزيع المحتوى</strong>
+                      <div style={{ display: "grid", gap: 10 }}>
+                        {[90, 82, 76, 68].map((w, i) => (
+                          <div key={i} style={{ height: 10, borderRadius: 999, background: "rgba(15,23,42,.06)", overflow: "hidden" }}>
+                            <div style={{ height: "100%", width: `${w}%`, borderRadius: 999, background: `linear-gradient(90deg,${BRAND},${ACCENT})` }} />
+                          </div>
+                        ))}
+                      </div>
+                      {[["مقالات حديثة", "محتوى جديد موجه لأصحاب الأعمال"], ["قيمة حقيقية", "شرح تقني وتجاري واضح"]].map(([t, d]) => (
+                        <div key={t} style={{ borderRadius: 16, padding: 12, background: SURFACE, border: `1px solid ${LINE}`, boxShadow: "0 8px 24px rgba(15,23,42,.05)" }}>
+                          <strong style={{ display: "block", fontSize: "1rem", marginBottom: 4, color: TEXT }}>{t}</strong>
+                          <span style={{ color: MUTED, fontSize: ".82rem", fontWeight: 700 }}>{d}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div style={{ position: "absolute", left: 0, top: 86, width: 215, zIndex: 3, borderRadius: 22, padding: 18, background: SURFACE, border: `1px solid ${LINE}`, boxShadow: SHADOW, backdropFilter: "blur(12px)" }}>
+                  <strong style={{ display: "block", fontSize: "1.1rem", marginBottom: 8, color: TEXT }}>محتوى احترافي</strong>
+                  <p style={{ margin: 0, color: MUTED, fontSize: ".9rem", lineHeight: 1.75 }}>واجهة مدونة حديثة تعكس جودة البراند.</p>
+                </div>
+                <div style={{ position: "absolute", right: 0, bottom: 52, width: 236, zIndex: 3, borderRadius: 22, padding: 18, background: SURFACE, border: `1px solid ${LINE}`, boxShadow: SHADOW, backdropFilter: "blur(12px)" }}>
+                  <strong style={{ display: "block", fontSize: "1.1rem", marginBottom: 8, color: TEXT }}>جاهزة للتوسع</strong>
+                  <p style={{ margin: 0, color: MUTED, fontSize: ".9rem", lineHeight: 1.75 }}>فلترة بالتصنيف، بحث مباشر — كل شيء جاهز.</p>
                 </div>
               </div>
-            </div>
-            {/* Floating notes */}
-            <div style={{ position: "absolute", left: 0, top: 86, width: 215, zIndex: 3, borderRadius: 22, padding: 18, background: SURFACE, border: `1px solid ${LINE}`, boxShadow: SHADOW, backdropFilter: "blur(12px)" }}>
-              <strong style={{ display: "block", fontSize: "1.1rem", marginBottom: 8, color: TEXT }}>محتوى احترافي</strong>
-              <p style={{ margin: 0, color: MUTED, fontSize: ".9rem", lineHeight: 1.75 }}>واجهة مدونة حديثة تعكس جودة البراند وتدعم القراءة والتصفح.</p>
-            </div>
-            <div style={{ position: "absolute", right: 0, bottom: 52, width: 236, zIndex: 3, borderRadius: 22, padding: 18, background: SURFACE, border: `1px solid ${LINE}`, boxShadow: SHADOW, backdropFilter: "blur(12px)" }}>
-              <strong style={{ display: "block", fontSize: "1.1rem", marginBottom: 8, color: TEXT }}>جاهزة للتوسع</strong>
-              <p style={{ margin: 0, color: MUTED, fontSize: ".9rem", lineHeight: 1.75 }}>فلترة بالتصنيف، بحث مباشر، وصفحات مقال داخلية — كل شيء جاهز.</p>
-            </div>
+            )}
           </div>
         </div>
       </section>
@@ -292,7 +333,7 @@ function BlogList({ lang = "ar", onLangChange, initialCategory }: BlogProps) {
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 18, flexWrap: "wrap", marginBottom: 24 }}>
             <div>
               <h2 style={{ margin: "0 0 10px", fontSize: "clamp(1.9rem, 3vw, 3rem)", lineHeight: 1.15, fontWeight: 900, color: TEXT }}>أحدث المقالات</h2>
-              <p style={{ margin: 0, color: MUTED, fontSize: "1rem" }}>نسخة حديثة لعرض المدونة مع بطاقات أوضح، صور بارزة، وعرض أفضل للعناوين والمقتطفات.</p>
+              <p style={{ margin: 0, color: MUTED, fontSize: "1rem" }}>مقالات متخصصة بعناوين واضحة ومقتطفات مفيدة.</p>
             </div>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               {CATEGORIES.map(cat => (
@@ -305,8 +346,7 @@ function BlogList({ lang = "ar", onLangChange, initialCategory }: BlogProps) {
           </div>
 
           {/* Content layout: posts + sidebar */}
-          <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 320px", gap: 24, alignItems: "start" }}>
-
+          <div style={articlesLayout}>
             {/* Posts grid */}
             <div>
               {filtered.length === 0 ? (
@@ -315,7 +355,7 @@ function BlogList({ lang = "ar", onLangChange, initialCategory }: BlogProps) {
                   <p style={{ margin: 0, fontWeight: 700 }}>لا توجد مقالات في هذا التصنيف</p>
                 </div>
               ) : (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 20 }}>
+                <div style={postsGrid}>
                   {filtered.map(post => <PostCard key={post.id} post={post} lang={lang} />)}
                 </div>
               )}
@@ -330,19 +370,20 @@ function BlogList({ lang = "ar", onLangChange, initialCategory }: BlogProps) {
             </div>
 
             {/* Sidebar */}
-            <aside style={{ display: "grid", gap: 18, position: "sticky", top: 110 }}>
+            <aside data-testid="blog-sidebar" style={sidebarStyle}>
               {/* Search */}
               <div style={{ borderRadius: 24, padding: 22, background: SURFACE, border: `1px solid ${LINE}`, boxShadow: "0 14px 40px rgba(15,23,42,.06)", backdropFilter: "blur(12px)" }}>
                 <h3 style={{ margin: "0 0 14px", fontSize: "1.08rem", fontWeight: 900, color: TEXT }}>البحث</h3>
                 <div style={{ display: "grid", gap: 10 }}>
                   <input
+                    data-testid="input-blog-search"
                     value={searchInput}
                     onChange={e => setSearchInput(e.target.value)}
                     onKeyDown={e => { if (e.key === "Enter") setSearch(searchInput); }}
                     placeholder="ابحث في المقالات..."
                     style={{ width: "100%", minHeight: 52, borderRadius: 16, border: `1px solid ${LINE}`, padding: "0 16px", fontFamily: "'Cairo', sans-serif", fontSize: ".96rem", outline: "none", background: "#fff", color: TEXT, boxSizing: "border-box" }}
                   />
-                  <button onClick={() => setSearch(searchInput)} style={{ minHeight: 50, borderRadius: 999, border: "1px solid transparent", fontWeight: 800, color: "#fff", background: `linear-gradient(135deg,${BRAND},${BRAND_DARK})`, cursor: "pointer", fontFamily: "'Cairo', sans-serif", fontSize: "1rem" }}>بحث</button>
+                  <button data-testid="btn-blog-search" onClick={() => setSearch(searchInput)} style={{ minHeight: 50, borderRadius: 999, border: "1px solid transparent", fontWeight: 800, color: "#fff", background: `linear-gradient(135deg,${BRAND},${BRAND_DARK})`, cursor: "pointer", fontFamily: "'Cairo', sans-serif", fontSize: "1rem" }}>بحث</button>
                 </div>
               </div>
 
@@ -384,9 +425,9 @@ function BlogList({ lang = "ar", onLangChange, initialCategory }: BlogProps) {
         <div style={CONTAINER}>
           <div style={{ marginBottom: 24 }}>
             <h2 style={{ margin: "0 0 10px", fontSize: "clamp(1.9rem, 3vw, 3rem)", lineHeight: 1.15, fontWeight: 900, color: TEXT }}>تصنيفات المحتوى</h2>
-            <p style={{ margin: 0, color: MUTED, fontSize: "1rem" }}>تنظيم المحتوى بهذه الطريقة يساعد الزائر على الوصول السريع إلى الموضوعات التي تهمه داخل المدونة.</p>
+            <p style={{ margin: 0, color: MUTED, fontSize: "1rem" }}>تنظيم المحتوى بهذه الطريقة يساعد الزائر على الوصول السريع إلى الموضوعات التي تهمه.</p>
           </div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 18 }}>
+          <div style={catsGrid}>
             {CATEGORY_META.map(cat => (
               <div key={cat.num} style={{ borderRadius: 24, padding: 24, background: SURFACE, border: `1px solid ${LINE}`, boxShadow: "0 14px 40px rgba(15,23,42,.06)", backdropFilter: "blur(12px)" }}>
                 <div style={{ width: 54, height: 54, display: "inline-grid", placeItems: "center", borderRadius: 18, marginBottom: 16, background: `linear-gradient(135deg, rgba(229,146,105,.18), rgba(130,183,53,.18))`, fontSize: "1.2rem", fontWeight: 900, color: TEXT }}>
@@ -403,19 +444,19 @@ function BlogList({ lang = "ar", onLangChange, initialCategory }: BlogProps) {
       {/* ── NEWSLETTER ── */}
       <section style={{ padding: "42px 0" }} id="newsletter">
         <div style={CONTAINER}>
-          <div style={{ borderRadius: 32, padding: 32, color: "#fff", background: `linear-gradient(135deg,${NAVY},#323c4b)`, position: "relative", overflow: "hidden", boxShadow: "0 22px 60px rgba(34,41,51,.22)" }}>
+          <div style={{ borderRadius: 32, padding: isMobile ? "24px 20px" : "28px 32px", color: "#fff", background: `linear-gradient(135deg,${NAVY},#323c4b)`, position: "relative", overflow: "hidden", boxShadow: "0 22px 60px rgba(34,41,51,.22)" }}>
             <div style={{ position: "absolute", width: 220, height: 220, borderRadius: "50%", top: -110, left: -40, background: "rgba(255,255,255,.06)" }} />
             <div style={{ position: "absolute", width: 170, height: 170, borderRadius: "50%", bottom: -80, right: 30, background: "rgba(255,255,255,.06)" }} />
-            <div style={{ position: "relative", zIndex: 1, display: "grid", gridTemplateColumns: "1.1fr .9fr", gap: 20, alignItems: "center" }}>
+            <div style={newsletterGrid}>
               <div>
-                <h2 style={{ margin: "0 0 10px", fontSize: "clamp(1.8rem, 3vw, 3rem)", lineHeight: 1.15, fontWeight: 900 }}>اشترك في النشرة البريدية</h2>
-                <p style={{ margin: 0, color: "rgba(255,255,255,.82)" }}>
-                  احصل على أحدث المقالات والنصائح التقنية والتجارية من Softlix مباشرة إلى بريدك، مع محتوى يساعدك على تطوير مشروعك الرقمي باحترافية.
+                <h2 style={{ margin: "0 0 10px", fontSize: "clamp(1.4rem, 3vw, 2.2rem)", lineHeight: 1.25, fontWeight: 900 }}>اشترك في النشرة البريدية</h2>
+                <p style={{ margin: 0, color: "rgba(255,255,255,.82)", fontSize: ".95rem" }}>
+                  احصل على أحدث المقالات والنصائح التقنية من Softlix مباشرة إلى بريدك.
                 </p>
               </div>
-              <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
-                <input type="email" placeholder="أدخل بريدك الإلكتروني" style={{ minWidth: 220, flex: 1, minHeight: 54, border: "none", borderRadius: 16, padding: "0 16px", fontFamily: "'Cairo', sans-serif", fontSize: ".95rem", outline: "none" }} />
-                <button style={{ minHeight: 54, padding: "0 22px", borderRadius: 999, border: "none", fontWeight: 800, color: "#fff", background: `linear-gradient(135deg,${BRAND},${BRAND_DARK})`, cursor: "pointer", fontFamily: "'Cairo', sans-serif", fontSize: "1rem", boxShadow: `0 14px 30px rgba(229,146,105,.26)` }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr auto", gap: 10 }}>
+                <input type="email" placeholder="أدخل بريدك الإلكتروني" style={{ width: "100%", minHeight: 54, border: "none", borderRadius: 16, padding: "0 16px", fontFamily: "'Cairo', sans-serif", fontSize: ".95rem", outline: "none", boxSizing: "border-box" }} />
+                <button style={{ minHeight: 54, padding: "0 22px", borderRadius: 999, border: "none", fontWeight: 800, color: "#fff", background: `linear-gradient(135deg,${BRAND},${BRAND_DARK})`, cursor: "pointer", fontFamily: "'Cairo', sans-serif", fontSize: "1rem", boxShadow: `0 14px 30px rgba(229,146,105,.26)`, width: isMobile ? "100%" : undefined }}>
                   اشترك الآن
                 </button>
               </div>
