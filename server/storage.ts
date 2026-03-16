@@ -1,5 +1,5 @@
 import {
-  tenants, users, subscriptions, companies, contacts, activityLog, sessions,
+  tenants, users, subscriptions, companies, contacts, activityLog, sessions, notifications,
   services, projects, blogCategories, blogPosts, siteClients, redirects,
   marketingSettings, formLeads, bookings,
   newsletterSubscribers, pricingPlans,
@@ -370,6 +370,20 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteUser(id: string, tenantId: string): Promise<void> {
+    // Delete/null FK references before deleting user to avoid constraint violations
+    await db.delete(sessions).where(eq(sessions.userId, id));
+    await db.delete(notifications).where(eq(notifications.userId, id));
+    await db.update(companies).set({ ownerId: null }).where(eq(companies.ownerId, id));
+    await db.update(crmLeads).set({ assignedToId: null }).where(eq(crmLeads.assignedToId, id));
+    await db.update(crmLeads).set({ createdById: null }).where(eq(crmLeads.createdById, id));
+    await db.update(crmDeals).set({ assignedToId: null }).where(eq(crmDeals.assignedToId, id));
+    await db.update(crmDeals).set({ createdById: null }).where(eq(crmDeals.createdById, id));
+    await db.update(crmProposals).set({ preparedById: null }).where(eq(crmProposals.preparedById, id));
+    await db.update(crmProposals).set({ approvedById: null }).where(eq(crmProposals.approvedById, id));
+    await db.update(crmProposals).set({ createdById: null }).where(eq(crmProposals.createdById, id));
+    await db.update(crmTasks).set({ assignedToId: null }).where(eq(crmTasks.assignedToId, id));
+    await db.update(crmTasks).set({ createdById: null }).where(eq(crmTasks.createdById, id));
+    await db.update(googleImportBuffer).set({ createdBy: null }).where(eq(googleImportBuffer.createdBy, id));
     await db.delete(users).where(and(eq(users.id, id), eq(users.tenantId, tenantId)));
   }
 
@@ -436,6 +450,11 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteCompany(id: string, tenantId: string): Promise<void> {
+    // Null out FK references before deleting to avoid constraint violations
+    await db.update(contacts).set({ companyId: null }).where(eq(contacts.companyId, id));
+    await db.update(crmDeals).set({ companyId: null }).where(eq(crmDeals.companyId, id));
+    await db.update(crmProposals).set({ companyId: null }).where(eq(crmProposals.companyId, id));
+    await db.update(googleImportBuffer).set({ importedCompanyId: null }).where(eq(googleImportBuffer.importedCompanyId, id));
     await db.delete(companies).where(and(eq(companies.id, id), eq(companies.tenantId, tenantId)));
   }
 
@@ -465,6 +484,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteContact(id: string, tenantId: string): Promise<void> {
+    // Null out FK references before deleting to avoid constraint violations
+    await db.update(crmDeals).set({ contactId: null }).where(eq(crmDeals.contactId, id));
+    await db.update(crmProposals).set({ contactId: null }).where(eq(crmProposals.contactId, id));
     await db.delete(contacts).where(and(eq(contacts.id, id), eq(contacts.tenantId, tenantId)));
   }
 
@@ -624,6 +646,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteBlogCategory(id: string, tenantId: string): Promise<void> {
+    // Null out FK references before deleting to avoid constraint violations
+    await db.update(blogPosts).set({ categoryId: null }).where(eq(blogPosts.categoryId, id));
     await db.delete(blogCategories).where(
       and(eq(blogCategories.id, id), eq(blogCategories.tenantId, tenantId))
     );
@@ -1094,6 +1118,9 @@ export class DatabaseStorage implements IStorage {
     return row;
   }
   async deleteCrmLead(id: string, tenantId: string): Promise<void> {
+    // Null out FK references before deleting to avoid constraint violations
+    await db.update(crmDeals).set({ leadId: null }).where(eq(crmDeals.leadId, id));
+    await db.update(crmProposals).set({ leadId: null }).where(eq(crmProposals.leadId, id));
     await db.delete(crmLeads).where(and(eq(crmLeads.id, id), eq(crmLeads.tenantId, tenantId)));
   }
   async getCrmLeadsStats(tenantId: string) {
@@ -1179,6 +1206,8 @@ export class DatabaseStorage implements IStorage {
     return row;
   }
   async deleteCrmDeal(id: string, tenantId: string): Promise<void> {
+    // Null out FK references before deleting to avoid constraint violations
+    await db.update(crmProposals).set({ dealId: null }).where(eq(crmProposals.dealId, id));
     await db.delete(crmDeals).where(and(eq(crmDeals.id, id), eq(crmDeals.tenantId, tenantId)));
   }
 
@@ -1245,6 +1274,9 @@ export class DatabaseStorage implements IStorage {
     return row;
   }
   async deleteCrmProposal(id: string, tenantId: string): Promise<void> {
+    // Delete child records first to avoid FK constraint violations
+    await db.delete(crmProposalItems).where(eq(crmProposalItems.proposalId, id));
+    await db.delete(crmProposalTokens).where(eq(crmProposalTokens.proposalId, id));
     await db.delete(crmProposals).where(and(eq(crmProposals.id, id), eq(crmProposals.tenantId, tenantId)));
   }
 
