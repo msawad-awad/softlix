@@ -2278,8 +2278,10 @@ export async function registerRoutes(
       const { keywords, city } = req.query as Record<string, string>;
       if (!keywords) return res.status(400).json({ error: "keywords مطلوبة" });
 
-      const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.GOOGLE_API_KEY;
-      if (!apiKey) return res.status(400).json({ error: "مفتاح Google Maps API غير مُعرَّف. يرجى إضافة GOOGLE_MAPS_API_KEY في إعدادات المتغيرات." });
+      const tenantId = (req as any).user?.tenantId;
+      const gmapsIntegration = tenantId ? await storage.getIntegration(tenantId, "google_maps") : null;
+      const apiKey = (gmapsIntegration?.config as any)?.apiKey || process.env.GOOGLE_MAPS_API_KEY || process.env.GOOGLE_API_KEY;
+      if (!apiKey) return res.status(400).json({ error: "مفتاح Google Maps API غير مُعرَّف. يرجى إضافته في إعدادات التكاملات." });
 
       const query = encodeURIComponent(`${keywords} ${city || ''} المملكة العربية السعودية`.trim());
       const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${query}&key=${apiKey}&language=ar`;
@@ -2309,7 +2311,9 @@ export async function registerRoutes(
 
   app.get("/api/crm/google-import/place-details/:placeId", requireAuth, async (req: Request, res: Response) => {
     try {
-      const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.GOOGLE_API_KEY;
+      const tenantId = (req as any).user?.tenantId;
+      const gmapsIntegration = tenantId ? await storage.getIntegration(tenantId, "google_maps") : null;
+      const apiKey = (gmapsIntegration?.config as any)?.apiKey || process.env.GOOGLE_MAPS_API_KEY || process.env.GOOGLE_API_KEY;
       if (!apiKey) return res.status(400).json({ error: "مفتاح Google Maps API غير مُعرَّف" });
 
       const fields = "name,formatted_address,formatted_phone_number,international_phone_number,website,url,rating,user_ratings_total,types,business_status";

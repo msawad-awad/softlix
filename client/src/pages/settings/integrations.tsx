@@ -10,7 +10,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Mail, MessageSquare, Video, Webhook, CheckCircle, XCircle, Loader2, ExternalLink, RefreshCw } from "lucide-react";
+import { Mail, MessageSquare, Video, Webhook, CheckCircle, XCircle, Loader2, ExternalLink, RefreshCw, Map } from "lucide-react";
 
 const PROVIDER_LABELS: Record<string, string> = {
   smtp: "البريد الإلكتروني SMTP",
@@ -335,6 +335,87 @@ function WebhookSection() {
   );
 }
 
+// Google Maps Section
+function GoogleMapsSection() {
+  const { toast } = useToast();
+  const qc = useQueryClient();
+  const { data: setting } = useQuery<any>({
+    queryKey: ["/api/integrations", "google_maps"],
+    queryFn: () => fetch("/api/integrations/google_maps", { credentials: "include" }).then(r => r.json()),
+  });
+  const [form, setForm] = useState<any>({});
+  const config = { ...((setting?.config) || {}), ...form };
+  const handleChange = (e: any) => setForm((f: any) => ({ ...f, [e.target.name]: e.target.value }));
+
+  const saveMutation = useMutation({
+    mutationFn: () => apiRequest("PUT", "/api/integrations/google_maps", { isEnabled: true, config }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["/api/integrations", "google_maps"] });
+      setForm({});
+      toast({ title: "✅ تم حفظ مفتاح Google Maps" });
+    },
+    onError: (e: any) => toast({ title: "خطأ في الحفظ", description: e.message, variant: "destructive" }),
+  });
+
+  const hasKey = !!(setting?.config as any)?.apiKey;
+
+  return (
+    <IntegrationCard
+      title="Google Maps"
+      description="استيراد الشركات من خرائط جوجل مباشرةً إلى CRM"
+      icon={Map}
+      iconBg="bg-emerald-500"
+      provider="google_maps"
+    >
+      {(_integration: any) => (
+        <div className="space-y-5">
+          {hasKey ? (
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-green-50 border border-green-100">
+              <CheckCircle className="h-5 w-5 text-green-600" />
+              <div className="flex-1">
+                <p className="text-sm font-medium text-green-800">المفتاح مُعرَّف ونشط</p>
+                <p className="text-xs text-green-600 font-mono">{String((setting?.config as any)?.apiKey || "").slice(0, 12)}••••••••••••</p>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-50 border border-amber-100">
+              <XCircle className="h-5 w-5 text-amber-500" />
+              <p className="text-sm text-amber-700 flex-1">لم يتم إضافة مفتاح API بعد</p>
+            </div>
+          )}
+          <div className="space-y-3">
+            <p className="text-xs font-semibold text-gray-700">مفتاح Google Maps API</p>
+            <ConfigField
+              label="API Key"
+              name="apiKey"
+              value={config.apiKey}
+              onChange={handleChange}
+              type="password"
+              placeholder="AIzaSy••••••••••••••••••••••••••••"
+            />
+          </div>
+          <Button
+            size="sm"
+            onClick={() => saveMutation.mutate()}
+            disabled={saveMutation.isPending || !config.apiKey}
+            data-testid="button-save-google-maps"
+          >
+            {saveMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin ml-1" /> : null}
+            حفظ المفتاح
+          </Button>
+          <div className="rounded-lg bg-blue-50 border border-blue-100 p-3 text-xs text-blue-700 space-y-1">
+            <p className="font-semibold">⚙️ كيفية الحصول على المفتاح:</p>
+            <p>1. اذهب إلى <a href="https://console.cloud.google.com" target="_blank" rel="noreferrer" className="underline">Google Cloud Console</a></p>
+            <p>2. أنشئ مشروعاً ← APIs & Services ← Credentials</p>
+            <p>3. أنشئ API Key ثم فعّل: <strong>Places API</strong></p>
+            <p>4. الصق المفتاح هنا واحفظه</p>
+          </div>
+        </div>
+      )}
+    </IntegrationCard>
+  );
+}
+
 export default function IntegrationsSettings() {
   return (
     <div className="space-y-6" dir="rtl">
@@ -346,6 +427,7 @@ export default function IntegrationsSettings() {
         <SmtpSection />
         <SmsSection />
         <GoogleSection />
+        <GoogleMapsSection />
         <WebhookSection />
       </div>
     </div>
