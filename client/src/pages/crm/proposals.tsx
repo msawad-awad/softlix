@@ -4,7 +4,7 @@ import { Link, useLocation } from "wouter";
 import { apiRequest } from "@/lib/queryClient";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -1087,7 +1087,7 @@ export default function CrmProposals() {
       {/* ═══════════════════ TEMPLATE PREVIEW ═══════════════════ */}
       <Dialog open={!!templatePreview} onOpenChange={open => !open && setTemplatePreview(null)}>
         <DialogContent dir="rtl" className="max-w-lg">
-          <DialogHeader><DialogTitle className="text-right">معاينة القالب: {templatePreview?.name}</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-right">معاينة القالب: {templatePreview?.name}</DialogTitle><DialogDescription className="sr-only">معاينة تفاصيل القالب</DialogDescription></DialogHeader>
           {templatePreview && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3 text-sm">
@@ -1128,7 +1128,7 @@ export default function CrmProposals() {
       {/* ═══════════════════ SERVICE LIBRARY MODAL ═══════════════════ */}
       <Dialog open={showLibrary} onOpenChange={setShowLibrary}>
         <DialogContent dir="rtl" className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
-          <DialogHeader><DialogTitle className="text-right flex items-center gap-2"><Library className="h-5 w-5 text-blue-600" /> مكتبة الخدمات الجاهزة</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-right flex items-center gap-2"><Library className="h-5 w-5 text-blue-600" /> مكتبة الخدمات الجاهزة</DialogTitle><DialogDescription className="sr-only">اختر خدمات جاهزة لإضافتها للعرض</DialogDescription></DialogHeader>
           <div className="flex-shrink-0">
             <div className="relative">
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -1169,7 +1169,7 @@ export default function CrmProposals() {
       {/* ═══════════════════ EMAIL DIALOG ═══════════════════ */}
       <Dialog open={showEmailDialog} onOpenChange={setShowEmailDialog}>
         <DialogContent dir="rtl" className="max-w-lg">
-          <DialogHeader><DialogTitle className="text-right">إرسال العرض بالبريد الإلكتروني</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-right">إرسال العرض بالبريد الإلكتروني</DialogTitle><DialogDescription className="sr-only">أدخل بيانات البريد الإلكتروني لإرسال العرض</DialogDescription></DialogHeader>
           <div className="space-y-4">
             <div><Label className="mb-1.5 block text-sm">البريد الإلكتروني للمستلم</Label><Input value={emailForm.to} onChange={e => setEmailForm(f => ({ ...f, to: e.target.value }))} placeholder="example@company.com" type="email" /></div>
             <div><Label className="mb-1.5 block text-sm">الموضوع</Label><Input value={emailForm.subject} onChange={e => setEmailForm(f => ({ ...f, subject: e.target.value }))} /></div>
@@ -1188,7 +1188,7 @@ export default function CrmProposals() {
       {/* ═══════════════════ SHARE LINK ═══════════════════ */}
       <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
         <DialogContent dir="rtl" className="max-w-md">
-          <DialogHeader><DialogTitle className="text-right">رابط العرض للعميل</DialogTitle></DialogHeader>
+          <DialogHeader><DialogTitle className="text-right">رابط العرض للعميل</DialogTitle><DialogDescription className="sr-only">شارك هذا الرابط مع العميل لمشاهدة العرض</DialogDescription></DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-gray-600">شارك هذا الرابط مع العميل ليتمكن من مشاهدة العرض والتوقيع عليه رقمياً:</p>
             <div className="flex gap-2">

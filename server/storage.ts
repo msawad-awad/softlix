@@ -450,6 +450,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteCompany(id: string, tenantId: string): Promise<void> {
+    // Delete child records first to avoid FK constraint violations
+    await db.delete(crmActivities).where(eq(crmActivities.entityId, id));
     // Null out FK references before deleting to avoid constraint violations
     await db.update(contacts).set({ companyId: null }).where(eq(contacts.companyId, id));
     await db.update(crmDeals).set({ companyId: null }).where(eq(crmDeals.companyId, id));
@@ -484,6 +486,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteContact(id: string, tenantId: string): Promise<void> {
+    // Delete child records first to avoid FK constraint violations
+    await db.delete(crmActivities).where(eq(crmActivities.entityId, id));
     // Null out FK references before deleting to avoid constraint violations
     await db.update(crmDeals).set({ contactId: null }).where(eq(crmDeals.contactId, id));
     await db.update(crmProposals).set({ contactId: null }).where(eq(crmProposals.contactId, id));
@@ -1275,6 +1279,7 @@ export class DatabaseStorage implements IStorage {
   }
   async deleteCrmProposal(id: string, tenantId: string): Promise<void> {
     // Delete child records first to avoid FK constraint violations
+    await db.delete(crmActivities).where(eq(crmActivities.entityId, id));
     await db.delete(crmProposalItems).where(eq(crmProposalItems.proposalId, id));
     await db.delete(crmProposalTokens).where(eq(crmProposalTokens.proposalId, id));
     await db.delete(crmProposals).where(and(eq(crmProposals.id, id), eq(crmProposals.tenantId, tenantId)));
