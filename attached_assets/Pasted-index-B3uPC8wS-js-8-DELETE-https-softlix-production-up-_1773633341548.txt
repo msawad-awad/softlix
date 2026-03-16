@@ -1,0 +1,218 @@
+index-B3uPC8wS.js:8  DELETE https://softlix-production.up.railway.app/api/contacts/ab3e653c-4e14-4a7e-a02b-528442e45b0c 500 (Internal Server Error)
+oe @ index-B3uPC8wS.js:8
+mutationFn @ index-B3uPC8wS.js:60
+fn @ index-B3uPC8wS.js:8
+b @ index-B3uPC8wS.js:8
+start @ index-B3uPC8wS.js:8
+execute @ index-B3uPC8wS.js:8
+await in execute
+mutate @ index-B3uPC8wS.js:8
+(anonymous) @ index-B3uPC8wS.js:8
+onClick @ index-B3uPC8wS.js:60
+(anonymous) @ index-B3uPC8wS.js:8
+FS @ index-B3uPC8wS.js:5
+WS @ index-B3uPC8wS.js:5
+BS @ index-B3uPC8wS.js:5
+y0 @ index-B3uPC8wS.js:5
+v0 @ index-B3uPC8wS.js:5
+(anonymous) @ index-B3uPC8wS.js:5
+tf @ index-B3uPC8wS.js:8
+kx @ index-B3uPC8wS.js:5
+tp @ index-B3uPC8wS.js:5
+Lh @ index-B3uPC8wS.js:5
+rk @ index-B3uPC8wS.js:5
+index-B3uPC8wS.js:52 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ index-B3uPC8wS.js:52
+ad @ index-B3uPC8wS.js:8
+Oa @ index-B3uPC8wS.js:8
+b4 @ index-B3uPC8wS.js:8
+$i @ index-B3uPC8wS.js:8
+Uy @ index-B3uPC8wS.js:8
+Zr @ index-B3uPC8wS.js:6
+(anonymous) @ index-B3uPC8wS.js:8
+index-B3uPC8wS.js:52 `DialogContent` requires a `DialogTitle` for the component to be accessible for screen reader users.
+
+If you want to hide the `DialogTitle`, you can wrap it with our VisuallyHidden component.
+
+For more information, see https://radix-ui.com/primitives/docs/components/dialog
+(anonymous) @ index-B3uPC8wS.js:52
+ad @ index-B3uPC8wS.js:8
+Oa @ index-B3uPC8wS.js:8
+b4 @ index-B3uPC8wS.js:8
+$i @ index-B3uPC8wS.js:8
+Uy @ index-B3uPC8wS.js:8
+Zr @ index-B3uPC8wS.js:6
+(anonymous) @ index-B3uPC8wS.js:8
+index-B3uPC8wS.js:52 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ index-B3uPC8wS.js:52
+ad @ index-B3uPC8wS.js:8
+Oa @ index-B3uPC8wS.js:8
+b4 @ index-B3uPC8wS.js:8
+$i @ index-B3uPC8wS.js:8
+Uy @ index-B3uPC8wS.js:8
+Zr @ index-B3uPC8wS.js:6
+(anonymous) @ index-B3uPC8wS.js:8
+deals:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+deals:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+deals:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+deals:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+deals:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+deals:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+deals:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+deals:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+deals:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+deals:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+deals:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+deals:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+deals:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+deals:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+index-B3uPC8wS.js:8  DELETE https://softlix-production.up.railway.app/api/crm/proposals/cbd170b1-1e54-4464-9056-804037a802fc 500 (Internal Server Error)
+oe @ index-B3uPC8wS.js:8
+mutationFn @ index-B3uPC8wS.js:229
+fn @ index-B3uPC8wS.js:8
+b @ index-B3uPC8wS.js:8
+start @ index-B3uPC8wS.js:8
+execute @ index-B3uPC8wS.js:8
+await in execute
+mutate @ index-B3uPC8wS.js:8
+(anonymous) @ index-B3uPC8wS.js:8
+onClick @ index-B3uPC8wS.js:229
+FS @ index-B3uPC8wS.js:5
+WS @ index-B3uPC8wS.js:5
+BS @ index-B3uPC8wS.js:5
+y0 @ index-B3uPC8wS.js:5
+v0 @ index-B3uPC8wS.js:5
+(anonymous) @ index-B3uPC8wS.js:5
+tf @ index-B3uPC8wS.js:8
+kx @ index-B3uPC8wS.js:5
+tp @ index-B3uPC8wS.js:5
+Lh @ index-B3uPC8wS.js:5
+rk @ index-B3uPC8wS.js:5
+index-B3uPC8wS.js:8  DELETE https://softlix-production.up.railway.app/api/crm/proposals/cbd170b1-1e54-4464-9056-804037a802fc 500 (Internal Server Error)
+oe @ index-B3uPC8wS.js:8
+mutationFn @ index-B3uPC8wS.js:229
+fn @ index-B3uPC8wS.js:8
+b @ index-B3uPC8wS.js:8
+start @ index-B3uPC8wS.js:8
+execute @ index-B3uPC8wS.js:8
+await in execute
+mutate @ index-B3uPC8wS.js:8
+(anonymous) @ index-B3uPC8wS.js:8
+onClick @ index-B3uPC8wS.js:229
+FS @ index-B3uPC8wS.js:5
+WS @ index-B3uPC8wS.js:5
+BS @ index-B3uPC8wS.js:5
+y0 @ index-B3uPC8wS.js:5
+v0 @ index-B3uPC8wS.js:5
+(anonymous) @ index-B3uPC8wS.js:5
+tf @ index-B3uPC8wS.js:8
+kx @ index-B3uPC8wS.js:5
+tp @ index-B3uPC8wS.js:5
+Lh @ index-B3uPC8wS.js:5
+rk @ index-B3uPC8wS.js:5
+index-B3uPC8wS.js:8  DELETE https://softlix-production.up.railway.app/api/companies/1165746c-d862-4fd1-89cb-42e8e1feb197 500 (Internal Server Error)
+oe @ index-B3uPC8wS.js:8
+mutationFn @ index-B3uPC8wS.js:60
+fn @ index-B3uPC8wS.js:8
+b @ index-B3uPC8wS.js:8
+start @ index-B3uPC8wS.js:8
+execute @ index-B3uPC8wS.js:8
+await in execute
+mutate @ index-B3uPC8wS.js:8
+(anonymous) @ index-B3uPC8wS.js:8
+onClick @ index-B3uPC8wS.js:60
+(anonymous) @ index-B3uPC8wS.js:8
+FS @ index-B3uPC8wS.js:5
+WS @ index-B3uPC8wS.js:5
+BS @ index-B3uPC8wS.js:5
+y0 @ index-B3uPC8wS.js:5
+v0 @ index-B3uPC8wS.js:5
+(anonymous) @ index-B3uPC8wS.js:5
+tf @ index-B3uPC8wS.js:8
+kx @ index-B3uPC8wS.js:5
+tp @ index-B3uPC8wS.js:5
+Lh @ index-B3uPC8wS.js:5
+rk @ index-B3uPC8wS.js:5
+index-B3uPC8wS.js:8  DELETE https://softlix-production.up.railway.app/api/crm/proposals/cbd170b1-1e54-4464-9056-804037a802fc 500 (Internal Server Error)
+oe @ index-B3uPC8wS.js:8
+mutationFn @ index-B3uPC8wS.js:229
+fn @ index-B3uPC8wS.js:8
+b @ index-B3uPC8wS.js:8
+start @ index-B3uPC8wS.js:8
+execute @ index-B3uPC8wS.js:8
+await in execute
+mutate @ index-B3uPC8wS.js:8
+(anonymous) @ index-B3uPC8wS.js:8
+onClick @ index-B3uPC8wS.js:229
+FS @ index-B3uPC8wS.js:5
+WS @ index-B3uPC8wS.js:5
+BS @ index-B3uPC8wS.js:5
+y0 @ index-B3uPC8wS.js:5
+v0 @ index-B3uPC8wS.js:5
+(anonymous) @ index-B3uPC8wS.js:5
+tf @ index-B3uPC8wS.js:8
+kx @ index-B3uPC8wS.js:5
+tp @ index-B3uPC8wS.js:5
+Lh @ index-B3uPC8wS.js:5
+rk @ index-B3uPC8wS.js:5
+index-B3uPC8wS.js:8  DELETE https://softlix-production.up.railway.app/api/crm/proposals/cbd170b1-1e54-4464-9056-804037a802fc 500 (Internal Server Error)
+oe @ index-B3uPC8wS.js:8
+mutationFn @ index-B3uPC8wS.js:229
+fn @ index-B3uPC8wS.js:8
+b @ index-B3uPC8wS.js:8
+start @ index-B3uPC8wS.js:8
+execute @ index-B3uPC8wS.js:8
+await in execute
+mutate @ index-B3uPC8wS.js:8
+(anonymous) @ index-B3uPC8wS.js:8
+onClick @ index-B3uPC8wS.js:229
+FS @ index-B3uPC8wS.js:5
+WS @ index-B3uPC8wS.js:5
+BS @ index-B3uPC8wS.js:5
+y0 @ index-B3uPC8wS.js:5
+v0 @ index-B3uPC8wS.js:5
+(anonymous) @ index-B3uPC8wS.js:5
+tf @ index-B3uPC8wS.js:8
+kx @ index-B3uPC8wS.js:5
+tp @ index-B3uPC8wS.js:5
+Lh @ index-B3uPC8wS.js:5
+rk @ index-B3uPC8wS.js:5
+/website/branding:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+/website/branding:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+/website/branding:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+/website/branding:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+/website/branding:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+/website/branding:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+/website/branding:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+/website/branding:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+/website/branding:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+/website/branding:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+/website/branding:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+/website/branding:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+/website/branding:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+/website/branding:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+/website/branding:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+/website/branding:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+/website/branding:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+/website/branding:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+/website/branding:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+/website/branding:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+/website/branding:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+index-B3uPC8wS.js:52 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ index-B3uPC8wS.js:52
+ad @ index-B3uPC8wS.js:8
+Oa @ index-B3uPC8wS.js:8
+b4 @ index-B3uPC8wS.js:8
+$i @ index-B3uPC8wS.js:8
+Uy @ index-B3uPC8wS.js:8
+Zr @ index-B3uPC8wS.js:6
+(anonymous) @ index-B3uPC8wS.js:8
+index-B3uPC8wS.js:52 Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+(anonymous) @ index-B3uPC8wS.js:52
+ad @ index-B3uPC8wS.js:8
+Oa @ index-B3uPC8wS.js:8
+b4 @ index-B3uPC8wS.js:8
+$i @ index-B3uPC8wS.js:8
+Uy @ index-B3uPC8wS.js:8
+Zr @ index-B3uPC8wS.js:6
+(anonymous) @ index-B3uPC8wS.js:8

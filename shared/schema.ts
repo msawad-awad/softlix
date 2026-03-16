@@ -831,6 +831,19 @@ export const crmProposals = pgTable("crm_proposals", {
   paymentSchedule: jsonb("payment_schedule").default([]),
   clientSignature: text("client_signature"),
   signedAt: timestamp("signed_at"),
+  createdById: varchar("created_by_id").references(() => users.id),
+  // ── Rich proposal document fields ─────────────────────────────────────────
+  requirements: text("requirements"),             // متطلبات العميل التفصيلية
+  introText: text("intro_text"),                  // نص المقدمة
+  authorName: text("author_name"),                // اسم كاتب الوثيقة
+  authorTitle: text("author_title"),              // مسماه الوظيفي
+  approverName: text("approver_name"),            // اسم الموافق
+  approverTitle: text("approver_title"),          // مسمى الموافق
+  timelineDays: integer("timeline_days"),         // مدة المشروع بالأيام
+  teamMembers: jsonb("team_members").default([]), // [{ role, name, title, experience, bio }]
+  selectedTechnologies: jsonb("selected_technologies").default([]), // [{ name, category, description }]
+  targetAudience: jsonb("target_audience").default([]),  // [{ group, role, language, system }]
+  deliverables: jsonb("deliverables").default([]),       // [{ name, description }]
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });

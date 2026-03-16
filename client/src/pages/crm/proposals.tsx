@@ -10,12 +10,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Plus, FileText, Trash2, Edit, Eye, Send, Share2, Loader2,
   ChevronRight, ChevronLeft, CheckCircle, Building2, Package,
   CreditCard, ClipboardCheck, Copy, X, BookOpen, Copy as CopyIcon,
   AlertTriangle, Bell, Star, Library, Search, SlidersHorizontal,
-  CalendarClock, Layers, Info,
+  CalendarClock, Layers, Info, Users, FileCode,
 } from "lucide-react";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -44,8 +45,37 @@ const WIZARD_STEPS = [
   { id: 1, label: "بيانات العميل", icon: Building2 },
   { id: 2, label: "القالب والبنود", icon: Package },
   { id: 3, label: "الأسعار والشروط", icon: CreditCard },
-  { id: 4, label: "المراجعة والإرسال", icon: ClipboardCheck },
+  { id: 4, label: "تفاصيل الوثيقة", icon: FileCode },
+  { id: 5, label: "المراجعة والإرسال", icon: ClipboardCheck },
 ];
+
+// ─── Default tech options ──────────────────────────────────────────────────────
+const TECH_OPTIONS = [
+  { name: "React Native", category: "تطبيق جوال" },
+  { name: "Flutter", category: "تطبيق جوال" },
+  { name: "iOS (Swift)", category: "تطبيق جوال" },
+  { name: "Android (Kotlin)", category: "تطبيق جوال" },
+  { name: "React.js", category: "واجهة الويب" },
+  { name: "Next.js", category: "واجهة الويب" },
+  { name: "Vue.js", category: "واجهة الويب" },
+  { name: "Node.js", category: "الخادم" },
+  { name: "Python / Django", category: "الخادم" },
+  { name: "Laravel (PHP)", category: "الخادم" },
+  { name: "PostgreSQL", category: "قاعدة البيانات" },
+  { name: "MySQL", category: "قاعدة البيانات" },
+  { name: "MongoDB", category: "قاعدة البيانات" },
+  { name: "Firebase", category: "الخدمات السحابية" },
+  { name: "AWS", category: "الخدمات السحابية" },
+  { name: "Google Cloud", category: "الخدمات السحابية" },
+  { name: "Stripe", category: "الدفع الإلكتروني" },
+  { name: "Twilio / SMS", category: "التواصل" },
+  { name: "Push Notifications", category: "التواصل" },
+];
+
+// ─── Types for rich fields ─────────────────────────────────────────────────────
+interface TeamMember { role: string; name: string; title: string; experience: string; bio: string; }
+interface TargetGroup { group: string; role: string; language: string; system: string; }
+interface Deliverable { name: string; description: string; }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface ProposalItem {
@@ -113,6 +143,16 @@ export default function CrmProposals() {
   const [librarySearch, setLibrarySearch] = useState("");
   const autoSaveRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // ── Rich document fields (Step 4) ──────────────────────────────────────────
+  const [richForm, setRichForm] = useState({
+    requirements: "", introText: "", authorName: "", authorTitle: "",
+    approverName: "", approverTitle: "", timelineDays: "65",
+  });
+  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
+  const [selectedTechnologies, setSelectedTechnologies] = useState<string[]>([]);
+  const [targetAudience, setTargetAudience] = useState<TargetGroup[]>([]);
+  const [deliverables, setDeliverables] = useState<Deliverable[]>([]);
+
   // Email / Share dialogs
   const [showEmailDialog, setShowEmailDialog] = useState(false);
   const [emailProposal, setEmailProposal] = useState<any>(null);
@@ -171,6 +211,8 @@ export default function CrmProposals() {
   const resetWizard = () => {
     setForm({ title: "", companyId: "", contactId: "", dealId: "", currency: "SAR", discountType: "fixed", discountValue: "0", taxPercent: "15", termsAndNotes: "", status: "draft", expiryDate: "", internalNotes: "" });
     setItems([emptyItem()]); setPaymentSchedule([]); setSelectedTemplate(""); setWizardStep(1); setEditingId(null);
+    setRichForm({ requirements: "", introText: "", authorName: "", authorTitle: "", approverName: "", approverTitle: "", timelineDays: "65" });
+    setTeamMembers([]); setSelectedTechnologies([]); setTargetAudience([]); setDeliverables([]);
   };
 
   const openWizard = (proposal?: any) => {
@@ -179,6 +221,19 @@ export default function CrmProposals() {
       setForm({ title: proposal.title || "", companyId: proposal.companyId || "", contactId: proposal.contactId || "", dealId: proposal.dealId || "", currency: proposal.currency || "SAR", discountType: proposal.discountType || "fixed", discountValue: proposal.discountValue || "0", taxPercent: proposal.taxPercent || "15", termsAndNotes: proposal.termsAndNotes || "", status: proposal.status || "draft", expiryDate: proposal.expiryDate ? proposal.expiryDate.split("T")[0] : "", internalNotes: proposal.internalNotes || "" });
       setItems((proposal.items || []).map((i: any) => calcItem(i)));
       setPaymentSchedule(proposal.paymentSchedule || []);
+      setRichForm({
+        requirements: proposal.requirements || "",
+        introText: proposal.introText || "",
+        authorName: proposal.authorName || "",
+        authorTitle: proposal.authorTitle || "",
+        approverName: proposal.approverName || "",
+        approverTitle: proposal.approverTitle || "",
+        timelineDays: String(proposal.timelineDays || "65"),
+      });
+      setTeamMembers(proposal.teamMembers || []);
+      setSelectedTechnologies((proposal.selectedTechnologies || []).map((t: any) => t.name || t));
+      setTargetAudience(proposal.targetAudience || []);
+      setDeliverables(proposal.deliverables || []);
     } else {
       // Restore auto-saved draft
       const draft = localStorage.getItem(LS_KEY);
@@ -297,19 +352,27 @@ export default function CrmProposals() {
 
   const handleSave = () => {
     const finalStatus = needsApproval && form.status === "draft" ? "pending_approval" : form.status;
+    const techObjects = selectedTechnologies.map(name => {
+      const found = TECH_OPTIONS.find(t => t.name === name);
+      return found || { name, category: "عام" };
+    });
     const payload = {
       ...form, status: finalStatus, items,
       paymentSchedule: paymentSchedule.filter(m => m.label),
       subtotal: subtotal.toFixed(2), discountValue: discount.toFixed(2),
       taxAmount: taxAmount.toFixed(2), total: total.toFixed(2),
       expiryDate: form.expiryDate || null,
+      // Rich document fields
+      ...richForm,
+      timelineDays: parseInt(richForm.timelineDays) || 65,
+      teamMembers, selectedTechnologies: techObjects, targetAudience, deliverables,
     };
     saveMutation.mutate(payload);
   };
 
   const nextStep = () => {
     if (wizardStep === 1 && !form.title.trim()) { toast({ title: "يرجى إدخال عنوان العرض", variant: "destructive" }); return; }
-    if (wizardStep < 4) setWizardStep(s => s + 1);
+    if (wizardStep < WIZARD_STEPS.length) setWizardStep(s => s + 1);
     else handleSave();
   };
   const prevStep = () => { if (wizardStep > 1) setWizardStep(s => s - 1); };
@@ -727,8 +790,218 @@ export default function CrmProposals() {
               </>
             )}
 
-            {/* ── STEP 4: Review ─────────────────────────────────────── */}
+            {/* ── STEP 4: Document Details ──────────────────────────── */}
             {wizardStep === 4 && (
+              <div className="space-y-6">
+                {/* Requirements */}
+                <div>
+                  <Label className="text-sm font-semibold text-gray-800 mb-1.5 block">متطلبات العميل التفصيلية</Label>
+                  <p className="text-xs text-gray-500 mb-2">يظهر هذا النص في صفحة "متطلبات العميل" داخل الوثيقة</p>
+                  <Textarea
+                    value={richForm.requirements}
+                    onChange={e => setRichForm(f => ({ ...f, requirements: e.target.value }))}
+                    placeholder={"يرغب العميل في تطوير تطبيق جوال يعمل على iOS و Android يتيح للمستخدمين...\n\nالمتطلبات الرئيسية:\n• ..."}
+                    rows={5}
+                    className="text-sm leading-relaxed"
+                  />
+                </div>
+
+                {/* Intro Text */}
+                <div>
+                  <Label className="text-sm font-semibold text-gray-800 mb-1.5 block">نص المقدمة (اختياري)</Label>
+                  <p className="text-xs text-gray-500 mb-2">يظهر في صفحة "نحن متحمسون للعمل معاً" — اتركه فارغاً لاستخدام النص الافتراضي</p>
+                  <Textarea
+                    value={richForm.introText}
+                    onChange={e => setRichForm(f => ({ ...f, introText: e.target.value }))}
+                    placeholder="اتركه فارغاً لاستخدام النص الافتراضي..."
+                    rows={4}
+                    className="text-sm"
+                  />
+                </div>
+
+                {/* Target Audience */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <Label className="text-sm font-semibold text-gray-800">المجموعة المستهدفة من المستخدمين</Label>
+                      <p className="text-xs text-gray-500">جدول يظهر أنواع المستخدمين وصلاحياتهم ومنصاتهم</p>
+                    </div>
+                    <Button variant="outline" size="sm" className="gap-1 h-7 text-xs" onClick={() => setTargetAudience(p => [...p, { group: "", role: "", language: "عربي", system: "" }])}>
+                      <Plus className="h-3 w-3" /> إضافة مجموعة
+                    </Button>
+                  </div>
+                  {targetAudience.length === 0 ? (
+                    <div className="rounded-xl border border-dashed border-gray-200 p-4 text-center text-sm text-gray-400">
+                      اضغط "إضافة مجموعة" لتحديد الفئات المستهدفة (مثال: المدير، المستخدم العادي، العميل النهائي)
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {targetAudience.map((row, i) => (
+                        <div key={i} className="grid grid-cols-4 gap-2 items-center bg-gray-50 rounded-xl p-2">
+                          <Input className="text-xs h-8" placeholder="المجموعة (مثال: المدير)" value={row.group} onChange={e => { const n = [...targetAudience]; n[i] = { ...n[i], group: e.target.value }; setTargetAudience(n); }} />
+                          <Input className="text-xs h-8" placeholder="الدور / الصلاحيات" value={row.role} onChange={e => { const n = [...targetAudience]; n[i] = { ...n[i], role: e.target.value }; setTargetAudience(n); }} />
+                          <Input className="text-xs h-8" placeholder="اللغة (عربي/English)" value={row.language} onChange={e => { const n = [...targetAudience]; n[i] = { ...n[i], language: e.target.value }; setTargetAudience(n); }} />
+                          <div className="flex gap-1">
+                            <Input className="text-xs h-8 flex-1" placeholder="النظام (iOS/Android/Web)" value={row.system} onChange={e => { const n = [...targetAudience]; n[i] = { ...n[i], system: e.target.value }; setTargetAudience(n); }} />
+                            <button onClick={() => setTargetAudience(p => p.filter((_, j) => j !== i))} className="text-red-300 hover:text-red-500 px-1"><X className="h-3.5 w-3.5" /></button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Deliverables */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <Label className="text-sm font-semibold text-gray-800">مخرجات المشروع</Label>
+                      <p className="text-xs text-gray-500">ما سيتسلمه العميل عند الانتهاء</p>
+                    </div>
+                    <Button variant="outline" size="sm" className="gap-1 h-7 text-xs" onClick={() => setDeliverables(p => [...p, { name: "", description: "" }])}>
+                      <Plus className="h-3 w-3" /> إضافة مخرج
+                    </Button>
+                  </div>
+                  {deliverables.length === 0 ? (
+                    <div className="rounded-xl border border-dashed border-gray-200 p-4 text-center text-sm text-gray-400">
+                      اضغط "إضافة مخرج" (مثال: تطبيق iOS، تطبيق Android، لوحة تحكم ويب، كود المصدر)
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {deliverables.map((d, i) => (
+                        <div key={i} className="flex gap-2 items-center bg-gray-50 rounded-xl p-2">
+                          <Input className="text-xs h-8 w-44 flex-shrink-0" placeholder="اسم المخرج" value={d.name} onChange={e => { const n = [...deliverables]; n[i] = { ...n[i], name: e.target.value }; setDeliverables(n); }} />
+                          <Input className="text-xs h-8 flex-1" placeholder="وصف المخرج..." value={d.description} onChange={e => { const n = [...deliverables]; n[i] = { ...n[i], description: e.target.value }; setDeliverables(n); }} />
+                          <button onClick={() => setDeliverables(p => p.filter((_, j) => j !== i))} className="text-red-300 hover:text-red-500"><X className="h-3.5 w-3.5" /></button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Technologies */}
+                <div>
+                  <Label className="text-sm font-semibold text-gray-800 mb-1.5 block">التقنيات المستخدمة</Label>
+                  <p className="text-xs text-gray-500 mb-3">اختر التقنيات التي ستُستخدم في المشروع</p>
+                  <div className="space-y-3">
+                    {Object.entries(
+                      TECH_OPTIONS.reduce((acc: Record<string, typeof TECH_OPTIONS>, t) => {
+                        if (!acc[t.category]) acc[t.category] = [];
+                        acc[t.category].push(t);
+                        return acc;
+                      }, {})
+                    ).map(([cat, techs]) => (
+                      <div key={cat}>
+                        <p className="text-xs font-semibold text-gray-600 mb-1.5">{cat}</p>
+                        <div className="flex flex-wrap gap-2">
+                          {techs.map(t => {
+                            const isSelected = selectedTechnologies.includes(t.name);
+                            return (
+                              <button
+                                key={t.name}
+                                onClick={() => setSelectedTechnologies(prev => isSelected ? prev.filter(x => x !== t.name) : [...prev, t.name])}
+                                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${isSelected ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-gray-200 hover:border-blue-300"}`}
+                              >
+                                {t.name}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {selectedTechnologies.length > 0 && (
+                    <p className="text-xs text-blue-600 mt-2">تم اختيار: {selectedTechnologies.join("، ")}</p>
+                  )}
+                </div>
+
+                {/* Timeline */}
+                <div>
+                  <Label className="text-sm font-semibold text-gray-800 mb-1.5 block">مدة المشروع التقديرية (بالأيام)</Label>
+                  <div className="flex items-center gap-3">
+                    <Input
+                      type="number"
+                      min="1" max="365"
+                      className="w-32 text-center text-lg font-bold"
+                      value={richForm.timelineDays}
+                      onChange={e => setRichForm(f => ({ ...f, timelineDays: e.target.value }))}
+                    />
+                    <div className="flex gap-2">
+                      {[30, 45, 60, 90, 120, 180].map(d => (
+                        <button
+                          key={d}
+                          onClick={() => setRichForm(f => ({ ...f, timelineDays: String(d) }))}
+                          className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${richForm.timelineDays === String(d) ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-gray-200 hover:border-blue-300"}`}
+                        >
+                          {d} يوم
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Team members */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <Label className="text-sm font-semibold text-gray-800">أعضاء الفريق</Label>
+                      <p className="text-xs text-gray-500">يظهر في صفحة "فريقنا" بالوثيقة</p>
+                    </div>
+                    <Button variant="outline" size="sm" className="gap-1 h-7 text-xs" onClick={() => setTeamMembers(p => [...p, { role: "", name: "", title: "", experience: "", bio: "" }])}>
+                      <Plus className="h-3 w-3" /> إضافة عضو
+                    </Button>
+                  </div>
+                  {teamMembers.length === 0 ? (
+                    <div className="rounded-xl border border-dashed border-gray-200 p-4 text-center text-sm text-gray-400">
+                      اتركه فارغاً لاستخدام الأعضاء الافتراضيين من قالب الوثيقة، أو أضف أعضاء مخصصين
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {teamMembers.map((m, i) => (
+                        <div key={i} className="bg-gray-50 rounded-xl p-3 space-y-2">
+                          <div className="grid grid-cols-2 gap-2">
+                            <Input className="text-xs h-8" placeholder="الدور (مثال: مدير المشروع)" value={m.role} onChange={e => { const n = [...teamMembers]; n[i] = { ...n[i], role: e.target.value }; setTeamMembers(n); }} />
+                            <Input className="text-xs h-8" placeholder="الاسم" value={m.name} onChange={e => { const n = [...teamMembers]; n[i] = { ...n[i], name: e.target.value }; setTeamMembers(n); }} />
+                            <Input className="text-xs h-8" placeholder="المسمى الوظيفي (English)" value={m.title} onChange={e => { const n = [...teamMembers]; n[i] = { ...n[i], title: e.target.value }; setTeamMembers(n); }} />
+                            <div className="flex gap-1">
+                              <Input className="text-xs h-8 flex-1" placeholder="سنوات الخبرة" type="number" value={m.experience} onChange={e => { const n = [...teamMembers]; n[i] = { ...n[i], experience: e.target.value }; setTeamMembers(n); }} />
+                              <button onClick={() => setTeamMembers(p => p.filter((_, j) => j !== i))} className="text-red-300 hover:text-red-500 px-1"><X className="h-3.5 w-3.5" /></button>
+                            </div>
+                          </div>
+                          <Textarea className="text-xs" placeholder="النبذة المهنية..." rows={2} value={m.bio} onChange={e => { const n = [...teamMembers]; n[i] = { ...n[i], bio: e.target.value }; setTeamMembers(n); }} />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Author / Approver */}
+                <div>
+                  <Label className="text-sm font-semibold text-gray-800 mb-3 block">بيانات مراقبة الوثيقة</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label className="text-xs text-gray-600 mb-1 block">اسم كاتب الوثيقة</Label>
+                      <Input className="text-sm h-9" placeholder="مثال: مهند العشري" value={richForm.authorName} onChange={e => setRichForm(f => ({ ...f, authorName: e.target.value }))} />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-gray-600 mb-1 block">مسمى الكاتب</Label>
+                      <Input className="text-sm h-9" placeholder="مثال: مدير تطوير الأعمال" value={richForm.authorTitle} onChange={e => setRichForm(f => ({ ...f, authorTitle: e.target.value }))} />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-gray-600 mb-1 block">اسم الموافق</Label>
+                      <Input className="text-sm h-9" placeholder="مثال: علاء الصبحي" value={richForm.approverName} onChange={e => setRichForm(f => ({ ...f, approverName: e.target.value }))} />
+                    </div>
+                    <div>
+                      <Label className="text-xs text-gray-600 mb-1 block">مسمى الموافق</Label>
+                      <Input className="text-sm h-9" placeholder="مثال: م/ البرمجيات" value={richForm.approverTitle} onChange={e => setRichForm(f => ({ ...f, approverTitle: e.target.value }))} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* ── STEP 5: Review ─────────────────────────────────────── */}
+            {wizardStep === 5 && (
               <>
                 <div className={`rounded-xl p-4 border flex items-start gap-3 ${needsApproval ? "bg-amber-50 border-amber-100" : "bg-green-50 border-green-100"}`}>
                   {needsApproval ? <AlertTriangle className="h-5 w-5 text-amber-600 mt-0.5 flex-shrink-0" /> : <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />}
@@ -804,8 +1077,8 @@ export default function CrmProposals() {
             <span className="text-sm text-gray-500">خطوة {wizardStep} من {WIZARD_STEPS.length}</span>
             <Button onClick={nextStep} disabled={saveMutation.isPending} className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="btn-wizard-next">
               {saveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
-              {wizardStep === 4 ? (editingId ? "حفظ التعديلات" : "حفظ وعرض") : "التالي"}
-              {wizardStep < 4 && <ChevronLeft className="h-4 w-4" />}
+              {wizardStep === WIZARD_STEPS.length ? (editingId ? "حفظ التعديلات" : "حفظ وعرض") : "التالي"}
+              {wizardStep < WIZARD_STEPS.length && <ChevronLeft className="h-4 w-4" />}
             </Button>
           </div>
         </DialogContent>
