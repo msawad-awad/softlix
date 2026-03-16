@@ -223,7 +223,7 @@ function ProjectDetail({ slug, lang = "ar", onLangChange }: { slug: string } & P
             {isAr ? "العودة إلى المشاريع" : "Back to Projects"}
           </Link>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1.1fr .9fr", gap: 50, alignItems: "center" }} className="pd-hero-grid">
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40, alignItems: "center" }} className="pd-hero-grid">
             {/* Left: text */}
             <div>
               {badge && (
@@ -256,7 +256,7 @@ function ProjectDetail({ slug, lang = "ar", onLangChange }: { slug: string } & P
 
               {/* Stat chips */}
               {(client || tags.length > 0) && (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14, marginTop: 36 }} className="pd-stats-grid">
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginTop: 32 }} className="pd-stats-grid">
                   {[
                     { labelAr: "العميل", labelEn: "Client", value: client || "—" },
                     { labelAr: "التصنيف", labelEn: "Category", value: badge || "—" },
