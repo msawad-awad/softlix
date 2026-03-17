@@ -32,7 +32,7 @@ export function PublicNavbar({ lang = "ar", onLangChange }: NavbarProps) {
 
   const { data: settings } = useQuery<any>({ queryKey: ["/api/public/site-settings"] });
   const siteName = isAr ? (settings?.siteNameAr || "Softlix") : (settings?.siteNameEn || "Softlix");
-  const logoUrl = settings?.logoUrl || "";
+  const logoUrl = settings?.logoUrl || "/logo_softlix.png";
   const phone = settings?.contactPhone || "0537861534";
   const email = settings?.contactEmail || "info@softlix.net";
   const workingHoursAr = settings?.contactHoursAr || "السبت - الخميس | 9:00 ص - 6:00 م";
@@ -101,12 +101,14 @@ export function PublicNavbar({ lang = "ar", onLangChange }: NavbarProps) {
           <Link href="/" style={{ 
             display: "flex", 
             alignItems: "center", 
-            gap: 14, 
+            gap: 16, 
             textDecoration: "none", 
             transition: "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
-            flexShrink: 0
+            flexShrink: 0,
+            paddingRight: isAr ? 8 : 0,
+            paddingLeft: !isAr ? 8 : 0
           }} 
-          onMouseEnter={(e: any) => e.currentTarget.style.transform = "scale(1.08)"} 
+          onMouseEnter={(e: any) => e.currentTarget.style.transform = "scale(1.12)"} 
           onMouseLeave={(e: any) => e.currentTarget.style.transform = "scale(1)"} 
           data-testid="nav-logo">
             {logoUrl ? (
@@ -114,14 +116,22 @@ export function PublicNavbar({ lang = "ar", onLangChange }: NavbarProps) {
                 src={logoUrl}
                 alt={siteName}
                 style={{ 
-                  height: 80, 
-                  maxWidth: 240, 
+                  height: 110, 
+                  maxWidth: 280, 
+                  width: "auto",
                   objectFit: "contain",
-                  filter: "drop-shadow(0 4px 16px rgba(255,136,0,0.12))",
-                  transition: "filter 0.3s"
+                  filter: "drop-shadow(0 6px 24px rgba(255,136,0,0.18))",
+                  transition: "filter 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)",
+                  WebkitFilter: "drop-shadow(0 6px 24px rgba(255,136,0,0.18))"
                 }}
-                onMouseEnter={(e: any) => e.style.filter = "drop-shadow(0 6px 24px rgba(255,136,0,0.2))"}
-                onMouseLeave={(e: any) => e.style.filter = "drop-shadow(0 4px 16px rgba(255,136,0,0.12))"}
+                onMouseEnter={(e: any) => { 
+                  e.style.filter = "drop-shadow(0 10px 32px rgba(255,136,0,0.28))";
+                  e.style.WebkitFilter = "drop-shadow(0 10px 32px rgba(255,136,0,0.28))";
+                }}
+                onMouseLeave={(e: any) => { 
+                  e.style.filter = "drop-shadow(0 6px 24px rgba(255,136,0,0.18))";
+                  e.style.WebkitFilter = "drop-shadow(0 6px 24px rgba(255,136,0,0.18))";
+                }}
                 onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
               />
             ) : (
