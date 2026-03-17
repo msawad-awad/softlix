@@ -86,11 +86,11 @@ export function FloatingContactWidget({ lang = "ar", whatsappUrl, onBookingClick
                   </div>
                 </a>
                 <a href={`tel:+${waNumber.replace(/\D/g, "")}`}
-                  style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", borderRadius: 16, background: "#eff6ff", border: "1px solid #bfdbfe", textDecoration: "none", color: "#1d4ed8" }}>
-                  <Phone size={20} color="#3b82f6" />
+                  style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", borderRadius: 16, background: "#fff7ed", border: "1px solid #fed7aa", textDecoration: "none", color: "#e05500" }}>
+                  <Phone size={20} color="#ff6a00" />
                   <div>
                     <p style={{ margin: 0, fontWeight: 800, fontSize: 14 }}>{isAr ? "اتصل بنا" : "Call Us"}</p>
-                    <p style={{ margin: 0, fontSize: 12, color: "#2563eb" }}>+{waNumber.replace(/\D/g, "")}</p>
+                    <p style={{ margin: 0, fontSize: 12, color: "#ff6a00" }}>+{waNumber.replace(/\D/g, "")}</p>
                   </div>
                 </a>
                 <button onClick={() => setShowQuickForm(true)}

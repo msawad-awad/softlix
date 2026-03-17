@@ -9,7 +9,7 @@ import type { PricingPlan } from "@shared/schema";
 interface Props { lang?: "ar" | "en"; onLangChange?: (l: "ar" | "en") => void; }
 
 const COLOR_MAP: Record<string, { bg: string; accent: string; badge: string }> = {
-  blue:   { bg: "#eff6ff", accent: "#2563eb", badge: "#dbeafe" },
+  blue:   { bg: "#fff7ed", accent: "#ff6a00", badge: "#fff3e0" },
   orange: { bg: "#fff7ed", accent: "#ea580c", badge: "#ffedd5" },
   green:  { bg: "#f0fdf4", accent: "#16a34a", badge: "#dcfce7" },
   purple: { bg: "#faf5ff", accent: "#7c3aed", badge: "#ede9fe" },

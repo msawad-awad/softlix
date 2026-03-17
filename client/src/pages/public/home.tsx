@@ -47,12 +47,12 @@ const TESTIMONIALS = [
 ];
 
 const PROJECT_COLORS = [
-  "linear-gradient(135deg, #0f172a, #1d4ed8)",
-  "linear-gradient(135deg, #111827, #0ea5e9)",
-  "linear-gradient(135deg, #1e293b, #06b6d4)",
-  "linear-gradient(135deg, #0f172a, #7c3aed)",
-  "linear-gradient(135deg, #111827, #0284c7)",
-  "linear-gradient(135deg, #1e293b, #0891b2)",
+  "linear-gradient(135deg, #0f172a, #ff6a00)",
+  "linear-gradient(135deg, #1a1a1a, #ff8c00)",
+  "linear-gradient(135deg, #1e293b, #e05500)",
+  "linear-gradient(135deg, #2d2d2d, #ff6a00)",
+  "linear-gradient(135deg, #111827, #ff8c00)",
+  "linear-gradient(135deg, #0f172a, #e05500)",
 ];
 
 interface HomeProps {
@@ -177,14 +177,14 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
       {/* ── Hero ───────────────────────────────────────── */}
       <section style={{
         position: "relative", overflow: "hidden", paddingTop: 72, paddingBottom: 40,
-        background: "radial-gradient(circle at 20% 20%, rgba(56,189,248,0.14), transparent 32%), radial-gradient(circle at 80% 0%, rgba(37,99,235,0.12), transparent 26%), linear-gradient(180deg,#fff 0%,#f8fbff 100%)"
+        background: "radial-gradient(circle at 20% 20%, rgba(255,140,0,0.14), transparent 32%), radial-gradient(circle at 80% 0%, rgba(255,106,0,0.12), transparent 26%), linear-gradient(180deg,#fff 0%,#f8fbff 100%)"
       }}>
         <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
           <div style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 36, alignItems: "center" }} className="hero-grid-responsive">
 
             {/* Left: Text */}
             <div>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#e0f2fe", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 700, marginBottom: 18 }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#fff7ed", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 700, marginBottom: 18 }}>
                 {heroBadge}
               </span>
               <h1 style={{ margin: "0 0 18px", fontSize: "clamp(26px, 3.5vw, 42px)", lineHeight: 1.15, letterSpacing: -0.5, color: "#0f172a", fontWeight: 800 }}>
@@ -194,7 +194,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
                 {heroSubtitle}
               </p>
               <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap", marginTop: 28 }}>
-                <a href="#contact" style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 24px", fontSize: 15, fontWeight: 700, cursor: "pointer", background: "linear-gradient(135deg,#2563eb,#38bdf8)", color: "#fff", boxShadow: "0 12px 30px rgba(37,99,235,0.25)", textDecoration: "none", border: 0 }} data-testid="btn-hero-contact">
+                <a href="#contact" style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 24px", fontSize: 15, fontWeight: 700, cursor: "pointer", background: "linear-gradient(135deg,#ff6a00,#ff8c00)", color: "#fff", boxShadow: "0 12px 30px rgba(255,106,0,0.25)", textDecoration: "none", border: 0 }} data-testid="btn-hero-contact">
                   {isAr ? "ابدأ مشروعك الآن" : "Start Your Project Now"}
                 </a>
                 <a href="#projects" style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 24px", fontSize: 15, fontWeight: 700, cursor: "pointer", background: "#fff", color: "#0f172a", border: "1px solid rgba(15,23,42,0.1)", textDecoration: "none" }} data-testid="btn-hero-projects">
@@ -234,7 +234,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
                     <h4 style={{ margin: "0 0 14px", fontSize: 16, color: "#e2e8f0" }}>{isAr ? "نمو الطلبات" : "Orders Growth"}</h4>
                     <div style={{ display: "flex", alignItems: "end", gap: 10, minHeight: 180 }}>
                       {[38, 52, 44, 70, 84, 92].map((h, i) => (
-                        <div key={i} style={{ flex: 1, background: "linear-gradient(180deg,#38bdf8,#2563eb)", borderRadius: "16px 16px 8px 8px", opacity: 0.95, height: `${h}%` }} />
+                        <div key={i} style={{ flex: 1, background: "linear-gradient(180deg,#ff8c00,#ff6a00)", borderRadius: "16px 16px 8px 8px", opacity: 0.95, height: `${h}%` }} />
                       ))}
                     </div>
                   </div>
@@ -280,7 +280,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
         <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
           <div style={{ display: "flex", alignItems: "end", justifyContent: "space-between", gap: 24, marginBottom: 32, flexWrap: "wrap" }}>
             <div>
-              <span style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#e0f2fe", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 700, marginBottom: 12 }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "#fff7ed", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 700, marginBottom: 12 }}>
                 {isAr ? "خدماتنا" : "Our Services"}
               </span>
               <h2 style={{ margin: "0 0 10px", fontSize: "clamp(28px,3vw,40px)", lineHeight: 1.2, fontWeight: 800 }}>
@@ -300,7 +300,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
                 <article style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 22, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 26, transition: "0.3s ease", cursor: "pointer", height: "100%" }}
                   onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-6px)")}
                   onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}>
-                  <div style={{ width: 64, height: 64, borderRadius: 20, display: "grid", placeItems: "center", fontSize: 26, background: "linear-gradient(135deg,#dbeafe,#e0f2fe)", color: "#2563eb", marginBottom: 18 }}>
+                  <div style={{ width: 64, height: 64, borderRadius: 20, display: "grid", placeItems: "center", fontSize: 26, background: "linear-gradient(135deg,#fff3e0,#fff7ed)", color: "#ff6a00", marginBottom: 18 }}>
                     {service.icon ?? "⚡"}
                   </div>
                   <h3 style={{ margin: "0 0 10px", fontSize: 22, fontWeight: 800, color: "#0f172a" }}>
@@ -328,7 +328,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
         <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
           <div style={{ display: "flex", alignItems: "end", justifyContent: "space-between", gap: 24, marginBottom: 32, flexWrap: "wrap" }}>
             <div>
-              <span style={{ display: "inline-flex", alignItems: "center", background: "#e0f2fe", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 700, marginBottom: 12 }}>
+              <span style={{ display: "inline-flex", alignItems: "center", background: "#fff7ed", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 700, marginBottom: 12 }}>
                 {isAr ? "أحدث الأعمال" : "Latest Work"}
               </span>
               <h2 style={{ margin: "0 0 10px", fontSize: "clamp(28px,3vw,40px)", lineHeight: 1.2, fontWeight: 800 }}>
@@ -370,7 +370,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
                     {project.clientName && <p style={{ margin: "0 0 16px", color: "#64748b" }}>{project.clientName}</p>}
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
                       {(project.technologies ?? []).slice(0, 3).map((t: string, ti: number) => (
-                        <span key={ti} style={{ padding: "8px 12px", borderRadius: 999, background: "#eff6ff", color: "#1d4ed8", fontSize: 13, fontWeight: 800 }}>{t}</span>
+                        <span key={ti} style={{ padding: "8px 12px", borderRadius: 999, background: "#fff7ed", color: "#e05500", fontSize: 13, fontWeight: 800 }}>{t}</span>
                       ))}
                     </div>
                   </div>
@@ -392,7 +392,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
         <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
           <div style={{ display: "flex", alignItems: "end", justifyContent: "space-between", gap: 24, marginBottom: 32, flexWrap: "wrap" }}>
             <div>
-              <span style={{ display: "inline-flex", background: "#e0f2fe", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 700, marginBottom: 12 }}>
+              <span style={{ display: "inline-flex", background: "#fff7ed", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 700, marginBottom: 12 }}>
                 {isAr ? "لماذا Softlix" : "Why Softlix"}
               </span>
               <h2 style={{ margin: "0 0 10px", fontSize: "clamp(28px,3vw,40px)", lineHeight: 1.2, fontWeight: 800 }}>
@@ -409,7 +409,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
               <article key={i} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 22, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 28, transition: "0.3s ease" }}
                 onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-6px)")}
                 onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}>
-                <div style={{ width: 48, height: 48, borderRadius: 14, background: "#eff6ff", color: "#2563eb", display: "grid", placeItems: "center", fontWeight: 900, marginBottom: 16, fontSize: 18 }}>{f.num}</div>
+                <div style={{ width: 48, height: 48, borderRadius: 14, background: "#fff7ed", color: "#ff6a00", display: "grid", placeItems: "center", fontWeight: 900, marginBottom: 16, fontSize: 18 }}>{f.num}</div>
                 <h3 style={{ margin: "0 0 10px", fontSize: 22, fontWeight: 800 }}>{isAr ? f.titleAr : f.titleEn}</h3>
                 <p style={{ margin: 0, color: "#64748b" }}>{isAr ? f.descAr : f.descEn}</p>
               </article>
@@ -438,7 +438,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
         <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
           <div style={{ display: "flex", alignItems: "end", justifyContent: "space-between", gap: 24, marginBottom: 32, flexWrap: "wrap" }}>
             <div>
-              <span style={{ display: "inline-flex", background: "#e0f2fe", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 700, marginBottom: 12 }}>
+              <span style={{ display: "inline-flex", background: "#fff7ed", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 700, marginBottom: 12 }}>
                 {isAr ? "آلية العمل" : "How We Work"}
               </span>
               <h2 style={{ margin: "0 0 10px", fontSize: "clamp(28px,3vw,40px)", lineHeight: 1.2, fontWeight: 800 }}>
@@ -453,7 +453,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20 }} className="process-grid-responsive">
             {activeProcess.map((step, i) => (
               <article key={i} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 22, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 24, position: "relative", overflow: "hidden" }}>
-                <div style={{ fontSize: 44, fontWeight: 900, lineHeight: 1, color: "rgba(37,99,235,0.12)", marginBottom: 10 }}>{step.num}</div>
+                <div style={{ fontSize: 44, fontWeight: 900, lineHeight: 1, color: "rgba(255,106,0,0.12)", marginBottom: 10 }}>{step.num}</div>
                 <h3 style={{ margin: "0 0 10px", fontSize: 21, fontWeight: 800 }}>{isAr ? step.titleAr : step.titleEn}</h3>
                 <p style={{ margin: 0, color: "#64748b" }}>{isAr ? step.descAr : step.descEn}</p>
               </article>
@@ -466,7 +466,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
       <section style={{ padding: "88px 0" }}>
         <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
           <div style={{ marginBottom: 32 }}>
-            <span style={{ display: "inline-flex", background: "#e0f2fe", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 700, marginBottom: 12 }}>
+            <span style={{ display: "inline-flex", background: "#fff7ed", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 700, marginBottom: 12 }}>
               {isAr ? "آراء العملاء" : "Client Testimonials"}
             </span>
             <h2 style={{ margin: "0 0 10px", fontSize: "clamp(28px,3vw,40px)", lineHeight: 1.2, fontWeight: 800 }}>
@@ -482,7 +482,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
                 <div style={{ color: "#f59e0b", fontSize: 18, letterSpacing: 2, marginBottom: 14 }}>{"★".repeat(t.stars)}</div>
                 <p style={{ margin: "0 0 18px", color: "#334155", fontSize: 16 }}>{isAr ? t.quoteAr : t.quoteEn}</p>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,#2563eb,#38bdf8)", color: "#fff", display: "grid", placeItems: "center", fontWeight: 800, flexShrink: 0 }}>{t.initial}</div>
+                  <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,#ff6a00,#ff8c00)", color: "#fff", display: "grid", placeItems: "center", fontWeight: 800, flexShrink: 0 }}>{t.initial}</div>
                   <div>
                     <strong style={{ display: "block", fontSize: 15 }}>{isAr ? t.nameAr : t.nameEn}</strong>
                     <span style={{ fontSize: 13, color: "#64748b" }}>{isAr ? t.roleAr : t.roleEn}</span>
@@ -497,7 +497,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
       {/* ── CTA ──────────────────────────────────────── */}
       <section style={{ padding: "0 0 88px" }}>
         <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
-          <div style={{ background: "linear-gradient(135deg,#0f172a,#1d4ed8 60%,#0ea5e9)", color: "#fff", borderRadius: 34, padding: 42, display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 24, alignItems: "center", overflow: "hidden", position: "relative" }} className="cta-grid-responsive">
+          <div style={{ background: "linear-gradient(135deg,#1a1a1a,#ff6a00 60%,#ff8c00)", color: "#fff", borderRadius: 34, padding: 42, display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 24, alignItems: "center", overflow: "hidden", position: "relative" }} className="cta-grid-responsive">
             <div>
               <h2 style={{ margin: "0 0 12px", fontSize: "clamp(28px,4vw,42px)", lineHeight: 1.2, fontWeight: 800 }}>
                 {isAr ? "جاهز لتحويل فكرتك إلى موقع أو تطبيق أو نظام احترافي؟" : "Ready to Turn Your Idea into a Professional Website, App, or System?"}
@@ -507,7 +507,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
               </p>
             </div>
             <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
-              <a href="#contact" style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 24px", fontSize: 15, fontWeight: 700, background: "linear-gradient(135deg,#2563eb,#38bdf8)", color: "#fff", boxShadow: "0 12px 30px rgba(37,99,235,0.25)", textDecoration: "none", border: 0 }} data-testid="btn-cta-contact">
+              <a href="#contact" style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 24px", fontSize: 15, fontWeight: 700, background: "linear-gradient(135deg,#ff6a00,#ff8c00)", color: "#fff", boxShadow: "0 12px 30px rgba(255,106,0,0.25)", textDecoration: "none", border: 0 }} data-testid="btn-cta-contact">
                 {isAr ? "اطلب عرض سعر" : "Request a Quote"}
               </a>
               <a href="/services" style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 24px", fontSize: 15, fontWeight: 700, background: "rgba(255,255,255,0.12)", color: "#fff", border: "1px solid rgba(255,255,255,0.18)", textDecoration: "none" }} data-testid="btn-cta-services">
@@ -524,7 +524,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
           <div style={{ display: "grid", gridTemplateColumns: "0.95fr 1.05fr", gap: 24 }} className="contact-grid-responsive">
             {/* Info */}
             <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 22, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 28 }}>
-              <span style={{ display: "inline-flex", background: "#e0f2fe", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 700, marginBottom: 18 }}>
+              <span style={{ display: "inline-flex", background: "#fff7ed", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 700, marginBottom: 18 }}>
                 {isAr ? "تواصل معنا" : "Contact Us"}
               </span>
               <h3 style={{ margin: "0 0 12px", fontSize: 28, fontWeight: 800 }}>{isAr ? "دعنا نناقش مشروعك" : "Let's Discuss Your Project"}</h3>
@@ -537,7 +537,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
                   { icon: "⏰", titleAr: "أوقات العمل", titleEn: "Working Hours", value: isAr ? "السبت - الخميس | 9:00 ص - 6:00 م" : "Sat - Thu | 9:00 AM - 6:00 PM", href: undefined },
                 ].map((item, i) => (
                   <div key={i} style={{ display: "flex", gap: 14, alignItems: "start", padding: 16, borderRadius: 18, background: "#f8fafc", border: "1px solid #e2e8f0" }}>
-                    <div style={{ width: 44, height: 44, borderRadius: 14, display: "grid", placeItems: "center", background: "#dbeafe", color: "#2563eb", fontWeight: 900, flexShrink: 0, fontSize: 20 }}>{item.icon}</div>
+                    <div style={{ width: 44, height: 44, borderRadius: 14, display: "grid", placeItems: "center", background: "#fff3e0", color: "#ff6a00", fontWeight: 900, flexShrink: 0, fontSize: 20 }}>{item.icon}</div>
                     <div>
                       <strong style={{ display: "block", marginBottom: 4, fontSize: 15, color: "#0f172a" }}>{isAr ? item.titleAr : item.titleEn}</strong>
                       {item.href ? <a href={item.href} style={{ color: "#64748b", fontSize: 14, textDecoration: "none" }}>{item.value}</a> : <span style={{ color: "#64748b", fontSize: 14 }}>{item.value}</span>}
@@ -549,7 +549,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
 
             {/* Form */}
             <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 22, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 28 }}>
-              <span style={{ display: "inline-flex", background: "#e0f2fe", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 700, marginBottom: 18 }}>
+              <span style={{ display: "inline-flex", background: "#fff7ed", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 700, marginBottom: 18 }}>
                 {isAr ? "نموذج الطلب" : "Request Form"}
               </span>
               <form onSubmit={handleSubmit((data) => leadMutation.mutate(data))} style={{ display: "grid", gap: 16 }}>
@@ -601,7 +601,7 @@ export default function PublicHome({ lang = "ar", onLangChange }: HomeProps) {
                   <textarea {...register("message")} placeholder={isAr ? "اكتب فكرة المشروع أو المتطلبات الأساسية هنا..." : "Write your project idea or main requirements here..."} style={{ width: "100%", border: "1px solid #dbe3ee", background: "#fff", borderRadius: 16, padding: "15px 16px", fontFamily: "inherit", fontSize: 15, color: "#0f172a", outline: "none", minHeight: 140, resize: "vertical" }} data-testid="textarea-message" />
                 </div>
                 <div>
-                  <button type="submit" disabled={leadMutation.isPending} style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 32px", fontSize: 15, fontWeight: 700, cursor: "pointer", background: "linear-gradient(135deg,#2563eb,#38bdf8)", color: "#fff", boxShadow: "0 12px 30px rgba(37,99,235,0.25)", border: 0, opacity: leadMutation.isPending ? 0.7 : 1 }} data-testid="btn-submit-lead">
+                  <button type="submit" disabled={leadMutation.isPending} style={{ display: "inline-flex", alignItems: "center", gap: 10, borderRadius: 999, padding: "14px 32px", fontSize: 15, fontWeight: 700, cursor: "pointer", background: "linear-gradient(135deg,#ff6a00,#ff8c00)", color: "#fff", boxShadow: "0 12px 30px rgba(255,106,0,0.25)", border: 0, opacity: leadMutation.isPending ? 0.7 : 1 }} data-testid="btn-submit-lead">
                     {leadMutation.isPending ? (isAr ? "جاري الإرسال..." : "Sending...") : (isAr ? "إرسال الطلب" : "Send Request")}
                   </button>
                 </div>

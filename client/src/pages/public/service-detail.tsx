@@ -11,12 +11,12 @@ import type { Service, Project } from "@shared/schema";
 const TENANT_ID = (import.meta.env.VITE_TENANT_ID as string) || "";
 
 const PROJECT_COLORS = [
-  "linear-gradient(135deg, #111827, #2563eb)",
-  "linear-gradient(135deg, #1f2937, #0ea5e9)",
-  "linear-gradient(135deg, #0f172a, #e49268)",
-  "linear-gradient(135deg, #0f172a, #7c3aed)",
-  "linear-gradient(135deg, #111827, #059669)",
-  "linear-gradient(135deg, #1e293b, #dc2626)",
+  "linear-gradient(135deg, #1a1a1a, #ff6a00)",
+  "linear-gradient(135deg, #2d2d2d, #ff8c00)",
+  "linear-gradient(135deg, #0f172a, #e05500)",
+  "linear-gradient(135deg, #1a1a1a, #ff8c00)",
+  "linear-gradient(135deg, #111827, #ff6a00)",
+  "linear-gradient(135deg, #1e293b, #e05500)",
 ];
 
 const PROCESS_STEPS = [
@@ -35,65 +35,65 @@ const TESTIMONIALS = [
 // Theme colors per service
 const SERVICE_THEMES: Record<string, { eyebrowBg: string; eyebrowColor: string; checkBg: string; ctaBg: string; ctaDark: boolean; shadowColor: string; chipBg: string; chipColor: string; contactIconBg: string; stepColor: string }> = {
   "digital-marketing": {
-    eyebrowBg: "#fff1f7",
-    eyebrowColor: "#a11d64",
-    checkBg: "linear-gradient(135deg,#7c3aed,#ec4899)",
-    ctaBg: "linear-gradient(135deg,#0f172a,#7c3aed 58%,#ec4899)",
+    eyebrowBg: "#fff1e9",
+    eyebrowColor: "#c45500",
+    checkBg: "linear-gradient(135deg,#ff6a00,#ff8c00)",
+    ctaBg: "linear-gradient(135deg,#1a1a1a,#ff6a00 58%,#ff8c00)",
     ctaDark: true,
-    shadowColor: "rgba(124,58,237,0.22)",
-    chipBg: "#f5efff",
-    chipColor: "#6d28d9",
-    contactIconBg: "#f3e8ff",
-    stepColor: "rgba(124,58,237,0.12)",
+    shadowColor: "rgba(255,106,0,0.22)",
+    chipBg: "#fff3e0",
+    chipColor: "#e05500",
+    contactIconBg: "#fff3e0",
+    stepColor: "rgba(255,106,0,0.12)",
   },
   "technical-consulting": {
-    eyebrowBg: "rgba(229,146,105,0.14)",
-    eyebrowColor: "#cf7e56",
-    checkBg: "linear-gradient(135deg,#e59269,#82b735)",
-    ctaBg: "linear-gradient(135deg,rgba(229,146,105,0.14),rgba(130,183,53,0.12))",
-    ctaDark: false,
-    shadowColor: "rgba(229,146,105,0.26)",
-    chipBg: "rgba(229,146,105,0.12)",
-    chipColor: "#b86a3e",
-    contactIconBg: "rgba(229,146,105,0.16)",
-    stepColor: "rgba(229,146,105,0.13)",
+    eyebrowBg: "rgba(255,106,0,0.10)",
+    eyebrowColor: "#c45500",
+    checkBg: "linear-gradient(135deg,#ff6a00,#ff8c00)",
+    ctaBg: "linear-gradient(135deg,#1a1a1a,#ff6a00 60%,#ff8c00)",
+    ctaDark: true,
+    shadowColor: "rgba(255,106,0,0.26)",
+    chipBg: "rgba(255,106,0,0.10)",
+    chipColor: "#e05500",
+    contactIconBg: "rgba(255,106,0,0.14)",
+    stepColor: "rgba(255,106,0,0.12)",
   },
   "content-management": {
-    eyebrowBg: "rgba(20,184,166,0.12)",
-    eyebrowColor: "#0f766e",
-    checkBg: "linear-gradient(135deg,#14b8a6,#6366f1)",
-    ctaBg: "linear-gradient(135deg,#1f2937,#3a4659 50%,#d07b52)",
+    eyebrowBg: "rgba(255,106,0,0.10)",
+    eyebrowColor: "#c45500",
+    checkBg: "linear-gradient(135deg,#ff6a00,#ff8c00)",
+    ctaBg: "linear-gradient(135deg,#1a1a1a,#ff6a00 58%,#ff8c00)",
     ctaDark: true,
-    shadowColor: "rgba(20,184,166,0.22)",
-    chipBg: "rgba(20,184,166,0.10)",
-    chipColor: "#0f766e",
-    contactIconBg: "rgba(20,184,166,0.14)",
-    stepColor: "rgba(20,184,166,0.10)",
+    shadowColor: "rgba(255,106,0,0.22)",
+    chipBg: "rgba(255,106,0,0.10)",
+    chipColor: "#e05500",
+    contactIconBg: "rgba(255,106,0,0.14)",
+    stepColor: "rgba(255,106,0,0.10)",
   },
   "web-development": {
-    eyebrowBg: "rgba(14,165,233,0.12)",
-    eyebrowColor: "#0369a1",
-    checkBg: "linear-gradient(135deg,#0ea5e9,#6366f1)",
-    ctaBg: "linear-gradient(135deg,#0f172a,#0ea5e9 58%,#6366f1)",
+    eyebrowBg: "rgba(255,106,0,0.10)",
+    eyebrowColor: "#c45500",
+    checkBg: "linear-gradient(135deg,#ff6a00,#ff8c00)",
+    ctaBg: "linear-gradient(135deg,#0f172a,#ff6a00 58%,#ff8c00)",
     ctaDark: true,
-    shadowColor: "rgba(14,165,233,0.26)",
-    chipBg: "rgba(14,165,233,0.10)",
-    chipColor: "#0369a1",
-    contactIconBg: "rgba(14,165,233,0.14)",
-    stepColor: "rgba(14,165,233,0.10)",
+    shadowColor: "rgba(255,106,0,0.26)",
+    chipBg: "rgba(255,106,0,0.10)",
+    chipColor: "#e05500",
+    contactIconBg: "rgba(255,106,0,0.14)",
+    stepColor: "rgba(255,106,0,0.10)",
   },
 };
 const DEFAULT_THEME = {
   eyebrowBg: "#fff1e9",
   eyebrowColor: "#9a4f22",
-  checkBg: "linear-gradient(135deg,#2563eb,#38bdf8)",
-  ctaBg: "linear-gradient(135deg,#0f172a,#2563eb 60%,#38bdf8)",
+  checkBg: "linear-gradient(135deg,#ff6a00,#ff8c00)",
+  ctaBg: "linear-gradient(135deg,#0f172a,#ff6a00 60%,#ff8c00)",
   ctaDark: true,
-  shadowColor: "rgba(37,99,235,0.22)",
-  chipBg: "#eff6ff",
-  chipColor: "#1d4ed8",
-  contactIconBg: "#dbeafe",
-  stepColor: "rgba(37,99,235,0.12)",
+  shadowColor: "rgba(255,106,0,0.22)",
+  chipBg: "#fff7ed",
+  chipColor: "#e05500",
+  contactIconBg: "#fff3e0",
+  stepColor: "rgba(255,106,0,0.12)",
 };
 
 // Per-service config: metrics, sub-services, benefits, technologies
@@ -429,7 +429,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
         <PublicNavbar lang={lang} onLangChange={onLangChange} />
         <div style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: "60vh" }}>
           <div style={{ textAlign: "center" }}>
-            <div style={{ width: 48, height: 48, border: "4px solid #dbeafe", borderTopColor: "#2563eb", borderRadius: "50%", animation: "spin 0.8s linear infinite", marginInline: "auto" }} />
+            <div style={{ width: 48, height: 48, border: "4px solid #fff3e0", borderTopColor: "#ff6a00", borderRadius: "50%", animation: "spin 0.8s linear infinite", marginInline: "auto" }} />
             <p style={{ marginTop: 16, color: "#64748b", fontWeight: 700 }}>{isAr ? "جاري التحميل..." : "Loading..."}</p>
           </div>
         </div>
@@ -444,7 +444,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
         <PublicNavbar lang={lang} onLangChange={onLangChange} />
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "60vh", textAlign: "center", padding: "0 16px" }}>
           <h1 style={{ fontSize: 32, fontWeight: 900, color: "#0f172a", marginBottom: 16 }}>{isAr ? "الخدمة غير موجودة" : "Service Not Found"}</h1>
-          <a href="/services" style={{ display: "inline-flex", borderRadius: 999, padding: "12px 24px", background: "linear-gradient(135deg,#2563eb,#38bdf8)", color: "#fff", textDecoration: "none", fontWeight: 700 }}>
+          <a href="/services" style={{ display: "inline-flex", borderRadius: 999, padding: "12px 24px", background: "linear-gradient(135deg,#ff6a00,#ff8c00)", color: "#fff", textDecoration: "none", fontWeight: 700 }}>
             {isAr ? "عودة للخدمات" : "Back to Services"}
           </a>
         </div>
@@ -482,9 +482,9 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
       {/* ── Breadcrumb ── */}
       <div style={{ background: "#fff", borderBottom: "1px solid #e2e8f0", padding: "12px 0" }}>
         <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto", display: "flex", alignItems: "center", gap: 8, fontSize: 14, color: "#64748b" }}>
-          <a href="/" style={{ color: "#64748b", textDecoration: "none" }} onMouseEnter={e => (e.currentTarget.style.color = "#2563eb")} onMouseLeave={e => (e.currentTarget.style.color = "#64748b")}>{isAr ? "الرئيسية" : "Home"}</a>
+          <a href="/" style={{ color: "#64748b", textDecoration: "none" }} onMouseEnter={e => (e.currentTarget.style.color = "#ff6a00")} onMouseLeave={e => (e.currentTarget.style.color = "#64748b")}>{isAr ? "الرئيسية" : "Home"}</a>
           <span>/</span>
-          <a href="/services" style={{ color: "#64748b", textDecoration: "none" }} onMouseEnter={e => (e.currentTarget.style.color = "#2563eb")} onMouseLeave={e => (e.currentTarget.style.color = "#64748b")}>{isAr ? "الخدمات" : "Services"}</a>
+          <a href="/services" style={{ color: "#64748b", textDecoration: "none" }} onMouseEnter={e => (e.currentTarget.style.color = "#ff6a00")} onMouseLeave={e => (e.currentTarget.style.color = "#64748b")}>{isAr ? "الخدمات" : "Services"}</a>
           <span>/</span>
           <span style={{ color: "#0f172a", fontWeight: 700 }}>{title}</span>
         </div>
@@ -495,7 +495,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
         padding: "78px 0 42px",
         background: isMarketing
           ? "radial-gradient(circle at 14% 20%, rgba(124,58,237,0.10), transparent 26%), radial-gradient(circle at 90% 0%, rgba(236,72,153,0.12), transparent 32%), linear-gradient(180deg,#ffffff 0%,#fbf8ff 100%)"
-          : "radial-gradient(circle at 15% 15%, rgba(228,146,104,0.14), transparent 26%), radial-gradient(circle at 85% 0%, rgba(56,189,248,0.14), transparent 28%), linear-gradient(180deg,#ffffff 0%,#f8fbff 100%)",
+          : "radial-gradient(circle at 15% 15%, rgba(228,146,104,0.14), transparent 26%), radial-gradient(circle at 85% 0%, rgba(255,140,0,0.14), transparent 28%), linear-gradient(180deg,#ffffff 0%,#f8fbff 100%)",
         overflow: "hidden",
       }}>
         <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
@@ -541,30 +541,30 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
                 <div style={{ position: "relative", zIndex: 2, display: "flex", alignItems: "center", justifyContent: "center", gap: 18, transform: "translateY(8px)" }}>
                   {/* Small phone */}
                   <div style={{ width: 185, height: 390, background: "#111827", borderRadius: 34, padding: 10, boxShadow: "0 25px 60px rgba(15,23,42,0.22)", transform: "translateY(34px) rotate(-8deg)", opacity: 0.92, flexShrink: 0 }}>
-                    <div style={{ width: "100%", height: "100%", borderRadius: 26, overflow: "hidden", background: "linear-gradient(180deg,#f8fbff,#e0f2fe)", padding: 16, position: "relative" }}>
+                    <div style={{ width: "100%", height: "100%", borderRadius: 26, overflow: "hidden", background: "linear-gradient(180deg,#f8fbff,#fff7ed)", padding: 16, position: "relative" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, fontWeight: 800, color: "#334155", marginBottom: 16 }}><span>9:41</span><span>LTE • 100%</span></div>
                       <div style={{ background: "#fff", borderRadius: 22, border: "1px solid #e2e8f0", padding: 14, marginBottom: 12 }}>
-                        <span style={{ display: "inline-block", background: "#eff6ff", color: "#1d4ed8", borderRadius: 999, padding: "6px 10px", fontSize: 11, fontWeight: 800, marginBottom: 10 }}>Analytics</span>
-                        <div style={{ height: 12, width: "68%", background: "#dbeafe", borderRadius: 999, marginBottom: 10 }} />
+                        <span style={{ display: "inline-block", background: "#fff7ed", color: "#e05500", borderRadius: 999, padding: "6px 10px", fontSize: 11, fontWeight: 800, marginBottom: 10 }}>Analytics</span>
+                        <div style={{ height: 12, width: "68%", background: "#fff3e0", borderRadius: 999, marginBottom: 10 }} />
                         <div style={{ height: 8, width: "100%", background: "#e2e8f0", borderRadius: 999, marginBottom: 7 }} />
                         <div style={{ height: 8, width: "70%", background: "#e2e8f0", borderRadius: 999 }} />
                       </div>
-                      <div style={{ height: 110, borderRadius: 18, background: "linear-gradient(135deg,#2563eb,#38bdf8)", marginBottom: 12 }} />
+                      <div style={{ height: 110, borderRadius: 18, background: "linear-gradient(135deg,#ff6a00,#ff8c00)", marginBottom: 12 }} />
                     </div>
                   </div>
 
                   {/* Large phone */}
                   <div style={{ width: 220, height: 452, background: "#111827", borderRadius: 34, padding: 10, boxShadow: "0 25px 60px rgba(15,23,42,0.22)", transform: "rotate(7deg)", flexShrink: 0 }}>
-                    <div style={{ width: "100%", height: "100%", borderRadius: 26, overflow: "hidden", background: "linear-gradient(180deg,#f8fbff,#e0f2fe)", padding: 16, position: "relative" }}>
+                    <div style={{ width: "100%", height: "100%", borderRadius: 26, overflow: "hidden", background: "linear-gradient(180deg,#f8fbff,#fff7ed)", padding: 16, position: "relative" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", fontSize: 11, fontWeight: 800, color: "#334155", marginBottom: 16 }}><span>9:41</span><span>5G • 100%</span></div>
                       <div style={{ background: "#fff", borderRadius: 22, border: "1px solid #e2e8f0", padding: 14, marginBottom: 12 }}>
-                        <span style={{ display: "inline-block", background: "#eff6ff", color: "#1d4ed8", borderRadius: 999, padding: "6px 10px", fontSize: 11, fontWeight: 800, marginBottom: 10 }}>Softlix App</span>
-                        <div style={{ height: 12, width: "72%", background: "#dbeafe", borderRadius: 999, marginBottom: 10 }} />
+                        <span style={{ display: "inline-block", background: "#fff7ed", color: "#e05500", borderRadius: 999, padding: "6px 10px", fontSize: 11, fontWeight: 800, marginBottom: 10 }}>Softlix App</span>
+                        <div style={{ height: 12, width: "72%", background: "#fff3e0", borderRadius: 999, marginBottom: 10 }} />
                         <div style={{ height: 8, width: "100%", background: "#e2e8f0", borderRadius: 999, marginBottom: 7 }} />
                       </div>
-                      <div style={{ height: 110, borderRadius: 18, background: "linear-gradient(135deg,#2563eb,#38bdf8)", marginBottom: 12 }} />
+                      <div style={{ height: 110, borderRadius: 18, background: "linear-gradient(135deg,#ff6a00,#ff8c00)", marginBottom: 12 }} />
                       <div style={{ background: "#fff", borderRadius: 22, border: "1px solid #e2e8f0", padding: 14 }}>
-                        <div style={{ height: 12, width: "62%", background: "#dbeafe", borderRadius: 999, marginBottom: 10 }} />
+                        <div style={{ height: 12, width: "62%", background: "#fff3e0", borderRadius: 999, marginBottom: 10 }} />
                         <div style={{ height: 8, width: "100%", background: "#e2e8f0", borderRadius: 999, marginBottom: 7 }} />
                         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginTop: 12 }}>
                           <div style={{ height: 38, borderRadius: 14, background: "#f8fafc", border: "1px solid #e2e8f0" }} />
@@ -685,8 +685,8 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
                       <div style={{ borderRadius: 16, background: "#fff", border: "1px solid rgba(14,165,233,0.10)", padding: 16, display: "grid", gap: 12 }}>
                         <div style={{ fontSize: 11, fontWeight: 800, color: "#0369a1", marginBottom: 4 }}>{isAr ? "أداء المشروع" : "Project Performance"}</div>
                         {[90, 72, 84, 63, 77].map((w, i) => (
-                          <div key={i} style={{ height: 10, borderRadius: 999, background: "#e0f2fe", overflow: "hidden", position: "relative" }}>
-                            <div style={{ position: "absolute", inset: 0, width: `${w}%`, borderRadius: "inherit", background: "linear-gradient(90deg,#0ea5e9,#6366f1)" }} />
+                          <div key={i} style={{ height: 10, borderRadius: 999, background: "#fff7ed", overflow: "hidden", position: "relative" }}>
+                            <div style={{ position: "absolute", inset: 0, width: `${w}%`, borderRadius: "inherit", background: "linear-gradient(90deg,#ff6a00,#ff8c00)" }} />
                           </div>
                         ))}
                       </div>
@@ -697,7 +697,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
                           { label: isAr ? "جودة الكود" : "Code Quality", value: "A+" },
                           { label: isAr ? "الأداء" : "Performance", value: "98%" },
                         ].map((m, i) => (
-                          <div key={i} style={{ borderRadius: 14, background: i === 0 ? "#e0f2fe" : i === 1 ? "#eef2ff" : "#f0fdf4", border: "1px solid rgba(14,165,233,0.10)", padding: "12px 14px" }}>
+                          <div key={i} style={{ borderRadius: 14, background: i === 0 ? "#fff7ed" : i === 1 ? "#eef2ff" : "#f0fdf4", border: "1px solid rgba(14,165,233,0.10)", padding: "12px 14px" }}>
                             <div style={{ fontSize: 11, fontWeight: 700, color: "#64748b", marginBottom: 2 }}>{m.label}</div>
                             <div style={{ fontSize: 20, fontWeight: 900, color: i === 0 ? "#0369a1" : i === 1 ? "#4f46e5" : "#15803d" }}>{m.value}</div>
                           </div>
@@ -733,14 +733,14 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
                         <span>Performance</span><span style={{ color: "#64748b" }}>هذا الشهر</span>
                       </div>
                       {/* Ring chart */}
-                      <div style={{ width: 90, height: 90, borderRadius: "50%", margin: "4px auto 10px", background: "conic-gradient(#ec4899 0 72%, #ede9fe 72% 100%)", display: "grid", placeItems: "center" }}>
+                      <div style={{ width: 90, height: 90, borderRadius: "50%", margin: "4px auto 10px", background: "conic-gradient(#ff6a00 0 72%, #fff3e0 72% 100%)", display: "grid", placeItems: "center" }}>
                         <div style={{ width: 62, height: 62, borderRadius: "50%", background: "#fff", display: "grid", placeItems: "center", fontWeight: 900, fontSize: 13, color: "#0f172a" }}>72%</div>
                       </div>
                       <div style={{ fontSize: 11, fontWeight: 700, color: "#64748b", textAlign: "center", marginBottom: 10 }}>{isAr ? "نسبة التفاعل" : "Engagement Rate"}</div>
                       <div style={{ display: "grid", gap: 7, marginTop: 10 }}>
                         {[82, 64, 74].map((w, i) => (
                           <div key={i} style={{ height: 8, borderRadius: 999, background: "#eef2ff", overflow: "hidden", position: "relative" }}>
-                            <div style={{ position: "absolute", inset: 0, width: `${w}%`, borderRadius: "inherit", background: "linear-gradient(90deg,#7c3aed,#ec4899)" }} />
+                            <div style={{ position: "absolute", inset: 0, width: `${w}%`, borderRadius: "inherit", background: "linear-gradient(90deg,#ff6a00,#ff8c00)" }} />
                           </div>
                         ))}
                       </div>
@@ -767,7 +767,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
                       </div>
                       {[76, 58].map((w, i) => (
                         <div key={i} style={{ height: 8, borderRadius: 999, background: "#eef2ff", overflow: "hidden", position: "relative", marginBottom: i < 1 ? 6 : 0 }}>
-                          <div style={{ position: "absolute", inset: 0, width: `${w}%`, borderRadius: "inherit", background: "linear-gradient(90deg,#7c3aed,#ec4899)" }} />
+                          <div style={{ position: "absolute", inset: 0, width: `${w}%`, borderRadius: "inherit", background: "linear-gradient(90deg,#ff6a00,#ff8c00)" }} />
                         </div>
                       ))}
                     </div>
@@ -786,7 +786,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
                   </div>
                   <div style={{ display: "flex", alignItems: "end", gap: 10, minHeight: 160, marginBottom: 16 }}>
                     {[45, 62, 38, 78, 55, 92].map((h, i) => (
-                      <div key={i} style={{ flex: 1, background: "linear-gradient(180deg,#38bdf8,#2563eb)", borderRadius: "16px 16px 8px 8px", height: `${h}%` }} />
+                      <div key={i} style={{ flex: 1, background: "linear-gradient(180deg,#ff8c00,#ff6a00)", borderRadius: "16px 16px 8px 8px", height: `${h}%` }} />
                     ))}
                   </div>
                   <div style={{ display: "grid", gap: 10 }}>
@@ -868,7 +868,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
                 <article key={i} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 24, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 26, transition: "0.25s ease" }}
                   onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-5px)")}
                   onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}>
-                  <div style={{ width: 64, height: 64, borderRadius: 20, display: "grid", placeItems: "center", background: "linear-gradient(135deg,#dbeafe,#e0f2fe)", color: "#2563eb", fontSize: 28, marginBottom: 16 }}>{s.icon}</div>
+                  <div style={{ width: 64, height: 64, borderRadius: 20, display: "grid", placeItems: "center", background: "linear-gradient(135deg,#fff3e0,#fff7ed)", color: "#ff6a00", fontSize: 28, marginBottom: 16 }}>{s.icon}</div>
                   <h3 style={{ margin: "0 0 10px", fontSize: 22, fontWeight: 800, color: "#0f172a" }}>{s.title}</h3>
                   <p style={{ margin: "0 0 16px", color: "#64748b" }}>{s.desc}</p>
                   <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "grid", gap: 10, color: "#334155", fontWeight: 700, fontSize: 14 }}>
@@ -924,7 +924,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
         <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
           <div style={{ display: "flex", alignItems: "end", justifyContent: "space-between", gap: 24, marginBottom: 32, flexWrap: "wrap" }}>
             <div>
-              <span style={{ display: "inline-flex", background: "#e0f2fe", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 12 }}>
+              <span style={{ display: "inline-flex", background: "#fff7ed", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 12 }}>
                 {isAr ? "لماذا Softlix" : "Why Softlix"}
               </span>
               <h2 style={{ margin: "0 0 10px", fontSize: "clamp(28px,3vw,40px)", lineHeight: 1.2, fontWeight: 800 }}>
@@ -940,7 +940,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
               <article key={i} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 24, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 26, transition: "0.25s ease" }}
                 onMouseEnter={e => (e.currentTarget.style.transform = "translateY(-5px)")}
                 onMouseLeave={e => (e.currentTarget.style.transform = "translateY(0)")}>
-                <div style={{ width: 64, height: 64, borderRadius: 20, display: "grid", placeItems: "center", background: "linear-gradient(135deg,#dbeafe,#e0f2fe)", fontSize: 28, marginBottom: 16 }}>{b.icon}</div>
+                <div style={{ width: 64, height: 64, borderRadius: 20, display: "grid", placeItems: "center", background: "linear-gradient(135deg,#fff3e0,#fff7ed)", fontSize: 28, marginBottom: 16 }}>{b.icon}</div>
                 <h3 style={{ margin: "0 0 10px", fontSize: 22, fontWeight: 800 }}>{b.title}</h3>
                 <p style={{ margin: 0, color: "#64748b" }}>{b.desc}</p>
               </article>
@@ -1044,7 +1044,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
                       {Array.isArray(project.technologies) && project.technologies.length > 0 && (
                         <div style={{ display: "flex", flexWrap: "wrap", gap: 10 }}>
                           {(project.technologies as string[]).slice(0, 3).map((t, ti) => (
-                            <span key={ti} style={{ padding: "8px 12px", borderRadius: 999, background: "#eff6ff", color: "#1d4ed8", fontSize: 13, fontWeight: 800 }}>{t}</span>
+                            <span key={ti} style={{ padding: "8px 12px", borderRadius: 999, background: "#fff7ed", color: "#e05500", fontSize: 13, fontWeight: 800 }}>{t}</span>
                           ))}
                         </div>
                       )}
@@ -1074,7 +1074,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
         <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
           <div style={{ display: "flex", alignItems: "end", justifyContent: "space-between", gap: 24, marginBottom: 32, flexWrap: "wrap" }}>
             <div>
-              <span style={{ display: "inline-flex", background: "#e0f2fe", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 12 }}>
+              <span style={{ display: "inline-flex", background: "#fff7ed", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 12 }}>
                 {isAr ? "كيف نعمل" : "How We Work"}
               </span>
               <h2 style={{ margin: "0 0 10px", fontSize: "clamp(28px,3vw,40px)", lineHeight: 1.2, fontWeight: 800 }}>
@@ -1085,7 +1085,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
           <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20 }} className="process-grid-responsive">
             {PROCESS_STEPS.map((step, i) => (
               <article key={i} style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 22, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 24, position: "relative", overflow: "hidden" }}>
-                <div style={{ fontSize: 44, lineHeight: 1, fontWeight: 900, color: "rgba(37,99,235,0.12)", marginBottom: 10 }}>{step.num}</div>
+                <div style={{ fontSize: 44, lineHeight: 1, fontWeight: 900, color: "rgba(255,106,0,0.12)", marginBottom: 10 }}>{step.num}</div>
                 <h3 style={{ margin: "0 0 10px", fontSize: 21, fontWeight: 800 }}>{isAr ? step.titleAr : step.titleEn}</h3>
                 <p style={{ margin: 0, color: "#64748b" }}>{isAr ? step.descAr : step.descEn}</p>
               </article>
@@ -1098,7 +1098,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
       <section style={{ padding: "88px 0", background: "linear-gradient(180deg,#fff,#f8fbff)" }}>
         <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
           <div style={{ marginBottom: 32 }}>
-            <span style={{ display: "inline-flex", background: "#e0f2fe", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 12 }}>
+            <span style={{ display: "inline-flex", background: "#fff7ed", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 12 }}>
               {isAr ? "آراء العملاء" : "Client Testimonials"}
             </span>
             <h2 style={{ margin: "0 0 10px", fontSize: "clamp(28px,3vw,40px)", lineHeight: 1.2, fontWeight: 800 }}>
@@ -1113,7 +1113,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
                 <div style={{ color: "#f59e0b", fontSize: 18, letterSpacing: 2, marginBottom: 14 }}>{"★".repeat(t.stars)}</div>
                 <p style={{ margin: "0 0 18px", color: "#334155", fontSize: 16 }}>{isAr ? t.quoteAr : t.quoteEn}</p>
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,#2563eb,#38bdf8)", color: "#fff", display: "grid", placeItems: "center", fontWeight: 800, flexShrink: 0 }}>{t.initial}</div>
+                  <div style={{ width: 48, height: 48, borderRadius: "50%", background: "linear-gradient(135deg,#ff6a00,#ff8c00)", color: "#fff", display: "grid", placeItems: "center", fontWeight: 800, flexShrink: 0 }}>{t.initial}</div>
                   <div>
                     <strong style={{ display: "block", fontSize: 15 }}>{isAr ? t.nameAr : t.nameEn}</strong>
                     <span style={{ fontSize: 13, color: "#64748b" }}>{isAr ? t.roleAr : t.roleEn}</span>
@@ -1169,7 +1169,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
           <div style={{ display: "grid", gridTemplateColumns: "0.95fr 1.05fr", gap: 24 }} className="contact-grid-responsive">
             {/* Info */}
             <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 24, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 28 }}>
-              <span style={{ display: "inline-flex", background: "#e0f2fe", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 18 }}>
+              <span style={{ display: "inline-flex", background: "#fff7ed", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 18 }}>
                 {isAr ? "تواصل معنا" : "Contact Us"}
               </span>
               <h3 style={{ margin: "0 0 12px", fontSize: 28, fontWeight: 800 }}>{isAr ? "دعنا نناقش مشروعك" : "Let's Discuss Your Project"}</h3>
@@ -1196,7 +1196,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
 
             {/* Form */}
             <div style={{ background: "#fff", border: "1px solid #e2e8f0", borderRadius: 24, boxShadow: "0 20px 50px rgba(15,23,42,0.08)", padding: 28 }}>
-              <span style={{ display: "inline-flex", background: "#e0f2fe", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 18 }}>
+              <span style={{ display: "inline-flex", background: "#fff7ed", color: "#0c4a6e", padding: "8px 14px", borderRadius: 999, fontSize: 14, fontWeight: 800, marginBottom: 18 }}>
                 {isAr ? "نموذج الطلب" : "Request Form"}
               </span>
               <form onSubmit={handleSubmit(data => leadMutation.mutate(data))} style={{ display: "grid", gap: 16 }} data-testid="form-service-request">
@@ -1225,7 +1225,7 @@ export default function ServiceDetail({ lang = "ar", onLangChange, slug: slugPro
                   <label style={{ fontSize: 14, fontWeight: 800, color: "#334155" }}>{isAr ? "تفاصيل طلبك *" : "Request Details *"}</label>
                   <textarea {...register("message")} placeholder={isAr ? `صِف ما تحتاجه من خدمة ${service.title}...` : `Describe what you need from ${service.titleEn || service.title}...`} style={{ border: "1px solid #dbe3ee", background: "#fff", borderRadius: 16, padding: "15px 16px", fontFamily: "inherit", fontSize: 15, color: "#0f172a", outline: "none", minHeight: 150, resize: "vertical" }} data-testid="textarea-message" />
                 </div>
-                <div style={{ background: "#eff6ff", borderRadius: 16, padding: "14px 16px", fontSize: 14, color: "#1d4ed8", fontWeight: 700 }}>
+                <div style={{ background: "#fff7ed", borderRadius: 16, padding: "14px 16px", fontSize: 14, color: "#e05500", fontWeight: 700 }}>
                   ✅ {isAr ? "سيتم التواصل معك خلال 24 ساعة عمل — معلوماتك محفوظة وخاصة" : "We will contact you within 24 business hours — your info is safe and private"}
                 </div>
                 <div>
