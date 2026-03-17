@@ -113,6 +113,7 @@ export function PublicNavbar({ lang = "ar", onLangChange }: NavbarProps) {
           data-testid="nav-logo">
             {logoUrl ? (
               <img
+                key={logoUrl}
                 src={logoUrl}
                 alt={siteName}
                 style={{ 
@@ -146,7 +147,7 @@ export function PublicNavbar({ lang = "ar", onLangChange }: NavbarProps) {
           </Link>
 
           {/* Desktop Nav - Center */}
-          <nav style={{ display: "flex", alignItems: "center", gap: 32, fontWeight: 600, color: "#333", flex: 1, justifyContent: "center" }} className="hide-mobile">
+          <nav style={{ display: "flex", alignItems: "center", gap: 24, fontWeight: 600, color: "#333", flex: 1, justifyContent: "center", flexWrap: "nowrap" }} className="hide-mobile">
             {navLinks.filter(l => l.href !== "/contact").map(link => (
               <Link
                 key={link.href}
@@ -199,12 +200,12 @@ export function PublicNavbar({ lang = "ar", onLangChange }: NavbarProps) {
                   <ChevronDown style={{ width: 16, height: 16 }} />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align={isAr ? "end" : "start"} style={{ width: 260, borderRadius: 16, border: "1px solid rgba(0,0,0,0.08)", boxShadow: "0 16px 40px rgba(0,0,0,0.12)", background: "#fff", padding: 10 }}>
+              <DropdownMenuContent align={isAr ? "end" : "start"} style={{ width: 280, maxHeight: 420, overflowY: "auto", borderRadius: 16, border: "1px solid rgba(0,0,0,0.08)", boxShadow: "0 16px 40px rgba(0,0,0,0.12)", background: "#fff", padding: 10 }}>
                 {SERVICES.map(s => (
                   <DropdownMenuItem key={s.href} asChild>
                     <Link
                       href={s.href}
-                      style={{ display: "block", padding: "12px 14px", borderRadius: 10, fontSize: 14, fontWeight: 500, color: "#333", textDecoration: "none", cursor: "pointer", transition: "all 0.2s" }}
+                      style={{ display: "block", padding: "12px 14px", borderRadius: 10, fontSize: 14, fontWeight: 500, color: "#333", textDecoration: "none", cursor: "pointer", transition: "all 0.2s", whiteSpace: "normal" }}
                       onMouseEnter={(e: any) => {
                         e.currentTarget.style.background = "rgba(255,136,0,0.08)";
                         e.currentTarget.style.color = "#ff6a00";
