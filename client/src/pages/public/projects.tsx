@@ -733,7 +733,7 @@ export default function PublicProjects({ lang = "ar", onLangChange, slug: slugPr
 
                     {/* Body */}
                     <div style={{ padding: "22px 22px 20px" }}>
-                      <h3 style={{ margin: "0 0 8px", fontSize: "1.22rem", fontWeight: 900, lineHeight: 1.35 }}>{title}</h3>
+                      <h3 style={{ margin: "0 0 8px", fontSize: "1.22rem", fontWeight: 900, lineHeight: 1.35, height: 52, overflow: "hidden", display: "block", textOverflow: "ellipsis", whiteSpace: "normal" }} className="line-clamp-2">{title}</h3>
                       <p style={{ margin: 0, color: "#5f6b7d", fontSize: ".95rem", lineHeight: 1.85, minHeight: 86 }}>{desc}</p>
 
                       <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 16 }}>
