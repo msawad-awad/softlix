@@ -1037,6 +1037,23 @@ export const visitorLogs = pgTable("visitor_logs", {
 export type VisitorLog = typeof visitorLogs.$inferSelect;
 export type InsertVisitorLog = typeof visitorLogs.$inferInsert;
 
+// Contact Interaction Events (GA4 Tracking)
+export const analyticsEvents = pgTable("analytics_events", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  eventName: text("event_name").notNull(), // 'contact_interaction'
+  buttonType: text("button_type").notNull(), // 'whatsapp' | 'call' | 'message' | 'consultation'
+  pageUrl: text("page_url"),
+  userAgent: text("user_agent"),
+  ipAddress: text("ip_address"),
+  userId: varchar("user_id"),
+  sessionId: text("session_id"),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+});
+
+export type AnalyticsEvent = typeof analyticsEvents.$inferSelect;
+export type InsertAnalyticsEvent = typeof analyticsEvents.$inferInsert;
+
 // ============================================================================
 // API Response Types
 // ============================================================================

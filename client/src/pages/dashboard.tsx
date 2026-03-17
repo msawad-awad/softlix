@@ -28,6 +28,10 @@ export default function Dashboard() {
     queryKey: ["/api/dashboard/visitors"],
   });
 
+  const { data: contactAnalytics } = useQuery<any>({
+    queryKey: ["/api/dashboard/contact-analytics"],
+  });
+
   const getActivityIcon = (entityType: string) => {
     switch (entityType) {
       case "company":
@@ -299,6 +303,48 @@ export default function Dashboard() {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Contact Interactions Analytics */}
+      {contactAnalytics && (
+        <div className="grid gap-6 lg:grid-cols-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm font-semibold">إجمالي التفاعلات</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold">{contactAnalytics.total || 0}</p>
+              <p className="text-xs text-gray-500 mt-1">جميع الوقت</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm font-semibold">آخر 7 أيام</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-3xl font-bold">{contactAnalytics.last7Days || 0}</p>
+              <p className="text-xs text-gray-500 mt-1">تفاعلات</p>
+            </CardContent>
+          </Card>
+
+          {contactAnalytics.byButton && contactAnalytics.byButton.map((btn: any) => (
+            <Card key={btn.buttonType}>
+              <CardHeader>
+                <CardTitle className="text-sm font-semibold capitalize">
+                  {btn.buttonType === "whatsapp" ? "واتساب" :
+                    btn.buttonType === "call" ? "اتصال" :
+                    btn.buttonType === "message" ? "رسالة" :
+                    "استشارة"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold">{btn.count}</p>
+                <p className="text-xs text-gray-500 mt-1">ضغطات</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       )}
     </div>
   );

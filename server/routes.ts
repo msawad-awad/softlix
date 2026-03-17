@@ -358,6 +358,36 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/dashboard/contact-analytics", requireAuth, async (req, res) => {
+    try {
+      const stats = await storage.getContactInteractionStats(req.user!.tenantId);
+      res.json(stats);
+    } catch (error) {
+      console.error("Contact analytics error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post("/api/analytics/contact-event", async (req, res) => {
+    try {
+      const tenantId = req.body.tenantId || (import.meta.env.VITE_TENANT_ID as string) || "";
+      const event = await storage.recordContactEvent({
+        tenantId,
+        eventName: "contact_interaction",
+        buttonType: req.body.buttonType,
+        pageUrl: req.body.pageUrl,
+        userAgent: req.body.userAgent,
+        ipAddress: req.body.ipAddress || req.ip || "",
+        userId: req.body.userId,
+        sessionId: req.body.sessionId,
+      });
+      res.json(event);
+    } catch (error) {
+      console.error("Record contact event error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // =========================================================================
   // COMPANIES ROUTES
   // =========================================================================

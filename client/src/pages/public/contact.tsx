@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Phone, Mail, MapPin, Clock, CheckCircle2, Send } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { SiWhatsapp } from "react-icons/si";
+import { useTrackContactEvent } from "@/hooks/use-track-contact";
 
 const TENANT_ID = (import.meta.env.VITE_TENANT_ID as string) || "";
 
@@ -22,6 +23,7 @@ interface ContactProps {
 
 export default function PublicContact({ lang = "ar", onLangChange }: ContactProps) {
   const isAr = lang === "ar";
+  const { trackEvent } = useTrackContactEvent();
   useSEO({
     title: isAr ? "تواصل معنا" : "Contact Us",
     description: isAr
@@ -53,6 +55,7 @@ export default function PublicContact({ lang = "ar", onLangChange }: ContactProp
       toast({ title: isAr ? "حدث خطأ" : "Error", description: isAr ? "الاسم ورقم الهاتف مطلوبان" : "Name and phone are required", variant: "destructive" });
       return;
     }
+    trackEvent("message", "/contact");
     setSubmitting(true);
     try {
       const res = await fetch(`/api/public/lead-capture${TENANT_ID ? `?tenantId=${TENANT_ID}` : ""}`, {
@@ -97,10 +100,10 @@ export default function PublicContact({ lang = "ar", onLangChange }: ContactProp
                 <h2 className="text-2xl font-black text-gray-900 dark:text-white mb-6">{isAr ? "معلومات التواصل" : "Contact Information"}</h2>
                 <div className="space-y-5">
                   {[
-                    { icon: Phone, labelAr: "الهاتف", labelEn: "Phone", value: phone, href: `tel:${phone}` },
-                    { icon: Mail, labelAr: "البريد الإلكتروني", labelEn: "Email", value: email, href: `mailto:${email}` },
-                    { icon: MapPin, labelAr: "العنوان", labelEn: "Address", value: isAr ? addressAr : addressEn, href: null },
-                    { icon: Clock, labelAr: "ساعات العمل", labelEn: "Working Hours", value: isAr ? workingHoursAr : workingHoursEn, href: null },
+                    { icon: Phone, labelAr: "الهاتف", labelEn: "Phone", value: phone, href: `tel:${phone}`, track: "call" },
+                    { icon: Mail, labelAr: "البريد الإلكتروني", labelEn: "Email", value: email, href: `mailto:${email}`, track: "message" },
+                    { icon: MapPin, labelAr: "العنوان", labelEn: "Address", value: isAr ? addressAr : addressEn, href: null, track: null },
+                    { icon: Clock, labelAr: "ساعات العمل", labelEn: "Working Hours", value: isAr ? workingHoursAr : workingHoursEn, href: null, track: null },
                   ].map((item, i) => {
                     const Icon = item.icon;
                     return (
@@ -111,7 +114,7 @@ export default function PublicContact({ lang = "ar", onLangChange }: ContactProp
                         <div>
                           <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">{isAr ? item.labelAr : item.labelEn}</p>
                           {item.href ? (
-                            <a href={item.href} className="text-sm font-medium text-gray-900 dark:text-white hover:text-blue-600 transition-colors">{item.value}</a>
+                            <a href={item.href} onClick={() => item.track && trackEvent(item.track as any, "/contact")} className="text-sm font-medium text-gray-900 dark:text-white hover:text-blue-600 transition-colors">{item.value}</a>
                           ) : (
                             <p className="text-sm font-medium text-gray-900 dark:text-white">{item.value}</p>
                           )}
@@ -129,6 +132,7 @@ export default function PublicContact({ lang = "ar", onLangChange }: ContactProp
                 </div>
                 <p className="text-sm text-green-700 dark:text-green-400 mb-3">{isAr ? "تواصل معنا مباشرة عبر واتساب" : "Contact us directly via WhatsApp"}</p>
                 <a href={whatsappUrl} target="_blank" rel="noopener noreferrer"
+                  onClick={() => trackEvent("whatsapp", "/contact")}
                   className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                   <SiWhatsapp className="w-4 h-4" />
                   {isAr ? "ابدأ محادثة" : "Start Chat"}

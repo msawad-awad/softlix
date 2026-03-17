@@ -8,11 +8,12 @@ import {
   crmLeadSources, crmLeads, crmDealPipelines, crmDealStages, crmDeals,
   crmActivities, crmTasks, crmProposals, crmProposalItems,
   integrationSettings, crmAttachments, crmProposalTokens,
-  proposalTemplates, googleImportBuffer, serviceLibrary, visitorLogs,
+  proposalTemplates, googleImportBuffer, serviceLibrary, visitorLogs, analyticsEvents,
   type ProposalTemplate, type InsertProposalTemplate,
   type GoogleImportBuffer, type InsertGoogleImportBuffer,
   type ServiceLibraryItem, type InsertServiceLibraryItem,
   type VisitorLog, type InsertVisitorLog,
+  type AnalyticsEvent, type InsertAnalyticsEvent,
   type NewsletterSubscriber, type InsertNewsletterSubscriber,
   type PricingPlan, type InsertPricingPlan,
   type Booking, type InsertBooking,
@@ -597,6 +598,40 @@ export class DatabaseStorage implements IStorage {
       .limit(limit);
 
     return { topCountries, topCities, topPages, recent };
+  }
+
+  // ── Contact Interaction Analytics (GA4) ──────────────────────────────────
+  async recordContactEvent(event: InsertAnalyticsEvent): Promise<AnalyticsEvent> {
+    const [record] = await db.insert(analyticsEvents).values(event).returning();
+    return record;
+  }
+
+  async getContactInteractionStats(tenantId: string): Promise<{
+    total: number;
+    byButton: Array<{ buttonType: string; count: number }>;
+    last7Days: number;
+  }> {
+    const last7Days = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+    const [totalResult] = await db.select({ count: count() }).from(analyticsEvents).where(eq(analyticsEvents.tenantId, tenantId));
+    const [last7Result] = await db.select({ count: count() }).from(analyticsEvents).where(
+      and(eq(analyticsEvents.tenantId, tenantId), gte(analyticsEvents.timestamp, last7Days))
+    );
+
+    const byButton = await db.select({
+      buttonType: analyticsEvents.buttonType,
+      count: count().as("count"),
+    })
+      .from(analyticsEvents)
+      .where(and(eq(analyticsEvents.tenantId, tenantId), gte(analyticsEvents.timestamp, last7Days)))
+      .groupBy(analyticsEvents.buttonType)
+      .orderBy(desc(count()));
+
+    return {
+      total: totalResult?.count || 0,
+      byButton,
+      last7Days: last7Result?.count || 0,
+    };
   }
 
   // Auth Helper
