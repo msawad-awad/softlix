@@ -19,16 +19,17 @@ import type { MarketingSettings } from "@shared/schema";
 import { Link } from "wouter";
 
 const TRACKING_TOOLS = [
-  { key: "gtmId", label: "Google Tag Manager ID", placeholder: "GTM-XXXXXXX", icon: "📦", desc: "يُحمَّل تلقائياً في جميع صفحات الموقع العام" },
+  { key: "gtmId", label: "Google Tag Manager ID", placeholder: "GTM-XXXXXXX", icon: "📦", desc: "يُحمَّل تلقائياً في جميع صفحات الموقع — ضع المعرّف فقط مثل GTM-59G4JW2" },
+  { key: "googleAnalyticsId", label: "Google Analytics 4 ID", placeholder: "G-XXXXXXXXXX", icon: "📊", desc: "تحليلات جوجل GA4 — المعرّف يبدأ بـ G-" },
+  { key: "googleAdsId", label: "Google Ads (Conversion) ID", placeholder: "AW-XXXXXXXXX", icon: "🎯", desc: "تتبع إعلانات جوجل والتحويلات — مثل AW-467275968" },
   { key: "metaPixelId", label: "Meta (Facebook) Pixel ID", placeholder: "XXXXXXXXXXXXXX", icon: "📘", desc: "يتتبع الزوار من إعلانات فيسبوك وإنستجرام" },
-  { key: "googleAnalyticsId", label: "Google Analytics ID (GA4)", placeholder: "G-XXXXXXXXXX", icon: "📊", desc: "تحليلات جوجل لتتبع الزيارات والتحويلات" },
   { key: "tiktokPixelId", label: "TikTok Pixel ID", placeholder: "CXXXXXXXXXXXXXXXXXX", icon: "🎵", desc: "تتبع إعلانات تيك توك" },
   { key: "snapchatPixelId", label: "Snapchat Pixel ID", placeholder: "XXXXXXXX-XXXX-XXXX", icon: "👻", desc: "تتبع إعلانات سناب شات" },
   { key: "linkedinInsightId", label: "LinkedIn Insight Tag ID", placeholder: "XXXXXXX", icon: "💼", desc: "تتبع إعلانات لينكدإن" },
 ];
 
 type FormState = {
-  gtmId: string; metaPixelId: string; googleAnalyticsId: string;
+  gtmId: string; metaPixelId: string; googleAnalyticsId: string; googleAdsId: string;
   tiktokPixelId: string; snapchatPixelId: string; linkedinInsightId: string;
   customHeadScript: string; customBodyScript: string;
   whatsappEnabled: boolean; whatsappNumber: string; whatsappMessage: string; whatsappPosition: string;
@@ -41,7 +42,7 @@ type FormState = {
 };
 
 const DEFAULT_FORM: FormState = {
-  gtmId: "", metaPixelId: "", googleAnalyticsId: "",
+  gtmId: "", metaPixelId: "", googleAnalyticsId: "", googleAdsId: "",
   tiktokPixelId: "", snapchatPixelId: "", linkedinInsightId: "",
   customHeadScript: "", customBodyScript: "",
   whatsappEnabled: false, whatsappNumber: "", whatsappMessage: "مرحباً، أود الاستفسار عن خدماتكم", whatsappPosition: "bottom-right",
@@ -65,6 +66,7 @@ export default function Marketing() {
         gtmId: settings.gtmId || "",
         metaPixelId: settings.metaPixelId || "",
         googleAnalyticsId: settings.googleAnalyticsId || "",
+        googleAdsId: (settings as any).googleAdsId || "",
         tiktokPixelId: settings.tiktokPixelId || "",
         snapchatPixelId: settings.snapchatPixelId || "",
         linkedinInsightId: settings.linkedinInsightId || "",

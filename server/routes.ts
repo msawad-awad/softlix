@@ -1176,6 +1176,7 @@ export async function registerRoutes(
         gtmId: settings.gtmId,
         metaPixelId: settings.metaPixelId,
         googleAnalyticsId: settings.googleAnalyticsId,
+        googleAdsId: settings.googleAdsId,
         tiktokPixelId: settings.tiktokPixelId,
         snapchatPixelId: settings.snapchatPixelId,
         linkedinInsightId: settings.linkedinInsightId,

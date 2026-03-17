@@ -91,16 +91,16 @@ export function useMarketingTracking() {
       }
     }
 
-    // ── Google Analytics 4 ─────────────────────────────────────────────────
-    if (settings.googleAnalyticsId?.trim()) {
-      const gaId = settings.googleAnalyticsId.trim();
-      injectScript("ga4-script", `https://www.googletagmanager.com/gtag/js?id=${gaId}`);
-      injectInlineScript("ga4-init", `
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', '${gaId}');
-      `);
+    // ── Google Analytics 4 + Google Ads ────────────────────────────────────
+    const gaId = (settings as any).googleAnalyticsId?.trim() || "";
+    const gAdsId = (settings as any).googleAdsId?.trim() || "";
+    if (gaId || gAdsId) {
+      const primaryId = gaId || gAdsId;
+      injectScript("gtag-script", `https://www.googletagmanager.com/gtag/js?id=${primaryId}`);
+      let gtagInit = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());`;
+      if (gaId) gtagInit += `gtag('config','${gaId}');`;
+      if (gAdsId) gtagInit += `gtag('config','${gAdsId}');`;
+      injectInlineScript("gtag-init", gtagInit);
     }
 
     // ── Meta (Facebook) Pixel ──────────────────────────────────────────────

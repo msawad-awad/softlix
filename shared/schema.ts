@@ -333,6 +333,7 @@ export const marketingSettings = pgTable("marketing_settings", {
   gtmId: text("gtm_id"),
   metaPixelId: text("meta_pixel_id"),
   googleAnalyticsId: text("google_analytics_id"),
+  googleAdsId: text("google_ads_id"),
   tiktokPixelId: text("tiktok_pixel_id"),
   snapchatPixelId: text("snapchat_pixel_id"),
   linkedinInsightId: text("linkedin_insight_id"),
