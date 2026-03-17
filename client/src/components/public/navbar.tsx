@@ -75,15 +75,15 @@ export function PublicNavbar({ lang = "ar", onLangChange }: NavbarProps) {
 
       {/* ── Navbar ── */}
       <header style={{ position: "sticky", top: 0, zIndex: 1000, backdropFilter: "blur(18px)", background: "rgba(248,250,252,0.92)", borderBottom: "1px solid rgba(226,232,240,0.85)" }}>
-        <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto", minHeight: 84, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 24 }}>
+        <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto", minHeight: 100, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 24 }}>
 
           {/* Logo */}
-          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 12, fontWeight: 800, fontSize: 24, color: "#0f172a", textDecoration: "none" }} data-testid="nav-logo">
+          <Link href="/" style={{ display: "flex", alignItems: "center", gap: 16, fontWeight: 800, fontSize: 24, color: "#0f172a", textDecoration: "none", padding: "12px 0", transition: "transform 0.2s" }} onMouseEnter={(e: any) => e.currentTarget.style.transform = "scale(1.05)"} onMouseLeave={(e: any) => e.currentTarget.style.transform = "scale(1)"} data-testid="nav-logo">
             {logoUrl ? (
               <img
                 src={logoUrl}
                 alt={siteName}
-                style={{ height: 48, maxWidth: 180, objectFit: "contain" }}
+                style={{ height: 76, maxWidth: 220, objectFit: "contain", filter: "drop-shadow(0 4px 12px rgba(15, 23, 42, 0.1))" }}
                 onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
               />
             ) : (
