@@ -97,16 +97,16 @@ export default function Dashboard() {
 
       {/* Visitors Analytics */}
       {visitors && (
-        <div className="grid gap-6 lg:grid-cols-2">
+        <div className="grid gap-6 lg:grid-cols-3">
           {/* Top Countries */}
-          <Card>
+          <Card className="min-h-[380px] flex flex-col">
             <CardHeader>
               <CardTitle className="text-lg font-semibold flex items-center gap-2">
                 <Globe className="h-5 w-5 text-blue-500" />
                 أفضل الدول
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1 overflow-y-auto">
               {visitors.topCountries && visitors.topCountries.length > 0 ? (
                 <div className="space-y-3">
                   {visitors.topCountries.map((c: any, i: number) => (
@@ -123,14 +123,14 @@ export default function Dashboard() {
           </Card>
 
           {/* Top Cities */}
-          <Card>
+          <Card className="min-h-[380px] flex flex-col">
             <CardHeader>
               <CardTitle className="text-lg font-semibold flex items-center gap-2">
                 <MapPin className="h-5 w-5 text-green-500" />
                 أفضل المدن
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1 overflow-y-auto">
               {visitors.topCities && visitors.topCities.length > 0 ? (
                 <div className="space-y-3">
                   {visitors.topCities.map((c: any, i: number) => (
@@ -150,14 +150,14 @@ export default function Dashboard() {
           </Card>
 
           {/* Top Pages */}
-          <Card className="lg:col-span-2">
+          <Card className="min-h-[380px] flex flex-col lg:col-span-1">
             <CardHeader>
               <CardTitle className="text-lg font-semibold">أكثر الصفحات زيارة</CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1 overflow-y-auto">
               {visitors.topPages && visitors.topPages.length > 0 ? (
                 <div className="space-y-2">
-                  {visitors.topPages.map((p: any, i: number) => (
+                  {visitors.topPages.slice(0, 8).map((p: any, i: number) => (
                     <div key={i} className="flex items-center justify-between p-2 rounded-lg hover-elevate text-sm">
                       <span className="text-gray-700 truncate flex-1">{p.pageUrl || "/"}</span>
                       <Badge variant="secondary">{p.count}</Badge>
