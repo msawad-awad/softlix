@@ -40,3 +40,10 @@ waitForPort = 5000
 
 [agent]
 integrations = ["javascript_database:1.0.0"]
+
+[userenv]
+
+[userenv.shared]
+R2_ACCOUNT_ID = "b20513bad1fc202b32d75584bdbc4628"
+R2_BUCKET_NAME = "softlix"
+R2_PUBLIC_URL = "https://pub-94fcd97354f54329a0610cae6736c079.r2.dev"

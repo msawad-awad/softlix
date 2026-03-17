@@ -9,6 +9,7 @@ import path from "path";
 import fs from "fs";
 import { sendEmail, sendSms } from "./email";
 import { invalidateTrackingCache } from "./inject-tracking";
+import { r2ImageUpload, r2DocUpload, handleFileUploadToR2, deleteFromR2, isR2Configured } from "./r2-storage";
 import { google } from "googleapis";
 
 // Secret masking helpers - يخفي كلمات السر عند الإرجاع
@@ -827,22 +828,25 @@ export async function registerRoutes(
   // FILE UPLOAD (Protected – returns public URL)
   // =========================================================================
 
-  app.post("/api/upload", requireAuth, upload.single("file"), (req: Request, res: Response) => {
-    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
-    const protocol = req.headers["x-forwarded-proto"] || req.protocol;
-    const host = req.headers["x-forwarded-host"] || req.get("host");
-    const url = `${protocol}://${host}/uploads/${req.file.filename}`;
-    res.json({ url, filename: req.file.filename, size: req.file.size });
+  app.post("/api/upload", requireAuth, r2ImageUpload.single("file"), async (req: Request, res: Response) => {
+    try {
+      const { url, key, size } = await handleFileUploadToR2(req as any, "uploads");
+      res.json({ url, key, size });
+    } catch (err: any) {
+      res.status(400).json({ message: err.message || "Upload failed" });
+    }
   });
 
-  app.delete("/api/upload/:filename", requireAuth, (req: Request, res: Response) => {
-    const filename = path.basename(req.params.filename); // prevent traversal
-    const filePath = path.join(uploadsDir, filename);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+  app.delete("/api/upload/:filename", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const key = decodeURIComponent(req.params.filename);
+      await deleteFromR2(key);
+      // Also try local fallback
+      const localPath = path.join(uploadsDir, path.basename(key));
+      if (fs.existsSync(localPath)) fs.unlinkSync(localPath);
       res.json({ message: "Deleted" });
-    } else {
-      res.status(404).json({ message: "File not found" });
+    } catch {
+      res.json({ message: "Deleted" });
     }
   });
 
@@ -2521,24 +2525,26 @@ export async function registerRoutes(
     res.json(attachments);
   });
 
-  app.post("/api/crm/attachments", requireAuth, uploadDoc.single("file"), async (req: Request, res: Response) => {
+  app.post("/api/crm/attachments", requireAuth, r2DocUpload.single("file"), async (req: Request, res: Response) => {
     if (!req.file) return res.status(400).json({ message: "No file uploaded" });
     const { entityType, entityId } = req.body;
     if (!entityType || !entityId) return res.status(400).json({ message: "entityType and entityId required" });
-    const protocol = req.protocol;
-    const host = req.get("host");
-    const fileUrl = `${protocol}://${host}/uploads/${req.file.filename}`;
-    const attachment = await storage.createAttachment({
-      tenantId: req.user!.tenantId,
-      entityType,
-      entityId,
-      fileName: req.file.originalname,
-      fileUrl,
-      fileSize: req.file.size,
-      mimeType: req.file.mimetype,
-      uploadedBy: req.user!.id,
-    });
-    res.json(attachment);
+    try {
+      const { url: fileUrl } = await handleFileUploadToR2(req as any, "attachments");
+      const attachment = await storage.createAttachment({
+        tenantId: req.user!.tenantId,
+        entityType,
+        entityId,
+        fileName: req.file.originalname,
+        fileUrl,
+        fileSize: req.file.size,
+        mimeType: req.file.mimetype,
+        uploadedBy: req.user!.id,
+      });
+      res.json(attachment);
+    } catch (err: any) {
+      res.status(500).json({ message: err.message || "Upload failed" });
+    }
   });
 
   app.delete("/api/crm/attachments/:id", requireAuth, async (req: Request, res: Response) => {
