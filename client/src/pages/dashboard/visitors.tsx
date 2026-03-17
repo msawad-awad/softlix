@@ -67,7 +67,9 @@ export default function VisitorsPage() {
       const params = new URLSearchParams({ limit: String(PAGE_SIZE), offset: String(page * PAGE_SIZE) });
       if (countryFilter) params.set("country", countryFilter);
       if (deviceFilter && deviceFilter !== "all") params.set("deviceType", deviceFilter);
-      const res = await fetch(`/api/dashboard/visitor-details?${params}`);
+      const res = await fetch(`/api/dashboard/visitor-details?${params}`, {
+        credentials: "include",
+      });
       if (!res.ok) throw new Error("Failed");
       return res.json();
     },
