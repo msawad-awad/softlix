@@ -1378,6 +1378,7 @@ export async function registerRoutes(
   app.put("/api/cms/site-settings", requireAuth, async (req, res) => {
     try {
       const s = await storage.upsertSiteSettings(req.user!.tenantId, req.body);
+      invalidateTrackingCache();
       res.json(s);
     } catch (e) { console.error(e); res.status(500).json({ message: "Internal server error" }); }
   });

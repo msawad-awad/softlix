@@ -31,6 +31,7 @@ export function PublicNavbar({ lang = "ar", onLangChange }: NavbarProps) {
 
   const { data: settings } = useQuery<any>({ queryKey: ["/api/public/site-settings"] });
   const siteName = isAr ? (settings?.siteNameAr || "Softlix") : (settings?.siteNameEn || "Softlix");
+  const logoUrl = settings?.logoUrl || "";
   const phone = settings?.contactPhone || "0537861534";
   const email = settings?.contactEmail || "info@softlix.net";
   const workingHoursAr = settings?.contactHoursAr || "السبت - الخميس | 9:00 ص - 6:00 م";
@@ -78,11 +79,22 @@ export function PublicNavbar({ lang = "ar", onLangChange }: NavbarProps) {
 
           {/* Logo */}
           <Link href="/" style={{ display: "flex", alignItems: "center", gap: 12, fontWeight: 800, fontSize: 24, color: "#0f172a", textDecoration: "none" }} data-testid="nav-logo">
-            <div style={{ width: 42, height: 42, borderRadius: 14, background: "linear-gradient(135deg,#2563eb,#38bdf8)", boxShadow: "0 12px 25px rgba(56,189,248,0.3)", position: "relative", overflow: "hidden", flexShrink: 0 }}>
-              <div style={{ position: "absolute", width: 22, height: 6, top: 10, right: 8, background: "rgba(255,255,255,0.85)", borderRadius: 99, transform: "rotate(-35deg)" }} />
-              <div style={{ position: "absolute", width: 18, height: 6, bottom: 10, left: 8, background: "rgba(255,255,255,0.85)", borderRadius: 99, transform: "rotate(-35deg)" }} />
-            </div>
-            <span>{siteName}</span>
+            {logoUrl ? (
+              <img
+                src={logoUrl}
+                alt={siteName}
+                style={{ height: 48, maxWidth: 180, objectFit: "contain" }}
+                onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+              />
+            ) : (
+              <>
+                <div style={{ width: 42, height: 42, borderRadius: 14, background: "linear-gradient(135deg,#2563eb,#38bdf8)", boxShadow: "0 12px 25px rgba(56,189,248,0.3)", position: "relative", overflow: "hidden", flexShrink: 0 }}>
+                  <div style={{ position: "absolute", width: 22, height: 6, top: 10, right: 8, background: "rgba(255,255,255,0.85)", borderRadius: 99, transform: "rotate(-35deg)" }} />
+                  <div style={{ position: "absolute", width: 18, height: 6, bottom: 10, left: 8, background: "rgba(255,255,255,0.85)", borderRadius: 99, transform: "rotate(-35deg)" }} />
+                </div>
+                <span>{siteName}</span>
+              </>
+            )}
           </Link>
 
           {/* Desktop Nav */}
