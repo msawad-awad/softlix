@@ -8,6 +8,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { sendEmail, sendSms } from "./email";
+import { invalidateTrackingCache } from "./inject-tracking";
 import { google } from "googleapis";
 
 // Secret masking helpers - يخفي كلمات السر عند الإرجاع
@@ -1200,6 +1201,7 @@ export async function registerRoutes(
   app.put("/api/marketing/settings", requireAuth, async (req, res) => {
     try {
       const ms = await storage.upsertMarketingSettings(req.user!.tenantId, req.body);
+      invalidateTrackingCache();
       res.json(ms);
     } catch (error) {
       console.error("Marketing settings error:", error);
