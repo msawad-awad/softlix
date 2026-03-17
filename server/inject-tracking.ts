@@ -17,11 +17,12 @@ function buildScripts(
 
   // ── Favicon ────────────────────────────────────────────────────────────────
   const faviconUrl = (site?.faviconUrl || "").trim();
-  if (faviconUrl) {
-    const ext = faviconUrl.split("?")[0].split(".").pop()?.toLowerCase() || "png";
+  const finalFaviconUrl = faviconUrl || "/logo_softlix.png";
+  if (finalFaviconUrl) {
+    const ext = finalFaviconUrl.split("?")[0].split(".").pop()?.toLowerCase() || "png";
     const mimeMap: Record<string, string> = { ico: "image/x-icon", svg: "image/svg+xml", png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp" };
     const mime = mimeMap[ext] || "image/png";
-    head += `\n<link id="dyn-favicon" rel="icon" type="${mime}" href="${faviconUrl}">`;
+    head += `\n<link id="dyn-favicon" rel="icon" type="${mime}" href="${finalFaviconUrl}">`;
   }
 
   if (!marketing) return { head, body };
