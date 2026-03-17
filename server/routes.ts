@@ -737,7 +737,7 @@ export async function registerRoutes(
       const tenantId = await resolvePublicTenantId(req);
       if (!tenantId) return res.json([]);
       const allProjects = await storage.getProjects(tenantId);
-      res.json(allProjects.filter(p => p.status === "published"));
+      res.json(allProjects.filter(p => !p.status || p.status === "published"));
     } catch (error) {
       res.status(500).json({ message: "Internal server error" });
     }

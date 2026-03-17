@@ -507,7 +507,9 @@ export default function PublicProjects({ lang = "ar", onLangChange, slug: slugPr
     enabled: !effectiveSlug,
   });
 
-  const displayProjects = [...(apiProjects || []), ...DEFAULT_PROJECTS];
+  const displayProjects = apiProjects && apiProjects.length > 0
+    ? (apiProjects as any[])
+    : DEFAULT_PROJECTS;
   const filtered = activeCategory === "all"
     ? displayProjects
     : displayProjects.filter((p: any) => {

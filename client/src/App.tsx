@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Switch, Route, useLocation, Redirect } from "wouter";
 import { queryClient } from "./lib/queryClient";
@@ -277,6 +277,35 @@ function Router() {
   );
 }
 
+function FaviconSync() {
+  const { data: siteSettings } = useQuery<any>({
+    queryKey: ["/api/public/site-settings"],
+    staleTime: 60 * 1000,
+  });
+  useEffect(() => {
+    const faviconUrl = siteSettings?.faviconUrl;
+    if (!faviconUrl) return;
+    let link = document.getElementById("app-favicon") as HTMLLinkElement | null;
+    if (!link) {
+      link = document.querySelector("link[rel='icon']") as HTMLLinkElement | null;
+    }
+    if (!link) {
+      link = document.createElement("link");
+      link.id = "app-favicon";
+      link.rel = "icon";
+      document.head.appendChild(link);
+    }
+    link.href = faviconUrl;
+    const ext = faviconUrl.split("?")[0].split(".").pop()?.toLowerCase() || "png";
+    const mimeMap: Record<string, string> = {
+      ico: "image/x-icon", svg: "image/svg+xml",
+      png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", webp: "image/webp"
+    };
+    link.type = mimeMap[ext] || "image/png";
+  }, [siteSettings?.faviconUrl]);
+  return null;
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -284,6 +313,7 @@ function App() {
         <LanguageProvider defaultLanguage="ar">
           <TooltipProvider>
             <AuthProvider>
+              <FaviconSync />
               <Toaster />
               <Router />
             </AuthProvider>
