@@ -324,6 +324,14 @@ export function AppSidebar() {
                             </Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
+                        <SidebarMenuSubItem>
+                          <SidebarMenuSubButton asChild isActive={isActive("/dashboard/visitors")}>
+                            <Link href="/dashboard/visitors" data-testid="nav-visitors">
+                              <Globe size={14} className={isRTL ? "ml-1.5" : "mr-1.5"} />
+                              تحليلات الزوار
+                            </Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
                       </SidebarMenuSub>
                     </CollapsibleContent>
                   </SidebarMenuItem>

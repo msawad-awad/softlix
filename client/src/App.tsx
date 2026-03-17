@@ -54,6 +54,7 @@ import WebsiteSiteStats from "@/pages/website/site-stats";
 import Marketing from "@/pages/marketing";
 import MarketingNewsletter from "@/pages/marketing/newsletter";
 import MarketingPricing from "@/pages/marketing/pricing";
+import VisitorsPage from "@/pages/dashboard/visitors";
 import PublicPricing from "@/pages/public/pricing";
 import { useMarketingTracking } from "@/hooks/use-marketing-tracking";
 import { FloatingContactWidget, ExitIntentPopup, AnnouncementBar, SocialProofToast } from "@/components/public/marketing-widgets";
@@ -234,6 +235,7 @@ function Router() {
       <Route path="/marketing/newsletter"><AdminRoute><MarketingNewsletter /></AdminRoute></Route>
       <Route path="/marketing/pricing"><AdminRoute><MarketingPricing /></AdminRoute></Route>
       <Route path="/marketing"><AdminRoute><Marketing /></AdminRoute></Route>
+      <Route path="/dashboard/visitors"><AdminRoute><VisitorsPage /></AdminRoute></Route>
 
       {/* Public website routes */}
       <Route path="/about"><PublicSite /></Route>

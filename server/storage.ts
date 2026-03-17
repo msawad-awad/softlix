@@ -53,7 +53,7 @@ import {
   type AuthenticatedUser,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, and, desc, asc, gte, count, sql, like, or, ilike } from "drizzle-orm";
+import { eq, and, desc, asc, gte, lte, count, sql, like, or, ilike } from "drizzle-orm";
 
 export interface IStorage {
   // Tenants
@@ -598,6 +598,36 @@ export class DatabaseStorage implements IStorage {
       .limit(limit);
 
     return { topCountries, topCities, topPages, recent };
+  }
+
+  async getVisitorDetails(tenantId: string, opts?: {
+    country?: string;
+    deviceType?: string;
+    dateFrom?: Date;
+    dateTo?: Date;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ logs: VisitorLog[]; total: number; byDevice: Array<{ deviceType: string | null; count: number }>; byBrowser: Array<{ browser: string | null; count: number }>; byOS: Array<{ osName: string | null; count: number }> }> {
+    const limit = opts?.limit ?? 50;
+    const offset = opts?.offset ?? 0;
+    const conditions: any[] = [eq(visitorLogs.tenantId, tenantId)];
+    if (opts?.country) conditions.push(eq(visitorLogs.country, opts.country));
+    if (opts?.deviceType) conditions.push(eq(visitorLogs.deviceType, opts.deviceType));
+    if (opts?.dateFrom) conditions.push(gte(visitorLogs.timestamp, opts.dateFrom));
+    if (opts?.dateTo) conditions.push(lte(visitorLogs.timestamp, opts.dateTo));
+    const where = and(...conditions);
+
+    const [totalResult] = await db.select({ count: count() }).from(visitorLogs).where(where);
+    const logs = await db.select().from(visitorLogs).where(where).orderBy(desc(visitorLogs.timestamp)).limit(limit).offset(offset);
+
+    const byDevice = await db.select({ deviceType: visitorLogs.deviceType, count: count().as("count") })
+      .from(visitorLogs).where(eq(visitorLogs.tenantId, tenantId)).groupBy(visitorLogs.deviceType).orderBy(desc(count()));
+    const byBrowser = await db.select({ browser: visitorLogs.browser, count: count().as("count") })
+      .from(visitorLogs).where(eq(visitorLogs.tenantId, tenantId)).groupBy(visitorLogs.browser).orderBy(desc(count()));
+    const byOS = await db.select({ osName: visitorLogs.osName, count: count().as("count") })
+      .from(visitorLogs).where(eq(visitorLogs.tenantId, tenantId)).groupBy(visitorLogs.osName).orderBy(desc(count()));
+
+    return { logs, total: totalResult?.count || 0, byDevice, byBrowser, byOS };
   }
 
   // ── Contact Interaction Analytics (GA4) ──────────────────────────────────

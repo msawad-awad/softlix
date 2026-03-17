@@ -358,6 +358,24 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/dashboard/visitor-details", requireAuth, async (req, res) => {
+    try {
+      const { country, deviceType, dateFrom, dateTo, limit, offset } = req.query;
+      const result = await storage.getVisitorDetails(req.user!.tenantId, {
+        country: country as string | undefined,
+        deviceType: deviceType as string | undefined,
+        dateFrom: dateFrom ? new Date(dateFrom as string) : undefined,
+        dateTo: dateTo ? new Date(dateTo as string) : undefined,
+        limit: limit ? parseInt(limit as string) : 50,
+        offset: offset ? parseInt(offset as string) : 0,
+      });
+      res.json(result);
+    } catch (error) {
+      console.error("Visitor details error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   app.get("/api/dashboard/contact-analytics", requireAuth, async (req, res) => {
     try {
       const stats = await storage.getContactInteractionStats(req.user!.tenantId);
@@ -385,6 +403,56 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Record contact event error:", error);
       res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post("/api/public/log-visitor", async (req, res) => {
+    try {
+      const { tenantId, pageUrl, referrer, sessionId, userAgent: bodyUA } = req.body;
+      if (!tenantId) return res.status(400).json({ message: "tenantId required" });
+
+      const ip = (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() ||
+        (req.headers["x-real-ip"] as string) || req.socket.remoteAddress || "";
+      const ua = bodyUA || req.headers["user-agent"] || "";
+
+      const deviceType = /mobile|android|iphone/i.test(ua) ? "mobile"
+        : /ipad|tablet/i.test(ua) ? "tablet" : "desktop";
+      const browser = /Edg\//i.test(ua) ? "Edge"
+        : /OPR\/|Opera/i.test(ua) ? "Opera"
+        : /Chrome\//.test(ua) ? "Chrome"
+        : /Firefox\//.test(ua) ? "Firefox"
+        : /Safari\//.test(ua) && !/Chrome/.test(ua) ? "Safari"
+        : "Other";
+      const osName = /Windows NT/.test(ua) ? "Windows"
+        : /Mac OS X/.test(ua) && !/iPhone|iPad/.test(ua) ? "macOS"
+        : /Android/.test(ua) ? "Android"
+        : /iPhone|iPad|iPod/.test(ua) ? "iOS"
+        : /Linux/.test(ua) ? "Linux" : "Other";
+
+      let geoData: any = {};
+      if (ip && ip !== "127.0.0.1" && ip !== "::1" && !ip.startsWith("192.") && !ip.startsWith("10.")) {
+        try {
+          const geoRes = await fetch(`http://ip-api.com/json/${ip}?fields=country,countryCode,city,regionName,lat,lon,isp`, { signal: AbortSignal.timeout(3000) });
+          if (geoRes.ok) geoData = await geoRes.json();
+        } catch {}
+      }
+
+      await storage.recordVisitor({
+        tenantId, ipAddress: ip, userAgent: ua, deviceType, browser, osName,
+        pageUrl: pageUrl || "/",
+        referrer: referrer || "",
+        sessionId: sessionId || "",
+        country: geoData.country || null,
+        countryCode: geoData.countryCode || null,
+        city: geoData.city || null,
+        region: geoData.regionName || null,
+        latitude: geoData.lat ? String(geoData.lat) : null,
+        longitude: geoData.lon ? String(geoData.lon) : null,
+        isp: geoData.isp || null,
+      });
+      res.json({ ok: true });
+    } catch (error) {
+      res.json({ ok: false });
     }
   });
 
