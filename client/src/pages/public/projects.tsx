@@ -225,15 +225,15 @@ function ProjectDetail({ slug, lang = "ar", onLangChange }: { slug: string } & P
             {isAr ? "العودة إلى المشاريع" : "Back to Projects"}
           </Link>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 40, alignItems: "center" }} className="pd-hero-grid">
-            {/* Left: text */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 40 }} className="pd-hero-grid">
+            {/* Title - full width */}
             <div>
               {badge && (
                 <span style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(255,255,255,.18)", border: "1px solid rgba(255,255,255,.3)", color: "#fff", borderRadius: 999, padding: "8px 18px", fontSize: 14, fontWeight: 700, marginBottom: 20 }}>
                   {badge}
                 </span>
               )}
-              <h1 style={{ fontSize: "clamp(1.7rem, 3.5vw, 2.6rem)", lineHeight: 1.15, fontWeight: 900, margin: "0 0 18px" }}>{title}</h1>
+              <h1 style={{ fontSize: "clamp(2rem, 5.5vw, 3.5rem)", lineHeight: 1.2, fontWeight: 900, margin: "0 0 18px", width: "100%", maxWidth: "100%" }}>{title}</h1>
               {client && (
                 <p style={{ color: "rgba(255,255,255,.75)", fontSize: 15, fontWeight: 700, margin: "0 0 14px" }}>
                   {isAr ? "العميل:" : "Client:"} <span style={{ color: "#fff" }}>{client}</span>
