@@ -1,0 +1,142 @@
+You are a senior UI/UX engineer and front-end expert.
+
+I have an existing website header (navigation bar) for a tech company called "Softlix". The current design is clean but too generic and lacks strong branding, visual hierarchy, and premium feel.
+
+Your task is to completely redesign and upgrade the header to a modern, high-end SaaS style (similar to Stripe / Linear / Vercel level quality).
+
+---
+
+## 🎯 Goals:
+
+* Make the header visually premium and modern
+* Improve branding using the Softlix logo colors (orange + dark tones)
+* Improve spacing, alignment, and hierarchy
+* Enhance CTA buttons to be more attractive and conversion-focused
+* Add subtle animations and interactions
+
+---
+
+## 🧱 Requirements:
+
+### 1. Layout:
+
+* Keep RTL support (Arabic)
+* Right side: Logo (larger and more prominent)
+* Center: Navigation links
+* Left side: CTA buttons
+
+---
+
+### 2. Logo:
+
+* Increase size by ~25%
+* Improve spacing around it
+* Ensure it stands out clearly
+
+---
+
+### 3. Navigation Menu:
+
+* Add hover underline animation
+* Add active state indicator (underline or highlight)
+* Improve spacing between menu items
+* Font should be modern and clean (Tajawal or similar)
+
+---
+
+### 4. CTA Buttons:
+
+#### Primary Button:
+
+* Text: "اطلب عرض سعر"
+* Use gradient background (orange theme):
+  linear-gradient(135deg, #ff6a00, #ff8c00)
+* Rounded (border-radius: 999px)
+* Add hover effect:
+
+  * slight lift (translateY)
+  * soft shadow
+
+#### Secondary Button:
+
+* Text: "شاهد الأعمال"
+* Outline style
+* Hover: filled with light background
+
+---
+
+### 5. Header Behavior:
+
+* Sticky header
+* Transparent at top
+* On scroll:
+
+  * becomes solid white or dark
+  * adds shadow
+  * slight blur effect (backdrop-filter)
+
+---
+
+### 6. Animations:
+
+* Smooth transitions (0.3s ease)
+* Button hover animations
+* Menu hover underline animation
+
+---
+
+### 7. Spacing System:
+
+Use consistent spacing:
+
+* gap: 16px / 24px / 32px
+
+---
+
+### 8. Colors:
+
+* Primary: Orange (#ff6a00, #ff8c00)
+* Text: Dark (#111 or #222)
+* Background: White
+* Hover accents: subtle orange glow
+
+---
+
+### 9. Responsiveness:
+
+* Fully responsive
+* On mobile:
+
+  * hamburger menu
+  * clean dropdown
+
+---
+
+### 10. Code Quality:
+
+* Clean semantic HTML
+* Modern CSS (flexbox or grid)
+* No inline styles
+* Organized classes
+* Ready for production
+
+---
+
+## 🎁 Bonus (Important):
+
+* Add subtle premium touch (glass effect or shadow layering)
+* Make it feel like a high-end SaaS product
+
+---
+
+## 🎯 Output:
+
+Provide:
+
+* Full HTML
+* Full CSS
+* Minimal JS (if needed for scroll effect or menu toggle)
+
+Make the result visually impressive and production-ready.
+
+Do NOT explain — just output clean code.
