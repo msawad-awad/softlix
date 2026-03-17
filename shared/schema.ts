@@ -1014,6 +1014,30 @@ export type InsertServiceLibraryItem = z.infer<typeof insertServiceLibrarySchema
 export type ServiceLibraryItem = typeof serviceLibrary.$inferSelect;
 
 // ============================================================================
+// VISITOR ANALYTICS
+// ============================================================================
+export const visitorLogs = pgTable("visitor_logs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  country: text("country"),
+  countryCode: text("country_code"),
+  city: text("city"),
+  region: text("region"),
+  latitude: text("latitude"),
+  longitude: text("longitude"),
+  isp: text("isp"),
+  referrer: text("referrer"),
+  pageUrl: text("page_url"),
+  sessionId: text("session_id"),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+});
+
+export type VisitorLog = typeof visitorLogs.$inferSelect;
+export type InsertVisitorLog = typeof visitorLogs.$inferInsert;
+
+// ============================================================================
 // API Response Types
 // ============================================================================
 export type UserWithoutPassword = Omit<User, "passwordHash">;
@@ -1029,4 +1053,6 @@ export interface DashboardStats {
   newLeadsThisMonth: number;
   activeClients: number;
   recentActivities: ActivityLog[];
+  totalVisitors?: number;
+  visitorsLast30Days?: number;
 }

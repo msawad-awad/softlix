@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
-import { Building2, Users, UserPlus, TrendingUp, Plus, FileText, Clock } from "lucide-react";
+import { Building2, Users, UserPlus, TrendingUp, Plus, FileText, Clock, Globe, MapPin } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +22,10 @@ export default function Dashboard() {
 
   const { data: stats, isLoading } = useQuery<DashboardStats>({
     queryKey: ["/api/dashboard/stats"],
+  });
+
+  const { data: visitors } = useQuery<any>({
+    queryKey: ["/api/dashboard/visitors"],
   });
 
   const getActivityIcon = (entityType: string) => {
@@ -83,7 +87,90 @@ export default function Dashboard() {
           icon={TrendingUp}
           trend={{ value: 5, isPositive: true }}
         />
+        <StatCard
+          title="الزوار (آخر 30 يوم)"
+          value={stats?.visitorsLast30Days || 0}
+          icon={Globe}
+          trend={{ value: 18, isPositive: true }}
+        />
       </div>
+
+      {/* Visitors Analytics */}
+      {visitors && (
+        <div className="grid gap-6 lg:grid-cols-2">
+          {/* Top Countries */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                <Globe className="h-5 w-5 text-blue-500" />
+                أفضل الدول
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {visitors.topCountries && visitors.topCountries.length > 0 ? (
+                <div className="space-y-3">
+                  {visitors.topCountries.map((c: any, i: number) => (
+                    <div key={i} className="flex items-center justify-between p-2 rounded-lg hover-elevate">
+                      <span className="text-sm font-medium">{c.country || "غير معروف"}</span>
+                      <Badge variant="secondary">{c.count} زائر</Badge>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">لا توجد بيانات</p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Top Cities */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                <MapPin className="h-5 w-5 text-green-500" />
+                أفضل المدن
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {visitors.topCities && visitors.topCities.length > 0 ? (
+                <div className="space-y-3">
+                  {visitors.topCities.map((c: any, i: number) => (
+                    <div key={i} className="flex items-center justify-between p-2 rounded-lg hover-elevate">
+                      <div>
+                        <p className="text-sm font-medium">{c.city || "غير معروف"}</p>
+                        <p className="text-xs text-gray-400">{c.country}</p>
+                      </div>
+                      <Badge variant="secondary">{c.count}</Badge>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">لا توجد بيانات</p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Top Pages */}
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle className="text-lg font-semibold">أكثر الصفحات زيارة</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {visitors.topPages && visitors.topPages.length > 0 ? (
+                <div className="space-y-2">
+                  {visitors.topPages.map((p: any, i: number) => (
+                    <div key={i} className="flex items-center justify-between p-2 rounded-lg hover-elevate text-sm">
+                      <span className="text-gray-700 truncate flex-1">{p.pageUrl || "/"}</span>
+                      <Badge variant="secondary">{p.count}</Badge>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500">لا توجد بيانات</p>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       <div className="grid gap-6 lg:grid-cols-3">
         <Card className="lg:col-span-2">

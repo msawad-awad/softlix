@@ -348,6 +348,16 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/dashboard/visitors", requireAuth, async (req, res) => {
+    try {
+      const analytics = await storage.getVisitorsAnalytics(req.user!.tenantId);
+      res.json(analytics);
+    } catch (error) {
+      console.error("Visitors analytics error:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   // =========================================================================
   // COMPANIES ROUTES
   // =========================================================================

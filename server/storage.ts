@@ -8,10 +8,11 @@ import {
   crmLeadSources, crmLeads, crmDealPipelines, crmDealStages, crmDeals,
   crmActivities, crmTasks, crmProposals, crmProposalItems,
   integrationSettings, crmAttachments, crmProposalTokens,
-  proposalTemplates, googleImportBuffer, serviceLibrary,
+  proposalTemplates, googleImportBuffer, serviceLibrary, visitorLogs,
   type ProposalTemplate, type InsertProposalTemplate,
   type GoogleImportBuffer, type InsertGoogleImportBuffer,
   type ServiceLibraryItem, type InsertServiceLibraryItem,
+  type VisitorLog, type InsertVisitorLog,
   type NewsletterSubscriber, type InsertNewsletterSubscriber,
   type PricingPlan, type InsertPricingPlan,
   type Booking, type InsertBooking,
@@ -512,6 +513,7 @@ export class DatabaseStorage implements IStorage {
     const startOfMonth = new Date();
     startOfMonth.setDate(1);
     startOfMonth.setHours(0, 0, 0, 0);
+    const last30Days = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
     const [totalCompaniesResult] = await db.select({ count: count() }).from(companies).where(eq(companies.tenantId, tenantId));
     const [totalContactsResult] = await db.select({ count: count() }).from(contacts).where(eq(contacts.tenantId, tenantId));
@@ -527,6 +529,10 @@ export class DatabaseStorage implements IStorage {
     );
     
     const recentActivities = await this.getActivityLogs(tenantId, 5);
+    const totalVisitors = await db.select({ count: count() }).from(visitorLogs).where(eq(visitorLogs.tenantId, tenantId));
+    const visitorsLast30Days = await db.select({ count: count() }).from(visitorLogs).where(
+      and(eq(visitorLogs.tenantId, tenantId), gte(visitorLogs.timestamp, last30Days))
+    );
 
     return {
       totalCompanies: totalCompaniesResult?.count || 0,
@@ -534,7 +540,63 @@ export class DatabaseStorage implements IStorage {
       newLeadsThisMonth: newLeadsResult?.count || 0,
       activeClients: activeClientsResult?.count || 0,
       recentActivities,
+      totalVisitors: totalVisitors[0]?.count || 0,
+      visitorsLast30Days: visitorsLast30Days[0]?.count || 0,
     };
+  }
+
+  // ── Visitor Analytics ──────────────────────────────────────────────────
+  async recordVisitor(log: InsertVisitorLog): Promise<VisitorLog> {
+    const [record] = await db.insert(visitorLogs).values(log).returning();
+    return record;
+  }
+
+  async getVisitorsAnalytics(tenantId: string, limit: number = 30): Promise<{
+    topCountries: Array<{ country: string; count: number }>;
+    topCities: Array<{ city: string; country: string; count: number }>;
+    topPages: Array<{ pageUrl: string; count: number }>;
+    recent: VisitorLog[];
+  }> {
+    const last30Days = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+    const topCountries = await db.select({
+      country: visitorLogs.country,
+      count: count().as("count"),
+    })
+      .from(visitorLogs)
+      .where(and(eq(visitorLogs.tenantId, tenantId), gte(visitorLogs.timestamp, last30Days)))
+      .groupBy(visitorLogs.country)
+      .orderBy(desc(count()))
+      .limit(10);
+
+    const topCities = await db.select({
+      city: visitorLogs.city,
+      country: visitorLogs.country,
+      count: count().as("count"),
+    })
+      .from(visitorLogs)
+      .where(and(eq(visitorLogs.tenantId, tenantId), gte(visitorLogs.timestamp, last30Days)))
+      .groupBy(visitorLogs.city, visitorLogs.country)
+      .orderBy(desc(count()))
+      .limit(10);
+
+    const topPages = await db.select({
+      pageUrl: visitorLogs.pageUrl,
+      count: count().as("count"),
+    })
+      .from(visitorLogs)
+      .where(and(eq(visitorLogs.tenantId, tenantId), gte(visitorLogs.timestamp, last30Days)))
+      .groupBy(visitorLogs.pageUrl)
+      .orderBy(desc(count()))
+      .limit(10);
+
+    const recent = await db.select()
+      .from(visitorLogs)
+      .where(eq(visitorLogs.tenantId, tenantId))
+      .orderBy(desc(visitorLogs.timestamp))
+      .limit(limit);
+
+    return { topCountries, topCities, topPages, recent };
   }
 
   // Auth Helper
