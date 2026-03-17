@@ -1170,9 +1170,9 @@ export async function registerRoutes(
     try {
       const tenantId = await resolvePublicTenantId(req);
       const settings = await storage.getMarketingSettings(tenantId);
-      if (!settings) return res.json({});
-      // Only return tracking IDs, not custom scripts for security
+      if (!settings) return res.json({ tenantId });
       res.json({
+        tenantId,
         gtmId: settings.gtmId,
         metaPixelId: settings.metaPixelId,
         googleAnalyticsId: settings.googleAnalyticsId,

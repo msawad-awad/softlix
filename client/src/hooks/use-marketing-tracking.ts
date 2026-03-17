@@ -2,8 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { MarketingSettings } from "@shared/schema";
 
-const TENANT_ID = (import.meta.env.VITE_TENANT_ID as string) || "";
-
 declare global {
   interface Window {
     dataLayer: any[];
@@ -62,13 +60,10 @@ export function useMarketingTracking() {
     };
   }, []);
 
-  const { data: settings } = useQuery<Partial<MarketingSettings>>({
-    queryKey: ["/api/public/marketing-settings", TENANT_ID],
+  const { data: settings } = useQuery<Partial<MarketingSettings> & { tenantId?: string }>({
+    queryKey: ["/api/public/marketing-settings"],
     queryFn: async () => {
-      const url = TENANT_ID
-        ? `/api/public/marketing-settings?tenantId=${TENANT_ID}`
-        : "/api/public/marketing-settings";
-      const res = await fetch(url);
+      const res = await fetch("/api/public/marketing-settings");
       return res.ok ? res.json() : {};
     },
     staleTime: 1000 * 60 * 10,
@@ -190,7 +185,8 @@ export function useMarketingTracking() {
 
   // ── Auto Visitor Logging — fires on each unique page view ──────────────
   useEffect(() => {
-    if (!TENANT_ID) return;
+    const tenantId = settings?.tenantId;
+    if (!tenantId) return;
     if (loggedPages.current.has(pathname)) return;
     loggedPages.current.add(pathname);
 
@@ -200,7 +196,7 @@ export function useMarketingTracking() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            tenantId: TENANT_ID,
+            tenantId,
             pageUrl: pathname,
             referrer: document.referrer || "",
             sessionId: getSessionId(),
@@ -212,7 +208,7 @@ export function useMarketingTracking() {
     }, 1000);
 
     return () => clearTimeout(timer);
-  }, [pathname]);
+  }, [pathname, settings?.tenantId]);
 
   // ── Fire page_view events on navigation ───────────────────────────────
   useEffect(() => {
