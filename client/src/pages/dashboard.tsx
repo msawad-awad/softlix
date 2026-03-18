@@ -106,7 +106,7 @@ export default function Dashboard() {
           <Card className="min-h-[380px] flex flex-col">
             <CardHeader>
               <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <Globe className="h-5 w-5 text-blue-500" />
+                <Globe className="h-5 w-5 text-[#ff6a00]" />
                 أفضل الدول
               </CardTitle>
             </CardHeader>
@@ -241,7 +241,7 @@ export default function Dashboard() {
                 className="w-full justify-start gap-3"
                 data-testid="button-add-company"
               >
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10 text-blue-500">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500/10 text-[#ff6a00]">
                   <Building2 className="h-4 w-4" />
                 </div>
                 <span>{t("dashboard.addCompany")}</span>

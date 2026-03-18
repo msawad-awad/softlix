@@ -90,11 +90,11 @@ export default function WebsiteProjects() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-gray-900 dark:text-white">{p.title}</span>
-                      {p.category && <Badge className="text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-0">{p.category}</Badge>}
+                      {p.category && <Badge className="text-xs bg-orange-100 dark:bg-orange-900/30 text-[#ff6a00] dark:text-[#ff6a00] border-0">{p.category}</Badge>}
                       <Badge className={`text-xs border-0 ${p.status === "published" ? "bg-green-100 dark:bg-green-900/30 text-green-700" : "bg-gray-100 text-gray-600"}`}>{p.status === "published" ? "منشور" : "مسودة"}</Badge>
                     </div>
                     {p.clientName && <p className="text-xs text-gray-500 mt-0.5">{p.clientName}</p>}
-                    <code className="text-xs text-blue-500">/projects/{p.slug}</code>
+                    <code className="text-xs text-[#ff6a00]">/projects/{p.slug}</code>
                   </div>
                   <div className="flex gap-1 flex-shrink-0">
                     <Button variant="ghost" size="icon" onClick={() => openEdit(p)} data-testid={`btn-edit-project-${p.id}`}><Pencil className="w-4 h-4" /></Button>

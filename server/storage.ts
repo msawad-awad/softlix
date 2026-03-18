@@ -9,6 +9,7 @@ import {
   crmActivities, crmTasks, crmProposals, crmProposalItems,
   integrationSettings, crmAttachments, crmProposalTokens,
   proposalTemplates, googleImportBuffer, serviceLibrary, visitorLogs, analyticsEvents,
+  tickets, ticketMessages, employees, inventoryItems,
   type ProposalTemplate, type InsertProposalTemplate,
   type GoogleImportBuffer, type InsertGoogleImportBuffer,
   type ServiceLibraryItem, type InsertServiceLibraryItem,
@@ -50,6 +51,10 @@ import {
   type CrmTask, type InsertCrmTask,
   type CrmProposal, type InsertCrmProposal,
   type CrmProposalItem, type InsertCrmProposalItem,
+  type Ticket, type InsertTicket,
+  type TicketMessage, type InsertTicketMessage,
+  type Employee, type InsertEmployee,
+  type InventoryItem, type InsertInventoryItem,
   type AuthenticatedUser,
 } from "@shared/schema";
 import { db } from "./db";
@@ -1569,54 +1574,318 @@ export class DatabaseStorage implements IStorage {
   }
   async seedDefaultProposalTemplates(tenantId: string): Promise<void> {
     const existing = await this.getProposalTemplates(tenantId);
-    if (existing.length > 0) return;
+    // Only reseed if no templates exist, or if existing ones are old format (no targetAudience)
+    const hasNewFormat = existing.some((t: any) => t.targetAudience && Array.isArray(t.targetAudience) && t.targetAudience.length > 0);
+    if (existing.length > 0 && hasNewFormat) return;
+    // Delete old default templates to replace with new comprehensive ones
+    if (existing.length > 0) {
+      for (const t of existing.filter((t: any) => t.isDefault)) {
+        await this.deleteProposalTemplate(t.id, tenantId);
+      }
+    }
+
+    const TERMS_WEB = `• صلاحية العرض 14 يوماً من تاريخ الإصدار
+• الدفع: 40% مقدم عند توقيع العقد، 40% عند اعتماد التصميم، 20% عند التسليم النهائي
+• مدة التنفيذ المقدرة: 45-60 يوم عمل من تاريخ توقيع العقد وسداد الدفعة الأولى
+• يشمل العرض صيانة مجانية لمدة 3 أشهر بعد الإطلاق
+• أي متطلبات خارج نطاق هذا العرض تستلزم تعديلاً في السعر
+• سوفت لكس تحتفظ بحقوق الملكية الفكرية للكود المصدري حتى سداد كامل المبلغ`;
+
+    const TERMS_APP = `• صلاحية العرض 14 يوماً من تاريخ الإصدار
+• الدفع: 30% مقدم عند توقيع العقد، 40% منتصف المشروع (بعد اعتماد التصميم والـ Backend)، 30% عند التسليم النهائي
+• مدة التنفيذ المقدرة: 90-120 يوم عمل من تاريخ توقيع العقد وسداد الدفعة الأولى
+• يشمل العرض صيانة مجانية لمدة 6 أشهر بعد الإطلاق
+• نشر التطبيق على App Store و Google Play مشمول في العرض (الرسوم السنوية للحسابات الرسمية على حساب العميل)
+• أي تغييرات جوهرية في المتطلبات بعد بدء التطوير تستلزم تعديلاً في السعر والجدول الزمني`;
+
+    const TERMS_DELIVERY = `• صلاحية العرض 21 يوماً من تاريخ الإصدار
+• الدفع: 25% مقدم، 35% بعد تسليم التصميم والـ Backend، 25% بعد تسليم التطبيقات، 15% بعد شهر التشغيل
+• مدة التنفيذ المقدرة: 120-150 يوم عمل
+• يشمل العرض 3 تطبيقات (عميل + سائق + تاجر) ولوحة تحكم ويب
+• صيانة مجانية 6 أشهر بعد الإطلاق
+• حسابات App Store و Google Play وGoogle Maps API على حساب العميل`;
+
     const defaults = [
+      // ─── 1. موقع ويب تعريفي ──────────────────────────────────────────────
       {
-        tenantId, name: "تطبيق جوال", nameEn: "Mobile App", category: "mobile-app",
-        defaultValidity: 14, defaultTaxPercent: "15",
-        defaultTerms: "• صلاحية العرض 14 يوماً من تاريخه\n• يتم تسليم المشروع خلال 90 يوم عمل\n• الدفع: 40% مقدم، 40% عند التسليم، 20% بعد التشغيل\n• يشمل صيانة مجانية 3 أشهر بعد الإطلاق",
-        items: [
-          { title: "تصميم UI/UX", description: "تصميم شاشات التطبيق وتجربة المستخدم", quantity: "1", unitPrice: "5000" },
-          { title: "تطوير الواجهة الأمامية", description: "Flutter / React Native", quantity: "1", unitPrice: "15000" },
-          { title: "تطوير الخادم والـ API", description: "Node.js + PostgreSQL", quantity: "1", unitPrice: "10000" },
-          { title: "الاختبار والنشر", description: "نشر على App Store و Google Play", quantity: "1", unitPrice: "3000" },
+        tenantId, name: "موقع ويب تعريفي", nameEn: "Informational Website", category: "web-platform",
+        defaultValidity: 14, defaultTaxPercent: "15", isDefault: true, displayOrder: 0,
+        defaultTerms: TERMS_WEB,
+        targetAudience: [
+          { group: "الزائر العام", role: "تصفح المحتوى والخدمات والتواصل مع الشركة", language: "عربي / English", system: "Web (متصفح) / جوال" },
+          { group: "مدير الموقع", role: "إدارة المحتوى وتحديث الصفحات والمدونة", language: "عربي", system: "Web (لوحة تحكم)" },
         ],
-        displayOrder: 0, isDefault: true,
+        deliverables: [
+          { name: "موقع ويب متجاوب", description: "موقع كامل يعمل على جميع الأجهزة (موبايل / تابلت / ديسكتوب) مع تصميم احترافي" },
+          { name: "لوحة تحكم CMS", description: "واجهة إدارة سهلة لتعديل المحتوى والصور والصفحات بدون برمجة" },
+          { name: "نموذج التواصل", description: "نموذج تواصل مرتبط بالبريد الإلكتروني مع حماية من السبام" },
+          { name: "تحسين SEO أساسي", description: "إعداد Meta Tags وSitemap وSchema Markup لمحركات البحث" },
+          { name: "دليل الاستخدام", description: "وثيقة تدريبية للمشرف على إدارة الموقع" },
+          { name: "دعم 3 أشهر", description: "صيانة تقنية ودعم فني بعد الإطلاق لمدة 3 أشهر" },
+        ],
+        technologies: [
+          { name: "React.js / Next.js", category: "واجهة الويب", description: "واجهة أمامية سريعة ومتجاوبة" },
+          { name: "Node.js", category: "الخادم", description: "خادم API قوي وقابل للتوسع" },
+          { name: "PostgreSQL", category: "قاعدة البيانات", description: "قاعدة بيانات علائقية موثوقة" },
+          { name: "AWS S3 / Cloudflare", category: "الخدمات السحابية", description: "تخزين الملفات والصور واستضافة سريعة" },
+        ],
+        items: [
+          { title: "تحليل المتطلبات والتخطيط", description: "دراسة الاحتياجات وإعداد وثيقة المواصفات الفنية وخريطة الموقع", quantity: "1", unitPrice: "2000", sectionName: "مرحلة التخطيط" },
+          { title: "تصميم UI/UX الاحترافي", description: "تصميم كامل لجميع الصفحات على Figma مع Prototype تفاعلي", quantity: "1", unitPrice: "4000", sectionName: "مرحلة التصميم" },
+          { title: "تطوير الواجهة الأمامية", description: "React.js / Next.js مع تصميم متجاوب كامل وتحسين الأداء", quantity: "1", unitPrice: "6000", sectionName: "مرحلة التطوير" },
+          { title: "تطوير الخادم والـ API", description: "Node.js + PostgreSQL لإدارة المحتوى والنماذج والبيانات", quantity: "1", unitPrice: "5000", sectionName: "مرحلة التطوير" },
+          { title: "نظام إدارة المحتوى (CMS)", description: "لوحة تحكم سهلة لتعديل كل محتوى الموقع بدون برمجة", quantity: "1", unitPrice: "3000", sectionName: "مرحلة التطوير" },
+          { title: "إعداد الاستضافة والنطاق", description: "نشر الموقع على سيرفر سحابي مع SSL وإعدادات الأداء", quantity: "1", unitPrice: "1000", sectionName: "مرحلة الإطلاق" },
+          { title: "اختبار الجودة الشامل", description: "اختبار على مختلف المتصفحات والأجهزة وإصلاح أي أخطاء", quantity: "1", unitPrice: "1500", sectionName: "مرحلة الإطلاق" },
+          { title: "تدريب ودعم ما بعد الإطلاق", description: "جلسة تدريب للمشرف + دعم فني مجاني لمدة 3 أشهر", quantity: "1", unitPrice: "2000", sectionName: "مرحلة الإطلاق" },
+          { title: "تحسين محركات البحث SEO", description: "إعداد SEO احترافي كامل لتحسين ظهور الموقع في Google", quantity: "1", unitPrice: "1500", sectionName: "مرحلة الإطلاق", isOptional: true },
+        ],
       },
+      // ─── 2. متجر إلكتروني ────────────────────────────────────────────────
       {
-        tenantId, name: "موقع ويب", nameEn: "Website", category: "web-platform",
-        defaultValidity: 14, defaultTaxPercent: "15",
-        defaultTerms: "• صلاحية العرض 14 يوماً\n• التسليم خلال 30-45 يوم عمل\n• الدفع: 50% مقدم، 50% عند التسليم\n• تدريب مجاني على لوحة التحكم",
-        items: [
-          { title: "تصميم الموقع", description: "تصميم احترافي متجاوب مع جميع الأجهزة", quantity: "1", unitPrice: "3000" },
-          { title: "تطوير الموقع", description: "React.js / Next.js", quantity: "1", unitPrice: "7000" },
-          { title: "لوحة تحكم CMS", description: "إدارة المحتوى بسهولة", quantity: "1", unitPrice: "2000" },
-          { title: "الاستضافة والنطاق (سنة)", description: "استضافة سحابية سريعة", quantity: "1", unitPrice: "1000" },
+        tenantId, name: "متجر إلكتروني", nameEn: "E-Commerce Platform", category: "web-platform",
+        defaultValidity: 14, defaultTaxPercent: "15", isDefault: true, displayOrder: 1,
+        defaultTerms: TERMS_APP,
+        targetAudience: [
+          { group: "العميل المشتري", role: "تصفح المنتجات والشراء وإدارة الطلبات والدفع", language: "عربي / English", system: "iOS / Android / Web" },
+          { group: "البائع / التاجر", role: "إدارة المنتجات والمخزون والطلبات والفواتير", language: "عربي", system: "Web (لوحة تحكم)" },
+          { group: "مدير النظام", role: "الإشراف الكامل على المنصة والمستخدمين والتقارير المالية", language: "عربي", system: "Web (لوحة الإدارة)" },
         ],
-        displayOrder: 1,
+        deliverables: [
+          { name: "تطبيق جوال iOS + Android", description: "تطبيق متجر كامل للمشتري مع تصفح المنتجات والدفع ومتابعة الطلبات" },
+          { name: "موقع ويب للمتجر", description: "واجهة ويب احترافية للتسوق عبر المتصفح مع تصميم متجاوب" },
+          { name: "لوحة تحكم البائع", description: "واجهة إدارة للبائع لإضافة المنتجات وإدارة الطلبات والمخزون" },
+          { name: "لوحة تحكم الإدارة", description: "مركز تحكم كامل للإدارة العليا مع التقارير والإحصاءات المالية" },
+          { name: "تكامل بوابة الدفع", description: "ربط آمن مع بوابة دفع (Stripe / PayTabs / مدى)" },
+          { name: "نظام الشحن والتوصيل", description: "تتبع الشحنات وربط مزودي التوصيل" },
+        ],
+        technologies: [
+          { name: "Flutter", category: "تطبيق جوال", description: "تطبيق iOS وAndroid من كود واحد" },
+          { name: "Next.js", category: "واجهة الويب", description: "موقع ويب سريع مع SEO ممتاز" },
+          { name: "Node.js", category: "الخادم", description: "API قوي وآمن" },
+          { name: "PostgreSQL", category: "قاعدة البيانات", description: "قاعدة بيانات موثوقة للمنتجات والطلبات" },
+          { name: "Stripe / PayTabs", category: "الدفع الإلكتروني", description: "بوابة دفع آمنة ومعتمدة" },
+          { name: "Firebase", category: "الخدمات السحابية", description: "إشعارات فورية وتخزين الملفات" },
+        ],
+        items: [
+          { title: "تحليل المتطلبات والتخطيط", description: "دراسة متطلبات المتجر وإعداد مواصفات المنتجات والفئات والدفع", quantity: "1", unitPrice: "3000", sectionName: "مرحلة التخطيط" },
+          { title: "تصميم UI/UX (موقع + تطبيق)", description: "تصميم احترافي كامل لجميع شاشات التطبيق والموقع على Figma", quantity: "1", unitPrice: "8000", sectionName: "مرحلة التصميم" },
+          { title: "تطوير تطبيق الجوال (Flutter)", description: "تطبيق iOS وAndroid للعميل مع تصفح المنتجات والشراء ومتابعة الطلبات", quantity: "1", unitPrice: "18000", sectionName: "مرحلة التطوير" },
+          { title: "تطوير موقع الويب (Next.js)", description: "موقع ويب متجاوب للتسوق عبر المتصفح مع كامل الوظائف", quantity: "1", unitPrice: "10000", sectionName: "مرحلة التطوير" },
+          { title: "تطوير الخادم والـ API", description: "Node.js + PostgreSQL: APIs كاملة للمنتجات والطلبات والمستخدمين", quantity: "1", unitPrice: "12000", sectionName: "مرحلة التطوير" },
+          { title: "نظام إدارة المنتجات والمخزون", description: "لوحة البائع: إضافة/تعديل المنتجات، الفئات، الأسعار، المخزون", quantity: "1", unitPrice: "5000", sectionName: "مرحلة التطوير" },
+          { title: "تكامل بوابة الدفع الإلكتروني", description: "ربط آمن مع Stripe/PayTabs مع دعم مدى وApple Pay وGoogle Pay", quantity: "1", unitPrice: "4000", sectionName: "مرحلة التطوير" },
+          { title: "نظام الشحن والتوصيل", description: "تتبع الشحنات وإدارة مزودي التوصيل وحسابات الشحن", quantity: "1", unitPrice: "4000", sectionName: "مرحلة التطوير" },
+          { title: "اختبار الجودة الشامل", description: "اختبار كامل لجميع وظائف التطبيق والموقع على أجهزة متعددة", quantity: "1", unitPrice: "4000", sectionName: "مرحلة الإطلاق" },
+          { title: "نشر التطبيق على المتاجر", description: "نشر على App Store و Google Play مع إعداد حسابات المطور", quantity: "1", unitPrice: "2000", sectionName: "مرحلة الإطلاق" },
+          { title: "إعداد الاستضافة والنشر", description: "نشر الموقع والخادم على بنية تحتية سحابية موثوقة", quantity: "1", unitPrice: "2000", sectionName: "مرحلة الإطلاق" },
+          { title: "تدريب ودعم 6 أشهر", description: "تدريب الفريق على إدارة المتجر + دعم فني لمدة 6 أشهر", quantity: "1", unitPrice: "5000", sectionName: "مرحلة الإطلاق" },
+          { title: "نظام الولاء والنقاط", description: "برنامج نقاط مكافآت للعملاء المتكررين مع كوبونات الخصم", quantity: "1", unitPrice: "6000", sectionName: "إضافات اختيارية", isOptional: true },
+        ],
       },
+      // ─── 3. تطبيق توصيل ─────────────────────────────────────────────────
       {
-        tenantId, name: "نظام ERP / إدارة", nameEn: "ERP System", category: "erp",
-        defaultValidity: 21, defaultTaxPercent: "15",
-        defaultTerms: "• صلاحية العرض 21 يوماً\n• التسليم خلال 60-120 يوم حسب الحجم\n• الدفع: 30% مقدم، 40% منتصف المشروع، 30% عند التسليم\n• دعم فني 6 أشهر مجاناً",
-        items: [
-          { title: "تحليل المتطلبات", description: "دراسة العمليات وإعداد المواصفات", quantity: "1", unitPrice: "5000" },
-          { title: "تطوير النظام", description: "نظام متكامل مع قاعدة البيانات", quantity: "1", unitPrice: "30000" },
-          { title: "التكامل مع الأنظمة الخارجية", description: "API & Integrations", quantity: "1", unitPrice: "8000" },
-          { title: "التدريب والتوثيق", description: "تدريب الفريق وإعداد الدليل", quantity: "1", unitPrice: "3000" },
+        tenantId, name: "تطبيق توصيل", nameEn: "Delivery App (3 Apps)", category: "mobile-app",
+        defaultValidity: 21, defaultTaxPercent: "15", isDefault: true, displayOrder: 2,
+        defaultTerms: TERMS_DELIVERY,
+        targetAudience: [
+          { group: "العميل المستخدم", role: "طلب الطعام/المنتجات ومتابعة التوصيل في الوقت الفعلي", language: "عربي / English", system: "iOS / Android" },
+          { group: "السائق / المندوب", role: "استلام الطلبات والتنقل بالخريطة وتأكيد التسليم", language: "عربي", system: "iOS / Android" },
+          { group: "المطعم / التاجر", role: "إدارة الطلبات الواردة وتحديث القائمة والأسعار", language: "عربي", system: "iOS / Android / Web" },
+          { group: "مدير النظام", role: "الإشراف الكامل على المنصة والسائقين والمطاعم والتقارير المالية", language: "عربي", system: "Web (لوحة الإدارة)" },
         ],
-        displayOrder: 2,
+        deliverables: [
+          { name: "تطبيق العميل (iOS + Android)", description: "تطبيق طلب الطعام/المنتجات مع تتبع لحظي وعدة طرق دفع" },
+          { name: "تطبيق السائق (iOS + Android)", description: "تطبيق السائق مع خريطة تفاعلية وإدارة الطلبات وحساب الأرباح" },
+          { name: "تطبيق التاجر / المطعم", description: "تطبيق إدارة الطلبات الواردة وتحديث القائمة والحالة" },
+          { name: "لوحة تحكم الإدارة (Web)", description: "مركز تحكم كامل: المطاعم والسائقين والطلبات والتقارير المالية" },
+          { name: "API موثّق", description: "وثيقة API كاملة لأي تكامل مستقبلي مع أطراف ثالثة" },
+        ],
+        technologies: [
+          { name: "Flutter", category: "تطبيق جوال", description: "3 تطبيقات iOS وAndroid من كود موحّد" },
+          { name: "Node.js", category: "الخادم", description: "Backend قوي لمعالجة الطلبات الكثيرة" },
+          { name: "PostgreSQL", category: "قاعدة البيانات", description: "قاعدة بيانات موثوقة للطلبات والمستخدمين" },
+          { name: "Firebase", category: "الخدمات السحابية", description: "إشعارات فورية وتحديثات لحظية" },
+          { name: "Google Maps API", category: "الخدمات السحابية", description: "تتبع لحظي وتحديد المواقع والمسارات" },
+          { name: "Stripe / PayTabs", category: "الدفع الإلكتروني", description: "دفع آمن متعدد الطرق" },
+          { name: "Socket.io", category: "التواصل", description: "اتصال لحظي بين العميل والسائق والمطعم" },
+        ],
+        items: [
+          { title: "تحليل المتطلبات والتصميم المعماري", description: "دراسة شاملة للنظام وإعداد المواصفات الفنية للتطبيقات الثلاثة ولوحة الإدارة", quantity: "1", unitPrice: "5000", sectionName: "مرحلة التخطيط" },
+          { title: "تصميم UI/UX للتطبيقات الثلاثة", description: "تصميم احترافي منفصل لكل تطبيق (عميل / سائق / تاجر) + لوحة الإدارة على Figma", quantity: "1", unitPrice: "12000", sectionName: "مرحلة التصميم" },
+          { title: "تطوير تطبيق العميل (Flutter)", description: "تطبيق iOS وAndroid: تصفح القوائم، الطلب، الدفع، التتبع اللحظي، التقييم", quantity: "1", unitPrice: "20000", sectionName: "مرحلة التطوير" },
+          { title: "تطوير تطبيق السائق (Flutter)", description: "تطبيق iOS وAndroid: استلام الطلبات، ملاحة GPS، تأكيد التسليم، كشف الأرباح", quantity: "1", unitPrice: "15000", sectionName: "مرحلة التطوير" },
+          { title: "تطوير تطبيق التاجر / المطعم", description: "تطبيق / ويب: إدارة الطلبات الواردة، تحديث القائمة والأسعار والتوافر", quantity: "1", unitPrice: "15000", sectionName: "مرحلة التطوير" },
+          { title: "لوحة تحكم الإدارة (Web)", description: "لوحة ويب كاملة: إدارة المطاعم والسائقين والطلبات والمناطق والتقارير المالية", quantity: "1", unitPrice: "12000", sectionName: "مرحلة التطوير" },
+          { title: "تطوير الخادم والـ API", description: "Node.js + PostgreSQL: APIs كاملة لجميع التطبيقات مع منطق الأعمال", quantity: "1", unitPrice: "18000", sectionName: "مرحلة التطوير" },
+          { title: "نظام التتبع اللحظي", description: "تتبع موقع السائق في الوقت الفعلي مع Socket.io وGoogle Maps", quantity: "1", unitPrice: "8000", sectionName: "مرحلة التطوير" },
+          { title: "بوابة الدفع الإلكتروني", description: "تكامل مع Stripe/PayTabs: بطاقات، مدى، Apple Pay، Google Pay، المحفظة", quantity: "1", unitPrice: "5000", sectionName: "مرحلة التطوير" },
+          { title: "نظام الإشعارات والتنبيهات", description: "إشعارات Push لكل حالة طلب على كل التطبيقات", quantity: "1", unitPrice: "4000", sectionName: "مرحلة التطوير" },
+          { title: "اختبار الجودة الشامل", description: "اختبار وظيفي وأداء وأمان لجميع التطبيقات الثلاثة", quantity: "1", unitPrice: "6000", sectionName: "مرحلة الإطلاق" },
+          { title: "نشر التطبيقات والاستضافة", description: "نشر على App Store وGoogle Play وإعداد الخوادم الإنتاجية", quantity: "1", unitPrice: "4000", sectionName: "مرحلة الإطلاق" },
+          { title: "تدريب وصيانة 6 أشهر", description: "تدريب الفريق والسائقين + دعم فني لمدة 6 أشهر بعد الإطلاق", quantity: "1", unitPrice: "8000", sectionName: "مرحلة الإطلاق" },
+          { title: "نظام التقييم والمراجعات", description: "نظام تقييم المطاعم والسائقين من العملاء", quantity: "1", unitPrice: "4000", sectionName: "إضافات اختيارية", isOptional: true },
+          { title: "نظام العروض والكوبونات", description: "إنشاء وإدارة عروض ترويجية وكوبونات خصم", quantity: "1", unitPrice: "5000", sectionName: "إضافات اختيارية", isOptional: true },
+        ],
       },
+      // ─── 4. تطبيق تعارف / اجتماعي ───────────────────────────────────────
       {
-        tenantId, name: "خدمات تسويقية", nameEn: "Marketing Services", category: "marketing",
-        defaultValidity: 7, defaultTaxPercent: "15",
-        defaultTerms: "• صلاحية العرض 7 أيام\n• الدفع شهري مقدم\n• إشعار إيقاف الخدمة قبل 30 يوم",
-        items: [
-          { title: "إدارة حسابات التواصل الاجتماعي", description: "إنشاء ونشر المحتوى (شهرياً)", quantity: "1", unitPrice: "3000" },
-          { title: "إعلانات جوجل", description: "إدارة حملات Google Ads", quantity: "1", unitPrice: "2000" },
-          { title: "إنتاج المحتوى المرئي", description: "تصميم بوستات وفيديو موشن", quantity: "4", unitPrice: "500" },
+        tenantId, name: "تطبيق تعارف / اجتماعي", nameEn: "Social / Dating App", category: "mobile-app",
+        defaultValidity: 14, defaultTaxPercent: "15", isDefault: true, displayOrder: 3,
+        defaultTerms: TERMS_APP,
+        targetAudience: [
+          { group: "المستخدم العام", role: "إنشاء ملف شخصي، التعارف، المحادثة، الاشتراك في المميزات", language: "عربي / English", system: "iOS / Android" },
+          { group: "مشرف النظام", role: "إدارة المستخدمين والبلاغات والمحتوى ومراقبة الأمان", language: "عربي", system: "Web (لوحة الاعتدال)" },
         ],
-        displayOrder: 3,
+        deliverables: [
+          { name: "تطبيق iOS + Android", description: "تطبيق كامل للتعارف مع ملفات شخصية وخوارزمية مطابقة ومحادثات" },
+          { name: "لوحة تحكم الاعتدال", description: "واجهة ويب لمراقبة المستخدمين والمحتوى والبلاغات" },
+          { name: "نظام الاشتراكات المدفوعة", description: "نظام Premium مع ميزات إضافية وبوابة دفع" },
+          { name: "Backend API موثّق", description: "API كاملة للتكامل والتطوير المستقبلي" },
+        ],
+        technologies: [
+          { name: "Flutter", category: "تطبيق جوال", description: "تطبيق iOS وAndroid موحّد" },
+          { name: "Node.js", category: "الخادم", description: "Backend قوي وآمن" },
+          { name: "PostgreSQL", category: "قاعدة البيانات", description: "قاعدة بيانات المستخدمين والمحادثات" },
+          { name: "Firebase", category: "الخدمات السحابية", description: "إشعارات فورية وتحليلات" },
+          { name: "Socket.io", category: "التواصل", description: "محادثات فورية في الوقت الحقيقي" },
+          { name: "Stripe", category: "الدفع الإلكتروني", description: "نظام الاشتراكات المدفوعة" },
+          { name: "AWS S3", category: "الخدمات السحابية", description: "تخزين الصور ومقاطع الفيديو" },
+        ],
+        items: [
+          { title: "تحليل المتطلبات والتخطيط", description: "دراسة شاملة وإعداد وثيقة المواصفات الفنية لجميع ميزات التطبيق", quantity: "1", unitPrice: "4000", sectionName: "مرحلة التخطيط" },
+          { title: "تصميم UI/UX وتجربة المستخدم", description: "تصميم كامل لجميع شاشات التطبيق مع Prototype تفاعلي على Figma", quantity: "1", unitPrice: "10000", sectionName: "مرحلة التصميم" },
+          { title: "نظام التسجيل والملف الشخصي", description: "تسجيل بالهاتف/الإيميل، ملف شخصي كامل مع الصور والاهتمامات", quantity: "1", unitPrice: "8000", sectionName: "مرحلة التطوير" },
+          { title: "خوارزمية المطابقة الذكية (Matching)", description: "خوارزمية تطابق المستخدمين بناءً على الاهتمامات والموقع والتفضيلات", quantity: "1", unitPrice: "10000", sectionName: "مرحلة التطوير" },
+          { title: "نظام المحادثات الفورية", description: "محادثات نصية وصور وإيموجي في الوقت الفعلي مع Socket.io", quantity: "1", unitPrice: "12000", sectionName: "مرحلة التطوير" },
+          { title: "نظام الاشتراكات والمدفوعات", description: "خطط Premium مع ميزات إضافية وبوابة دفع Stripe", quantity: "1", unitPrice: "7000", sectionName: "مرحلة التطوير" },
+          { title: "نظام الإشعارات الفورية", description: "إشعارات Push لكل تفاعل (إعجاب، رسالة، مطابقة جديدة)", quantity: "1", unitPrice: "3000", sectionName: "مرحلة التطوير" },
+          { title: "نظام الإبلاغ والاعتدال", description: "نظام بلاغات المستخدمين + لوحة اعتدال للمشرف", quantity: "1", unitPrice: "5000", sectionName: "مرحلة التطوير" },
+          { title: "لوحة تحكم الإدارة", description: "لوحة ويب كاملة لإدارة المستخدمين والمحتوى والتقارير", quantity: "1", unitPrice: "8000", sectionName: "مرحلة التطوير" },
+          { title: "اختبار الأمان والجودة", description: "اختبار شامل للأمان وسرية البيانات والأداء", quantity: "1", unitPrice: "5000", sectionName: "مرحلة الإطلاق" },
+          { title: "نشر التطبيق والاستضافة", description: "نشر على App Store وGoogle Play وإعداد الخوادم", quantity: "1", unitPrice: "4000", sectionName: "مرحلة الإطلاق" },
+          { title: "دعم وصيانة 6 أشهر", description: "دعم فني وتحديثات لمدة 6 أشهر بعد الإطلاق", quantity: "1", unitPrice: "6000", sectionName: "مرحلة الإطلاق" },
+        ],
+      },
+      // ─── 5. تطبيق خدمات صيانة ───────────────────────────────────────────
+      {
+        tenantId, name: "تطبيق خدمات صيانة", nameEn: "Maintenance Services App", category: "mobile-app",
+        defaultValidity: 14, defaultTaxPercent: "15", isDefault: true, displayOrder: 4,
+        defaultTerms: TERMS_APP,
+        targetAudience: [
+          { group: "العميل (صاحب المنزل)", role: "طلب خدمات الصيانة ومتابعة الطلب والدفع وتقييم الفني", language: "عربي", system: "iOS / Android / Web" },
+          { group: "الفني / مزود الخدمة", role: "استلام الطلبات والتنقل وتنفيذ الخدمة وتحديث الحالة", language: "عربي", system: "iOS / Android" },
+          { group: "مدير النظام", role: "إدارة الفنيين والطلبات والتقارير ومراقبة الجودة", language: "عربي", system: "Web (لوحة الإدارة)" },
+        ],
+        deliverables: [
+          { name: "تطبيق العميل (iOS + Android)", description: "تطبيق لطلب خدمات الصيانة والحجز والدفع ومتابعة الطلب" },
+          { name: "تطبيق الفني (iOS + Android)", description: "تطبيق الفني لاستلام الطلبات وإدارة جدوله وتحديث حالة الطلب" },
+          { name: "موقع ويب للخدمات", description: "موقع ويب للعملاء مع نظام الحجز الإلكتروني" },
+          { name: "لوحة تحكم الإدارة", description: "مركز إدارة كامل: الفنيون والطلبات والمناطق والتقارير المالية" },
+        ],
+        technologies: [
+          { name: "Flutter", category: "تطبيق جوال", description: "تطبيقان iOS وAndroid (عميل + فني)" },
+          { name: "Node.js", category: "الخادم", description: "API مركزي لجميع التطبيقات" },
+          { name: "PostgreSQL", category: "قاعدة البيانات", description: "قاعدة بيانات الطلبات والفنيين" },
+          { name: "Firebase", category: "الخدمات السحابية", description: "إشعارات فورية لكل تحديث" },
+          { name: "Google Maps API", category: "الخدمات السحابية", description: "تحديد مواقع الفنيين والعملاء" },
+          { name: "Stripe / PayTabs", category: "الدفع الإلكتروني", description: "دفع إلكتروني آمن" },
+        ],
+        items: [
+          { title: "تحليل المتطلبات والتخطيط", description: "تحليل أنواع الخدمات وتصميم منطق الحجز والجدولة", quantity: "1", unitPrice: "4000", sectionName: "مرحلة التخطيط" },
+          { title: "تصميم UI/UX للتطبيقين", description: "تصميم تطبيق العميل وتطبيق الفني وموقع الويب على Figma", quantity: "1", unitPrice: "8000", sectionName: "مرحلة التصميم" },
+          { title: "تطوير تطبيق العميل (Flutter)", description: "تصفح الخدمات، الحجز، الدفع، التتبع اللحظي للفني، التقييم", quantity: "1", unitPrice: "15000", sectionName: "مرحلة التطوير" },
+          { title: "تطوير تطبيق الفني (Flutter)", description: "قبول الطلبات، التنقل بالخريطة، تحديث الحالة، كشف الأرباح", quantity: "1", unitPrice: "12000", sectionName: "مرحلة التطوير" },
+          { title: "تطوير موقع الويب", description: "موقع تعريفي مع نظام الحجز الإلكتروني وعرض الخدمات", quantity: "1", unitPrice: "8000", sectionName: "مرحلة التطوير" },
+          { title: "لوحة تحكم الإدارة (Web)", description: "إدارة الفنيين والمناطق والخدمات والطلبات والتقارير المالية", quantity: "1", unitPrice: "10000", sectionName: "مرحلة التطوير" },
+          { title: "تطوير الخادم والـ API", description: "Node.js + PostgreSQL: APIs لجميع التطبيقات مع منطق الأعمال", quantity: "1", unitPrice: "12000", sectionName: "مرحلة التطوير" },
+          { title: "نظام الحجز والجدولة", description: "نظام ذكي لجدولة الطلبات وتعيين الفنيين وإدارة التوافر", quantity: "1", unitPrice: "6000", sectionName: "مرحلة التطوير" },
+          { title: "تكامل الدفع الإلكتروني", description: "ربط بوابة دفع آمنة مع دعم البطاقات والمدى والمحفظة", quantity: "1", unitPrice: "4000", sectionName: "مرحلة التطوير" },
+          { title: "نظام التقييم والتقارير", description: "تقييم الفنيين وتقارير الأداء والإيرادات", quantity: "1", unitPrice: "3000", sectionName: "مرحلة التطوير" },
+          { title: "اختبار الجودة الشامل", description: "اختبار وظيفي وأداء لجميع التطبيقات على أجهزة متعددة", quantity: "1", unitPrice: "4000", sectionName: "مرحلة الإطلاق" },
+          { title: "نشر وإطلاق", description: "نشر على متاجر التطبيقات وإعداد الخوادم الإنتاجية", quantity: "1", unitPrice: "3000", sectionName: "مرحلة الإطلاق" },
+          { title: "تدريب ودعم 6 أشهر", description: "تدريب فريق الإدارة + دعم فني لمدة 6 أشهر", quantity: "1", unitPrice: "6000", sectionName: "مرحلة الإطلاق" },
+        ],
+      },
+      // ─── 6. موقع عقاري ──────────────────────────────────────────────────
+      {
+        tenantId, name: "موقع عقاري", nameEn: "Real Estate Website", category: "web-platform",
+        defaultValidity: 14, defaultTaxPercent: "15", isDefault: true, displayOrder: 5,
+        defaultTerms: TERMS_WEB,
+        targetAudience: [
+          { group: "المشتري / المستأجر", role: "البحث عن العقارات وتصفح القوائم والتواصل مع الوسيط", language: "عربي / English", system: "Web / جوال" },
+          { group: "البائع / المؤجر", role: "نشر العقارات وإدارة الطلبات والإعلانات", language: "عربي", system: "Web" },
+          { group: "الوسيط العقاري", role: "إدارة حافظة العقارات والعملاء وطلبات الحجز", language: "عربي", system: "Web (لوحة الوسيط)" },
+          { group: "مدير النظام", role: "الإشراف الكامل على المنصة والمستخدمين وعوائد الإعلانات", language: "عربي", system: "Web (لوحة الإدارة)" },
+        ],
+        deliverables: [
+          { name: "موقع ويب عقاري متجاوب", description: "موقع كامل لعرض العقارات والبحث والتواصل مع الوسطاء" },
+          { name: "لوحة تحكم الوسيط", description: "واجهة لإدارة حافظة العقارات والعملاء وطلبات الحجز" },
+          { name: "لوحة تحكم الإدارة", description: "مركز تحكم شامل لإدارة المنصة والمستخدمين والتقارير" },
+          { name: "نظام البحث المتقدم", description: "بحث بالفلاتر المتعددة (السعر، الموقع، النوع، المساحة)" },
+          { name: "تكامل الخرائط", description: "عرض العقارات على الخريطة التفاعلية مع Google Maps" },
+        ],
+        technologies: [
+          { name: "Next.js", category: "واجهة الويب", description: "موقع سريع مع SEO ممتاز لمحركات البحث" },
+          { name: "Node.js", category: "الخادم", description: "API قوي وآمن" },
+          { name: "PostgreSQL", category: "قاعدة البيانات", description: "قاعدة بيانات العقارات والمستخدمين" },
+          { name: "Google Maps API", category: "الخدمات السحابية", description: "خرائط تفاعلية لعرض العقارات" },
+          { name: "AWS S3", category: "الخدمات السحابية", description: "تخزين صور العقارات والمستندات" },
+          { name: "Elasticsearch", category: "قاعدة البيانات", description: "بحث متقدم سريع في قوائم العقارات" },
+        ],
+        items: [
+          { title: "تحليل المتطلبات والتخطيط", description: "تحليل نماذج العقارات وأنواع المستخدمين وإعداد وثيقة المواصفات", quantity: "1", unitPrice: "4000", sectionName: "مرحلة التخطيط" },
+          { title: "تصميم UI/UX الاحترافي", description: "تصميم كامل للموقع ولوحات التحكم على Figma مع Prototype", quantity: "1", unitPrice: "8000", sectionName: "مرحلة التصميم" },
+          { title: "تطوير صفحات العقارات والقوائم", description: "صفحات العقارات مع معرض صور كامل وكامل التفاصيل", quantity: "1", unitPrice: "10000", sectionName: "مرحلة التطوير" },
+          { title: "نظام البحث والفلاتر المتقدمة", description: "فلاتر متعددة: السعر والموقع والنوع والمساحة وعدد الغرف", quantity: "1", unitPrice: "8000", sectionName: "مرحلة التطوير" },
+          { title: "تكامل الخرائط التفاعلية", description: "عرض العقارات على Google Maps مع تجميع النتائج وتحديد الموقع", quantity: "1", unitPrice: "5000", sectionName: "مرحلة التطوير" },
+          { title: "نظام التواصل والطلبات", description: "نموذج تواصل مع الوسيط ونظام حجز معاينة وإشعارات بريدية", quantity: "1", unitPrice: "5000", sectionName: "مرحلة التطوير" },
+          { title: "لوحة تحكم الوسيط", description: "إدارة حافظة العقارات وطلبات العملاء وإحصاءات الأداء", quantity: "1", unitPrice: "8000", sectionName: "مرحلة التطوير" },
+          { title: "لوحة تحكم الإدارة", description: "إدارة الوسطاء والمستخدمين والإعلانات والتقارير المالية", quantity: "1", unitPrice: "8000", sectionName: "مرحلة التطوير" },
+          { title: "تطوير الخادم والـ API", description: "Node.js + PostgreSQL: APIs كاملة مع منطق الأعمال العقاري", quantity: "1", unitPrice: "10000", sectionName: "مرحلة التطوير" },
+          { title: "تحسين SEO العقاري", description: "SEO متخصص للعقارات: Schema Markup وSitemap وتحسين الأداء", quantity: "1", unitPrice: "3000", sectionName: "مرحلة الإطلاق" },
+          { title: "اختبار الجودة الشامل", description: "اختبار على المتصفحات والأجهزة المختلفة وإصلاح الأخطاء", quantity: "1", unitPrice: "3000", sectionName: "مرحلة الإطلاق" },
+          { title: "الإطلاق والاستضافة", description: "نشر على سيرفر سحابي مع SSL وإعدادات الأداء والأمان", quantity: "1", unitPrice: "3000", sectionName: "مرحلة الإطلاق" },
+          { title: "تدريب ودعم 3 أشهر", description: "تدريب فريق الوسطاء على الإدارة + دعم فني لمدة 3 أشهر", quantity: "1", unitPrice: "5000", sectionName: "مرحلة الإطلاق" },
+        ],
+      },
+      // ─── 7. تطبيق عقاري ─────────────────────────────────────────────────
+      {
+        tenantId, name: "تطبيق عقاري", nameEn: "Real Estate Mobile App", category: "mobile-app",
+        defaultValidity: 14, defaultTaxPercent: "15", isDefault: true, displayOrder: 6,
+        defaultTerms: TERMS_APP,
+        targetAudience: [
+          { group: "المشتري / المستأجر", role: "البحث عن العقارات بالخريطة والتواصل مع الوسيط وحجز المعاينة", language: "عربي / English", system: "iOS / Android" },
+          { group: "الوسيط العقاري", role: "إدارة حافظة العقارات والعملاء والمواعيد وتتبع الصفقات", language: "عربي", system: "iOS / Android / Web" },
+          { group: "مدير النظام", role: "الإشراف الكامل على المنصة والوسطاء والتقارير", language: "عربي", system: "Web (لوحة الإدارة)" },
+        ],
+        deliverables: [
+          { name: "تطبيق iOS + Android", description: "تطبيق عقاري كامل للعملاء والوسطاء مع خرائط تفاعلية" },
+          { name: "لوحة تحكم ويب", description: "لوحة إدارة للوسطاء وللإدارة العليا" },
+          { name: "Backend API موثّق", description: "API كاملة للتكامل مع أي نظام مستقبلي" },
+        ],
+        technologies: [
+          { name: "Flutter", category: "تطبيق جوال", description: "تطبيق iOS وAndroid موحّد" },
+          { name: "Node.js", category: "الخادم", description: "API قوي وآمن" },
+          { name: "PostgreSQL", category: "قاعدة البيانات", description: "قاعدة بيانات العقارات والمستخدمين" },
+          { name: "Google Maps API", category: "الخدمات السحابية", description: "خرائط تفاعلية وبحث بالموقع" },
+          { name: "Firebase", category: "الخدمات السحابية", description: "إشعارات فورية وتحليلات" },
+          { name: "AWS S3", category: "الخدمات السحابية", description: "تخزين صور العقارات والمستندات" },
+        ],
+        items: [
+          { title: "تحليل المتطلبات والتخطيط", description: "تحليل شامل لنماذج العقارات وأنواع المستخدمين وإعداد المواصفات الفنية", quantity: "1", unitPrice: "4000", sectionName: "مرحلة التخطيط" },
+          { title: "تصميم UI/UX الاحترافي", description: "تصميم كامل لتطبيق العميل وتطبيق الوسيط ولوحة الإدارة على Figma", quantity: "1", unitPrice: "10000", sectionName: "مرحلة التصميم" },
+          { title: "تطوير تطبيق العميل (Flutter)", description: "تصفح العقارات بالخريطة، البحث المتقدم، الصور، حجز المعاينة، التواصل", quantity: "1", unitPrice: "20000", sectionName: "مرحلة التطوير" },
+          { title: "تطوير تطبيق الوسيط العقاري", description: "إدارة حافظة العقارات، العملاء المحتملين، المواعيد، الصفقات وكشف الأرباح", quantity: "1", unitPrice: "15000", sectionName: "مرحلة التطوير" },
+          { title: "لوحة تحكم الإدارة (Web)", description: "إدارة الوسطاء والعقارات والمستخدمين والتقارير والإحصاءات", quantity: "1", unitPrice: "10000", sectionName: "مرحلة التطوير" },
+          { title: "تطوير الخادم والـ API", description: "Node.js + PostgreSQL: APIs كاملة مع منطق البحث والحجز", quantity: "1", unitPrice: "12000", sectionName: "مرحلة التطوير" },
+          { title: "نظام البحث بالخرائط", description: "بحث جغرافي متقدم على Google Maps مع فلاتر السعر والنوع والمساحة", quantity: "1", unitPrice: "7000", sectionName: "مرحلة التطوير" },
+          { title: "نظام الإشعارات والتنبيهات", description: "تنبيهات عقارات جديدة وحالة الطلبات والمواعيد", quantity: "1", unitPrice: "3000", sectionName: "مرحلة التطوير" },
+          { title: "CRM عقاري بسيط", description: "إدارة العملاء المحتملين والمتابعات والصفقات للوسطاء", quantity: "1", unitPrice: "6000", sectionName: "مرحلة التطوير" },
+          { title: "اختبار الجودة الشامل", description: "اختبار وظيفي وأداء على أجهزة iOS وAndroid متعددة", quantity: "1", unitPrice: "4000", sectionName: "مرحلة الإطلاق" },
+          { title: "نشر وإطلاق التطبيق", description: "نشر على App Store وGoogle Play وإعداد الخوادم الإنتاجية", quantity: "1", unitPrice: "4000", sectionName: "مرحلة الإطلاق" },
+          { title: "تدريب ودعم 6 أشهر", description: "تدريب الوسطاء والإدارة + دعم فني لمدة 6 أشهر", quantity: "1", unitPrice: "8000", sectionName: "مرحلة الإطلاق" },
+        ],
       },
     ];
     for (const t of defaults) await this.createProposalTemplate(t as any);
@@ -1740,6 +2009,107 @@ export class DatabaseStorage implements IStorage {
 
   async deleteBooking(id: string, tenantId: string): Promise<void> {
     await db.delete(bookings).where(and(eq(bookings.id, id), eq(bookings.tenantId, tenantId)));
+  }
+
+  // ── Inventory ─────────────────────────────────────────────────────────────
+  async getInventoryItems(tenantId: string, filters?: { category?: string; search?: string }): Promise<InventoryItem[]> {
+    let q = db.select().from(inventoryItems).where(and(eq(inventoryItems.tenantId, tenantId), eq(inventoryItems.isActive, true))).$dynamic();
+    if (filters?.category) q = q.where(eq(inventoryItems.category, filters.category));
+    if (filters?.search) q = q.where(or(ilike(inventoryItems.name, `%${filters.search}%`), ilike(inventoryItems.sku!, `%${filters.search}%`)));
+    return (await q).sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  async getInventoryItem(id: string, tenantId: string): Promise<InventoryItem | null> {
+    const [row] = await db.select().from(inventoryItems).where(and(eq(inventoryItems.id, id), eq(inventoryItems.tenantId, tenantId)));
+    return row || null;
+  }
+
+  async createInventoryItem(data: InsertInventoryItem): Promise<InventoryItem> {
+    const [row] = await db.insert(inventoryItems).values(data).returning();
+    return row;
+  }
+
+  async updateInventoryItem(id: string, tenantId: string, data: Partial<InsertInventoryItem>): Promise<InventoryItem | null> {
+    const [row] = await db.update(inventoryItems).set({ ...data, updatedAt: new Date() })
+      .where(and(eq(inventoryItems.id, id), eq(inventoryItems.tenantId, tenantId))).returning();
+    return row || null;
+  }
+
+  async deleteInventoryItem(id: string, tenantId: string): Promise<void> {
+    await db.update(inventoryItems).set({ isActive: false, updatedAt: new Date() })
+      .where(and(eq(inventoryItems.id, id), eq(inventoryItems.tenantId, tenantId)));
+  }
+
+  // ── Tickets ────────────────────────────────────────────────────────────────
+  async getTickets(tenantId: string, filters?: { status?: string; priority?: string; category?: string }): Promise<Ticket[]> {
+    let q = db.select().from(tickets).where(eq(tickets.tenantId, tenantId)).$dynamic();
+    if (filters?.status) q = q.where(eq(tickets.status, filters.status));
+    if (filters?.priority) q = q.where(eq(tickets.priority, filters.priority));
+    if (filters?.category) q = q.where(eq(tickets.category, filters.category));
+    return (await q).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+
+  async getTicket(id: string, tenantId: string): Promise<Ticket | null> {
+    const [row] = await db.select().from(tickets).where(and(eq(tickets.id, id), eq(tickets.tenantId, tenantId)));
+    return row || null;
+  }
+
+  async createTicket(data: InsertTicket): Promise<Ticket> {
+    const count = await db.select({ c: sql<number>`count(*)` }).from(tickets).where(eq(tickets.tenantId, data.tenantId));
+    const num = (Number(count[0]?.c) || 0) + 1;
+    const number = `TK-${String(num).padStart(4, "0")}`;
+    const [row] = await db.insert(tickets).values({ ...data, number }).returning();
+    return row;
+  }
+
+  async updateTicket(id: string, tenantId: string, data: Partial<InsertTicket>): Promise<Ticket | null> {
+    const [row] = await db.update(tickets).set({ ...data, updatedAt: new Date() })
+      .where(and(eq(tickets.id, id), eq(tickets.tenantId, tenantId))).returning();
+    return row || null;
+  }
+
+  async deleteTicket(id: string, tenantId: string): Promise<void> {
+    await db.delete(ticketMessages).where(eq(ticketMessages.ticketId, id));
+    await db.delete(tickets).where(and(eq(tickets.id, id), eq(tickets.tenantId, tenantId)));
+  }
+
+  async getTicketMessages(ticketId: string, tenantId: string): Promise<TicketMessage[]> {
+    return db.select().from(ticketMessages)
+      .where(and(eq(ticketMessages.ticketId, ticketId), eq(ticketMessages.tenantId, tenantId)))
+      .orderBy(asc(ticketMessages.createdAt));
+  }
+
+  async createTicketMessage(data: InsertTicketMessage): Promise<TicketMessage> {
+    const [row] = await db.insert(ticketMessages).values(data).returning();
+    return row;
+  }
+
+  // ── Employees ─────────────────────────────────────────────────────────────
+  async getEmployees(tenantId: string, filters?: { status?: string; department?: string }): Promise<Employee[]> {
+    let q = db.select().from(employees).where(eq(employees.tenantId, tenantId)).$dynamic();
+    if (filters?.status) q = q.where(eq(employees.status, filters.status));
+    if (filters?.department) q = q.where(eq(employees.department, filters.department));
+    return (await q).sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  async getEmployee(id: string, tenantId: string): Promise<Employee | null> {
+    const [row] = await db.select().from(employees).where(and(eq(employees.id, id), eq(employees.tenantId, tenantId)));
+    return row || null;
+  }
+
+  async createEmployee(data: InsertEmployee): Promise<Employee> {
+    const [row] = await db.insert(employees).values(data).returning();
+    return row;
+  }
+
+  async updateEmployee(id: string, tenantId: string, data: Partial<InsertEmployee>): Promise<Employee | null> {
+    const [row] = await db.update(employees).set({ ...data, updatedAt: new Date() })
+      .where(and(eq(employees.id, id), eq(employees.tenantId, tenantId))).returning();
+    return row || null;
+  }
+
+  async deleteEmployee(id: string, tenantId: string): Promise<void> {
+    await db.delete(employees).where(and(eq(employees.id, id), eq(employees.tenantId, tenantId)));
   }
 }
 

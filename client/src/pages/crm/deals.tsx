@@ -14,7 +14,7 @@ import { Plus, LayoutGrid, List, DollarSign, TrendingUp, Trash2, Edit, Zap } fro
 
 const STATUS_LABELS: Record<string, string> = { open: "مفتوحة", won: "رابحة", lost: "خاسرة", archived: "مؤرشفة" };
 const STATUS_COLORS: Record<string, string> = {
-  open: "bg-blue-100 text-blue-700",
+  open: "bg-orange-100 text-orange-700",
   won: "bg-green-100 text-green-700",
   lost: "bg-red-100 text-red-700",
   archived: "bg-gray-100 text-gray-600",
@@ -127,10 +127,10 @@ export default function CrmDeals() {
             </Button>
           )}
           <div className="flex border rounded-lg overflow-hidden">
-            <button onClick={() => setView("kanban")} className={`px-3 py-1.5 text-sm transition-colors ${view === "kanban" ? "bg-blue-600 text-white" : "text-gray-600 hover:bg-gray-50"}`} data-testid="button-view-kanban">
+            <button onClick={() => setView("kanban")} className={`px-3 py-1.5 text-sm transition-colors ${view === "kanban" ? "bg-[#ff6a00] text-white" : "text-gray-600 hover:bg-gray-50"}`} data-testid="button-view-kanban">
               <LayoutGrid className="h-4 w-4" />
             </button>
-            <button onClick={() => setView("table")} className={`px-3 py-1.5 text-sm transition-colors ${view === "table" ? "bg-blue-600 text-white" : "text-gray-600 hover:bg-gray-50"}`} data-testid="button-view-table">
+            <button onClick={() => setView("table")} className={`px-3 py-1.5 text-sm transition-colors ${view === "table" ? "bg-[#ff6a00] text-white" : "text-gray-600 hover:bg-gray-50"}`} data-testid="button-view-table">
               <List className="h-4 w-4" />
             </button>
           </div>
@@ -145,12 +145,12 @@ export default function CrmDeals() {
       {pipelines.length > 0 && (
         <div className="flex gap-2 flex-wrap">
           <button onClick={() => setSelectedPipeline("all")}
-            className={`text-sm px-4 py-1.5 rounded-full border transition-all ${selectedPipeline === "all" ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-gray-200"}`}>
+            className={`text-sm px-4 py-1.5 rounded-full border transition-all ${selectedPipeline === "all" ? "bg-[#ff6a00] text-white border-[#ff6a00]" : "bg-white text-gray-600 border-gray-200"}`}>
             كل الصفقات
           </button>
           {pipelines.map((p: any) => (
             <button key={p.id} onClick={() => setSelectedPipeline(p.id)}
-              className={`text-sm px-4 py-1.5 rounded-full border transition-all ${selectedPipeline === p.id ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-gray-200"}`}>
+              className={`text-sm px-4 py-1.5 rounded-full border transition-all ${selectedPipeline === p.id ? "bg-[#ff6a00] text-white border-[#ff6a00]" : "bg-white text-gray-600 border-gray-200"}`}>
               {p.name}
             </button>
           ))}

@@ -27,7 +27,7 @@ const STATUS_LABELS: Record<string, string> = {
 };
 const STATUS_COLORS: Record<string, string> = {
   draft: "bg-gray-100 text-gray-600", pending_approval: "bg-amber-100 text-amber-700",
-  approved: "bg-blue-100 text-blue-700", sent: "bg-indigo-100 text-indigo-700",
+  approved: "bg-teal-100 text-teal-700", sent: "bg-indigo-100 text-indigo-700",
   viewed: "bg-purple-100 text-purple-700", revised: "bg-orange-100 text-orange-700",
   accepted: "bg-green-100 text-green-700", rejected: "bg-red-100 text-red-700",
   expired: "bg-rose-100 text-rose-700",
@@ -58,18 +58,28 @@ const TECH_OPTIONS = [
   { name: "React.js", category: "واجهة الويب" },
   { name: "Next.js", category: "واجهة الويب" },
   { name: "Vue.js", category: "واجهة الويب" },
+  { name: "React.js / Next.js", category: "واجهة الويب" },
   { name: "Node.js", category: "الخادم" },
   { name: "Python / Django", category: "الخادم" },
   { name: "Laravel (PHP)", category: "الخادم" },
   { name: "PostgreSQL", category: "قاعدة البيانات" },
   { name: "MySQL", category: "قاعدة البيانات" },
   { name: "MongoDB", category: "قاعدة البيانات" },
+  { name: "Elasticsearch", category: "قاعدة البيانات" },
   { name: "Firebase", category: "الخدمات السحابية" },
   { name: "AWS", category: "الخدمات السحابية" },
+  { name: "AWS S3", category: "الخدمات السحابية" },
+  { name: "AWS S3 / Cloudflare", category: "الخدمات السحابية" },
   { name: "Google Cloud", category: "الخدمات السحابية" },
+  { name: "Google Maps API", category: "الخدمات السحابية" },
+  { name: "Cloudflare", category: "الخدمات السحابية" },
   { name: "Stripe", category: "الدفع الإلكتروني" },
+  { name: "Stripe / PayTabs", category: "الدفع الإلكتروني" },
+  { name: "PayTabs", category: "الدفع الإلكتروني" },
   { name: "Twilio / SMS", category: "التواصل" },
   { name: "Push Notifications", category: "التواصل" },
+  { name: "Socket.io", category: "التواصل" },
+  { name: "WebSocket / Socket.io", category: "التواصل" },
 ];
 
 // ─── Types for rich fields ─────────────────────────────────────────────────────
@@ -275,11 +285,14 @@ export default function CrmProposals() {
       setForm(f => ({ ...f, expiryDate: d.toISOString().split("T")[0] }));
     }
     if (!form.title && tpl.name) {
-      const company = (companies as any[]).find(c => c.id === form.companyId);
       setForm(f => ({ ...f, title: applyTemplateVariables(`عرض سعر - ${tpl.name}${company ? ` - ${company.name}` : ""}`, vars) }));
     }
+    // ── Populate rich fields from template ──────────────────────────────────
+    if (tpl.targetAudience?.length) setTargetAudience(tpl.targetAudience);
+    if (tpl.deliverables?.length) setDeliverables(tpl.deliverables);
+    if (tpl.technologies?.length) setSelectedTechnologies((tpl.technologies || []).map((t: any) => t.name || t));
     setPaymentSchedule([]);
-    toast({ title: `تم تطبيق قالب: ${tpl.name}` });
+    toast({ title: `✅ تم تطبيق قالب: ${tpl.name}`, description: `${(tpl.items||[]).length} بند · ${(tpl.targetAudience||[]).length} مجموعة مستهدفة · ${(tpl.deliverables||[]).length} مخرج` });
   };
 
   const addFromLibrary = (libItem: any) => {
@@ -412,7 +425,7 @@ export default function CrmProposals() {
           <h1 className="text-2xl font-bold text-gray-900">عروض الأسعار</h1>
           <p className="text-sm text-gray-500 mt-0.5">إدارة وإنشاء عروض الأسعار الاحترافية</p>
         </div>
-        <Button onClick={() => openWizard()} className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="btn-new-proposal">
+        <Button onClick={() => openWizard()} className="gap-2 bg-[#ff6a00] hover:bg-[#ff8c00] text-white" data-testid="btn-new-proposal">
           <Plus className="h-4 w-4" /> عرض سعر جديد
         </Button>
       </div>
@@ -438,13 +451,13 @@ export default function CrmProposals() {
       {/* List */}
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
         {isLoading ? (
-          <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-blue-500" /></div>
+          <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-[#ff6a00]" /></div>
         ) : (proposals as any[]).length === 0 ? (
           <div className="text-center py-20 px-4">
             <FileText className="h-14 w-14 text-gray-200 mx-auto mb-4" />
             <h3 className="text-lg font-semibold text-gray-900 mb-1">لا توجد عروض أسعار</h3>
             <p className="text-gray-500 mb-6">أنشئ أول عرض سعر احترافي لعملائك</p>
-            <Button onClick={() => openWizard()} className="gap-2 bg-blue-600 hover:bg-blue-700">
+            <Button onClick={() => openWizard()} className="gap-2 bg-[#ff6a00] hover:bg-[#ff8c00] text-white">
               <Plus className="h-4 w-4" /> إنشاء أول عرض
             </Button>
           </div>
@@ -452,8 +465,8 @@ export default function CrmProposals() {
           <div className="divide-y divide-gray-50">
             {(proposals as any[]).map(p => (
               <div key={p.id} className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50/60 transition-colors" data-testid={`proposal-row-${p.id}`}>
-                <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                  <FileText className="h-5 w-5 text-blue-600" />
+                <div className="h-10 w-10 rounded-xl bg-orange-50 flex items-center justify-center flex-shrink-0">
+                  <FileText className="h-5 w-5 text-[#ff6a00]" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-gray-900 truncate text-sm">{p.title}</p>
@@ -506,11 +519,11 @@ export default function CrmProposals() {
       <Dialog open={showWizard} onOpenChange={open => { if (!open) { setShowWizard(false); } }}>
         <DialogContent className="max-w-4xl max-h-[95vh] overflow-hidden flex flex-col p-0 gap-0" dir="rtl">
           {/* Header / Steps */}
-          <div className="bg-gradient-to-l from-blue-700 to-blue-900 text-white p-5 flex-shrink-0">
+          <div className="bg-gradient-to-l from-[#1a1a1a] to-[#2a1500] text-white p-5 flex-shrink-0">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-lg font-bold">{editingId ? "تعديل عرض السعر" : "إنشاء عرض سعر جديد"}</h2>
-                {!editingId && <p className="text-xs text-blue-200 mt-0.5">يحفظ تلقائياً كل 2 ثانية</p>}
+                {!editingId && <p className="text-xs text-orange-200 mt-0.5">يحفظ تلقائياً كل 2 ثانية</p>}
               </div>
               <Button variant="ghost" size="icon" className="text-white/70 hover:text-white hover:bg-white/10 h-8 w-8" onClick={() => setShowWizard(false)}>
                 <X className="h-4 w-4" />
@@ -524,12 +537,12 @@ export default function CrmProposals() {
                 return (
                   <div key={step.id} className="flex items-center flex-1">
                     <button onClick={() => isDone && setWizardStep(step.id)} className={`flex flex-col items-center gap-1 flex-1 transition-all ${isActive ? "opacity-100" : isDone ? "opacity-80 cursor-pointer" : "opacity-40"}`}>
-                      <div className={`h-9 w-9 rounded-full flex items-center justify-center transition-all ${isActive ? "bg-white text-blue-700 shadow-lg" : isDone ? "bg-blue-400 text-white" : "bg-white/20 text-white"}`}>
+                      <div className={`h-9 w-9 rounded-full flex items-center justify-center transition-all ${isActive ? "bg-white text-[#ff6a00] shadow-lg" : isDone ? "bg-[#ff6a00]/80 text-white" : "bg-white/20 text-white"}`}>
                         {isDone ? <CheckCircle className="h-5 w-5" /> : <Icon className="h-4 w-4" />}
                       </div>
                       <span className="text-xs font-medium hidden sm:block">{step.label}</span>
                     </button>
-                    {idx < WIZARD_STEPS.length - 1 && <div className={`h-0.5 flex-1 mx-1 ${isDone ? "bg-blue-400" : "bg-white/20"}`} />}
+                    {idx < WIZARD_STEPS.length - 1 && <div className={`h-0.5 flex-1 mx-1 ${isDone ? "bg-[#ff6a00]/60" : "bg-white/20"}`} />}
                   </div>
                 );
               })}
@@ -598,9 +611,9 @@ export default function CrmProposals() {
                   <Label className="text-sm font-medium text-gray-700 mb-1.5 block">ملاحظات داخلية (لا تظهر للعميل)</Label>
                   <Textarea value={form.internalNotes} onChange={e => setForm(f => ({ ...f, internalNotes: e.target.value }))} placeholder="ملاحظات للفريق الداخلي..." rows={2} />
                 </div>
-                <div className="bg-blue-50 rounded-xl p-3 border border-blue-100 flex items-start gap-2">
-                  <Info className="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                  <p className="text-xs text-blue-700">يمكن استخدام متغيرات ديناميكية في القوالب مثل <code className="bg-blue-100 px-1 rounded">{"{{company_name}}"}</code>، <code className="bg-blue-100 px-1 rounded">{"{{date}}"}</code>، <code className="bg-blue-100 px-1 rounded">{"{{validity_days}}"}</code> — تُملأ تلقائياً عند تطبيق القالب.</p>
+                <div className="bg-orange-50 rounded-xl p-3 border border-orange-100 flex items-start gap-2">
+                  <Info className="h-4 w-4 text-[#ff6a00] mt-0.5 flex-shrink-0" />
+                  <p className="text-xs text-orange-700">يمكن استخدام متغيرات ديناميكية في القوالب مثل <code className="bg-orange-100 px-1 rounded">{"{{company_name}}"}</code>، <code className="bg-orange-100 px-1 rounded">{"{{date}}"}</code>، <code className="bg-orange-100 px-1 rounded">{"{{validity_days}}"}</code> — تُملأ تلقائياً عند تطبيق القالب.</p>
                 </div>
               </>
             )}
@@ -613,19 +626,30 @@ export default function CrmProposals() {
                   <div>
                     <Label className="text-sm font-medium text-gray-700 mb-2 block">اختر قالباً جاهزاً (اختياري)</Label>
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                      {(templates as any[]).map(t => (
+                      {(templates as any[]).map(t => {
+                        const isSelected = selectedTemplate === t.id;
+                        const icons: Record<string, string> = { "mobile-app": "📱", "web-platform": "🌐", erp: "⚙️", marketing: "📣", general: "📄" };
+                        return (
                         <button
                           key={t.id}
                           onClick={() => applyTemplate(t)}
-                          className={`p-3 rounded-xl border-2 text-right transition-all ${selectedTemplate === t.id ? "border-blue-500 bg-blue-50" : "border-gray-100 bg-white hover:border-blue-200"}`}
+                          className={`p-3 rounded-xl border-2 text-right transition-all ${isSelected ? "border-orange-500 bg-orange-50" : "border-gray-100 bg-white hover:border-orange-200 hover:bg-orange-50/30"}`}
                           data-testid={`template-card-${t.id}`}
                         >
-                          <p className="font-semibold text-sm text-gray-900">{t.name}</p>
-                          <p className="text-xs text-gray-500 mt-0.5">{CATEGORY_LABELS[t.category] || t.category}</p>
-                          <p className="text-xs text-blue-600 mt-1">{(t.items || []).length} بنود</p>
-                          {selectedTemplate === t.id && <CheckCircle className="h-4 w-4 text-blue-500 mt-1" />}
+                          <div className="flex items-start justify-between mb-1">
+                            <p className="font-semibold text-sm text-gray-900 leading-tight">{t.name}</p>
+                            <span className="text-lg flex-shrink-0">{icons[t.category] || "📄"}</span>
+                          </div>
+                          <p className="text-xs text-gray-400 mb-2">{t.nameEn || CATEGORY_LABELS[t.category] || t.category}</p>
+                          <div className="space-y-0.5">
+                            <p className="text-xs text-orange-600 font-medium">{(t.items || []).length} بند تسعيري</p>
+                            {(t.targetAudience||[]).length > 0 && <p className="text-xs text-[#ff6a00]">{(t.targetAudience||[]).length} مجموعة مستهدفة</p>}
+                            {(t.deliverables||[]).length > 0 && <p className="text-xs text-green-600">{(t.deliverables||[]).length} مخرج</p>}
+                          </div>
+                          {isSelected && <div className="flex items-center gap-1 mt-2"><CheckCircle className="h-3.5 w-3.5 text-orange-500" /><span className="text-xs text-orange-600 font-medium">مُفعَّل</span></div>}
                         </button>
-                      ))}
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -725,14 +749,14 @@ export default function CrmProposals() {
                 </div>
 
                 {/* Totals */}
-                <div className="bg-blue-50 rounded-xl p-5 border border-blue-100">
+                <div className="bg-orange-50 rounded-xl p-5 border border-orange-100">
                   <h4 className="font-semibold text-gray-900 mb-3 text-sm">ملخص الأسعار</h4>
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm"><span className="text-gray-600">المجموع الفرعي (إلزامي)</span><span className="font-medium">{subtotal.toLocaleString()} {form.currency}</span></div>
                     {optionalTotal > 0 && <div className="flex justify-between text-sm text-amber-600"><span>البنود الاختيارية (غير محتسبة)</span><span>{optionalTotal.toLocaleString()} {form.currency}</span></div>}
                     {discount > 0 && <div className="flex justify-between text-sm text-red-600"><span>الخصم {form.discountType === "percent" ? `(${form.discountValue}%)` : ""}</span><span>- {discount.toLocaleString()} {form.currency}</span></div>}
                     <div className="flex justify-between text-sm"><span className="text-gray-600">ضريبة القيمة المضافة ({form.taxPercent}%)</span><span>{taxAmount.toLocaleString()} {form.currency}</span></div>
-                    <div className="flex justify-between font-bold text-lg border-t-2 border-blue-200 pt-2 text-blue-700">
+                    <div className="flex justify-between font-bold text-lg border-t-2 border-orange-200 pt-2 text-[#ff6a00]">
                       <span>الإجمالي النهائي</span><span>{total.toLocaleString()} {form.currency}</span>
                     </div>
                   </div>
@@ -742,7 +766,7 @@ export default function CrmProposals() {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <Label className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
-                      <CalendarClock className="h-4 w-4 text-blue-500" /> جدول الدفعات
+                      <CalendarClock className="h-4 w-4 text-[#ff6a00]" /> جدول الدفعات
                     </Label>
                     <Button variant="outline" size="sm" onClick={addPaymentMilestone} className="gap-1 h-7 text-xs">
                       <Plus className="h-3 w-3" /> إضافة دفعة
@@ -900,7 +924,7 @@ export default function CrmProposals() {
                               <button
                                 key={t.name}
                                 onClick={() => setSelectedTechnologies(prev => isSelected ? prev.filter(x => x !== t.name) : [...prev, t.name])}
-                                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${isSelected ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-gray-200 hover:border-blue-300"}`}
+                                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${isSelected ? "bg-[#ff6a00] text-white border-[#ff6a00]" : "bg-white text-gray-600 border-gray-200 hover:border-orange-300"}`}
                               >
                                 {t.name}
                               </button>
@@ -911,7 +935,7 @@ export default function CrmProposals() {
                     ))}
                   </div>
                   {selectedTechnologies.length > 0 && (
-                    <p className="text-xs text-blue-600 mt-2">تم اختيار: {selectedTechnologies.join("، ")}</p>
+                    <p className="text-xs text-[#ff6a00] mt-2">تم اختيار: {selectedTechnologies.join("، ")}</p>
                   )}
                 </div>
 
@@ -931,7 +955,7 @@ export default function CrmProposals() {
                         <button
                           key={d}
                           onClick={() => setRichForm(f => ({ ...f, timelineDays: String(d) }))}
-                          className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${richForm.timelineDays === String(d) ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-gray-200 hover:border-blue-300"}`}
+                          className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${richForm.timelineDays === String(d) ? "bg-[#ff6a00] text-white border-[#ff6a00]" : "bg-white text-gray-600 border-gray-200 hover:border-orange-300"}`}
                         >
                           {d} يوم
                         </button>
@@ -1024,9 +1048,9 @@ export default function CrmProposals() {
                     { label: "الخصم", value: discount > 0 ? `- ${discount.toLocaleString()} ${form.currency}` : "لا يوجد" },
                     { label: "الدفعات", value: paymentSchedule.length > 0 ? `${paymentSchedule.length} دفعات` : "غير محدد" },
                   ].map(card => (
-                    <div key={card.label} className={`rounded-xl border p-3 ${card.highlight ? "bg-blue-50 border-blue-100" : "bg-white border-gray-100"}`}>
+                    <div key={card.label} className={`rounded-xl border p-3 ${card.highlight ? "bg-orange-50 border-orange-100" : "bg-white border-gray-100"}`}>
                       <p className="text-xs text-gray-500 mb-0.5">{card.label}</p>
-                      <p className={`font-semibold text-sm ${card.highlight ? "text-blue-700" : "text-gray-900"}`}>{card.value}</p>
+                      <p className={`font-semibold text-sm ${card.highlight ? "text-[#ff6a00]" : "text-gray-900"}`}>{card.value}</p>
                     </div>
                   ))}
                 </div>
@@ -1040,14 +1064,14 @@ export default function CrmProposals() {
                     <div key={idx} className={`flex justify-between items-center px-4 py-2.5 border-b border-gray-50 last:border-0 ${item.isOptional ? "bg-amber-50/40" : ""}`}>
                       <div>
                         <p className="text-sm font-medium text-gray-900">{item.title} {item.isOptional && <span className="text-xs text-amber-500 mr-1">(اختياري)</span>}</p>
-                        {item.sectionName && <p className="text-xs text-blue-500">{item.sectionName}</p>}
+                        {item.sectionName && <p className="text-xs text-[#ff6a00]">{item.sectionName}</p>}
                       </div>
                       <p className="text-sm font-semibold text-gray-900">{parseFloat(item.lineTotal || "0").toLocaleString()} {form.currency}</p>
                     </div>
                   ))}
-                  <div className="px-4 py-3 bg-blue-50 flex justify-between items-center">
+                  <div className="px-4 py-3 bg-orange-50 flex justify-between items-center">
                     <span className="font-bold text-gray-900">الإجمالي (شامل الضريبة)</span>
-                    <span className="font-bold text-blue-700 text-lg">{total.toLocaleString()} {form.currency}</span>
+                    <span className="font-bold text-[#ff6a00] text-lg">{total.toLocaleString()} {form.currency}</span>
                   </div>
                 </div>
 
@@ -1075,7 +1099,7 @@ export default function CrmProposals() {
               <ChevronRight className="h-4 w-4" /> السابق
             </Button>
             <span className="text-sm text-gray-500">خطوة {wizardStep} من {WIZARD_STEPS.length}</span>
-            <Button onClick={nextStep} disabled={saveMutation.isPending} className="gap-2 bg-blue-600 hover:bg-blue-700" data-testid="btn-wizard-next">
+            <Button onClick={nextStep} disabled={saveMutation.isPending} className="gap-2 bg-[#ff6a00] hover:bg-[#ff8c00] text-white" data-testid="btn-wizard-next">
               {saveMutation.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               {wizardStep === WIZARD_STEPS.length ? (editingId ? "حفظ التعديلات" : "حفظ وعرض") : "التالي"}
               {wizardStep < WIZARD_STEPS.length && <ChevronLeft className="h-4 w-4" />}
@@ -1118,7 +1142,7 @@ export default function CrmProposals() {
           )}
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setTemplatePreview(null)}>إلغاء</Button>
-            <Button onClick={() => applyTemplate(templatePreview, true)} className="bg-blue-600 hover:bg-blue-700 gap-2">
+            <Button onClick={() => applyTemplate(templatePreview, true)} className="bg-[#ff6a00] hover:bg-[#ff8c00] text-white gap-2">
               <CheckCircle className="h-4 w-4" /> تطبيق هذا القالب
             </Button>
           </DialogFooter>
@@ -1128,7 +1152,7 @@ export default function CrmProposals() {
       {/* ═══════════════════ SERVICE LIBRARY MODAL ═══════════════════ */}
       <Dialog open={showLibrary} onOpenChange={setShowLibrary}>
         <DialogContent dir="rtl" className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
-          <DialogHeader><DialogTitle className="text-right flex items-center gap-2"><Library className="h-5 w-5 text-blue-600" /> مكتبة الخدمات الجاهزة</DialogTitle><DialogDescription className="sr-only">اختر خدمات جاهزة لإضافتها للعرض</DialogDescription></DialogHeader>
+          <DialogHeader><DialogTitle className="text-right flex items-center gap-2"><Library className="h-5 w-5 text-[#ff6a00]" /> مكتبة الخدمات الجاهزة</DialogTitle><DialogDescription className="sr-only">اختر خدمات جاهزة لإضافتها للعرض</DialogDescription></DialogHeader>
           <div className="flex-shrink-0">
             <div className="relative">
               <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -1141,7 +1165,7 @@ export default function CrmProposals() {
                 <button
                   key={item.id}
                   onClick={() => { addFromLibrary(item); }}
-                  className="p-3 rounded-xl border border-gray-100 hover:border-blue-200 hover:bg-blue-50 text-right transition-all flex items-center gap-3 group"
+                  className="p-3 rounded-xl border border-gray-100 hover:border-orange-200 hover:bg-orange-50 text-right transition-all flex items-center gap-3 group"
                   data-testid={`library-item-${item.id}`}
                 >
                   <div className="flex-1 min-w-0">
@@ -1149,10 +1173,10 @@ export default function CrmProposals() {
                     {item.description && <p className="text-xs text-gray-400 truncate">{item.description}</p>}
                   </div>
                   <div className="text-left flex-shrink-0">
-                    <p className="text-sm font-bold text-blue-700">{parseFloat(item.unitPrice || "0").toLocaleString()}</p>
+                    <p className="text-sm font-bold text-[#ff6a00]">{parseFloat(item.unitPrice || "0").toLocaleString()}</p>
                     <p className="text-xs text-gray-400">{UNIT_LABELS[item.unit] || item.unit}</p>
                   </div>
-                  <Plus className="h-4 w-4 text-blue-400 opacity-0 group-hover:opacity-100 flex-shrink-0" />
+                  <Plus className="h-4 w-4 text-[#ff6a00] opacity-0 group-hover:opacity-100 flex-shrink-0" />
                 </button>
               ))}
               {filteredLibrary.length === 0 && (
@@ -1177,7 +1201,7 @@ export default function CrmProposals() {
           </div>
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={() => setShowEmailDialog(false)}>إلغاء</Button>
-            <Button onClick={() => emailProposal && sendEmailMutation.mutate({ id: emailProposal.id, data: emailForm })} disabled={sendEmailMutation.isPending} className="gap-2 bg-blue-600 hover:bg-blue-700">
+            <Button onClick={() => emailProposal && sendEmailMutation.mutate({ id: emailProposal.id, data: emailForm })} disabled={sendEmailMutation.isPending} className="gap-2 bg-[#ff6a00] hover:bg-[#ff8c00] text-white">
               {sendEmailMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
               إرسال
             </Button>
@@ -1197,7 +1221,7 @@ export default function CrmProposals() {
                 <Copy className="h-4 w-4" />
               </Button>
             </div>
-            <Button asChild className="w-full gap-2 bg-blue-600 hover:bg-blue-700">
+            <Button asChild className="w-full gap-2 bg-[#ff6a00] hover:bg-[#ff8c00] text-white">
               <a href={shareLink || "#"} target="_blank" rel="noopener noreferrer"><Eye className="h-4 w-4" /> معاينة كالعميل</a>
             </Button>
           </div>

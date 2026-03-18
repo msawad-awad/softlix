@@ -104,7 +104,7 @@ export default function WebsiteBookings() {
                         {STATUS_LABELS[b.status]}
                       </span>
                       {b.serviceType && (
-                        <span className="text-xs font-bold bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 px-3 py-1 rounded-full border border-blue-100 dark:border-blue-800">
+                        <span className="text-xs font-bold bg-orange-50 dark:bg-orange-900/20 text-[#ff6a00] dark:text-[#ff6a00] px-3 py-1 rounded-full border border-orange-100 dark:border-orange-800">
                           {b.serviceType}
                         </span>
                       )}

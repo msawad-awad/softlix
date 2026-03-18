@@ -71,8 +71,8 @@ export default function NewsletterAdmin() {
       <div className="grid grid-cols-3 gap-4 mb-6">
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center">
-              <Users size={18} className="text-blue-600" />
+            <div className="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center">
+              <Users size={18} className="text-[#ff6a00]" />
             </div>
             <div>
               <p className="text-2xl font-black text-slate-800">{subscribers.length}</p>

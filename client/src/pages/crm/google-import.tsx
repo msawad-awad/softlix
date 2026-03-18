@@ -219,7 +219,7 @@ export default function GoogleImport() {
           <p className="text-sm text-gray-500 mt-0.5">ابحث عن الشركات في خرائط جوجل واستوردها مباشرة إلى CRM</p>
         </div>
         {pendingBuffer.length > 0 && (
-          <Badge className="bg-blue-100 text-blue-700 text-sm px-3 py-1">
+          <Badge className="bg-orange-100 text-[#ff6a00] text-sm px-3 py-1">
             {pendingBuffer.length} شركة في الانتظار
           </Badge>
         )}
@@ -230,7 +230,7 @@ export default function GoogleImport() {
         <div className="lg:col-span-3 space-y-4">
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
             <h2 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <Search className="h-5 w-5 text-blue-600" /> البحث في Google Maps
+              <Search className="h-5 w-5 text-[#ff6a00]" /> البحث في Google Maps
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
               <div className="sm:col-span-2">
@@ -254,15 +254,15 @@ export default function GoogleImport() {
                 </Select>
               </div>
             </div>
-            <Button onClick={handleSearch} disabled={isSearching} className="w-full gap-2 bg-blue-600 hover:bg-blue-700" data-testid="btn-search">
+            <Button onClick={handleSearch} disabled={isSearching} className="w-full gap-2 bg-orange-600 hover:bg-orange-700" data-testid="btn-search">
               {isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />}
               {isSearching ? "جاري البحث..." : "بحث"}
             </Button>
           </div>
 
-          <div className="bg-blue-50 border border-blue-100 rounded-xl p-3 flex gap-2 items-start">
-            <Info className="h-4 w-4 text-blue-500 flex-shrink-0 mt-0.5" />
-            <p className="text-xs text-blue-700">عند الضغط على <strong>إضافة</strong> سيتم جلب رقم الهاتف والموقع الإلكتروني تلقائياً من Google.</p>
+          <div className="bg-orange-50 border border-orange-100 rounded-xl p-3 flex gap-2 items-start">
+            <Info className="h-4 w-4 text-[#ff6a00] flex-shrink-0 mt-0.5" />
+            <p className="text-xs text-[#ff6a00]">عند الضغط على <strong>إضافة</strong> سيتم جلب رقم الهاتف والموقع الإلكتروني تلقائياً من Google.</p>
           </div>
 
           {searchResults.length > 0 && (
@@ -279,8 +279,8 @@ export default function GoogleImport() {
                   const isLoading = loadingPlaceId === result.googlePlaceId;
                   return (
                     <div key={result.googlePlaceId} className="p-4 hover:bg-gray-50/60 transition-colors flex gap-3" data-testid={`result-${result.googlePlaceId}`}>
-                      <div className="h-10 w-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
-                        <Building2 className="h-5 w-5 text-blue-600" />
+                      <div className="h-10 w-10 rounded-xl bg-orange-50 flex items-center justify-center flex-shrink-0">
+                        <Building2 className="h-5 w-5 text-[#ff6a00]" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
@@ -309,7 +309,7 @@ export default function GoogleImport() {
                             variant={isAdded ? "outline" : "default"}
                             disabled={isAdded || isLoading || addToBufferMutation.isPending}
                             onClick={() => !isAdded && handleAddToBuffer(result)}
-                            className={`flex-shrink-0 h-8 text-xs gap-1 ${!isAdded ? "bg-blue-600 hover:bg-blue-700" : ""}`}
+                            className={`flex-shrink-0 h-8 text-xs gap-1 ${!isAdded ? "bg-orange-600 hover:bg-orange-700" : ""}`}
                             data-testid={`btn-add-${result.googlePlaceId}`}
                           >
                             {isLoading ? <Loader2 className="h-3 w-3 animate-spin" /> : isAdded ? <CheckCircle className="h-3 w-3" /> : <Plus className="h-3 w-3" />}
@@ -330,7 +330,7 @@ export default function GoogleImport() {
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
             <div className="px-5 py-3 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
               <p className="font-semibold text-gray-900 text-sm flex items-center gap-2">
-                <Download className="h-4 w-4 text-blue-600" />
+                <Download className="h-4 w-4 text-[#ff6a00]" />
                 قائمة الانتظار ({pendingBuffer.length})
               </p>
               {pendingBuffer.length > 0 && (
@@ -341,7 +341,7 @@ export default function GoogleImport() {
             </div>
 
             {bufferLoading ? (
-              <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-blue-400" /></div>
+              <div className="flex justify-center py-8"><Loader2 className="h-6 w-6 animate-spin text-[#ff6a00]" /></div>
             ) : pendingBuffer.length === 0 ? (
               <div className="text-center py-10 px-4">
                 <Building2 className="h-10 w-10 text-gray-200 mx-auto mb-3" />
@@ -357,7 +357,7 @@ export default function GoogleImport() {
                         <p className="font-semibold text-sm text-gray-900 truncate">{item.name}</p>
                         {item.address && <p className="text-xs text-gray-400 truncate mt-0.5 flex items-center gap-1"><MapPin className="h-3 w-3 flex-shrink-0" />{item.address}</p>}
                         {item.phone && <p className="text-xs text-gray-500 flex items-center gap-1 mt-0.5"><Phone className="h-3 w-3 text-green-500" />{item.phone}</p>}
-                        {item.website && <p className="text-xs text-blue-500 flex items-center gap-1 mt-0.5 truncate"><Globe className="h-3 w-3 flex-shrink-0" />{item.website}</p>}
+                        {item.website && <p className="text-xs text-[#ff6a00] flex items-center gap-1 mt-0.5 truncate"><Globe className="h-3 w-3 flex-shrink-0" />{item.website}</p>}
                         {item.rating && (
                           <p className="text-xs text-amber-600 flex items-center gap-0.5 mt-0.5">
                             <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
@@ -410,8 +410,8 @@ export default function GoogleImport() {
           <DialogHeader><DialogTitle className="text-right">استيراد إلى CRM</DialogTitle></DialogHeader>
           {importDialog && (
             <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
-              <div className="bg-blue-50 rounded-xl p-3 border border-blue-100">
-                <p className="text-xs text-blue-600 font-semibold mb-1">بيانات من Google Maps</p>
+              <div className="bg-orange-50 rounded-xl p-3 border border-orange-100">
+                <p className="text-xs text-[#ff6a00] font-semibold mb-1">بيانات من Google Maps</p>
                 {importDialog.item.rating && (
                   <p className="text-xs text-amber-600 flex items-center gap-1">
                     <Star className="h-3 w-3 fill-amber-400 text-amber-400" />

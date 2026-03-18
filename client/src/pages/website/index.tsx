@@ -115,8 +115,8 @@ export default function WebsiteOverview() {
               <div className="space-y-3">
                 {newLeads.map((lead) => (
                   <div key={lead.id} className="flex items-start gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg" data-testid={`lead-item-${lead.id}`}>
-                    <div className="w-9 h-9 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
-                      <span className="text-blue-700 dark:text-blue-300 text-sm font-bold">{lead.name.charAt(0)}</span>
+                    <div className="w-9 h-9 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center flex-shrink-0">
+                      <span className="text-[#ff6a00] dark:text-[#ff6a00] text-sm font-bold">{lead.name.charAt(0)}</span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">

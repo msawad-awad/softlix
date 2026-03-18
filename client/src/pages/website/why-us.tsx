@@ -119,7 +119,7 @@ export default function WhyUsPage() {
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center h-32"><RefreshCw className="w-6 h-6 animate-spin text-blue-500" /></div>
+        <div className="flex items-center justify-center h-32"><RefreshCw className="w-6 h-6 animate-spin text-[#ff6a00]" /></div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {items?.length === 0 && (

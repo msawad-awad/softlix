@@ -64,10 +64,10 @@
 - ✅ **Dashboard**: KPI cards, recent activity feed, quick actions
 - ✅ **Companies**: Complete CRUD with detailed forms
 - ✅ **Contacts**: Complete CRUD with contact details
-- ✅ **Tasks**: Task management with priority levels and status tracking
-- ✅ **Tickets**: Support ticket system with priority and status
-- ✅ **HR**: Employee directory with departments and status
-- ✅ **Inventory**: Stock management with low-stock alerts
+- ✅ **Tasks** (`/tasks`): Full CRUD, status pipeline (pending/in_progress/completed/cancelled), priority (low/medium/high/urgent), overdue detection, stats cards, create/edit dialog — real backend via `/api/crm/tasks`
+- ✅ **Tickets** (`/tickets`): Full support ticket system — create/view/reply, auto-number (TK-0001), status (open/in_progress/resolved/closed), priority, categories, inline messaging via `/api/tickets` + `/api/tickets/:id/messages`
+- ✅ **HR / Employees** (`/hr`): Full employee directory — name, email, phone, department, role, salary, hire date, status, CRUD via `/api/hr/employees`
+- ✅ **Inventory** (`/inventory`): Stock management — name, SKU, barcode, category, unit, quantity (with +/- buttons), min/max quantity, cost/sell prices, supplier, location, low-stock alerts, real-time search/filter — CRUD via `/api/inventory`
 - ✅ **Settings**: Profile, language, theme, notifications, billing
 - ✅ **Integrations**: SMTP email, SMS (Twilio/Unifonic/Msegat), Google OAuth (Meet/Calendar), Webhook — all configurable from /settings/integrations
 
@@ -79,14 +79,19 @@
 - ✅ Admin account pre-configured: `info@softlix.net` / `123456`
 
 ### 7. API Routes (Complete)
-- ✅ `/api/auth/register` - Create account + tenant
-- ✅ `/api/auth/login` - Session-based login
-- ✅ `/api/auth/logout` - Session cleanup
-- ✅ `/api/auth/me` - Current user info
+- ✅ `/api/auth/*` - Register, login, logout, me
 - ✅ `/api/dashboard/stats` - Dashboard metrics
-- ✅ `/api/companies` - CRUD operations
-- ✅ `/api/contacts` - CRUD operations
-- ✅ All routes protected with authentication middleware
+- ✅ `/api/companies` - CRUD
+- ✅ `/api/contacts` - CRUD
+- ✅ `/api/crm/tasks` - CRUD with status/priority filters
+- ✅ `/api/tickets` + `/api/tickets/:id/messages` - Support tickets + messaging
+- ✅ `/api/hr/employees` - Employee CRUD
+- ✅ `/api/inventory` - Inventory CRUD with soft delete
+- ✅ `/api/crm/leads`, `/api/crm/deals`, `/api/crm/proposals` - Full CRM
+- ✅ `/api/website/*` - CMS routes (services, projects, blog, settings, etc.)
+- ✅ `/api/marketing/*` - Newsletter, pricing plans, tracking
+- ✅ `/api/upload` - File upload to public/uploads/ via multer
+- ✅ All routes protected with requireAuth middleware
 
 ### 8. Website CMS Module - FULLY IMPLEMENTED
 - ✅ **Public Pages**: `/` (Home), `/about`, `/services`, `/services/:slug`, `/projects`, `/projects/:slug`, `/blog`, `/blog/:slug`, `/contact`

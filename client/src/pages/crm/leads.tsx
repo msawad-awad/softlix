@@ -35,7 +35,7 @@ const PRIORITIES = [
 ];
 
 const STATUS_COLORS: Record<string, string> = {
-  new: "bg-blue-100 text-blue-700 border-blue-200",
+  new: "bg-orange-100 text-[#ff6a00] border-orange-200",
   attempting_contact: "bg-yellow-100 text-yellow-700 border-yellow-200",
   contacted: "bg-indigo-100 text-indigo-700 border-indigo-200",
   qualified: "bg-green-100 text-green-700 border-green-200",
@@ -177,7 +177,7 @@ export default function CrmLeads() {
       <div className="flex gap-2 flex-wrap">
         {STATUSES.map(s => (
           <button key={s.value} onClick={() => setStatusFilter(s.value)}
-            className={`text-xs px-3 py-1 rounded-full border transition-all ${statusFilter === s.value ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-gray-200 hover:border-blue-300"}`}>
+            className={`text-xs px-3 py-1 rounded-full border transition-all ${statusFilter === s.value ? "bg-[#ff6a00] text-white border-[#ff6a00]" : "bg-white text-gray-600 border-gray-200 hover:border-orange-300"}`}>
             {s.label}
           </button>
         ))}

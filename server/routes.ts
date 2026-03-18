@@ -2630,6 +2630,106 @@ export async function registerRoutes(
   // TEAM / USER MANAGEMENT ROUTES (admin/manager only for write ops)
   // ============================================================================
 
+  // ── Inventory ─────────────────────────────────────────────────────────────
+  app.get("/api/inventory", requireAuth, async (req, res) => {
+    try {
+      const { category, search } = req.query as Record<string, string>;
+      res.json(await storage.getInventoryItems(req.user!.tenant.id, { category, search }));
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.get("/api/inventory/:id", requireAuth, async (req, res) => {
+    try {
+      const item = await storage.getInventoryItem(req.params.id, req.user!.tenant.id);
+      if (!item) return res.status(404).json({ error: "Not found" });
+      res.json(item);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.post("/api/inventory", requireAuth, async (req, res) => {
+    try { res.status(201).json(await storage.createInventoryItem({ ...req.body, tenantId: req.user!.tenant.id })); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.patch("/api/inventory/:id", requireAuth, async (req, res) => {
+    try {
+      const item = await storage.updateInventoryItem(req.params.id, req.user!.tenant.id, req.body);
+      if (!item) return res.status(404).json({ error: "Not found" });
+      res.json(item);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.delete("/api/inventory/:id", requireAuth, async (req, res) => {
+    try { await storage.deleteInventoryItem(req.params.id, req.user!.tenant.id); res.json({ ok: true }); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // ── Tickets ────────────────────────────────────────────────────────────────
+  app.get("/api/tickets", requireAuth, async (req, res) => {
+    try {
+      const { status, priority, category } = req.query as Record<string, string>;
+      res.json(await storage.getTickets(req.user!.tenant.id, { status, priority, category }));
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.get("/api/tickets/:id", requireAuth, async (req, res) => {
+    try {
+      const ticket = await storage.getTicket(req.params.id, req.user!.tenant.id);
+      if (!ticket) return res.status(404).json({ error: "Not found" });
+      res.json(ticket);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.post("/api/tickets", requireAuth, async (req, res) => {
+    try { res.status(201).json(await storage.createTicket({ ...req.body, tenantId: req.user!.tenant.id, createdById: req.user!.id })); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.patch("/api/tickets/:id", requireAuth, async (req, res) => {
+    try {
+      const t = await storage.updateTicket(req.params.id, req.user!.tenant.id, req.body);
+      if (!t) return res.status(404).json({ error: "Not found" });
+      res.json(t);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.delete("/api/tickets/:id", requireAuth, async (req, res) => {
+    try { await storage.deleteTicket(req.params.id, req.user!.tenant.id); res.json({ ok: true }); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.get("/api/tickets/:id/messages", requireAuth, async (req, res) => {
+    try { res.json(await storage.getTicketMessages(req.params.id, req.user!.tenant.id)); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.post("/api/tickets/:id/messages", requireAuth, async (req, res) => {
+    try {
+      const msg = await storage.createTicketMessage({ ...req.body, ticketId: req.params.id, tenantId: req.user!.tenant.id, createdById: req.user!.id });
+      res.status(201).json(msg);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // ── Employees ─────────────────────────────────────────────────────────────
+  app.get("/api/hr/employees", requireAuth, async (req, res) => {
+    try {
+      const { status, department } = req.query as Record<string, string>;
+      res.json(await storage.getEmployees(req.user!.tenant.id, { status, department }));
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.get("/api/hr/employees/:id", requireAuth, async (req, res) => {
+    try {
+      const emp = await storage.getEmployee(req.params.id, req.user!.tenant.id);
+      if (!emp) return res.status(404).json({ error: "Not found" });
+      res.json(emp);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.post("/api/hr/employees", requireAuth, async (req, res) => {
+    try { res.status(201).json(await storage.createEmployee({ ...req.body, tenantId: req.user!.tenant.id })); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.patch("/api/hr/employees/:id", requireAuth, async (req, res) => {
+    try {
+      const emp = await storage.updateEmployee(req.params.id, req.user!.tenant.id, req.body);
+      if (!emp) return res.status(404).json({ error: "Not found" });
+      res.json(emp);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+  app.delete("/api/hr/employees/:id", requireAuth, async (req, res) => {
+    try { await storage.deleteEmployee(req.params.id, req.user!.tenant.id); res.json({ ok: true }); }
+    catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
   app.get("/api/users", requireAuth, async (req, res) => {
     try {
       const teamUsers = await storage.getTeamUsers(req.user!.tenantId);

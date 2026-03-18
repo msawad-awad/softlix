@@ -10,7 +10,7 @@ import type { FormLead } from "@shared/schema";
 
 const STATUS_CONFIG = {
   new: { label: "جديد", color: "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300", icon: Clock },
-  contacted: { label: "تم التواصل", color: "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300", icon: CheckCircle2 },
+  contacted: { label: "تم التواصل", color: "bg-orange-100 dark:bg-orange-900/30 text-[#ff6a00] dark:text-[#ff6a00]", icon: CheckCircle2 },
   converted: { label: "تحوّل لعميل", color: "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300", icon: CheckCircle2 },
   closed: { label: "مغلق", color: "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400", icon: XCircle },
 };
@@ -73,7 +73,7 @@ export default function WebsiteLeads() {
               <Card key={lead.id} data-testid={`lead-card-${lead.id}`}>
                 <CardContent className="py-4 px-5">
                   <div className="flex items-start gap-4">
-                    <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0 font-bold text-blue-700 dark:text-blue-300">
+                    <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center flex-shrink-0 font-bold text-[#ff6a00] dark:text-[#ff6a00]">
                       {lead.name.charAt(0)}
                     </div>
                     <div className="flex-1 min-w-0">
@@ -86,7 +86,7 @@ export default function WebsiteLeads() {
                         {lead.phone && <span className="flex items-center gap-1"><Phone className="w-3 h-3"/>{lead.phone}</span>}
                         {lead.email && <span className="flex items-center gap-1"><Mail className="w-3 h-3"/>{lead.email}</span>}
                         <span className="flex items-center gap-1"><Calendar className="w-3 h-3"/>{new Date(lead.createdAt).toLocaleDateString("ar-SA")}</span>
-                        {lead.pageSource && <span className="text-blue-500">{lead.pageSource}</span>}
+                        {lead.pageSource && <span className="text-[#ff6a00]">{lead.pageSource}</span>}
                       </div>
                       {lead.message && <p className="text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-lg p-2.5 flex items-start gap-2"><MessageSquare className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-gray-400"/><span className="line-clamp-2">{lead.message}</span></p>}
                     </div>

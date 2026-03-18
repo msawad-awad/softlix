@@ -123,7 +123,7 @@ export default function WebsiteServices() {
                       </Badge>
                     </div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{service.shortDescription}</p>
-                    <code className="text-xs text-blue-500 mt-1">/{service.slug}</code>
+                    <code className="text-xs text-[#ff6a00] mt-1">/{service.slug}</code>
                   </div>
                   <div className="flex items-center gap-1 flex-shrink-0">
                     <Button variant="ghost" size="icon" onClick={() => openEdit(service)} data-testid={`btn-edit-service-${service.id}`}>

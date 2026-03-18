@@ -73,17 +73,17 @@ html[dir="rtl"] [class*="text-4xl"] {
   --sidebar: 222 47% 11%;
   --sidebar-foreground: 210 20% 98%;
   --sidebar-border: 222 40% 18%;
-  --sidebar-primary: 217 91% 60%;
+  --sidebar-primary: 25 100% 50%;
   --sidebar-primary-foreground: 0 0% 100%;
   --sidebar-accent: 222 40% 18%;
   --sidebar-accent-foreground: 210 20% 98%;
-  --sidebar-ring: 217 91% 60%;
+  --sidebar-ring: 25 100% 50%;
 
   --popover: 0 0% 100%;
   --popover-foreground: 222 47% 11%;
   --popover-border: 214 20% 92%;
 
-  --primary: 217 91% 60%;
+  --primary: 25 100% 50%;
   --primary-foreground: 0 0% 100%;
 
   --secondary: 210 20% 96%;
@@ -99,9 +99,9 @@ html[dir="rtl"] [class*="text-4xl"] {
   --destructive-foreground: 0 0% 100%;
 
   --input: 214 20% 85%;
-  --ring: 217 91% 60%;
+  --ring: 25 100% 50%;
   
-  --chart-1: 217 91% 60%;
+  --chart-1: 25 100% 50%;
   --chart-2: 142 71% 45%;
   --chart-3: 47 96% 53%;
   --chart-4: 280 68% 60%;
@@ -165,17 +165,17 @@ html[dir="rtl"] [class*="text-4xl"] {
   --sidebar: 222 47% 5%;
   --sidebar-foreground: 210 20% 98%;
   --sidebar-border: 222 40% 14%;
-  --sidebar-primary: 217 91% 60%;
+  --sidebar-primary: 25 100% 50%;
   --sidebar-primary-foreground: 0 0% 100%;
   --sidebar-accent: 222 40% 14%;
   --sidebar-accent-foreground: 210 20% 98%;
-  --sidebar-ring: 217 91% 60%;
+  --sidebar-ring: 25 100% 50%;
 
   --popover: 222 47% 11%;
   --popover-foreground: 210 20% 98%;
   --popover-border: 222 40% 18%;
 
-  --primary: 217 91% 60%;
+  --primary: 25 100% 50%;
   --primary-foreground: 0 0% 100%;
 
   --secondary: 222 40% 18%;
@@ -191,9 +191,9 @@ html[dir="rtl"] [class*="text-4xl"] {
   --destructive-foreground: 0 0% 100%;
 
   --input: 222 40% 22%;
-  --ring: 217 91% 60%;
+  --ring: 25 100% 50%;
   
-  --chart-1: 217 91% 60%;
+  --chart-1: 25 100% 50%;
   --chart-2: 142 71% 45%;
   --chart-3: 47 96% 53%;
   --chart-4: 280 68% 60%;
@@ -300,7 +300,7 @@ html[dir="rtl"] [class*="text-4xl"] {
 
   /* Gradient text utility */
   .gradient-text {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-blue-400;
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#ff6a00] to-[#ff8c00];
   }
 
   /* Glass effect */

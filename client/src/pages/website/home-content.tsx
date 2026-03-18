@@ -122,7 +122,7 @@ function SectionEditor({
                   )}
                 </div>
                 <div>
-                  <span className="text-xs text-blue-500 font-bold mb-1 block">English</span>
+                  <span className="text-xs text-[#ff6a00] font-bold mb-1 block">English</span>
                   {f.type === "textarea" ? (
                     <Textarea
                       value={en[f.key] || ""}
@@ -155,7 +155,7 @@ export default function HomeContentPage() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center h-64">
-      <RefreshCw className="w-6 h-6 animate-spin text-blue-500" />
+      <RefreshCw className="w-6 h-6 animate-spin text-[#ff6a00]" />
     </div>
   );
 
@@ -164,7 +164,7 @@ export default function HomeContentPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black text-gray-900 dark:text-white flex items-center gap-2">
-            <Home className="w-6 h-6 text-blue-500" />
+            <Home className="w-6 h-6 text-[#ff6a00]" />
             محتوى الصفحة الرئيسية
           </h1>
           <p className="text-gray-500 text-sm mt-1">تحرير كل سكشن في الصفحة الرئيسية بالعربية والإنجليزية</p>

@@ -23,7 +23,7 @@ const ENTITY_LABELS: Record<string, string> = {
 };
 
 const ENTITY_COLORS: Record<string, string> = {
-  lead: "bg-blue-100 text-blue-700",
+  lead: "bg-orange-100 text-[#ff6a00]",
   contact: "bg-purple-100 text-purple-700",
   company: "bg-indigo-100 text-indigo-700",
   deal: "bg-green-100 text-green-700",

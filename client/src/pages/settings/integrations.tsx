@@ -88,7 +88,7 @@ function SmtpSection() {
   });
 
   return (
-    <IntegrationCard title="البريد الإلكتروني (SMTP)" description="أرسل إيميلات وعروض أسعار مباشرة من النظام" icon={Mail} iconBg="bg-blue-500" provider="smtp">
+    <IntegrationCard title="البريد الإلكتروني (SMTP)" description="أرسل إيميلات وعروض أسعار مباشرة من النظام" icon={Mail} iconBg="bg-orange-500" provider="smtp">
       {(integration: any) => (
         <div className="space-y-5">
           <div className="flex items-center gap-3">
@@ -117,7 +117,7 @@ function SmtpSection() {
               </div>
             )}
           </div>
-          <div className="rounded-lg bg-blue-50 border border-blue-100 p-3 text-xs text-blue-700 space-y-1">
+          <div className="rounded-lg bg-orange-50 border border-orange-100 p-3 text-xs text-[#ff6a00] space-y-1">
             <p className="font-semibold">💡 نصائح الإعداد:</p>
             <p>• Gmail: استخدم App Password من إعدادات الأمان (2FA يجب أن يكون مفعّلاً)</p>
             <p>• Port 587 مع STARTTLS أو Port 465 مع SSL</p>
@@ -272,11 +272,11 @@ function GoogleSection() {
             <ExternalLink className="h-4 w-4" />
             {isConnected ? "إعادة ربط Google" : "ربط حساب Google"}
           </Button>
-          <div className="rounded-lg bg-blue-50 border border-blue-100 p-3 text-xs text-blue-700 space-y-1">
+          <div className="rounded-lg bg-orange-50 border border-orange-100 p-3 text-xs text-[#ff6a00] space-y-1">
             <p className="font-semibold">⚙️ كيفية الإعداد:</p>
             <p>1. اذهب إلى <a href="https://console.cloud.google.com" target="_blank" className="underline">Google Cloud Console</a></p>
             <p>2. أنشئ مشروعاً جديداً → APIs & Services → OAuth 2.0</p>
-            <p>3. أضف Redirect URI: <code className="bg-blue-100 px-1 rounded">{window.location.origin}/api/integrations/google/callback</code></p>
+            <p>3. أضف Redirect URI: <code className="bg-orange-100 px-1 rounded">{window.location.origin}/api/integrations/google/callback</code></p>
             <p>4. فعّل: Google Calendar API + Gmail API</p>
           </div>
         </div>
@@ -403,7 +403,7 @@ function GoogleMapsSection() {
             {saveMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin ml-1" /> : null}
             حفظ المفتاح
           </Button>
-          <div className="rounded-lg bg-blue-50 border border-blue-100 p-3 text-xs text-blue-700 space-y-1">
+          <div className="rounded-lg bg-orange-50 border border-orange-100 p-3 text-xs text-[#ff6a00] space-y-1">
             <p className="font-semibold">⚙️ كيفية الحصول على المفتاح:</p>
             <p>1. اذهب إلى <a href="https://console.cloud.google.com" target="_blank" rel="noreferrer" className="underline">Google Cloud Console</a></p>
             <p>2. أنشئ مشروعاً ← APIs & Services ← Credentials</p>

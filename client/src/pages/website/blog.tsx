@@ -85,7 +85,7 @@ export default function WebsiteBlog() {
                     </div>
                     <p className="text-xs text-gray-500 truncate">{p.excerpt}</p>
                     <div className="flex items-center gap-3 mt-1">
-                      <code className="text-xs text-blue-500">/blog/{p.slug}</code>
+                      <code className="text-xs text-[#ff6a00]">/blog/{p.slug}</code>
                       {p.publishedAt && <span className="text-xs text-gray-400">{new Date(p.publishedAt).toLocaleDateString("ar-SA")}</span>}
                     </div>
                   </div>

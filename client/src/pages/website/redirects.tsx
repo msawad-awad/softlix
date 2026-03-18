@@ -82,8 +82,8 @@ export default function WebsiteRedirects() {
       </div>
 
       {/* Info card */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
-        <p className="text-sm text-blue-700 dark:text-blue-300">
+      <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-xl p-4">
+        <p className="text-sm text-[#ff6a00] dark:text-[#ff6a00]">
           <strong>تلميح:</strong> اضغط على "إضافة التحويلات الافتراضية" لإضافة جميع التحويلات من الموقع القديم (softlixagency.com) تلقائياً، مثل /porjects/ → /projects
         </p>
       </div>
@@ -98,10 +98,10 @@ export default function WebsiteRedirects() {
             <Card key={r.id} className="hover:shadow-sm transition-shadow" data-testid={`redirect-row-${r.id}`}>
               <CardContent className="py-3 px-5">
                 <div className="flex items-center gap-3">
-                  <Badge className={`flex-shrink-0 text-xs border-0 ${r.statusCode === 301 ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700" : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700"}`}>{r.statusCode}</Badge>
+                  <Badge className={`flex-shrink-0 text-xs border-0 ${r.statusCode === 301 ? "bg-orange-100 dark:bg-orange-900/30 text-[#ff6a00]" : "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700"}`}>{r.statusCode}</Badge>
                   <code className="text-sm text-gray-700 dark:text-gray-300 truncate flex-1" dir="ltr">{r.fromUrl}</code>
                   <ArrowRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                  <code className="text-sm text-blue-600 dark:text-blue-400 truncate flex-1" dir="ltr">{r.toUrl}</code>
+                  <code className="text-sm text-[#ff6a00] dark:text-[#ff6a00] truncate flex-1" dir="ltr">{r.toUrl}</code>
                   <span className="text-xs text-gray-400 flex-shrink-0">{r.hitCount || 0} زيارة</span>
                   <div className="flex items-center gap-1 flex-shrink-0">
                     <button onClick={() => updateMut.mutate({ id: r.id, data: { isActive: !r.isActive } })}

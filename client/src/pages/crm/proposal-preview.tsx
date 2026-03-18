@@ -20,7 +20,7 @@ const STATUS_LABELS: Record<string, string> = {
 };
 const STATUS_COLORS: Record<string, string> = {
   draft: "bg-gray-100 text-gray-600", pending_approval: "bg-amber-100 text-amber-700",
-  approved: "bg-blue-100 text-blue-700", sent: "bg-indigo-100 text-indigo-700",
+  approved: "bg-orange-100 text-[#ff6a00]", sent: "bg-indigo-100 text-indigo-700",
   viewed: "bg-purple-100 text-purple-700", accepted: "bg-green-100 text-green-700",
   rejected: "bg-red-100 text-red-700", expired: "bg-rose-100 text-rose-700",
 };
@@ -102,18 +102,18 @@ function PageHeader({ proposalNumber, date }: { proposalNumber: string; date: st
   return (
     <div
       className="flex items-center justify-between mb-8 pb-4 border-b-2"
-      style={{ borderColor: "#1e3a8a" }}
+      style={{ borderColor: "#ff6a00" }}
     >
       <div className="flex items-center gap-3">
         <div
           className="w-8 h-8 rounded flex items-center justify-center text-white font-bold text-xs"
-          style={{ background: "linear-gradient(135deg,#1e3a8a,#3b82f6)" }}
+          style={{ background: "linear-gradient(135deg,#1a1a1a,#ff6a00)" }}
         >
           SX
         </div>
         <div>
           <p className="text-xs font-bold text-gray-800">شركة سوفت لكس لتقنية المعلومات</p>
-          <p className="text-xs text-gray-400">Softlix Information Technology</p>
+          <p className="text-xs" style={{ color: "#ff6a00" }}>Softlix Information Technology</p>
         </div>
       </div>
       <div className="text-left text-xs text-gray-400">
@@ -140,13 +140,13 @@ function SectionTitle({ ar, en }: { ar: string; en?: string }) {
   return (
     <div className="mb-5">
       <div className="flex items-center gap-3">
-        <div className="w-1 h-7 rounded-full" style={{ background: "linear-gradient(to bottom,#1e3a8a,#3b82f6)" }} />
+        <div className="w-1.5 h-7 rounded-full" style={{ background: "linear-gradient(to bottom,#ff6a00,#ff8c00)" }} />
         <div>
-          <h2 className="text-lg font-bold" style={{ color: "#1e3a8a" }}>{ar}</h2>
-          {en && <p className="text-xs text-gray-400">{en}</p>}
+          <h2 className="text-lg font-bold" style={{ color: "#1a1a1a" }}>{ar}</h2>
+          {en && <p className="text-xs" style={{ color: "#ff6a00" }}>{en}</p>}
         </div>
       </div>
-      <div className="h-px mt-3" style={{ background: "linear-gradient(to left,transparent,#93c5fd,transparent)" }} />
+      <div className="h-px mt-3" style={{ background: "linear-gradient(to left,transparent,#ff8c00,transparent)" }} />
     </div>
   );
 }
@@ -220,73 +220,113 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
           width: "210mm",
           minHeight: "297mm",
           margin: "0 auto 20px",
-          background: "linear-gradient(160deg,#0f172a 0%,#1e3a8a 50%,#1d4ed8 100%)",
+          background: "linear-gradient(160deg,#0f172a 0%,#1a1a1a 60%,#2a1200 100%)",
           boxSizing: "border-box",
-          boxShadow: "0 4px 24px rgba(0,0,0,0.2)",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.3)",
           pageBreakAfter: "always",
         }}
       >
-        {/* Top ribbon */}
-        <div className="h-2" style={{ background: "linear-gradient(to right,#60a5fa,#3b82f6,#1d4ed8)" }} />
+        {/* Top ribbon - orange */}
+        <div className="h-3" style={{ background: "linear-gradient(to right,#ff8c00,#ff6a00,#e55c00)" }} />
 
         {/* Logo area */}
-        <div className="px-16 pt-12 pb-8 border-b" style={{ borderColor: "rgba(255,255,255,0.15)" }}>
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-xl bg-white/10 flex items-center justify-center border border-white/20">
-              <span className="text-2xl font-black text-white">SX</span>
+        <div className="px-16 pt-10 pb-8 border-b" style={{ borderColor: "rgba(255,106,0,0.3)" }}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div
+                className="w-14 h-14 rounded-xl flex items-center justify-center border"
+                style={{ background: "rgba(255,106,0,0.15)", borderColor: "rgba(255,106,0,0.4)" }}
+              >
+                <span className="text-2xl font-black text-white">SX</span>
+              </div>
+              <div>
+                <p className="text-xl font-bold">سوفت لكس</p>
+                <p className="text-sm" style={{ color: "#ff8c00" }}>Softlix Information Technology</p>
+              </div>
             </div>
-            <div>
-              <p className="text-xl font-bold">سوفت لكس</p>
-              <p className="text-blue-300 text-sm">Softlix Information Technology</p>
+            <div className="text-left text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>
+              <p>www.softlixagency.com</p>
+              <p>info@softlix.net</p>
             </div>
           </div>
         </div>
 
         {/* Main content */}
-        <div className="flex-1 flex flex-col items-center justify-center px-16 py-12 text-center">
-          {/* Proposal label */}
-          <div
-            className="px-6 py-2 rounded-full text-sm font-semibold mb-8 border"
-            style={{ background: "rgba(255,255,255,0.08)", borderColor: "rgba(255,255,255,0.2)" }}
-          >
-            {issueDateStr} &nbsp;|&nbsp; {proposalNumber}
+        <div className="flex-1 flex flex-col justify-center px-16 py-10" style={{ direction: "rtl" }}>
+          {/* Badge */}
+          <div className="mb-8">
+            <span
+              className="text-xs font-bold px-4 py-1.5 rounded-full"
+              style={{ background: "rgba(255,106,0,0.2)", border: "1px solid rgba(255,106,0,0.5)", color: "#ff8c00" }}
+            >
+              العرض التقني والمالي &nbsp;·&nbsp; Technical & Financial Proposal
+            </span>
           </div>
 
-          <h1 className="text-4xl font-black mb-4 leading-tight" style={{ textShadow: "0 2px 12px rgba(0,0,0,0.3)" }}>
-            العرض التقني والمالي
+          {/* Project title */}
+          <h1
+            className="text-4xl font-black mb-3 leading-tight"
+            style={{ color: "#ffffff", textShadow: "0 2px 20px rgba(0,0,0,0.5)" }}
+          >
+            {proposal.title || "العرض التقني والمالي"}
           </h1>
-          <div className="w-24 h-1 rounded-full bg-blue-400 mb-6 mx-auto" />
-          <h2 className="text-2xl font-bold text-blue-200 mb-4 leading-relaxed">{proposal.title}</h2>
 
+          {/* Orange divider */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="h-1 w-20 rounded-full" style={{ background: "#ff6a00" }} />
+            <div className="h-0.5 w-10 rounded-full" style={{ background: "rgba(255,106,0,0.3)" }} />
+          </div>
+
+          {/* Subtitle */}
+          <p className="text-lg mb-8" style={{ color: "rgba(255,255,255,0.7)", maxWidth: "480px", lineHeight: "1.8" }}>
+            حل تقني متكامل مُصمَّم خصيصاً لتلبية متطلباتكم وتحقيق أهدافكم الاستراتيجية
+          </p>
+
+          {/* Client box */}
           {(proposal.company || proposal.contact) && (
-            <div className="mt-4 px-8 py-3 rounded-xl text-sm" style={{ background: "rgba(255,255,255,0.08)" }}>
-              <p className="text-blue-300 text-xs mb-1">مُقدَّم إلى</p>
-              <p className="font-bold">{clientName}</p>
+            <div
+              className="inline-block px-6 py-4 rounded-2xl mb-8"
+              style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", maxWidth: "360px" }}
+            >
+              <p className="text-xs mb-1.5 font-medium" style={{ color: "#ff8c00" }}>مُقدَّم إلى</p>
+              <p className="text-xl font-bold text-white">{clientName}</p>
             </div>
           )}
+
+          {/* Stats row */}
+          <div className="grid grid-cols-3 gap-4" style={{ maxWidth: "480px" }}>
+            {[
+              { label: "رقم العرض", value: proposalNumber },
+              { label: "تاريخ الإصدار", value: issueDateStr },
+              { label: "صالح لمدة", value: `${validityDays} يوم` },
+            ].map(item => (
+              <div key={item.label} className="rounded-xl p-3 text-center" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
+                <p className="text-xs mb-1" style={{ color: "#ff8c00" }}>{item.label}</p>
+                <p className="font-bold text-sm text-white">{item.value}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Bottom info */}
+        {/* Bottom info strip */}
         <div
-          className="px-16 py-8 border-t grid grid-cols-3 gap-4 text-sm"
-          style={{ borderColor: "rgba(255,255,255,0.15)" }}
+          className="px-16 py-5 grid grid-cols-3 gap-6 text-sm border-t"
+          style={{ borderColor: "rgba(255,106,0,0.2)", background: "rgba(0,0,0,0.2)" }}
         >
-          <div>
-            <p className="text-blue-400 text-xs mb-1">رقم العرض</p>
-            <p className="font-bold">{proposalNumber}</p>
-          </div>
-          <div>
-            <p className="text-blue-400 text-xs mb-1">تاريخ الإصدار</p>
-            <p className="font-bold">{issueDateStr}</p>
-          </div>
-          <div>
-            <p className="text-blue-400 text-xs mb-1">صالح لمدة</p>
-            <p className="font-bold">{validityDays} يوم</p>
-          </div>
+          {[
+            { icon: "⚡", text: "تسليم في الوقت المحدد" },
+            { icon: "🏆", text: "جودة عالية المستوى" },
+            { icon: "🤝", text: "شراكة استراتيجية" },
+          ].map(item => (
+            <div key={item.text} className="flex items-center gap-2">
+              <span className="text-base">{item.icon}</span>
+              <span className="text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>{item.text}</span>
+            </div>
+          ))}
         </div>
 
         {/* Bottom ribbon */}
-        <div className="h-2" style={{ background: "linear-gradient(to right,#1d4ed8,#3b82f6,#60a5fa)" }} />
+        <div className="h-3" style={{ background: "linear-gradient(to right,#e55c00,#ff6a00,#ff8c00)" }} />
       </div>
 
       {/* ── PAGE 2: CONFIDENTIALITY ─────────────────────────────────────── */}
@@ -295,18 +335,18 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
         <SectionTitle ar="بيان السرية" en="Confidentiality Statement" />
         <div
           className="rounded-xl p-6 mb-6"
-          style={{ background: "linear-gradient(135deg,#eff6ff,#dbeafe)", border: "1px solid #bfdbfe" }}
+          style={{ background: "linear-gradient(135deg,#fff7ed,#ffedd5)", border: "1px solid #fed7aa" }}
         >
           <div className="flex items-start gap-4 mb-4">
             <div
               className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-              style={{ background: "linear-gradient(135deg,#1e3a8a,#3b82f6)" }}
+              style={{ background: "linear-gradient(135deg,#1a1a1a,#ff6a00)" }}
             >
               <Shield className="h-6 w-6 text-white" />
             </div>
             <div>
               <h3 className="font-bold text-gray-900 mb-1">معلومات سرية وخاصة</h3>
-              <p className="text-sm text-gray-600">Confidential & Proprietary Information</p>
+              <p className="text-sm" style={{ color: "#ff6a00" }}>Confidential & Proprietary Information</p>
             </div>
           </div>
           <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{CONFIDENTIALITY_TEXT}</p>
@@ -329,7 +369,7 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
         <div className="grid grid-cols-2 gap-5 mb-6">
           {/* الوثيقة */}
           <div className="rounded-xl overflow-hidden border border-gray-200">
-            <div className="px-4 py-2" style={{ background: "linear-gradient(135deg,#1e3a8a,#3b82f6)" }}>
+            <div className="px-4 py-2" style={{ background: "linear-gradient(135deg,#1a1a1a,#ff6a00)" }}>
               <p className="text-white text-sm font-bold">الوثيقة</p>
             </div>
             <table className="w-full text-sm">
@@ -431,7 +471,7 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
             <div
               key={v.title}
               className="rounded-xl p-4 text-center"
-              style={{ background: "linear-gradient(135deg,#eff6ff,#dbeafe)", border: "1px solid #bfdbfe" }}
+              style={{ background: "linear-gradient(135deg,#fff7ed,#ffedd5)", border: "1px solid #fed7aa" }}
             >
               <div className="text-3xl mb-2">{v.icon}</div>
               <p className="font-bold text-gray-900 text-sm mb-1">{v.title}</p>
@@ -469,10 +509,10 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
             <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #e2e8f0" }}>
               <table className="w-full text-sm">
                 <thead>
-                  <tr style={{ background: "linear-gradient(135deg,#1e3a8a,#3b82f6)" }}>
+                  <tr style={{ background: "linear-gradient(135deg,#1a1a1a,#ff6a00)" }}>
                     <th className="text-right py-3 px-4 text-white font-semibold">المجموعة المستهدفة</th>
                     <th className="text-right py-3 px-4 text-white font-semibold">الدور والصلاحيات</th>
-                    <th className="text-right py-3 px-4 text-white font-semibold">لغة البرمجة</th>
+                    <th className="text-right py-3 px-4 text-white font-semibold">لغة / منصة التشغيل</th>
                     <th className="text-right py-3 px-4 text-white font-semibold">النظام / المنصة</th>
                   </tr>
                 </thead>
@@ -528,13 +568,13 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
               <div className="grid grid-cols-2 gap-4">
                 {Object.entries(techByCategory).map(([cat, techs]) => (
                   <div key={cat} className="rounded-xl overflow-hidden" style={{ border: "1px solid #e2e8f0" }}>
-                    <div className="px-4 py-2" style={{ background: "linear-gradient(135deg,#1e3a8a,#3b82f6)" }}>
+                    <div className="px-4 py-2" style={{ background: "linear-gradient(135deg,#1a1a1a,#ff6a00)" }}>
                       <p className="text-white text-xs font-bold">{cat}</p>
                     </div>
                     <div className="p-3 space-y-1.5">
                       {(techs as any[]).map((t: any, i: number) => (
                         <div key={i} className="flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0" />
+                          <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "#ff6a00" }} />
                           <div>
                             <span className="text-sm font-medium text-gray-900">{t.name}</span>
                             {t.description && <span className="text-xs text-gray-500 mr-2">— {t.description}</span>}
@@ -558,13 +598,13 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
 
         <div
           className="rounded-xl p-6 mb-6 text-sm text-gray-700 leading-relaxed"
-          style={{ background: "#eff6ff", border: "1px solid #bfdbfe" }}
+          style={{ background: "#fff7ed", border: "1px solid #fed7aa" }}
         >
           <p>
             الجدول الزمني للمشروع: من المقدر أن يستغرق تسليم المشروع كاملاً{" "}
-            <strong className="text-blue-800">{timelineDays} يوم عمل</strong>.
+            <strong style={{ color: "#e55c00" }}>{timelineDays} يوم عمل</strong>.
             سيتم تحديد المدة الدقيقة عند إنشاء خطة المشروع التفصيلية.
-            بالإضافة إلى ذلك، فترة تعبئة <strong className="text-blue-800">10 أيام عمل</strong>{" "}
+            بالإضافة إلى ذلك، فترة تعبئة <strong style={{ color: "#e55c00" }}>10 أيام عمل</strong>{" "}
             بعد إصدار أوامر الشراء أو توقيع العقد.
           </p>
         </div>
@@ -574,8 +614,8 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
           {[
             { phase: "التخطيط وتحليل المتطلبات", days: Math.ceil(timelineDays * 0.1), color: "#7c3aed" },
             { phase: "تصميم تجربة المستخدم (UX/UI)", days: Math.ceil(timelineDays * 0.2), color: "#0891b2" },
-            { phase: "التطوير الأساسي (Backend & APIs)", days: Math.ceil(timelineDays * 0.3), color: "#1e3a8a" },
-            { phase: "تطوير الواجهة الأمامية (Frontend)", days: Math.ceil(timelineDays * 0.25), color: "#3b82f6" },
+            { phase: "التطوير الأساسي (Backend & APIs)", days: Math.ceil(timelineDays * 0.3), color: "#1a1a1a" },
+            { phase: "تطوير الواجهة الأمامية (Frontend)", days: Math.ceil(timelineDays * 0.25), color: "#ff6a00" },
             { phase: "مراقبة الجودة والاختبار (QA)", days: Math.ceil(timelineDays * 0.1), color: "#059669" },
             { phase: "الإطلاق والنشر", days: Math.ceil(timelineDays * 0.05), color: "#f59e0b" },
           ].map((p, i) => (
@@ -593,7 +633,7 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
 
         <div
           className="mt-6 rounded-xl p-4 flex items-center gap-3 text-sm"
-          style={{ background: "#fffbeb", border: "1px solid #fde68a" }}
+          style={{ background: "#fff7ed", border: "1px solid #fed7aa" }}
         >
           <span className="text-2xl">⏱️</span>
           <p className="text-gray-700">
@@ -620,7 +660,7 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
               {sectionKey !== "__default__" && (
                 <div
                   className="px-4 py-2 rounded-t-xl flex items-center gap-2"
-                  style={{ background: "linear-gradient(135deg,#1e3a8a,#3b82f6)" }}
+                  style={{ background: "linear-gradient(135deg,#1a1a1a,#ff6a00)" }}
                 >
                   <p className="text-sm font-bold text-white">{sectionKey}</p>
                 </div>
@@ -718,7 +758,7 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
         {/* Totals box */}
         <div className="flex justify-end mt-4">
           <div className="w-80 rounded-xl overflow-hidden" style={{ border: "1px solid #e2e8f0" }}>
-            <div className="px-4 py-2" style={{ background: "linear-gradient(135deg,#1e3a8a,#3b82f6)" }}>
+            <div className="px-4 py-2" style={{ background: "linear-gradient(135deg,#1a1a1a,#ff6a00)" }}>
               <p className="text-white font-bold text-sm">ملخص الأسعار</p>
             </div>
             <div className="divide-y divide-gray-100">
@@ -738,10 +778,10 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
               </div>
               <div
                 className="flex justify-between px-4 py-4 font-bold text-lg"
-                style={{ background: "linear-gradient(135deg,#eff6ff,#dbeafe)" }}
+                style={{ background: "linear-gradient(135deg,#fff7ed,#ffedd5)" }}
               >
-                <span style={{ color: "#1e3a8a" }}>الإجمالي النهائي</span>
-                <span style={{ color: "#1e3a8a" }}>{total.toLocaleString("ar-SA")} {currency}</span>
+                <span style={{ color: "#e55c00" }}>الإجمالي النهائي</span>
+                <span style={{ color: "#e55c00" }}>{total.toLocaleString("ar-SA")} {currency}</span>
               </div>
             </div>
           </div>
@@ -853,23 +893,23 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
               >
                 <div
                   className="px-5 py-3 flex items-center justify-between"
-                  style={{ background: "linear-gradient(135deg,#eff6ff,#dbeafe)" }}
+                  style={{ background: "linear-gradient(135deg,#fff7ed,#ffedd5)" }}
                 >
                   <div className="flex items-center gap-3">
                     <div
                       className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
-                      style={{ background: "linear-gradient(135deg,#1e3a8a,#3b82f6)" }}
+                      style={{ background: "linear-gradient(135deg,#1a1a1a,#ff6a00)" }}
                     >
                       {String.fromCharCode(0x623 + i)}
                     </div>
                     <div>
                       <p className="font-bold text-gray-900 text-sm">{member.name || member.role}</p>
-                      <p className="text-xs text-blue-600">{member.title || defaultBio?.title || member.role}</p>
+                      <p className="text-xs" style={{ color: "#ff6a00" }}>{member.title || defaultBio?.title || member.role}</p>
                     </div>
                   </div>
                   <div className="text-left">
                     <p className="text-xs text-gray-500">خبرة</p>
-                    <p className="font-bold text-blue-800 text-sm">{member.experience || "—"} سنوات</p>
+                    <p className="font-bold text-sm" style={{ color: "#e55c00" }}>{member.experience || "—"} سنوات</p>
                   </div>
                 </div>
                 {bio && (
@@ -902,11 +942,11 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
 
         <div className="grid grid-cols-2 gap-8 mb-8">
           {/* Company signature */}
-          <div className="rounded-xl p-5" style={{ border: "2px solid #bfdbfe" }}>
+          <div className="rounded-xl p-5" style={{ border: "2px solid #fed7aa" }}>
             <p className="font-bold text-gray-900 mb-1 text-sm">ختم وتوقيع سوفت لكس</p>
             <p className="text-xs text-gray-500 mb-4">Softlix Information Technology</p>
-            <div className="h-20 rounded-lg border border-dashed border-blue-200 mb-3 flex items-center justify-center bg-blue-50/30">
-              <p className="text-xs text-blue-300">توقيع الشركة</p>
+            <div className="h-20 rounded-lg border border-dashed mb-3 flex items-center justify-center" style={{ borderColor: "#fed7aa", background: "rgba(255,106,0,0.03)" }}>
+              <p className="text-xs" style={{ color: "#ff8c00" }}>توقيع الشركة</p>
             </div>
             <div className="space-y-1.5 text-xs text-gray-600">
               <p><span className="font-semibold">الاسم:</span> {approverName}</p>
@@ -941,14 +981,18 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
 
         {/* Closing message */}
         <div
-          className="rounded-xl p-6 text-center"
-          style={{ background: "linear-gradient(135deg,#0f172a,#1e3a8a)", color: "white" }}
+          className="rounded-xl p-8 text-center relative overflow-hidden"
+          style={{ background: "linear-gradient(135deg,#0f172a 0%,#1a1a1a 50%,#2a1200 100%)", color: "white" }}
         >
-          <p className="text-xl font-bold mb-2">شكراً لاختياركم سوفت لكس</p>
-          <p className="text-blue-300 text-sm">Thank you for choosing Softlix</p>
-          <div className="mt-4 text-xs text-blue-400">
-            <p>info@softlix.net | www.softlixagency.com</p>
+          <div className="absolute top-0 left-0 right-0 h-1" style={{ background: "linear-gradient(to right,#ff8c00,#ff6a00,#e55c00)" }} />
+          <p className="text-2xl font-black mb-2">شكراً لاختياركم سوفت لكس</p>
+          <p className="text-sm mb-4" style={{ color: "#ff8c00" }}>Thank you for choosing Softlix Information Technology</p>
+          <div className="h-px my-4" style={{ background: "rgba(255,106,0,0.3)" }} />
+          <p className="text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>نتطلع إلى شراكة ناجحة ومستدامة معكم</p>
+          <div className="mt-3 text-xs font-medium" style={{ color: "#ff8c00" }}>
+            <p>info@softlix.net &nbsp;|&nbsp; www.softlixagency.com</p>
           </div>
+          <div className="absolute bottom-0 left-0 right-0 h-1" style={{ background: "linear-gradient(to right,#e55c00,#ff6a00,#ff8c00)" }} />
         </div>
 
         {proposal.clientSignature && (
@@ -978,7 +1022,7 @@ export function ProposalPreviewById() {
 
   if (isLoading) return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      <Loader2 className="h-8 w-8 animate-spin text-[#ff6a00]" />
     </div>
   );
   if (!proposal) return (
@@ -1091,7 +1135,7 @@ export function ProposalPublicView() {
 
   if (isLoading) return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
+      <Loader2 className="h-8 w-8 animate-spin text-[#ff6a00]" />
     </div>
   );
 

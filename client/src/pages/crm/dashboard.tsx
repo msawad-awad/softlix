@@ -24,9 +24,9 @@ const LEAD_STATUS_LABELS: Record<string, string> = {
 };
 
 const LEAD_STATUS_COLORS: Record<string, string> = {
-  new: "bg-blue-100 text-blue-800",
+  new: "bg-orange-100 text-orange-800",
   attempting_contact: "bg-yellow-100 text-yellow-800",
-  contacted: "bg-indigo-100 text-indigo-800",
+  contacted: "bg-amber-100 text-amber-800",
   qualified: "bg-green-100 text-green-800",
   unqualified: "bg-gray-100 text-gray-600",
   proposal_sent: "bg-orange-100 text-orange-800",
@@ -59,7 +59,7 @@ export default function CrmDashboard() {
   }
 
   const statCards = [
-    { label: "إجمالي العملاء المحتملين", value: stats?.totalLeads ?? 0, icon: Users, color: "text-blue-600", bg: "bg-blue-50", link: "/crm/leads" },
+    { label: "إجمالي العملاء المحتملين", value: stats?.totalLeads ?? 0, icon: Users, color: "text-[#ff6a00]", bg: "bg-orange-50", link: "/crm/leads" },
     { label: "عملاء جدد اليوم", value: stats?.newLeadsToday ?? 0, icon: ArrowUpRight, color: "text-emerald-600", bg: "bg-emerald-50", link: "/crm/leads" },
     { label: "الصفقات المفتوحة", value: stats?.openDeals ?? 0, icon: TrendingUp, color: "text-indigo-600", bg: "bg-indigo-50", link: "/crm/deals" },
     { label: "قيمة الصفقات المفتوحة", value: `${(stats?.openDealsValue ?? 0).toLocaleString()} ريال`, icon: DollarSign, color: "text-amber-600", bg: "bg-amber-50", link: "/crm/deals" },
@@ -137,7 +137,7 @@ export default function CrmDashboard() {
                           {LEAD_STATUS_LABELS[status] || status}
                         </span>
                         <div className="flex-1 bg-gray-100 rounded-full h-2">
-                          <div className="bg-blue-500 h-2 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                          <div className="bg-[#ff6a00] h-2 rounded-full transition-all" style={{ width: `${pct}%` }} />
                         </div>
                         <span className="text-sm font-medium text-gray-700 w-8 text-left">{count}</span>
                       </div>
@@ -203,7 +203,7 @@ export default function CrmDashboard() {
                 <Link href={`/crm/leads/${lead.id}`} key={lead.id}>
                   <div className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors" data-testid={`lead-row-${lead.id}`}>
                     <div className="flex items-center gap-3">
-                      <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold text-sm">
+                      <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#ff6a00] to-[#ff8c00] flex items-center justify-center text-white font-semibold text-sm">
                         {lead.fullName?.[0] || "؟"}
                       </div>
                       <div>

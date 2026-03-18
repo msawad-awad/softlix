@@ -30,7 +30,7 @@ function getFlag(country: string | null) {
 }
 
 function DeviceIcon({ type }: { type: string | null }) {
-  if (type === "mobile") return <Smartphone size={14} className="text-blue-500" />;
+  if (type === "mobile") return <Smartphone size={14} className="text-[#ff6a00]" />;
   if (type === "tablet") return <Tablet size={14} className="text-purple-500" />;
   return <Monitor size={14} className="text-gray-500" />;
 }
@@ -86,7 +86,7 @@ export default function VisitorsPage() {
     : logs;
 
   const kpiCards = [
-    { label: "إجمالي الزوار", value: data?.total ?? 0, icon: <Users size={20} className="text-blue-500" />, color: "blue" },
+    { label: "إجمالي الزوار", value: data?.total ?? 0, icon: <Users size={20} className="text-[#ff6a00]" />, color: "blue" },
     {
       label: "موبايل",
       value: data?.byDevice.find(d => d.deviceType === "mobile")?.count ?? 0,
@@ -162,7 +162,7 @@ export default function VisitorsPage() {
         <Card className="border-0 shadow-sm">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-bold flex items-center gap-2">
-              <Smartphone size={16} className="text-blue-500" /> توزيع الأجهزة
+              <Smartphone size={16} className="text-[#ff6a00]" /> توزيع الأجهزة
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
@@ -175,7 +175,7 @@ export default function VisitorsPage() {
                     {d.deviceType === "mobile" ? "موبايل" : d.deviceType === "tablet" ? "تابلت" : "سطح المكتب"}
                   </span>
                   <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-full h-2">
-                    <div className="bg-blue-500 h-2 rounded-full" style={{ width: `${pct}%` }} />
+                    <div className="bg-orange-500 h-2 rounded-full" style={{ width: `${pct}%` }} />
                   </div>
                   <span className="text-xs font-bold text-gray-500 w-12 text-left">{d.count} <span className="text-gray-400">({pct}%)</span></span>
                 </div>
@@ -279,10 +279,10 @@ export default function VisitorsPage() {
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle className="text-base font-bold flex items-center gap-2">
-              <Eye size={18} className="text-blue-500" />
+              <Eye size={18} className="text-[#ff6a00]" />
               سجل الزوار
               {data?.total !== undefined && (
-                <Badge className="text-xs bg-blue-100 text-blue-700 border-0">{data.total.toLocaleString()} زيارة</Badge>
+                <Badge className="text-xs bg-orange-100 text-[#ff6a00] border-0">{data.total.toLocaleString()} زيارة</Badge>
               )}
             </CardTitle>
             {data && data.total > PAGE_SIZE && (
@@ -360,7 +360,7 @@ export default function VisitorsPage() {
                       <td className="px-4 py-3 max-w-[160px]">
                         <div className="flex items-center gap-1">
                           <Link2 size={11} className="text-gray-400 flex-shrink-0" />
-                          <span className="text-xs text-blue-600 dark:text-blue-400 truncate" title={log.pageUrl || ""}>
+                          <span className="text-xs text-[#ff6a00] dark:text-[#ff6a00] truncate" title={log.pageUrl || ""}>
                             {trimUrl(log.pageUrl)}
                           </span>
                         </div>
@@ -394,19 +394,19 @@ export default function VisitorsPage() {
       {/* Marketing Insights Box */}
       <Card className="border-0 shadow-sm bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20">
         <CardContent className="p-5">
-          <h3 className="font-bold text-blue-800 dark:text-blue-300 mb-3 flex items-center gap-2">
+          <h3 className="font-bold text-[#ff6a00] dark:text-[#ff6a00] mb-3 flex items-center gap-2">
             <TrendingUp size={18} /> نصائح لتحسين الحملات بناءً على بيانات الزوار
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-blue-700 dark:text-blue-300">
-            <div className="bg-white/70 dark:bg-blue-900/30 rounded-xl p-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-[#ff6a00] dark:text-[#ff6a00]">
+            <div className="bg-white/70 dark:bg-orange-900/30 rounded-xl p-4">
               <p className="font-bold mb-1">📱 استهداف الموبايل</p>
               <p className="text-xs leading-relaxed">إذا كانت نسبة الموبايل أعلى من 60% فوجّه ميزانية الإعلانات للتنسيقات المخصصة للجوال (Stories, Reels)</p>
             </div>
-            <div className="bg-white/70 dark:bg-blue-900/30 rounded-xl p-4">
+            <div className="bg-white/70 dark:bg-orange-900/30 rounded-xl p-4">
               <p className="font-bold mb-1">🌍 الاستهداف الجغرافي</p>
               <p className="text-xs leading-relaxed">استخدم بيانات الدول والمدن لإنشاء جماهير مخصصة (Custom Audiences) في Meta وGoogle Ads</p>
             </div>
-            <div className="bg-white/70 dark:bg-blue-900/30 rounded-xl p-4">
+            <div className="bg-white/70 dark:bg-orange-900/30 rounded-xl p-4">
               <p className="font-bold mb-1">🔄 إعادة الاستهداف</p>
               <p className="text-xs leading-relaxed">صدّر IPs والجلسات لاستخدامها في حملات الـ Retargeting وتحديد جماهير Lookalike</p>
             </div>

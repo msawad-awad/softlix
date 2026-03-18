@@ -28,7 +28,7 @@ const STATUSES = [
 ];
 
 const STATUS_COLORS: Record<string, string> = {
-  new: "bg-blue-100 text-blue-700",
+  new: "bg-orange-100 text-orange-700",
   attempting_contact: "bg-yellow-100 text-yellow-700",
   contacted: "bg-indigo-100 text-indigo-700",
   qualified: "bg-green-100 text-green-700",
@@ -143,7 +143,7 @@ export default function LeadDetail() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center h-64">
-      <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+      <Loader2 className="h-8 w-8 animate-spin text-[#ff6a00]" />
     </div>
   );
 
@@ -207,13 +207,13 @@ export default function LeadDetail() {
               {lead.mobile && (
                 <div className="flex items-center gap-2 text-sm">
                   <Phone className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                  <a href={`tel:${lead.mobile}`} className="text-blue-600 hover:underline">{lead.mobile}</a>
+                  <a href={`tel:${lead.mobile}`} className="text-[#ff6a00] hover:underline">{lead.mobile}</a>
                 </div>
               )}
               {lead.email && (
                 <div className="flex items-center gap-2 text-sm">
                   <Mail className="h-4 w-4 text-gray-400 flex-shrink-0" />
-                  <a href={`mailto:${lead.email}`} className="text-blue-600 hover:underline">{lead.email}</a>
+                  <a href={`mailto:${lead.email}`} className="text-[#ff6a00] hover:underline">{lead.email}</a>
                 </div>
               )}
               {lead.companyName && (
@@ -302,7 +302,7 @@ export default function LeadDetail() {
             )}
             {lead.email && (
               <a href={`mailto:${lead.email}`}>
-                <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 transition-colors">
+                <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-orange-50 text-[#ff6a00] border border-orange-100 hover:bg-orange-100 transition-colors">
                   <Mail className="h-3.5 w-3.5" /> بريد
                 </button>
               </a>
@@ -330,7 +330,7 @@ export default function LeadDetail() {
                   { type: "whatsapp_log", label: "واتساب", icon: "💬" },
                 ].map(t => (
                   <button key={t.type} onClick={() => setNoteType(t.type)}
-                    className={`flex-1 py-2 rounded-lg text-xs border transition-all ${noteType === t.type ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-gray-200 hover:border-blue-300"}`}>
+                    className={`flex-1 py-2 rounded-lg text-xs border transition-all ${noteType === t.type ? "bg-[#ff6a00] text-white border-[#ff6a00]" : "bg-white text-gray-600 border-gray-200 hover:border-orange-300"}`}>
                     {t.icon} {t.label}
                   </button>
                 ))}
@@ -436,7 +436,7 @@ export default function LeadDetail() {
       <Dialog open={showEmailDialog} onOpenChange={setShowEmailDialog}>
         <DialogContent className="max-w-lg" dir="rtl">
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2"><Send className="h-5 w-5 text-blue-600" />إرسال بريد إلكتروني</DialogTitle>
+            <DialogTitle className="flex items-center gap-2"><Send className="h-5 w-5 text-[#ff6a00]" />إرسال بريد إلكتروني</DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <div>
@@ -513,7 +513,7 @@ export default function LeadDetail() {
               <Label>المشاركون (بريد إلكتروني)</Label>
               <Input value={meetForm.attendees} onChange={e => setMeetForm(f => ({ ...f, attendees: e.target.value }))} placeholder="email@example.com" data-testid="input-meet-attendees" />
             </div>
-            <div className="rounded-lg bg-blue-50 border border-blue-100 p-3 text-xs text-blue-700">
+            <div className="rounded-lg bg-orange-50 border border-orange-100 p-3 text-xs text-[#ff6a00]">
               💡 يتطلب ربط Google Calendar من إعدادات التكاملات
             </div>
           </div>

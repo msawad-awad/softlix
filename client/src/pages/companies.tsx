@@ -44,7 +44,7 @@ import type { Company } from "@shared/schema";
 
 const statusColors: Record<string, string> = {
   lead: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400",
-  prospect: "bg-blue-500/10 text-blue-600 dark:text-blue-400",
+  prospect: "bg-orange-500/10 text-[#ff6a00] dark:text-[#ff6a00]",
   client: "bg-green-500/10 text-green-600 dark:text-green-400",
   archived: "bg-gray-500/10 text-gray-600 dark:text-gray-400",
 };

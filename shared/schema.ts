@@ -934,6 +934,9 @@ export const proposalTemplates = pgTable("proposal_templates", {
   defaultValidity: integer("default_validity").default(14), // days
   defaultTaxPercent: decimal("default_tax_percent", { precision: 5, scale: 2 }).default("15"),
   items: jsonb("items").default([]), // array of { title, description, quantity, unitPrice }
+  targetAudience: jsonb("target_audience").default([]), // array of { group, role, language, system }
+  deliverables: jsonb("deliverables").default([]), // array of { name, description }
+  technologies: jsonb("technologies").default([]), // array of { name, category, description }
   isDefault: boolean("is_default").default(false),
   displayOrder: integer("display_order").default(0),
   createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -1057,6 +1060,96 @@ export const analyticsEvents = pgTable("analytics_events", {
 
 export type AnalyticsEvent = typeof analyticsEvents.$inferSelect;
 export type InsertAnalyticsEvent = typeof analyticsEvents.$inferInsert;
+
+// ============================================================================
+// INVENTORY
+// ============================================================================
+export const inventoryItems = pgTable("inventory_items", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  name: text("name").notNull(),
+  nameEn: text("name_en"),
+  sku: text("sku"),
+  barcode: text("barcode"),
+  category: text("category"),
+  unit: text("unit").default("قطعة"),
+  quantity: integer("quantity").default(0).notNull(),
+  minQuantity: integer("min_quantity").default(0),
+  maxQuantity: integer("max_quantity"),
+  costPrice: decimal("cost_price", { precision: 12, scale: 2 }),
+  sellPrice: decimal("sell_price", { precision: 12, scale: 2 }),
+  supplier: text("supplier"),
+  location: text("location"),
+  imageUrl: text("image_url"),
+  description: text("description"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+export const insertInventoryItemSchema = createInsertSchema(inventoryItems).omit({ id: true, createdAt: true, updatedAt: true });
+export type InventoryItem = typeof inventoryItems.$inferSelect;
+export type InsertInventoryItem = z.infer<typeof insertInventoryItemSchema>;
+
+// ============================================================================
+// TICKETS / SUPPORT
+// ============================================================================
+export const tickets = pgTable("tickets", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  number: text("number"),
+  title: text("title").notNull(),
+  description: text("description"),
+  status: text("status").default("open").notNull(), // open, in_progress, resolved, closed
+  priority: text("priority").default("medium").notNull(), // low, medium, high, urgent
+  category: text("category").default("support"), // bug, feature, support, billing, other
+  assignedToId: varchar("assigned_to_id").references(() => users.id),
+  createdById: varchar("created_by_id").references(() => users.id),
+  resolvedAt: timestamp("resolved_at"),
+  closedAt: timestamp("closed_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+export const insertTicketSchema = createInsertSchema(tickets).omit({ id: true, createdAt: true, updatedAt: true });
+export type Ticket = typeof tickets.$inferSelect;
+export type InsertTicket = z.infer<typeof insertTicketSchema>;
+
+export const ticketMessages = pgTable("ticket_messages", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  ticketId: varchar("ticket_id").references(() => tickets.id).notNull(),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  message: text("message").notNull(),
+  createdById: varchar("created_by_id").references(() => users.id),
+  isInternal: boolean("is_internal").default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+export const insertTicketMessageSchema = createInsertSchema(ticketMessages).omit({ id: true, createdAt: true });
+export type TicketMessage = typeof ticketMessages.$inferSelect;
+export type InsertTicketMessage = z.infer<typeof insertTicketMessageSchema>;
+
+// ============================================================================
+// HR / EMPLOYEES
+// ============================================================================
+export const employees = pgTable("employees", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  name: text("name").notNull(),
+  nameEn: text("name_en"),
+  email: text("email"),
+  phone: text("phone"),
+  position: text("position"),
+  department: text("department"),
+  status: text("status").default("active").notNull(), // active, on_leave, inactive, terminated
+  hireDate: timestamp("hire_date"),
+  salary: decimal("salary", { precision: 12, scale: 2 }),
+  nationalId: text("national_id"),
+  avatarUrl: text("avatar_url"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+export const insertEmployeeSchema = createInsertSchema(employees).omit({ id: true, createdAt: true, updatedAt: true });
+export type Employee = typeof employees.$inferSelect;
+export type InsertEmployee = z.infer<typeof insertEmployeeSchema>;
 
 // ============================================================================
 // API Response Types

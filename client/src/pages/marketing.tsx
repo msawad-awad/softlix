@@ -125,7 +125,7 @@ export default function Marketing() {
           {form.whatsappEnabled && <Badge className="bg-green-100 text-green-700 border-0">WhatsApp مفعّل ✓</Badge>}
           {form.exitIntentEnabled && <Badge className="bg-orange-100 text-orange-700 border-0">Exit Popup مفعّل ✓</Badge>}
           {form.socialProofEnabled && <Badge className="bg-purple-100 text-purple-700 border-0">Social Proof مفعّل ✓</Badge>}
-          {form.newsletterEnabled && <Badge className="bg-blue-100 text-blue-700 border-0">Newsletter مفعّل ✓</Badge>}
+          {form.newsletterEnabled && <Badge className="bg-orange-100 text-[#ff6a00] border-0">Newsletter مفعّل ✓</Badge>}
           <Button onClick={() => saveMut.mutate(form)} disabled={saveMut.isPending} data-testid="btn-save-marketing">
             <Save className="w-4 h-4 me-2" />
             {saveMut.isPending ? "جاري الحفظ..." : "حفظ جميع الإعدادات"}
@@ -134,9 +134,9 @@ export default function Marketing() {
       </div>
 
       {/* Info Banner */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4 flex gap-3">
-        <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-        <p className="text-sm text-blue-700 dark:text-blue-300">
+      <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-xl p-4 flex gap-3">
+        <Info className="w-5 h-5 text-[#ff6a00] flex-shrink-0 mt-0.5" />
+        <p className="text-sm text-[#ff6a00] dark:text-[#ff6a00]">
           <strong>تلميح:</strong> جميع الإعدادات هنا تنعكس مباشرة على الموقع العام بعد الحفظ.
         </p>
       </div>
@@ -144,7 +144,7 @@ export default function Marketing() {
       {/* Quick Nav Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: "النشرة البريدية", href: "/marketing/newsletter", icon: <Bell size={18} className="text-blue-600" />, badge: `${0} مشترك`, color: "blue" },
+          { label: "النشرة البريدية", href: "/marketing/newsletter", icon: <Bell size={18} className="text-[#ff6a00]" />, badge: `${0} مشترك`, color: "blue" },
           { label: "باقات الأسعار", href: "/marketing/pricing", icon: <DollarSign size={18} className="text-green-600" />, badge: "إدارة الباقات", color: "green" },
         ].map(item => (
           <Link key={item.href} href={item.href}>
@@ -315,7 +315,7 @@ export default function Marketing() {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Bell className="text-blue-500" size={20} />
+              <Bell className="text-[#ff6a00]" size={20} />
               النشرة البريدية
             </div>
             <Switch
@@ -349,7 +349,7 @@ export default function Marketing() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <TrendingUp className="w-5 h-5 text-blue-600" />
+            <TrendingUp className="w-5 h-5 text-[#ff6a00]" />
             أكواد التتبع والتحليل
           </CardTitle>
           <CardDescription>أضف معرفات أدوات التسويق لتتبع الزوار وقياس أداء الإعلانات</CardDescription>

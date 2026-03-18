@@ -78,7 +78,7 @@ export default function BrandingPage() {
 
   if (isLoading) return (
     <div className="flex items-center justify-center h-64">
-      <RefreshCw className="w-6 h-6 animate-spin text-blue-500" />
+      <RefreshCw className="w-6 h-6 animate-spin text-[#ff6a00]" />
     </div>
   );
 
@@ -300,7 +300,7 @@ export default function BrandingPage() {
                       type="button"
                       onClick={() => setValue("fontFamily", font)}
                       data-testid={`font-${font}`}
-                      className={`p-3 rounded-xl border-2 text-center transition-all ${watch("fontFamily") === font ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20" : "border-gray-200 dark:border-gray-700 hover:border-gray-300"}`}
+                      className={`p-3 rounded-xl border-2 text-center transition-all ${watch("fontFamily") === font ? "border-orange-500 bg-orange-50 dark:bg-orange-900/20" : "border-gray-200 dark:border-gray-700 hover:border-gray-300"}`}
                     >
                       <div className="text-sm font-semibold" style={{ fontFamily: font }}>{font}</div>
                       <div className="text-xs text-gray-400 mt-1" style={{ fontFamily: font }}>مرحباً بالعالم</div>

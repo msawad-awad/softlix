@@ -112,7 +112,7 @@ export default function ProcessStepsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black text-gray-900 dark:text-white flex items-center gap-2">
-            <ListOrdered className="w-6 h-6 text-blue-500" />
+            <ListOrdered className="w-6 h-6 text-[#ff6a00]" />
             خطوات العمل
           </h1>
           <p className="text-gray-500 text-sm mt-1">إدارة خطوات العمل التي تظهر في الصفحة الرئيسية وصفحة الأعمال</p>
@@ -124,7 +124,7 @@ export default function ProcessStepsPage() {
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center h-32"><RefreshCw className="w-6 h-6 animate-spin text-blue-500" /></div>
+        <div className="flex items-center justify-center h-32"><RefreshCw className="w-6 h-6 animate-spin text-[#ff6a00]" /></div>
       ) : (
         <div className="space-y-3">
           {items?.length === 0 && (

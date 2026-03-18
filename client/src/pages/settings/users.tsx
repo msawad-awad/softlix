@@ -66,7 +66,7 @@ interface TeamUser {
 const ROLES = [
   { value: "admin", label: "مدير عام", color: "bg-red-100 text-red-700" },
   { value: "manager", label: "مدير", color: "bg-orange-100 text-orange-700" },
-  { value: "sales", label: "مبيعات", color: "bg-blue-100 text-blue-700" },
+  { value: "sales", label: "مبيعات", color: "bg-orange-100 text-[#ff6a00]" },
   { value: "support", label: "دعم فني", color: "bg-green-100 text-green-700" },
   { value: "accountant", label: "محاسب", color: "bg-purple-100 text-purple-700" },
   { value: "user", label: "مستخدم", color: "bg-gray-100 text-gray-700" },

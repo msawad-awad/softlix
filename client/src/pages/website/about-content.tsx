@@ -84,7 +84,7 @@ function SectionEditor({ sectionKey, fields }: { sectionKey: string; fields: any
                   )}
                 </div>
                 <div>
-                  <span className="text-xs text-blue-500 font-bold mb-1 block">English</span>
+                  <span className="text-xs text-[#ff6a00] font-bold mb-1 block">English</span>
                   {f.type === "textarea" ? (
                     <Textarea value={en[f.key] || ""} onChange={e => setEn(p => ({ ...p, [f.key]: e.target.value }))} className="resize-none text-sm" rows={3} data-testid={`en-about-${f.key}`} />
                   ) : (
