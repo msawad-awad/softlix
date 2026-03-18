@@ -100,11 +100,10 @@ export function AppSidebar() {
   ];
 
   const moduleItems = [
-    { title: t("nav.quotes"), url: "/quotes", icon: FileText, disabled: true },
-    { title: t("nav.tasks"), url: "/tasks", icon: CheckSquare, disabled: true },
-    { title: t("nav.tickets"), url: "/tickets", icon: TicketCheck, disabled: true },
-    { title: t("nav.hr"), url: "/hr", icon: UserCog, disabled: true },
-    { title: t("nav.inventory"), url: "/inventory", icon: Package, disabled: true },
+    { title: t("nav.tasks"), url: "/tasks", icon: CheckSquare, disabled: false },
+    { title: t("nav.tickets"), url: "/tickets", icon: TicketCheck, disabled: false },
+    { title: t("nav.hr"), url: "/hr", icon: UserCog, disabled: false },
+    { title: t("nav.inventory"), url: "/inventory", icon: Package, disabled: false },
     { title: t("nav.accounting"), url: "/accounting", icon: Calculator, disabled: true },
   ];
 
@@ -211,12 +210,12 @@ export function AppSidebar() {
           </SidebarGroup>
         )}
 
-        {/* Modules (coming soon) */}
+        {/* Modules */}
         <SidebarGroup>
           <Collapsible defaultOpen className="group/collapsible">
             <SidebarGroupLabel asChild>
               <CollapsibleTrigger className="flex w-full items-center justify-between">
-                <span>{t("softlix.tagline")}</span>
+                <span>نظام أعمال متكامل</span>
                 <ChevronDown className="h-4 w-4 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180" />
               </CollapsibleTrigger>
             </SidebarGroupLabel>
@@ -225,23 +224,30 @@ export function AppSidebar() {
                 <SidebarMenu>
                   {moduleItems.map((item) => (
                     <SidebarMenuItem key={item.title}>
-                      <SidebarMenuButton
-                        asChild
-                        isActive={isActive(item.url)}
-                        tooltip={item.title}
-                        disabled={item.disabled}
-                        className={item.disabled ? "opacity-50 cursor-not-allowed" : ""}
-                      >
-                        <span className="flex items-center">
+                      {item.disabled ? (
+                        <SidebarMenuButton
+                          tooltip={item.title}
+                          disabled
+                          className="opacity-50 cursor-not-allowed"
+                        >
                           <item.icon className={isRTL ? "ml-2" : "mr-2"} />
                           <span>{item.title}</span>
-                          {item.disabled && (
-                            <Badge variant="secondary" className="ml-auto text-[10px] px-1.5">
-                              Soon
-                            </Badge>
-                          )}
-                        </span>
-                      </SidebarMenuButton>
+                          <Badge variant="secondary" className="ml-auto text-[10px] px-1.5">
+                            Soon
+                          </Badge>
+                        </SidebarMenuButton>
+                      ) : (
+                        <SidebarMenuButton
+                          asChild
+                          isActive={isActive(item.url)}
+                          tooltip={item.title}
+                        >
+                          <Link href={item.url} data-testid={`nav-${item.url.slice(1).replace(/\//g, "-")}`}>
+                            <item.icon className={isRTL ? "ml-2" : "mr-2"} />
+                            <span>{item.title}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                      )}
                     </SidebarMenuItem>
                   ))}
                 </SidebarMenu>
