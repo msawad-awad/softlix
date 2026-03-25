@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ماي فاسيلتي - منصة سوق تصنيفات هجينة | My Facility</title>
+    <meta name="description" content="منصة سوق تصنيفات سعودية متقدمة تربط المعلنين الأفراد مع الشركات المتخصصة">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #16a34a;
+            --primary-light: #22c55e;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', 'Segoe UI', Tahoma, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: #ffffff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Navigation */
+        header {
+            background: linear-gradient(135deg, var(--primary) 0%, #15803d 100%);
+            color: white;
+            padding: 20px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.15);
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo span {
+            font-size: 24px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin-right: 30px;
+            transition: opacity 0.3s;
+            font-weight: 500;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, #22c55e 100%);
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 52px;
+            margin-bottom: 20px;
+            font-weight: 900;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .hero .subtitle {
+            font-size: 24px;
+            margin-bottom: 30px;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .btn {
+            padding: 14px 35px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: white;
+            color: var(--primary);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Section Styles */
+        section {
+            padding: 80px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        section.white {
+            background: white;
+        }
+
+        section.light {
+            background: var(--light);
+        }
+
+        h2 {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: var(--dark);
+            font-weight: 800;
+        }
+
+        .section-subtitle {
+            font-size: 18px;
+            color: var(--text-light);
+            margin-bottom: 50px;
+            max-width: 600px;
+        }
+
+        /* Overview Section */
+        .overview-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+            margin-top: 50px;
+        }
+
+        .overview-text h3 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .overview-text p {
+            font-size: 16px;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            color: var(--text-light);
+        }
+
+        .overview-image {
+            background: linear-gradient(135deg, var(--light) 0%, #f1f5f9 100%);
+            border-radius: 12px;
+            height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 100px;
+            color: var(--primary);
+            box-shadow: 0 10px 30px rgba(22, 163, 74, 0.1);
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(22, 163, 74, 0.15);
+        }
+
+        .feature-card .icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+        }
+
+        .feature-card h4 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        /* Tech Stack Section */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin-top: 50px;
+        }
+
+        .tech-item {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border: 1px solid var(--border);
+            transition: all 0.3s;
+        }
+
+        .tech-item:hover {
+            border-color: var(--primary);
+            box-shadow: 0 6px 20px rgba(22, 163, 74, 0.1);
+        }
+
+        .tech-item .tech-icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .tech-item h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .tech-item p {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        /* Stats Section */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        .stat {
+            padding: 30px;
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 16px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        /* Architecture Section */
+        .architecture-diagram {
+            background: linear-gradient(135deg, var(--light) 0%, #f1f5f9 100%);
+            padding: 40px;
+            border-radius: 12px;
+            margin-top: 50px;
+            overflow-x: auto;
+        }
+
+        .arch-box {
+            display: inline-block;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            margin-right: 20px;
+            margin-bottom: 20px;
+            border: 2px solid var(--primary);
+            min-width: 200px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .arch-box h4 {
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .arch-box p {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        /* Security Features */
+        .security-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 50px;
+        }
+
+        .security-item {
+            display: flex;
+            gap: 15px;
+            padding: 20px;
+            background: var(--light);
+            border-radius: 8px;
+        }
+
+        .security-item .check {
+            color: var(--primary);
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .security-item h4 {
+            font-size: 16px;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+
+        .security-item p {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        /* Mobile Responsive */
+        .overview-grid {
+            grid-template-columns: 1fr;
+        }
+
+        @media (min-width: 768px) {
+            .overview-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        /* Code Snippet */
+        .code-snippet {
+            background: var(--dark);
+            color: #e2e8f0;
+            padding: 30px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-top: 30px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .code-keyword {
+            color: #fbbf24;
+        }
+
+        .code-string {
+            color: #86efac;
+        }
+
+        .code-comment {
+            color: #6b7280;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 50px 0;
+            text-align: center;
+        }
+
+        .footer-content {
+            margin-bottom: 30px;
+        }
+
+        .footer-content h3 {
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .footer-links a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: var(--primary-light);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+            color: #94a3b8;
+            font-size: 14px;
+        }
+
+        /* Highlight Box */
+        .highlight {
+            background: linear-gradient(135deg, rgba(22, 163, 74, 0.1) 0%, rgba(34, 197, 94, 0.05) 100%);
+            border-right: 4px solid var(--primary);
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+
+        .highlight strong {
+            color: var(--primary);
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 32px;
+            }
+
+            h2 {
+                font-size: 28px;
+            }
+
+            .hero h1 {
+                font-size: 36px;
+            }
+
+            .hero .subtitle {
+                font-size: 18px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            section {
+                padding: 50px 0;
+            }
+
+            nav a {
+                margin-right: 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="logo">
+                <span>🏪</span>
+                <div>
+                    <div style="font-size: 20px;">ماي فاسيلتي</div>
+                    <div style="font-size: 12px; opacity: 0.9;">My Facility</div>
+                </div>
+            </div>
+            <nav>
+                <a href="#overview">نبذة</a>
+                <a href="#features">المميزات</a>
+                <a href="#tech">التقنيات</a>
+                <a href="#architecture">البنية</a>
+                <a href="#contact">التواصل</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>ماي فاسيلتي</h1>
+            <p class="subtitle">منصة سوق تصنيفات هجينة متقدمة للعالم العربي</p>
+            <p style="font-size: 18px; margin-bottom: 30px; opacity: 0.95;">تربط الأفراد والعاملين بالشركات المتخصصة في بيئة آمنة وموثوقة</p>
+            <div class="cta-buttons">
+                <a href="https://my-facility-production.up.railway.app" target="_blank" class="btn btn-primary">🚀 جرب المنصة</a>
+                <a href="#overview" class="btn btn-secondary">📖 اعرف أكثر</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Overview Section -->
+    <section class="light" id="overview">
+        <div class="container">
+            <h2>نبذة عن المشروع</h2>
+            <p class="section-subtitle">منصة متطورة تجمع بين مرونة الأسواق الحرة واحترافية الشركات المتخصصة</p>
+            
+            <div class="overview-grid">
+                <div class="overview-text">
+                    <h3>الفكرة الأساسية</h3>
+                    <p><strong>ماي فاسيلتي</strong> هي منصة سوق تصنيفات سعودية حديثة توفر تجربة فريدة للمستخدمين:</p>
+                    <ul style="margin: 15px 0; padding-right: 20px;">
+                        <li style="margin: 10px 0;">🛍️ <strong>للأفراد:</strong> بيع واشتراء السلع والخدمات بسهولة وأمان</li>
+                        <li style="margin: 10px 0;">🏢 <strong>للشركات:</strong> متاجر احترافية موثقة مع نظام تقييمات وتحقق</li>
+                        <li style="margin: 10px 0;">📱 <strong>للجميع:</strong> تطبيق موبايل أصلي (iOS/Android) + ويب متجاوب</li>
+                        <li style="margin: 10px 0;">🔒 <strong>الأمان أولاً:</strong> معالجة متقدمة للمخاطر وتصفية المحتوى</li>
+                    </ul>
+                    <p style="margin-top: 25px; padding: 20px; background: var(--light); border-radius: 8px; border-right: 4px solid var(--primary);">
+                        <strong style="color: var(--primary);">الهدف:</strong> أن تصبح المنصة الأسيس الموثوقة للإعلان والتسويق في المملكة العربية السعودية
+                    </p>
+                </div>
+                <div class="overview-image">
+                    📊
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Key Features -->
+    <section class="white" id="features">
+        <div class="container">
+            <h2>المميزات الرئيسية</h2>
+            <p class="section-subtitle">تجربة شاملة لكل احتياجاتك في عالم الإعلان والتسويق</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="icon">📋</div>
+                    <h4>إدارة الإعلانات</h4>
+                    <p>إنشاء وتحرير وحذف الإعلانات بسهولة مع دعم الصور والفيديو والعلامات</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon">🏪</div>
+                    <h4>متاجر احترافية</h4>
+                    <p>ملفات تعريفية موثوقة للشركات مع ساعات العمل والمواقع والمستندات</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon">⭐</div>
+                    <h4>نظام التقييمات</h4>
+                    <p>تقييمات موثقة من المشترين الحقيقيين مع نظام تحقق متقدم</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon">💬</div>
+                    <h4>المراسلة الفورية</h4>
+                    <p>نظام محادثات في الوقت الفعلي مع دعم الوسائط والإشعارات</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon">🎯</div>
+                    <h4>البحث والتصفية</h4>
+                    <p>محرك بحث ذكي مع تصفية متقدمة حسب السعر والمدينة والفئة</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon">🛡️</div>
+                    <h4>الأمان والحماية</h4>
+                    <p>معالجة المخاطر وتصفية المحتوى وكشف الإعلانات المكررة</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon">📊</div>
+                    <h4>لوحة تحكم الأدمن</h4>
+                    <p>إدارة شاملة للمستخدمين والإعلانات والمتاجر والمحتوى والإعدادات</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon">📱</div>
+                    <h4>تطبيق موبايل</h4>
+                    <p>تطبيق أصلي لـ iOS و Android مع نفس جودة الويب</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon">🎨</div>
+                    <h4>مظهر عصري</h4>
+                    <p>واجهة حديثة RTL متجاوبة مع الوضع الليلي والتفتح التام</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Technical Stack -->
+    <section class="light" id="tech">
+        <div class="container">
+            <h2>المكدس التقني</h2>
+            <p class="section-subtitle">أحدث التقنيات لبناء منصة قوية وموثوقة</p>
+
+            <div class="tech-grid">
+                <div class="tech-item">
+                    <div class="tech-icon">⚛️</div>
+                    <h4>React + Vite</h4>
+                    <p>واجهة سريعة وحديثة مع أداء تطوير فائق</p>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-icon">🎨</div>
+                    <h4>Tailwind CSS</h4>
+                    <p>تصميم عصري واستجابي مع مكونات shadcn/ui</p>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-icon">🔌</div>
+                    <h4>Express.js</h4>
+                    <p>خادم قوي وسريع مع نظام معالجة الأخطاء</p>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-icon">🗄️</div>
+                    <h4>PostgreSQL</h4>
+                    <p>قاعدة بيانات قوية مع فهارس محسّنة</p>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-icon">🔐</div>
+                    <h4>Drizzle ORM</h4>
+                    <p>وصول آمن للبيانات مع حماية من SQL Injection</p>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-icon">☁️</div>
+                    <h4>Cloudflare R2</h4>
+                    <p>تخزين الصور والفيديو بسرعة عالية</p>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-icon">📱</div>
+                    <h4>Capacitor</h4>
+                    <p>تطبيق موبايل أصلي من كود الويب</p>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-icon">🚀</div>
+                    <h4>Railway</h4>
+                    <p>استضافة سحابية موثوقة وسهلة التوسع</p>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-icon">📊</div>
+                    <h4>Recharts</h4>
+                    <p>تصور البيانات والإحصائيات بطريقة احترافية</p>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-icon">✍️</div>
+                    <h4>TipTap</h4>
+                    <p>محرر نصوص غني للمحتوى والإعلانات</p>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-icon">🗺️</div>
+                    <h4>OpenStreetMap</h4>
+                    <p>خرائط ومحرك بحث للعناوين والمواقع</p>
+                </div>
+
+                <div class="tech-item">
+                    <div class="tech-icon">📦</div>
+                    <h4>Zod Validation</h4>
+                    <p>التحقق الآمن من البيانات على جميع المستويات</p>
+                </div>
+            </div>
+
+            <div class="highlight" style="margin-top: 50px;">
+                <strong>🎯 القيمة المضافة:</strong> استخدام أحدث أدوات التطوير مما يضمن أداء عالي وأمان قوي وصيانة سهلة على المدى الطويل.
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture -->
+    <section class="white" id="architecture">
+        <div class="container">
+            <h2>البنية المعمارية</h2>
+            <p class="section-subtitle">تصميم متقدم يضمن قابلية التوسع والأداء العالي</p>
+
+            <div class="architecture-diagram">
+                <div class="arch-box">
+                    <h4>🌐 الواجهة</h4>
+                    <p>React + Tailwind<br/>Responsive RTL</p>
+                </div>
+                <span style="color: var(--primary); font-weight: bold; padding: 0 15px; display: inline-flex; align-items: center;">→</span>
+                <div class="arch-box">
+                    <h4>🔌 API</h4>
+                    <p>Express.js<br/>REST + WebSocket</p>
+                </div>
+                <span style="color: var(--primary); font-weight: bold; padding: 0 15px; display: inline-flex; align-items: center;">→</span>
+                <div class="arch-box">
+                    <h4>🗄️ القاعدة</h4>
+                    <p>PostgreSQL<br/>Drizzle ORM</p>
+                </div>
+                <span style="color: var(--primary); font-weight: bold; padding: 0 15px; display: inline-flex; align-items: center;">→</span>
+                <div class="arch-box">
+                    <h4>☁️ التخزين</h4>
+                    <p>Cloudflare R2<br/>CDN سريع</p>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 50px; margin-bottom: 25px; color: var(--primary);">المميزات المعمارية:</h3>
+
+            <div class="security-list">
+                <div class="security-item">
+                    <div class="check">✓</div>
+                    <div>
+                        <h4>معالجة الأخطاء</h4>
+                        <p>تتبع دقيق للأخطاء وإرجاع رسائل واضحة</p>
+                    </div>
+                </div>
+
+                <div class="security-item">
+                    <div class="check">✓</div>
+                    <div>
+                        <h4>التحقق من البيانات</h4>
+                        <p>Zod schemas على كل الـ endpoints</p>
+                    </div>
+                </div>
+
+                <div class="security-item">
+                    <div class="check">✓</div>
+                    <div>
+                        <h4>المصادقة الآمنة</h4>
+                        <p>bcrypt للكلمات المرور + session-based auth</p>
+                    </div>
+                </div>
+
+                <div class="security-item">
+                    <div class="check">✓</div>
+                    <div>
+                        <h4>حد من المعدل</h4>
+                        <p>Rate limiting لمنع الإساءة والبوتات</p>
+                    </div>
+                </div>
+
+                <div class="security-item">
+                    <div class="check">✓</div>
+                    <div>
+                        <h4>الفهارس المحسّنة</h4>
+                        <p>فهارس على createdAt و status و user IDs</p>
+                    </div>
+                </div>
+
+                <div class="security-item">
+                    <div class="check">✓</div>
+                    <div>
+                        <h4>كشف المحتوى</h4>
+                        <p>تصفية الكلمات الممنوعة والإعلانات المكررة</p>
+                    </div>
+                </div>
+
+                <div class="security-item">
+                    <div class="check">✓</div>
+                    <div>
+                        <h4>CORS محكم</h4>
+                        <p>التحكم الكامل في مصادر الطلبات المسموحة</p>
+                    </div>
+                </div>
+
+                <div class="security-item">
+                    <div class="check">✓</div>
+                    <div>
+                        <h4>استضافة آمنة</h4>
+                        <p>Railway مع HTTPS و CDN عالمي</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics -->
+    <section class="light">
+        <div class="container">
+            <h2 style="margin-bottom: 10px;">الأرقام الرئيسية</h2>
+            <p class="section-subtitle" style="margin-bottom: 50px;">قياسات الأداء والتطوير</p>
+
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number">21</div>
+                    <div class="stat-label">قسم في لوحة تحكم الأدمن</div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-number">16</div>
+                    <div class="stat-label">إعلان في كل قسم</div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">مستويات في التصنيفات</div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-number">∞</div>
+                    <div class="stat-label">نوع من السلع والخدمات</div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">تطبيق موبايل (iOS + Android)</div>
+                </div>
+
+                <div class="stat">
+                    <div class="stat-number">100%</div>
+                    <div class="stat-label">RTL ودعم العربية</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Example -->
+    <section class="white">
+        <div class="container">
+            <h2>نموذج من البنية التقنية</h2>
+            <p class="section-subtitle">مثال على كيفية بناء endpoint بـ Express و Zod</p>
+
+            <div class="code-snippet">
+<span class="code-comment">// إنشاء إعلان جديد مع التحقق من البيانات</span>
+<span class="code-keyword">app</span>.post(<span class="code-string">"/api/ads"</span>, isAuthenticated, <span class="code-keyword">async</span> (req, res) => {
+  <span class="code-keyword">const</span> parsed = adCreationSchema.safeParse(req.body);
+  
+  <span class="code-keyword">if</span> (!parsed.success) {
+    <span class="code-keyword">return</span> res.status(<span class="code-string">400</span>).json({
+      success: <span class="code-keyword">false</span>,
+      message: <span class="code-string">"بيانات الإعلان غير صالحة"</span>,
+      errors: parsed.error.flatten()
+    });
+  }
+
+  <span class="code-keyword">const</span> ad = <span class="code-keyword">await</span> storage.createAd(parsed.data);
+  res.status(<span class="code-string">201</span>).json({ success: <span class="code-keyword">true</span>, data: ad });
+});
+            </div>
+
+            <div class="highlight">
+                <strong>🔐 الأمان:</strong> كل طلب يتم التحقق منه باستخدام Zod schemas، مما يضمن أن البيانات تطابق المتطلبات تماماً قبل حفظها في قاعدة البيانات.
+            </div>
+        </div>
+    </section>
+
+    <!-- Use Cases -->
+    <section class="light">
+        <div class="container">
+            <h2>حالات الاستخدام</h2>
+            <p class="section-subtitle">أمثلة واقعية لكيفية استخدام المنصة</p>
+
+            <div class="features-grid" style="margin-top: 50px;">
+                <div class="feature-card">
+                    <div class="icon">👨‍💼</div>
+                    <h4>التاجر الفردي</h4>
+                    <p>يعرض منتجاته وخدماته بسهولة ويتواصل مع العملاء المهتمين مباشرة</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon">🏭</div>
+                    <h4>الشركة المتخصصة</h4>
+                    <p>متجر احترافي موثوق مع نظام تقييمات يزيد من الثقة والمبيعات</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon">🛍️</div>
+                    <h4>المشتري</h4>
+                    <p>يبحث عن منتجات بسهولة ويقارن الأسعار ويقرأ التقييمات الحقيقية</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon">📣</div>
+                    <h4>المعلن</h4>
+                    <p>يروج لخدماته أو منتجاته بتكلفة معقولة مع وصول عالمي</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon">⚙️</div>
+                    <h4>مدير المنصة</h4>
+                    <p>لوحة تحكم شاملة لإدارة جميع جوانب المنصة والمحتوى</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="icon">📊</div>
+                    <h4>المحلل</h4>
+                    <p>يراقب الإحصائيات والاتجاهات والأداء في الوقت الفعلي</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="white" id="contact">
+        <div class="container">
+            <h2>تواصل معنا</h2>
+            <p class="section-subtitle">استفسر عن المشروع أو طلب عرض توضيحي</p>
+
+            <div style="background: var(--light); padding: 50px; border-radius: 12px; text-align: center; margin-top: 50px;">
+                <h3 style="margin-bottom: 20px; color: var(--primary);">روابط مهمة</h3>
+                <div class="footer-links" style="justify-content: center; margin: 30px 0;">
+                    <a href="https://my-facility-production.up.railway.app" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600; padding: 12px 25px; background: white; border-radius: 8px; display: inline-block;">🚀 المنصة الحية</a>
+                    <a href="https://facilityappsa.com" target="_blank" style="color: var(--primary); text-decoration: none; font-weight: 600; padding: 12px 25px; background: white; border-radius: 8px; display: inline-block;">🌐 الموقع الرسمي</a>
+                    <a href="mailto:info@softlix.com" style="color: var(--primary); text-decoration: none; font-weight: 600; padding: 12px 25px; background: white; border-radius: 8px; display: inline-block;">📧 البريد الإلكتروني</a>
+                </div>
+
+                <div style="margin-top: 30px; padding-top: 30px; border-top: 1px solid var(--border);">
+                    <p style="color: var(--text-light); margin-bottom: 15px;">
+                        <strong>الفريق التطويري:</strong> فريق متخصص من مطوري React و Node.js
+                    </p>
+                    <p style="color: var(--text-light);">
+                        <strong>الدعم:</strong> نوفر دعم كامل وصيانة مستمرة للمنصة
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <h3>ماي فاسيلتي - منصة سوق تصنيفات سعودية</h3>
+                <p>تربط الملايين من البائعين والمشترين في بيئة آمنة وموثوقة</p>
+            </div>
+
+            <div class="footer-links">
+                <a href="#overview">نبذة عن المشروع</a>
+                <a href="#features">المميزات</a>
+                <a href="#tech">التقنيات</a>
+                <a href="#architecture">البنية المعمارية</a>
+                <a href="https://my-facility-production.up.railway.app" target="_blank">استكشف المنصة</a>
+            </div>
+
+            <div class="footer-bottom">
+                <p>تم تطويره بواسطة <strong>فريق Softlix التطويري</strong> | جميع الحقوق محفوظة © 2026</p>
+                <p style="margin-top: 10px; opacity: 0.8;">مستضاف على Railway | البيانات محفوظة في PostgreSQL | الصور في Cloudflare R2</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const href = this.getAttribute('href');
+                if (href !== '#') {
+                    e.preventDefault();
+                    const target = document.querySelector(href);
+                    if (target) {
+                        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+            });
+        });
+
+        // Add fade-in animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.feature-card, .tech-item, .stat').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>
