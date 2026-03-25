@@ -39,6 +39,7 @@ import PublicClients from "@/pages/public/clients";
 import WebsiteOverview from "@/pages/website/index";
 import WebsiteServices from "@/pages/website/services";
 import WebsiteProjects from "@/pages/website/projects";
+import WebsiteProjectDetails from "@/pages/website/project-details";
 import WebsiteBlog from "@/pages/website/blog";
 import WebsiteLeads from "@/pages/website/leads";
 import WebsiteClients from "@/pages/website/clients";
@@ -226,6 +227,7 @@ function Router() {
       <Route path="/website/site-stats"><AdminRoute><WebsiteSiteStats /></AdminRoute></Route>
       <Route path="/website/services"><AdminRoute><WebsiteServices /></AdminRoute></Route>
       <Route path="/website/projects"><AdminRoute><WebsiteProjects /></AdminRoute></Route>
+      <Route path="/website/projects/:id/details"><AdminRoute><WebsiteProjectDetails /></AdminRoute></Route>
       <Route path="/website/blog"><AdminRoute><WebsiteBlog /></AdminRoute></Route>
       <Route path="/website/leads"><AdminRoute><WebsiteLeads /></AdminRoute></Route>
       <Route path="/website/bookings"><AdminRoute><WebsiteBookings /></AdminRoute></Route>

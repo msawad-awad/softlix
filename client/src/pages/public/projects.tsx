@@ -182,7 +182,24 @@ function ProjectDetail({ slug, lang = "ar", onLangChange }: { slug: string } & P
   const client = proj.clientName || proj.client || "";
   const images: string[] = (proj.images || []).filter(Boolean);
 
-  /* Derive feature cards from tech stack + generic project highlights */
+  // Rich structured details from CMS
+  const det = (proj.details || {}) as {
+    heroSubtitleAr?: string; heroSubtitleEn?: string;
+    overviewAr?: string; overviewEn?: string;
+    liveUrl?: string; officialUrl?: string;
+    highlightAr?: string; highlightEn?: string;
+    features?: { icon: string; titleAr: string; titleEn: string; descAr: string; descEn: string }[];
+    techStack?: { icon: string; name: string; descAr: string; descEn: string }[];
+    stats?: { number: string; labelAr: string; labelEn: string }[];
+    architecture?: { titleAr: string; titleEn: string; descAr: string; descEn: string }[];
+    securityFeatures?: { titleAr: string; titleEn: string; descAr: string; descEn: string }[];
+    useCases?: { icon: string; titleAr: string; titleEn: string; descAr: string; descEn: string }[];
+  };
+  const heroSubtitle = isAr ? det.heroSubtitleAr : det.heroSubtitleEn;
+  const overviewText = isAr ? (det.overviewAr || desc) : (det.overviewEn || desc);
+  const highlightText = isAr ? det.highlightAr : det.highlightEn;
+
+  /* Derive feature cards — prefer rich details.features, then tech stack */
   const TECH_ICONS: Record<string, string> = {
     flutter: "📱", "react native": "📱", ios: "🍎", android: "🤖",
     "node.js": "⚙️", nodejs: "⚙️", express: "⚙️",
@@ -191,7 +208,9 @@ function ProjectDetail({ slug, lang = "ar", onLangChange }: { slug: string } & P
     "ui/ux": "🎨", design: "🎨", branding: "🎨",
     dashboard: "📊", erp: "🏢", crm: "🤝",
   };
-  const featureCards = tags.length > 0
+  const featureCards = (det.features && det.features.length > 0)
+    ? det.features
+    : tags.length > 0
     ? tags.slice(0, 6).map((t: string) => {
         const key = t.toLowerCase();
         const icon = Object.entries(TECH_ICONS).find(([k]) => key.includes(k))?.[1] || "⚡";
@@ -239,7 +258,10 @@ function ProjectDetail({ slug, lang = "ar", onLangChange }: { slug: string } & P
                   {isAr ? "العميل:" : "Client:"} <span style={{ color: "#fff" }}>{client}</span>
                 </p>
               )}
-              <p style={{ fontSize: "1.1rem", color: "rgba(255,255,255,.92)", margin: "0 0 28px", maxWidth: "65ch" }}>{desc}</p>
+              {heroSubtitle && (
+                <p style={{ fontSize: "1.1rem", color: "rgba(255,255,255,.92)", margin: "0 0 6px", maxWidth: "65ch", fontWeight: 300 }}>{heroSubtitle}</p>
+              )}
+              <p style={{ fontSize: "1.05rem", color: "rgba(255,255,255,.85)", margin: "0 0 28px", maxWidth: "65ch" }}>{desc}</p>
 
               <div style={{ display: "flex", gap: 14, flexWrap: "wrap" }}>
                 <Link href="/contact"
@@ -324,7 +346,7 @@ function ProjectDetail({ slug, lang = "ar", onLangChange }: { slug: string } & P
                 <div style={{ color: "#6b7280", fontSize: "1rem", lineHeight: 1.9 }}
                   dangerouslySetInnerHTML={{ __html: isAr ? proj.content : (proj.contentEn || proj.content) }} />
               ) : (
-                <p style={{ margin: 0, color: "#6b7280", fontSize: "1.05rem" }}>{desc}</p>
+                <p style={{ margin: 0, color: "#6b7280", fontSize: "1.05rem" }}>{overviewText}</p>
               )}
               {tags.length > 0 && (
                 <ul style={{ margin: "22px 0 0", padding: 0, listStyle: "none", display: "grid", gap: 14 }}>
@@ -392,6 +414,167 @@ function ProjectDetail({ slug, lang = "ar", onLangChange }: { slug: string } & P
           </div>
         </section>
       )}
+
+
+      {/* ── TECH STACK (from details) ── */}
+      {det.techStack && det.techStack.length > 0 && (
+        <section style={{ padding: "0 0 88px", background: "#f0f4fb" }}>
+          <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
+            <div style={{ maxWidth: 700, marginInline: "auto", textAlign: "center", marginBottom: 40, paddingTop: 88 }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(229,146,105,.10)", color: "#cb7147", border: "1px solid rgba(229,146,105,.2)", padding: "10px 18px", borderRadius: 999, fontWeight: 700, fontSize: 14 }}>
+                {isAr ? "المكدس التقني" : "Tech Stack"}
+              </span>
+              <h2 style={{ fontSize: "clamp(1.7rem, 3vw, 2.5rem)", lineHeight: 1.3, margin: "16px 0 12px", fontWeight: 900 }}>
+                {isAr ? "التقنيات المستخدمة في البناء" : "Technologies Used in the Build"}
+              </h2>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 20 }}>
+              {det.techStack.map((t, i) => (
+                <div key={i} style={{ background: "#fff", border: "1px solid #e8edf5", borderRadius: 18, padding: "22px 18px", textAlign: "center", boxShadow: "0 8px 24px rgba(19,33,68,.06)", transition: ".25s ease", cursor: "default" }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = "#e59269"; e.currentTarget.style.transform = "translateY(-4px)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = "#e8edf5"; e.currentTarget.style.transform = ""; }}>
+                  <div style={{ fontSize: 46, marginBottom: 12 }}>{t.icon}</div>
+                  <div style={{ fontWeight: 800, fontSize: "1rem", color: "#172033", marginBottom: 6 }}>{t.name}</div>
+                  <div style={{ fontSize: ".85rem", color: "#6b7280" }}>{isAr ? t.descAr : t.descEn}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── STATS ── */}
+      {det.stats && det.stats.length > 0 && (
+        <section style={{ padding: "88px 0", background: "#fff" }}>
+          <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
+            <div style={{ maxWidth: 700, marginInline: "auto", textAlign: "center", marginBottom: 60 }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(229,146,105,.10)", color: "#cb7147", border: "1px solid rgba(229,146,105,.2)", padding: "10px 18px", borderRadius: 999, fontWeight: 700, fontSize: 14 }}>
+                {isAr ? "الأرقام الرئيسية" : "Key Numbers"}
+              </span>
+              <h2 style={{ fontSize: "clamp(1.7rem, 3vw, 2.5rem)", lineHeight: 1.3, margin: "16px 0 12px", fontWeight: 900 }}>
+                {isAr ? "قياسات الأداء والتطوير" : "Performance & Development Metrics"}
+              </h2>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 24 }}>
+              {det.stats.map((s, i) => (
+                <div key={i} style={{ textAlign: "center", padding: "32px 20px", background: "linear-gradient(135deg, #fff 0%, #f8f9ff 100%)", border: "1px solid #e8edf5", borderRadius: 22, boxShadow: "0 8px 24px rgba(19,33,68,.06)" }}>
+                  <div style={{ fontSize: "clamp(2.5rem, 5vw, 3.5rem)", fontWeight: 900, color: "#e59269", lineHeight: 1, marginBottom: 10 }}>{s.number}</div>
+                  <div style={{ fontSize: ".9rem", color: "#6b7280", fontWeight: 600 }}>{isAr ? s.labelAr : s.labelEn}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── ARCHITECTURE ── */}
+      {det.architecture && det.architecture.length > 0 && (
+        <section style={{ padding: "88px 0", background: "#f0f4fb" }}>
+          <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
+            <div style={{ maxWidth: 700, marginInline: "auto", textAlign: "center", marginBottom: 50 }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(229,146,105,.10)", color: "#cb7147", border: "1px solid rgba(229,146,105,.2)", padding: "10px 18px", borderRadius: 999, fontWeight: 700, fontSize: 14 }}>
+                {isAr ? "البنية المعمارية" : "Architecture"}
+              </span>
+              <h2 style={{ fontSize: "clamp(1.7rem, 3vw, 2.5rem)", lineHeight: 1.3, margin: "16px 0 12px", fontWeight: 900 }}>
+                {isAr ? "تصميم يضمن قابلية التوسع" : "Design for Scalability"}
+              </h2>
+            </div>
+            <div style={{ background: "#fff", border: "1px solid #e8edf5", borderRadius: 24, padding: "36px", boxShadow: "0 10px 30px rgba(19,33,68,.07)" }}>
+              <div style={{ display: "flex", gap: 16, flexWrap: "wrap", alignItems: "center", justifyContent: "center" }}>
+                {det.architecture.map((a, i) => (
+                  <>
+                    <div key={i} style={{ background: "linear-gradient(135deg, #fff 0%, #f8f9ff 100%)", border: "2px solid #e59269", borderRadius: 16, padding: "20px 24px", minWidth: 160, textAlign: "center", boxShadow: "0 6px 20px rgba(229,146,105,.10)" }}>
+                      <div style={{ fontWeight: 800, fontSize: "1rem", color: "#e59269", marginBottom: 6 }}>{isAr ? a.titleAr : a.titleEn}</div>
+                      <div style={{ fontSize: ".82rem", color: "#6b7280" }}>{isAr ? a.descAr : a.descEn}</div>
+                    </div>
+                    {i < det.architecture.length - 1 && (
+                      <div key={`arrow-${i}`} style={{ color: "#e59269", fontWeight: 900, fontSize: 20, flexShrink: 0 }}>→</div>
+                    )}
+                  </>
+                ))}
+              </div>
+            </div>
+
+            {/* Security Features */}
+            {det.securityFeatures && det.securityFeatures.length > 0 && (
+              <div style={{ marginTop: 40 }}>
+                <h3 style={{ textAlign: "center", fontSize: "1.3rem", fontWeight: 900, marginBottom: 28, color: "#172033" }}>
+                  {isAr ? "المميزات التقنية والأمان" : "Technical & Security Features"}
+                </h3>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: 16 }}>
+                  {det.securityFeatures.map((s, i) => (
+                    <div key={i} style={{ display: "flex", gap: 14, padding: "18px 20px", background: "#fff", border: "1px solid #e8edf5", borderRadius: 16, boxShadow: "0 4px 12px rgba(19,33,68,.05)" }}>
+                      <div style={{ width: 36, height: 36, borderRadius: 10, background: "linear-gradient(135deg, rgba(229,146,105,.2), rgba(203,113,71,.1))", display: "flex", alignItems: "center", justifyContent: "center", color: "#e59269", fontWeight: 900, fontSize: 16, flexShrink: 0 }}>✓</div>
+                      <div>
+                        <div style={{ fontWeight: 800, fontSize: ".95rem", color: "#172033", marginBottom: 3 }}>{isAr ? s.titleAr : s.titleEn}</div>
+                        <div style={{ fontSize: ".82rem", color: "#6b7280" }}>{isAr ? s.descAr : s.descEn}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* ── USE CASES ── */}
+      {det.useCases && det.useCases.length > 0 && (
+        <section style={{ padding: "88px 0", background: "#fff" }}>
+          <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
+            <div style={{ maxWidth: 700, marginInline: "auto", textAlign: "center", marginBottom: 50 }}>
+              <span style={{ display: "inline-flex", alignItems: "center", gap: 8, background: "rgba(229,146,105,.10)", color: "#cb7147", border: "1px solid rgba(229,146,105,.2)", padding: "10px 18px", borderRadius: 999, fontWeight: 700, fontSize: 14 }}>
+                {isAr ? "حالات الاستخدام" : "Use Cases"}
+              </span>
+              <h2 style={{ fontSize: "clamp(1.7rem, 3vw, 2.5rem)", lineHeight: 1.3, margin: "16px 0 12px", fontWeight: 900 }}>
+                {isAr ? "من يستخدم هذا المنتج؟" : "Who Uses This Product?"}
+              </h2>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }} className="pd-features-grid">
+              {det.useCases.map((u, i) => (
+                <div key={i} style={{ background: "#fff", border: "1px solid #e8edf5", borderRadius: 22, padding: "28px 24px", boxShadow: "0 10px 28px rgba(19,33,68,.07)", transition: ".25s ease" }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-4px)"; e.currentTarget.style.boxShadow = "0 20px 50px rgba(19,33,68,.12)"; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = ""; e.currentTarget.style.boxShadow = "0 10px 28px rgba(19,33,68,.07)"; }}>
+                  <div style={{ width: 58, height: 58, borderRadius: 18, background: "linear-gradient(135deg, rgba(229,146,105,.18), rgba(203,113,71,.10))", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, marginBottom: 16 }}>
+                    {u.icon}
+                  </div>
+                  <h3 style={{ margin: "0 0 10px", fontSize: "1.1rem", fontWeight: 900, color: "#172033" }}>{isAr ? u.titleAr : u.titleEn}</h3>
+                  <p style={{ margin: 0, color: "#6b7280", fontSize: ".92rem", lineHeight: 1.7 }}>{isAr ? u.descAr : u.descEn}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── HIGHLIGHT BOX ── */}
+      {(det.liveUrl || det.officialUrl) && (
+        <section style={{ padding: "0 0 88px", background: "#fff" }}>
+          <div style={{ width: "min(1200px, calc(100% - 32px))", marginInline: "auto" }}>
+            <div style={{ background: "linear-gradient(135deg, rgba(229,146,105,.08) 0%, rgba(203,113,71,.04) 100%)", border: "1px solid rgba(229,146,105,.25)", borderRadius: 24, padding: "40px", textAlign: "center" }}>
+              <h3 style={{ fontSize: "1.4rem", fontWeight: 900, margin: "0 0 12px", color: "#172033" }}>
+                {isAr ? "روابط مهمة" : "Important Links"}
+              </h3>
+              {highlightText && <p style={{ color: "#6b7280", marginBottom: 24, fontSize: "1rem" }}>{highlightText}</p>}
+              <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
+                {det.liveUrl && (
+                  <a href={det.liveUrl} target="_blank" rel="noopener noreferrer"
+                    style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px", borderRadius: 14, fontWeight: 800, background: "#e59269", color: "#fff", textDecoration: "none", boxShadow: "0 10px 24px rgba(229,146,105,.28)" }}>
+                    🚀 {isAr ? "المنصة الحية" : "Live Platform"}
+                  </a>
+                )}
+                {det.officialUrl && (
+                  <a href={det.officialUrl} target="_blank" rel="noopener noreferrer"
+                    style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "14px 28px", borderRadius: 14, fontWeight: 800, background: "#fff", color: "#e59269", border: "2px solid #e59269", textDecoration: "none" }}>
+                    🌐 {isAr ? "الموقع الرسمي" : "Official Website"}
+                  </a>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
 
       {/* ── SHOWCASE (images) ── */}
       {images.length > 0 && (

@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { Link } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { Plus, Pencil, Trash2, Layers, GripVertical } from "lucide-react";
+import { Plus, Pencil, Trash2, Layers, GripVertical, LayoutTemplate, ExternalLink } from "lucide-react";
 import { ImageUploader } from "@/components/ui/image-uploader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -97,6 +98,16 @@ export default function WebsiteProjects() {
                     <code className="text-xs text-[#ff6a00]">/projects/{p.slug}</code>
                   </div>
                   <div className="flex gap-1 flex-shrink-0">
+                    <Button variant="ghost" size="icon" asChild title="تفاصيل المشروع الكاملة">
+                      <Link href={`/website/projects/${p.id}/details`} data-testid={`btn-details-project-${p.id}`}>
+                        <LayoutTemplate className="w-4 h-4 text-[#ff6a00]" />
+                      </Link>
+                    </Button>
+                    <Button variant="ghost" size="icon" asChild title="معاينة">
+                      <a href={`/projects/${p.slug}`} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="w-4 h-4 text-gray-400" />
+                      </a>
+                    </Button>
                     <Button variant="ghost" size="icon" onClick={() => openEdit(p)} data-testid={`btn-edit-project-${p.id}`}><Pencil className="w-4 h-4" /></Button>
                     <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-700" onClick={() => { if (confirm("تأكيد الحذف؟")) deleteMut.mutate(p.id); }} data-testid={`btn-delete-project-${p.id}`}><Trash2 className="w-4 h-4" /></Button>
                   </div>

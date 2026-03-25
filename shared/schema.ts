@@ -233,6 +233,7 @@ export const projects = pgTable("projects", {
   status: text("status").default("published").notNull(), // published, draft
   displayOrder: integer("display_order").default(0),
   completedAt: timestamp("completed_at"),
+  details: jsonb("details").default(null), // rich structured content for project page
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
