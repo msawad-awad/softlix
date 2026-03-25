@@ -977,6 +977,20 @@ export async function registerRoutes(
     }
   });
 
+  // Quick reorder - fix display order for new projects (temp)
+  app.post("/api/admin/reorder-projects", async (req, res) => {
+    try {
+      const TENANT_ID = "f5d13ee7-6388-410e-8631-c1ccf191ecc3";
+      const { updates } = req.body as { updates: Array<{ slug: string; displayOrder: number }> };
+      if (!updates || !Array.isArray(updates)) return res.status(400).json({ error: "Invalid data" });
+      for (const { slug, displayOrder } of updates) {
+        const proj = await storage.getProjectBySlug(slug, TENANT_ID);
+        if (proj) await storage.updateProject(proj.id, TENANT_ID, { displayOrder });
+      }
+      res.json({ ok: true, updated: updates.length });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
   // =========================================================================
   // CMS - BLOG (Protected)
   // =========================================================================
