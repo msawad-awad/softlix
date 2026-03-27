@@ -37,7 +37,11 @@ export default function WebsiteProjects() {
   const [editId, setEditId] = useState<string | null>(null);
   const [form, setForm] = useState<ProjectForm>(empty);
 
-  const { data: projects = [], isLoading } = useQuery<Project[]>({ queryKey: ["/api/cms/projects"] });
+  const { data: projects = [], isLoading, error } = useQuery<Project[]>({
+    queryKey: ["/api/cms/projects"],
+    staleTime: 0,
+    refetchOnMount: "always",
+  });
 
   const createMut = useMutation({
     mutationFn: (data: ProjectForm) => apiRequest("POST", "/api/cms/projects", data),
@@ -77,6 +81,8 @@ export default function WebsiteProjects() {
 
       {isLoading ? (
         <div className="grid gap-4">{[1,2,3].map(i => <div key={i} className="h-24 rounded-xl bg-gray-100 dark:bg-gray-800 animate-pulse" />)}</div>
+      ) : error ? (
+        <Card><CardContent className="py-16 text-center"><Layers className="w-12 h-12 mx-auto mb-3 text-red-300" /><p className="text-red-500 mb-2 font-medium">خطأ في تحميل المشاريع</p><p className="text-gray-400 text-sm mb-4">{(error as Error).message}</p><Button variant="outline" onClick={() => window.location.reload()}>إعادة المحاولة</Button></CardContent></Card>
       ) : projects.length === 0 ? (
         <Card><CardContent className="py-16 text-center"><Layers className="w-12 h-12 mx-auto mb-3 text-gray-300 dark:text-gray-600" /><p className="text-gray-500 mb-4">لا توجد مشاريع</p><Button onClick={() => setOpen(true)}><Plus className="w-4 h-4 me-2" />إضافة أول مشروع</Button></CardContent></Card>
       ) : (
