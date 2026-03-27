@@ -104,18 +104,29 @@ export function useMarketingTracking() {
     }
 
     // ── Meta (Facebook) Pixel ──────────────────────────────────────────────
+    // Skip if GTM has already initialized this pixel (prevents duplicate pixel warning)
     if (settings.metaPixelId?.trim()) {
       const pixelId = settings.metaPixelId.trim();
       injectInlineScript("fb-pixel", `
-        !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-        n.queue=[];t=b.createElement(e);t.async=!0;
-        t.src=v;s=b.getElementsByTagName(e)[0];
-        s.parentNode.insertBefore(t,s)}(window,document,'script',
-        'https://connect.facebook.net/en_US/fbevents.js');
-        fbq('init', '${pixelId}');
-        fbq('track', 'PageView');
+        (function(pixelId){
+          // If fbq already exists and this pixel was already inited (e.g. via GTM), skip
+          if(window.fbq && typeof window.fbq.getState === 'function') {
+            var state = window.fbq.getState();
+            if(state && state.pixels && state.pixels.some(function(p){ return p.id === pixelId; })) return;
+          }
+          if(window.__fbPixelIds && window.__fbPixelIds[pixelId]) return;
+          if(!window.__fbPixelIds) window.__fbPixelIds = {};
+          window.__fbPixelIds[pixelId] = true;
+          !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+          n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+          if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+          n.queue=[];t=b.createElement(e);t.async=!0;
+          t.src=v;s=b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t,s)}(window,document,'script',
+          'https://connect.facebook.net/en_US/fbevents.js');
+          fbq('init', pixelId);
+          fbq('track', 'PageView');
+        })('${pixelId}');
       `);
     }
 
