@@ -1,0 +1,2327 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>طرد - TARD Logistics | نبذة عن المشروع</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  :root {
+    --primary: #7c3aed;
+    --primary-dark: #5b21b6;
+    --primary-light: #ede9fe;
+    --secondary: #06b6d4;
+    --accent: #f59e0b;
+    --dark: #0f172a;
+    --dark-2: #1e293b;
+    --dark-3: #334155;
+    --gray: #64748b;
+    --gray-light: #f1f5f9;
+    --white: #ffffff;
+    --green: #10b981;
+    --red: #ef4444;
+    --orange: #f97316;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Tajawal', 'Inter', sans-serif;
+    background: #0a0a0f;
+    color: #e2e8f0;
+    overflow-x: hidden;
+    line-height: 1.7;
+  }
+
+  /* ===== HERO ===== */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #0a0a0f 0%, #12082b 40%, #0d1926 100%);
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(124,58,237,0.35) 0%, transparent 70%);
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(124,58,237,0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,58,237,0.08) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, rgba(0,0,0,0.5) 0%, transparent 75%);
+  }
+
+  .hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.25;
+    animation: float 8s ease-in-out infinite;
+  }
+  .orb-1 { width: 600px; height: 600px; background: var(--primary); top: -200px; right: -150px; animation-delay: 0s; }
+  .orb-2 { width: 400px; height: 400px; background: var(--secondary); bottom: -100px; left: -100px; animation-delay: -4s; }
+  .orb-3 { width: 300px; height: 300px; background: var(--accent); top: 50%; right: 20%; animation-delay: -2s; }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px) scale(1); }
+    50% { transform: translateY(-30px) scale(1.05); }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 80px 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(124,58,237,0.15);
+    border: 1px solid rgba(124,58,237,0.4);
+    color: #c4b5fd;
+    padding: 6px 16px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 28px;
+    letter-spacing: 0.5px;
+  }
+
+  .badge-dot {
+    width: 8px; height: 8px;
+    background: var(--primary);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--primary);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .hero-title {
+    font-size: clamp(3rem, 5vw, 5rem);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 24px;
+  }
+
+  .hero-title .ar { display: block; font-size: 1.1em; }
+  .hero-title .en {
+    display: block;
+    font-size: 0.6em;
+    background: linear-gradient(135deg, #7c3aed, #06b6d4, #f59e0b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -1px;
+  }
+
+  .hero-desc {
+    font-size: 18px;
+    color: #94a3b8;
+    margin-bottom: 40px;
+    line-height: 1.8;
+    max-width: 520px;
+  }
+
+  .hero-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 50px;
+  }
+
+  .tag {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #cbd5e1;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .tag:hover { background: rgba(124,58,237,0.2); border-color: rgba(124,58,237,0.4); color: #c4b5fd; }
+
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .stat-item {
+    background: rgba(15,23,42,0.8);
+    padding: 24px 20px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+  }
+
+  .stat-num {
+    font-size: 2.5rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #7c3aed, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .stat-label { font-size: 13px; color: #64748b; margin-top: 4px; }
+
+  /* Hero Visual */
+  .hero-visual {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .phone-mockup {
+    width: 280px;
+    height: 560px;
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    border-radius: 40px;
+    border: 2px solid rgba(124,58,237,0.4);
+    box-shadow:
+      0 0 0 6px rgba(124,58,237,0.1),
+      0 50px 100px rgba(0,0,0,0.7),
+      inset 0 1px 0 rgba(255,255,255,0.08);
+    position: relative;
+    overflow: hidden;
+    z-index: 2;
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .phone-screen {
+    position: absolute;
+    inset: 12px;
+    border-radius: 30px;
+    background: linear-gradient(180deg, #1a0a3e 0%, #0d1926 50%, #0a1628 100%);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .phone-notch {
+    width: 80px; height: 20px;
+    background: #0a0a0f;
+    border-radius: 0 0 14px 14px;
+    margin: 0 auto;
+  }
+
+  .phone-content {
+    flex: 1;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .p-header {
+    background: linear-gradient(135deg, rgba(124,58,237,0.3), rgba(6,182,212,0.2));
+    border-radius: 14px;
+    padding: 14px;
+    border: 1px solid rgba(124,58,237,0.3);
+  }
+
+  .p-title { font-size: 11px; font-weight: 700; color: #c4b5fd; margin-bottom: 4px; }
+  .p-num { font-size: 20px; font-weight: 900; color: #fff; font-family: 'Inter', sans-serif; }
+  .p-sub { font-size: 10px; color: #94a3b8; }
+
+  .p-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+  .p-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 12px 10px;
+  }
+
+  .p-card-icon {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+
+  .p-card-val { font-size: 14px; font-weight: 700; color: #fff; font-family: 'Inter', sans-serif; }
+  .p-card-lbl { font-size: 9px; color: #64748b; margin-top: 2px; }
+
+  .p-orders { display: flex; flex-direction: column; gap: 6px; }
+
+  .p-order {
+    background: rgba(255,255,255,0.04);
+    border-radius: 10px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .p-order-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .p-order-info { flex: 1; }
+  .p-order-id { font-size: 10px; font-weight: 600; color: #e2e8f0; font-family: 'Inter', sans-serif; }
+  .p-order-name { font-size: 9px; color: #64748b; }
+  .p-order-status { font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+
+  .tablet-mockup {
+    position: absolute;
+    right: -80px;
+    top: 30px;
+    width: 200px;
+    height: 280px;
+    background: linear-gradient(145deg, #1e293b, #0f172a);
+    border-radius: 20px;
+    border: 1.5px solid rgba(6,182,212,0.4);
+    box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+    overflow: hidden;
+    animation: float 7s ease-in-out infinite;
+    animation-delay: -2s;
+    z-index: 1;
+  }
+
+  .tablet-screen {
+    position: absolute;
+    inset: 8px;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #0d1926, #0a1628);
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .t-bar { height: 8px; border-radius: 4px; background: rgba(255,255,255,0.06); }
+  .t-bar.active { background: linear-gradient(90deg, #7c3aed, #06b6d4); width: 70%; }
+
+  .t-row {
+    display: flex; gap: 6px; align-items: center;
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+    padding: 8px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .t-avatar { width: 20px; height: 20px; border-radius: 6px; flex-shrink: 0; }
+  .t-lines { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+  .t-line { height: 6px; border-radius: 3px; background: rgba(255,255,255,0.08); }
+  .t-line.short { width: 60%; }
+  .t-badge { width: 40px; height: 16px; border-radius: 4px; flex-shrink: 0; }
+
+  /* ===== SECTION STYLES ===== */
+  .section {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 100px 40px;
+  }
+
+  .section-header {
+    text-align: center;
+    margin-bottom: 70px;
+  }
+
+  .section-tag {
+    display: inline-block;
+    background: rgba(124,58,237,0.12);
+    border: 1px solid rgba(124,58,237,0.3);
+    color: #a78bfa;
+    padding: 6px 18px;
+    border-radius: 100px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+  }
+
+  .section-title {
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 800;
+    color: #f1f5f9;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+
+  .section-sub {
+    font-size: 17px;
+    color: #64748b;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* ===== OVERVIEW ===== */
+  .overview-bg {
+    background: linear-gradient(180deg, #0a0a0f 0%, #0d0d1a 50%, #0a0a0f 100%);
+    border-top: 1px solid rgba(124,58,237,0.15);
+    border-bottom: 1px solid rgba(124,58,237,0.15);
+  }
+
+  .overview-grid {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 80px;
+    align-items: center;
+  }
+
+  .overview-text h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #f1f5f9;
+    margin-bottom: 20px;
+    line-height: 1.2;
+  }
+
+  .overview-text p {
+    color: #94a3b8;
+    font-size: 16px;
+    margin-bottom: 24px;
+    line-height: 1.9;
+  }
+
+  .overview-highlights {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .highlight-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .highlight-icon {
+    width: 40px; height: 40px;
+    background: rgba(124,58,237,0.15);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    border: 1px solid rgba(124,58,237,0.25);
+  }
+
+  .highlight-info h4 { font-size: 15px; font-weight: 700; color: #e2e8f0; margin-bottom: 3px; }
+  .highlight-info p { font-size: 13px; color: #64748b; }
+
+  .flow-diagram {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .flow-step {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    position: relative;
+  }
+
+  .flow-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 19px;
+    top: 50px;
+    width: 2px;
+    height: calc(100% - 10px);
+    background: linear-gradient(180deg, rgba(124,58,237,0.5), transparent);
+  }
+
+  .flow-step-num {
+    width: 40px; height: 40px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800;
+    font-size: 16px;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 4px 15px rgba(124,58,237,0.4);
+    font-family: 'Inter', sans-serif;
+  }
+
+  .flow-step-body {
+    padding-bottom: 32px;
+    flex: 1;
+  }
+
+  .flow-step-body h4 { font-size: 15px; font-weight: 700; color: #e2e8f0; margin-bottom: 6px; }
+  .flow-step-body p { font-size: 13px; color: #64748b; line-height: 1.7; }
+
+  /* ===== ROLES ===== */
+  .roles-bg { background: #0a0a0f; }
+
+  .roles-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 20px;
+  }
+
+  .role-card {
+    background: linear-gradient(145deg, rgba(30,41,59,0.5), rgba(15,23,42,0.8));
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 20px;
+    padding: 28px 20px;
+    text-align: center;
+    transition: all 0.35s ease;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .role-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    opacity: 0;
+    transition: opacity 0.35s;
+  }
+
+  .role-card:hover { transform: translateY(-8px); border-color: rgba(124,58,237,0.4); }
+  .role-card:hover::before { opacity: 1; }
+
+  .role-card.admin::before { background: radial-gradient(ellipse at top, rgba(124,58,237,0.12), transparent 70%); }
+  .role-card.store::before { background: radial-gradient(ellipse at top, rgba(6,182,212,0.12), transparent 70%); }
+  .role-card.driver::before { background: radial-gradient(ellipse at top, rgba(16,185,129,0.12), transparent 70%); }
+  .role-card.point::before { background: radial-gradient(ellipse at top, rgba(245,158,11,0.12), transparent 70%); }
+  .role-card.institution::before { background: radial-gradient(ellipse at top, rgba(239,68,68,0.12), transparent 70%); }
+
+  .role-emoji { font-size: 3rem; margin-bottom: 16px; display: block; }
+
+  .role-name {
+    font-size: 16px; font-weight: 700; color: #e2e8f0; margin-bottom: 8px;
+  }
+
+  .role-name-en { font-size: 12px; color: #64748b; font-family: 'Inter', sans-serif; display: block; margin-bottom: 12px; }
+
+  .role-features {
+    list-style: none;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .role-features li {
+    font-size: 12px;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .role-features li::before { content: '◆'; font-size: 6px; opacity: 0.5; flex-shrink: 0; }
+
+  /* ===== FEATURES ===== */
+  .features-bg {
+    background: linear-gradient(180deg, #0a0a0f, #0d0d1a, #0a0a0f);
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .feature-card {
+    background: linear-gradient(145deg, rgba(30,41,59,0.4), rgba(15,23,42,0.7));
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 20px;
+    padding: 32px 28px;
+    transition: all 0.35s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feature-card:hover {
+    border-color: rgba(124,58,237,0.35);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 60px rgba(124,58,237,0.1);
+  }
+
+  .feature-card::after {
+    content: '';
+    position: absolute;
+    top: 0; right: 0;
+    width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(124,58,237,0.6), transparent);
+    opacity: 0;
+    transition: opacity 0.35s;
+  }
+
+  .feature-card:hover::after { opacity: 1; }
+
+  .feature-icon-wrap {
+    width: 56px; height: 56px;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .feature-title { font-size: 18px; font-weight: 700; color: #f1f5f9; margin-bottom: 10px; }
+  .feature-desc { font-size: 14px; color: #64748b; line-height: 1.8; }
+
+  .feature-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+  .feature-tag {
+    font-size: 11px; padding: 3px 10px; border-radius: 4px;
+    background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.2); color: #a78bfa;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ===== TECH STACK ===== */
+  .stack-bg { background: #0a0a0f; }
+
+  .stack-categories {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 28px;
+  }
+
+  .stack-cat {
+    background: linear-gradient(145deg, rgba(30,41,59,0.4), rgba(15,23,42,0.7));
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 20px;
+    padding: 32px;
+    transition: all 0.3s;
+  }
+
+  .stack-cat:hover { border-color: rgba(124,58,237,0.25); }
+
+  .stack-cat-header {
+    display: flex; align-items: center; gap: 12px; margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .stack-cat-icon {
+    width: 44px; height: 44px;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+
+  .stack-cat-name { font-size: 17px; font-weight: 700; color: #e2e8f0; }
+  .stack-cat-sub { font-size: 12px; color: #64748b; }
+
+  .tech-items {
+    display: flex; flex-direction: column; gap: 14px;
+  }
+
+  .tech-item {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .tech-name {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 14px; color: #cbd5e1; font-weight: 500;
+  }
+
+  .tech-logo {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    flex-shrink: 0;
+  }
+
+  .tech-bar-wrap { display: flex; align-items: center; gap: 10px; }
+
+  .tech-bar {
+    width: 100px; height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .tech-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #7c3aed, #06b6d4);
+  }
+
+  .tech-pct { font-size: 11px; color: #64748b; font-family: 'Inter', sans-serif; min-width: 35px; text-align: left; }
+
+  /* ===== FINANCE ===== */
+  .finance-bg {
+    background: linear-gradient(180deg, #0a0a0f, #0d0a1a, #0a0a0f);
+    border-top: 1px solid rgba(124,58,237,0.1);
+    border-bottom: 1px solid rgba(124,58,237,0.1);
+  }
+
+  .wallet-diagram {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-bottom: 60px;
+  }
+
+  .wallet-card {
+    background: linear-gradient(145deg, rgba(30,41,59,0.6), rgba(15,23,42,0.9));
+    border-radius: 16px;
+    padding: 22px 16px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .wallet-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+
+  .wallet-icon { font-size: 2rem; margin-bottom: 10px; display: block; }
+  .wallet-name { font-size: 14px; font-weight: 700; color: #e2e8f0; margin-bottom: 4px; }
+  .wallet-type { font-size: 11px; color: #64748b; font-family: 'Inter', sans-serif; }
+
+  .wallet-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: rgba(16,185,129,0.15);
+    border: 1px solid rgba(16,185,129,0.3);
+    color: #10b981;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .finance-flows {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .flow-card {
+    background: rgba(30,41,59,0.3);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 28px;
+  }
+
+  .flow-card-title {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 16px; font-weight: 700; color: #e2e8f0;
+    margin-bottom: 20px;
+  }
+
+  .flow-card-icon { font-size: 22px; }
+
+  .flow-steps { display: flex; flex-direction: column; gap: 10px; }
+
+  .flow-s {
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 13px; color: #94a3b8;
+  }
+
+  .flow-s-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: rgba(124,58,237,0.2);
+    border: 1px solid rgba(124,58,237,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: #a78bfa;
+    flex-shrink: 0;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ===== ARCHITECTURE ===== */
+  .arch-bg { background: #0a0a0f; }
+
+  .arch-diagram {
+    background: linear-gradient(145deg, rgba(15,23,42,0.8), rgba(10,10,15,0.95));
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 24px;
+    padding: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .arch-diagram::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(124,58,237,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(124,58,237,0.04) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+
+  .arch-layers {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .arch-layer {
+    border-radius: 14px;
+    padding: 20px 24px;
+    border: 1px solid;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .arch-layer.clients { border-color: rgba(124,58,237,0.3); background: rgba(124,58,237,0.08); }
+  .arch-layer.frontend { border-color: rgba(6,182,212,0.3); background: rgba(6,182,212,0.08); }
+  .arch-layer.backend { border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.08); }
+  .arch-layer.data { border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.08); }
+  .arch-layer.external { border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.08); }
+
+  .arch-layer-label {
+    min-width: 130px;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .arch-layer.clients .arch-layer-label { color: #c4b5fd; }
+  .arch-layer.frontend .arch-layer-label { color: #67e8f9; }
+  .arch-layer.backend .arch-layer-label { color: #6ee7b7; }
+  .arch-layer.data .arch-layer-label { color: #fcd34d; }
+  .arch-layer.external .arch-layer-label { color: #fca5a5; }
+
+  .arch-items {
+    display: flex; flex-wrap: wrap; gap: 8px; flex: 1;
+  }
+
+  .arch-item {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: #e2e8f0;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+  }
+
+  .arch-arrow {
+    display: flex; justify-content: center; align-items: center;
+    color: #334155; font-size: 20px; letter-spacing: 4px;
+    position: relative;
+  }
+
+  .arch-arrow::before, .arch-arrow::after {
+    content: '';
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(124,58,237,0.2), transparent);
+  }
+
+  /* ===== INTEGRATIONS ===== */
+  .integrations-bg {
+    background: linear-gradient(180deg, #0a0a0f, #0d0d1a, #0a0a0f);
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .integrations-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+  }
+
+  .integration-card {
+    background: linear-gradient(145deg, rgba(30,41,59,0.4), rgba(15,23,42,0.7));
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px;
+    padding: 28px 20px;
+    text-align: center;
+    transition: all 0.3s;
+  }
+
+  .integration-card:hover {
+    border-color: rgba(124,58,237,0.3);
+    transform: translateY(-4px);
+  }
+
+  .int-icon { font-size: 2.5rem; margin-bottom: 14px; display: block; }
+  .int-name { font-size: 15px; font-weight: 700; color: #e2e8f0; margin-bottom: 6px; }
+  .int-desc { font-size: 12px; color: #64748b; line-height: 1.6; }
+  .int-status {
+    display: inline-block;
+    margin-top: 12px;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 4px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+  }
+  .status-live { background: rgba(16,185,129,0.12); color: #10b981; border: 1px solid rgba(16,185,129,0.25); }
+  .status-plan { background: rgba(100,116,139,0.12); color: #64748b; border: 1px solid rgba(100,116,139,0.25); }
+
+  /* ===== NUMBERS ===== */
+  .numbers-bg { background: #0a0a0f; }
+
+  .numbers-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    background: rgba(124,58,237,0.15);
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid rgba(124,58,237,0.2);
+  }
+
+  .number-item {
+    background: #0a0a0f;
+    padding: 50px 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .number-item:hover { background: rgba(124,58,237,0.05); }
+
+  .number-item::before {
+    content: '';
+    position: absolute;
+    top: -50px; right: -50px;
+    width: 150px; height: 150px;
+    background: radial-gradient(circle, rgba(124,58,237,0.08), transparent 70%);
+  }
+
+  .number-value {
+    font-size: clamp(2.5rem, 4vw, 4rem);
+    font-weight: 900;
+    background: linear-gradient(135deg, #7c3aed, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: block;
+    line-height: 1;
+    margin-bottom: 12px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .number-label { font-size: 16px; color: #94a3b8; font-weight: 500; }
+  .number-sub { font-size: 13px; color: #475569; margin-top: 6px; }
+
+  /* ===== SCREENS ===== */
+  .screens-bg {
+    background: linear-gradient(180deg, #0a0a0f, #0d0a1a, #0a0a0f);
+    border-top: 1px solid rgba(124,58,237,0.1);
+  }
+
+  .screens-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .screen-card {
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.08);
+    transition: all 0.35s;
+    background: rgba(15,23,42,0.6);
+  }
+
+  .screen-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(124,58,237,0.4);
+    box-shadow: 0 30px 80px rgba(124,58,237,0.15);
+  }
+
+  .screen-preview {
+    height: 220px;
+    position: relative;
+    overflow: hidden;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .screen-bar {
+    display: flex; align-items: center; gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .screen-dots { display: flex; gap: 4px; }
+  .screen-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  .screen-header-bar {
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 8px;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+  }
+
+  .screen-row {
+    height: 44px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    gap: 10px;
+  }
+
+  .screen-row-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .screen-row-lines { flex: 1; display: flex; flex-direction: column; gap: 5px; }
+  .screen-row-line { height: 5px; border-radius: 3px; }
+  .screen-row-badge { width: 50px; height: 18px; border-radius: 4px; flex-shrink: 0; }
+
+  .screen-info {
+    padding: 20px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .screen-title { font-size: 16px; font-weight: 700; color: #e2e8f0; margin-bottom: 6px; }
+  .screen-desc { font-size: 13px; color: #64748b; line-height: 1.6; }
+
+  .screen-pills {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px;
+  }
+
+  .screen-pill {
+    font-size: 11px; padding: 3px 10px;
+    border-radius: 4px;
+    background: rgba(124,58,237,0.1);
+    border: 1px solid rgba(124,58,237,0.15);
+    color: #a78bfa;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ===== FOOTER ===== */
+  .footer {
+    background: #060609;
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding: 60px 40px 40px;
+    text-align: center;
+  }
+
+  .footer-logo {
+    font-size: 3rem;
+    font-weight: 900;
+    background: linear-gradient(135deg, #7c3aed, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+    font-family: 'Inter', sans-serif;
+    letter-spacing: -2px;
+  }
+
+  .footer-tagline { font-size: 16px; color: #475569; margin-bottom: 40px; }
+
+  .footer-tech-line {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 40px;
+  }
+
+  .f-tech {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #64748b;
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.05);
+    padding-top: 24px;
+    color: #334155;
+    font-size: 13px;
+  }
+
+  /* ===== DIVIDERS ===== */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(124,58,237,0.3), transparent);
+    margin: 0 40px;
+  }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate { animation: slide-up 0.7s ease forwards; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 1100px) {
+    .roles-grid { grid-template-columns: repeat(3, 1fr); }
+    .numbers-grid { grid-template-columns: repeat(2, 1fr); }
+    .hero-content { grid-template-columns: 1fr; }
+    .hero-visual { display: none; }
+    .wallet-diagram { grid-template-columns: repeat(3, 1fr); }
+    .integrations-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 768px) {
+    .section { padding: 60px 20px; }
+    .features-grid { grid-template-columns: 1fr; }
+    .stack-categories { grid-template-columns: 1fr; }
+    .screens-grid { grid-template-columns: 1fr; }
+    .finance-flows { grid-template-columns: 1fr; }
+    .roles-grid { grid-template-columns: repeat(2, 1fr); }
+    .overview-grid { grid-template-columns: 1fr; }
+    .arch-layer { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-orb orb-1"></div>
+  <div class="hero-orb orb-2"></div>
+  <div class="hero-orb orb-3"></div>
+
+  <div class="hero-content">
+    <div>
+      <div class="badge">
+        <span class="badge-dot"></span>
+        منصة لوجستية متكاملة · Saudi Arabia
+      </div>
+      <h1 class="hero-title">
+        <span class="ar">طرد</span>
+        <span class="en">TARD LOGISTICS</span>
+      </h1>
+      <p class="hero-desc">
+        منصة لوجستية شاملة تُدار من السحابة، تُعالج كامل دورة حياة الطلب من الإنشاء حتى التوصيل والتسوية المالية. صُمّمت لتلبية متطلبات السوق السعودي بدعم كامل للغة العربية وتكاملات المدفوعات المحلية.
+      </p>
+      <div class="hero-tags">
+        <span class="tag">🇸🇦 السوق السعودي</span>
+        <span class="tag">React 18 + TypeScript</span>
+        <span class="tag">Node.js + Express</span>
+        <span class="tag">PostgreSQL</span>
+        <span class="tag">Real-time WebSockets</span>
+        <span class="tag">دعم RTL كامل</span>
+        <span class="tag">تطبيق موبايل Capacitor</span>
+        <span class="tag">نظام مالي متكامل</span>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-num">5</span>
+          <span class="stat-label">أدوار مستخدمين</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">150+</span>
+          <span class="stat-label">API Endpoint</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-num">40+</span>
+          <span class="stat-label">جدول قاعدة بيانات</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <!-- Phone Mockup -->
+      <div class="phone-mockup">
+        <div class="phone-screen">
+          <div class="phone-notch"></div>
+          <div class="phone-content">
+            <div class="p-header">
+              <div class="p-title">📦 لوحة التحكم</div>
+              <div class="p-num">2,847</div>
+              <div class="p-sub">إجمالي الطلبات هذا الشهر</div>
+            </div>
+            <div class="p-cards">
+              <div class="p-card">
+                <div class="p-card-icon" style="background:rgba(16,185,129,0.15)">✅</div>
+                <div class="p-card-val">1,234</div>
+                <div class="p-card-lbl">مسلّمة</div>
+              </div>
+              <div class="p-card">
+                <div class="p-card-icon" style="background:rgba(245,158,11,0.15)">🚚</div>
+                <div class="p-card-val">89</div>
+                <div class="p-card-lbl">قيد التوصيل</div>
+              </div>
+              <div class="p-card">
+                <div class="p-card-icon" style="background:rgba(124,58,237,0.15)">💰</div>
+                <div class="p-card-val">45.2K</div>
+                <div class="p-card-lbl">الإيرادات</div>
+              </div>
+              <div class="p-card">
+                <div class="p-card-icon" style="background:rgba(6,182,212,0.15)">⭐</div>
+                <div class="p-card-val">4.8</div>
+                <div class="p-card-lbl">التقييم</div>
+              </div>
+            </div>
+            <div class="p-orders">
+              <div class="p-order">
+                <div class="p-order-dot" style="background:#10b981"></div>
+                <div class="p-order-info">
+                  <div class="p-order-id">#ORD-00291</div>
+                  <div class="p-order-name">متجر الأناقة</div>
+                </div>
+                <div class="p-order-status" style="background:rgba(16,185,129,0.15);color:#10b981">مسلّمة</div>
+              </div>
+              <div class="p-order">
+                <div class="p-order-dot" style="background:#f59e0b"></div>
+                <div class="p-order-info">
+                  <div class="p-order-id">#ORD-00290</div>
+                  <div class="p-order-name">التقنية الحديثة</div>
+                </div>
+                <div class="p-order-status" style="background:rgba(245,158,11,0.15);color:#f59e0b">في الطريق</div>
+              </div>
+              <div class="p-order">
+                <div class="p-order-dot" style="background:#7c3aed"></div>
+                <div class="p-order-info">
+                  <div class="p-order-id">#ORD-00289</div>
+                  <div class="p-order-name">ستايل السعودية</div>
+                </div>
+                <div class="p-order-status" style="background:rgba(124,58,237,0.15);color:#a78bfa">جديد</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tablet Mockup -->
+      <div class="tablet-mockup">
+        <div class="tablet-screen">
+          <div class="t-bar active"></div>
+          <div class="t-bar" style="width:45%"></div>
+          <div style="height:8px"></div>
+          <div class="t-row">
+            <div class="t-avatar" style="background:rgba(124,58,237,0.3)"></div>
+            <div class="t-lines">
+              <div class="t-line"></div>
+              <div class="t-line short"></div>
+            </div>
+            <div class="t-badge" style="background:rgba(16,185,129,0.2);border-radius:4px"></div>
+          </div>
+          <div class="t-row">
+            <div class="t-avatar" style="background:rgba(6,182,212,0.3)"></div>
+            <div class="t-lines">
+              <div class="t-line"></div>
+              <div class="t-line short"></div>
+            </div>
+            <div class="t-badge" style="background:rgba(245,158,11,0.2);border-radius:4px"></div>
+          </div>
+          <div class="t-row">
+            <div class="t-avatar" style="background:rgba(239,68,68,0.3)"></div>
+            <div class="t-lines">
+              <div class="t-line"></div>
+              <div class="t-line short"></div>
+            </div>
+            <div class="t-badge" style="background:rgba(100,116,139,0.2);border-radius:4px"></div>
+          </div>
+          <div style="height:8px"></div>
+          <div class="t-bar" style="width:80%;background:linear-gradient(90deg,rgba(16,185,129,0.4),rgba(6,182,212,0.4))"></div>
+          <div class="t-bar" style="width:55%;background:rgba(255,255,255,0.06);margin-top:4px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== OVERVIEW ===== -->
+<section class="overview-bg">
+  <div class="section">
+    <div class="overview-grid">
+      <div class="overview-text">
+        <div class="section-tag">🎯 نظرة عامة</div>
+        <h2>منصة لوجستية من الجيل القادم للسوق السعودي</h2>
+        <p>
+          TARD هو نظام إدارة لوجستي متكامل صُمّم خصيصاً لتلبية احتياجات سوق التجارة الإلكترونية السعودي. يعالج المنصة كامل دورة الطلب من لحظة إنشائه في المتجر حتى التوصيل النهائي للعميل، مع نظام مالي متطور للتسوية والمحافظ.
+        </p>
+        <p>
+          يدعم نموذج عمل B2B و B2C مع هيكل تسعير متعدد المستويات، وتتكامل المنصة مع بوابات الدفع السعودية ومنصة سلة للتجارة الإلكترونية. يوفر النظام تطبيق ويب كامل وتطبيق موبايل باستخدام Capacitor.
+        </p>
+        <div class="overview-highlights">
+          <div class="highlight-item">
+            <div class="highlight-icon">🌍</div>
+            <div class="highlight-info">
+              <h4>دعم ثنائي اللغة مع RTL</h4>
+              <p>واجهة عربية كاملة مع دعم RTL الأصيل وتبديل سلس بين العربية والإنجليزية</p>
+            </div>
+          </div>
+          <div class="highlight-item">
+            <div class="highlight-icon">⚡</div>
+            <div class="highlight-info">
+              <h4>بيانات فورية Real-time</h4>
+              <p>WebSockets مدمجة مع TanStack Query لتحديث فوري دون إعادة تحميل</p>
+            </div>
+          </div>
+          <div class="highlight-item">
+            <div class="highlight-icon">🔒</div>
+            <div class="highlight-info">
+              <h4>نظام صلاحيات متقدم RBAC</h4>
+              <p>تحكم دقيق في الصلاحيات لكل دور مع مشرفين إقليميين وأدوار مخصصة</p>
+            </div>
+          </div>
+          <div class="highlight-item">
+            <div class="highlight-icon">📱</div>
+            <div class="highlight-info">
+              <h4>تطبيق موبايل هجين</h4>
+              <p>Capacitor مع نفس قاعدة كود React يوفر تجربة موبايل أصيلة لنظامَي iOS و Android</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="section-tag" style="margin-bottom:24px">🔄 مسار الطلب</div>
+        <div class="flow-diagram">
+          <div class="flow-step">
+            <div class="flow-step-num">1</div>
+            <div class="flow-step-body">
+              <h4>إنشاء الطلب</h4>
+              <p>المتجر ينشئ طلباً مع تفاصيل العميل والمنتج وطريقة الدفع (مسبق / COD / نقطة استلام). إشعار فوري يصل للمؤسسة اللوجستية.</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-num">2</div>
+            <div class="flow-step-body">
+              <h4>تعيين السائق</h4>
+              <p>وضع Pull أو Assign للسائق مع نظام أولويات الموقع. السائق يؤكد الاستلام ويبدأ رحلة التوصيل.</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-num">3</div>
+            <div class="flow-step-body">
+              <h4>التوصيل والتتبع</h4>
+              <p>تتبع مباشر للسائق، إشعارات SMS للعميل، صفحة تتبع للعميل بدون تسجيل دخول. حماية خصوصية بيانات العميل.</p>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-step-num">4</div>
+            <div class="flow-step-body">
+              <h4>التسوية المالية</h4>
+              <p>للطلبات النقدية: السائق يسجل التحصيل → المؤسسة تسوّي → تُحتسب رسوم التوصيل تلقائياً وتُضاف الأرباح لمحفظة المتجر.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== ROLES ===== -->
+<section class="roles-bg">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-tag">👥 الأدوار والمستخدمون</div>
+      <h2 class="section-title">نظام متعدد الأدوار بصلاحيات دقيقة</h2>
+      <p class="section-sub">كل دور يملك واجهة مخصصة ولوحة تحكم مستقلة تناسب احتياجاته تماماً</p>
+    </div>
+    <div class="roles-grid">
+      <div class="role-card admin">
+        <span class="role-emoji">🛡️</span>
+        <div class="role-name">الأدمن</div>
+        <span class="role-name-en">Super Admin</span>
+        <ul class="role-features">
+          <li>إدارة كاملة للنظام</li>
+          <li>إنشاء أدمن فرعيين</li>
+          <li>تقارير مالية شاملة</li>
+          <li>إدارة المستخدمين والأسعار</li>
+          <li>مشرفون إقليميون</li>
+          <li>إعدادات النظام</li>
+        </ul>
+      </div>
+      <div class="role-card store">
+        <span class="role-emoji">🏪</span>
+        <div class="role-name">المتجر</div>
+        <span class="role-name-en">Store</span>
+        <ul class="role-features">
+          <li>إنشاء وإدارة الطلبات</li>
+          <li>تتبع التوصيل</li>
+          <li>إدارة المحفظة</li>
+          <li>إحصائيات المبيعات</li>
+          <li>تكامل سلة Salla</li>
+          <li>برنامج الإحالة</li>
+        </ul>
+      </div>
+      <div class="role-card driver">
+        <span class="role-emoji">🚗</span>
+        <div class="role-name">السائق</div>
+        <span class="role-name-en">Driver</span>
+        <ul class="role-features">
+          <li>استلام الطلبات</li>
+          <li>وضع الرحلة Route Mode</li>
+          <li>تحصيل COD</li>
+          <li>تتبع الأداء</li>
+          <li>إدارة المحفظة</li>
+          <li>نظام الإحالة</li>
+        </ul>
+      </div>
+      <div class="role-card point">
+        <span class="role-emoji">📍</span>
+        <div class="role-name">نقطة استلام</div>
+        <span class="role-name-en">Pickup Point</span>
+        <ul class="role-features">
+          <li>استلام الطلبات</li>
+          <li>إشعار العملاء</li>
+          <li>COD موجَّه للنقطة</li>
+          <li>إدارة المخزون المؤقت</li>
+          <li>تقارير النقطة</li>
+          <li>ربط بمؤسسة النقاط</li>
+        </ul>
+      </div>
+      <div class="role-card institution">
+        <span class="role-emoji">🏢</span>
+        <div class="role-name">المؤسسة</div>
+        <span class="role-name-en">Institution</span>
+        <ul class="role-features">
+          <li>إدارة السائقين</li>
+          <li>إدارة الرحلات</li>
+          <li>تسوية COD</li>
+          <li>فواتير وفاتورة</li>
+          <li>حد الائتمان</li>
+          <li>مؤسسة نقاط مستقلة</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== FEATURES ===== -->
+<section class="features-bg">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-tag">✨ المميزات الرئيسية</div>
+      <h2 class="section-title">كل ما تحتاجه شركة اللوجستيات</h2>
+      <p class="section-sub">منظومة متكاملة من الأدوات والخصائص المصممة للبيئة السعودية</p>
+    </div>
+    <div class="features-grid">
+
+      <div class="feature-card">
+        <div class="feature-icon-wrap" style="background:rgba(124,58,237,0.15)">💰</div>
+        <h3 class="feature-title">نظام مالي متطور</h3>
+        <p class="feature-desc">5 أنواع محافظ رقمية مستقلة مع تتبع كامل للمعاملات، تسوية COD تلقائية، توزيع العمولات، ودعم الدفع المسبق وعند الاستلام.</p>
+        <div class="feature-tags">
+          <span class="feature-tag">COD Settlement</span>
+          <span class="feature-tag">Wallet System</span>
+          <span class="feature-tag">Commission</span>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon-wrap" style="background:rgba(6,182,212,0.15)">📡</div>
+        <h3 class="feature-title">تتبع فوري Real-time</h3>
+        <p class="feature-desc">WebSockets مدمجة لتحديث بيانات الطلبات والسائقين لحظياً. TanStack Query مع staleTime 5 ثوانٍ وrefetch كل 15 ثانية تلقائياً.</p>
+        <div class="feature-tags">
+          <span class="feature-tag">WebSockets</span>
+          <span class="feature-tag">TanStack Query</span>
+          <span class="feature-tag">Live Updates</span>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon-wrap" style="background:rgba(16,185,129,0.15)">🗺️</div>
+        <h3 class="feature-title">تتبع السائق والخرائط</h3>
+        <p class="feature-desc">تكامل Google Maps مع العنوان الوطني السعودي. تتبع مسار السائق، حساب المسافات، وصفحة تتبع مباشرة للعميل دون تسجيل دخول.</p>
+        <div class="feature-tags">
+          <span class="feature-tag">Google Maps</span>
+          <span class="feature-tag">National Address</span>
+          <span class="feature-tag">Live Tracking</span>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon-wrap" style="background:rgba(245,158,11,0.15)">🖨️</div>
+        <h3 class="feature-title">طباعة بوليصة حرارية</h3>
+        <p class="feature-desc">طباعة مباشرة للبوليصة على الطابعات الحرارية بحجم 80mm. باركود وQR code مدمج، معلومات كاملة بتصميم جاهز للتشغيل.</p>
+        <div class="feature-tags">
+          <span class="feature-tag">Thermal Print</span>
+          <span class="feature-tag">80mm</span>
+          <span class="feature-tag">QR Code</span>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon-wrap" style="background:rgba(239,68,68,0.15)">📲</div>
+        <h3 class="feature-title">إشعارات متعددة القنوات</h3>
+        <p class="feature-desc">رسائل SMS عبر بوابة 4jawaly، إشعارات داخل التطبيق، دردشة مباشرة، بريد إلكتروني عبر Nodemailer. تنبيهات احتيال وتتبع مشبوه.</p>
+        <div class="feature-tags">
+          <span class="feature-tag">SMS 4jawaly</span>
+          <span class="feature-tag">Live Chat</span>
+          <span class="feature-tag">Email</span>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon-wrap" style="background:rgba(124,58,237,0.15)">⚙️</div>
+        <h3 class="feature-title">سير عمل قابل للتهيئة</h3>
+        <p class="feature-desc">نظام حالات الطلب قابل للتخصيص، وضع Pull/Assign لتوزيع الطلبات، حد ائتمان المؤسسة، عتبات التنبيه لمكافحة الاحتيال.</p>
+        <div class="feature-tags">
+          <span class="feature-tag">Configurable</span>
+          <span class="feature-tag">Anti-Fraud</span>
+          <span class="feature-tag">Credit Limit</span>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon-wrap" style="background:rgba(6,182,212,0.15)">🛍️</div>
+        <h3 class="feature-title">تكامل سلة Salla</h3>
+        <p class="feature-desc">Webhook يستقبل الطلبات تلقائياً من منصة سلة. مزامنة فورية لبيانات المتجر والطلبات، دعم كامل لنموذج B2B/B2C.</p>
+        <div class="feature-tags">
+          <span class="feature-tag">Salla Plugin</span>
+          <span class="feature-tag">Webhook</span>
+          <span class="feature-tag">B2B/B2C</span>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon-wrap" style="background:rgba(16,185,129,0.15)">🎁</div>
+        <h3 class="feature-title">نظام الإحالة الموسّع</h3>
+        <p class="feature-desc">برنامج إحالة شامل يشمل السائقين والمتاجر والمؤسسات ونقاط الاستلام. مكافآت قابلة للتخصيص، تتبع لحظي، وصرف تلقائي للمحافظ.</p>
+        <div class="feature-tags">
+          <span class="feature-tag">Referral Program</span>
+          <span class="feature-tag">Rewards</span>
+          <span class="feature-tag">Multi-role</span>
+        </div>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon-wrap" style="background:rgba(245,158,11,0.15)">📊</div>
+        <h3 class="feature-title">تقارير وتحليلات</h3>
+        <p class="feature-desc">لوحات بيانات تفاعلية لكل دور، تقارير مالية مفصلة، إحصائيات الأداء، تصدير البيانات، ونظام فلترة وبحث متقدم.</p>
+        <div class="feature-tags">
+          <span class="feature-tag">Analytics</span>
+          <span class="feature-tag">Reports</span>
+          <span class="feature-tag">Export</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== FINANCIAL SYSTEM ===== -->
+<section class="finance-bg">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-tag">💳 النظام المالي</div>
+      <h2 class="section-title">بنية مالية متكاملة ودقيقة</h2>
+      <p class="section-sub">5 محافظ مستقلة مع نظام تسوية COD متعدد المراحل وتتبع كامل للمعاملات</p>
+    </div>
+
+    <div class="wallet-diagram">
+      <div class="wallet-card" style="border-color:rgba(124,58,237,0.3)">
+        <span class="wallet-badge">Admin</span>
+        <span class="wallet-icon">🏛️</span>
+        <div class="wallet-name">محفظة طرد</div>
+        <div class="wallet-type">TARD Transit</div>
+      </div>
+      <div class="wallet-card" style="border-color:rgba(6,182,212,0.3)">
+        <span class="wallet-icon">🏪</span>
+        <div class="wallet-name">محفظة المتجر</div>
+        <div class="wallet-type">Store Wallet</div>
+      </div>
+      <div class="wallet-card" style="border-color:rgba(16,185,129,0.3)">
+        <span class="wallet-icon">🚗</span>
+        <div class="wallet-name">محفظة السائق</div>
+        <div class="wallet-type">Driver Wallet</div>
+      </div>
+      <div class="wallet-card" style="border-color:rgba(245,158,11,0.3)">
+        <span class="wallet-icon">🏢</span>
+        <div class="wallet-name">محفظة المؤسسة</div>
+        <div class="wallet-type">Institution Wallet</div>
+      </div>
+      <div class="wallet-card" style="border-color:rgba(239,68,68,0.3)">
+        <span class="wallet-icon">📍</span>
+        <div class="wallet-name">محفظة النقطة</div>
+        <div class="wallet-type">Point Wallet</div>
+      </div>
+    </div>
+
+    <div class="finance-flows">
+      <div class="flow-card">
+        <div class="flow-card-title">
+          <span class="flow-card-icon">💵</span>
+          تدفق COD (الدفع عند الاستلام)
+        </div>
+        <div class="flow-steps">
+          <div class="flow-s">
+            <div class="flow-s-num">1</div>
+            <span>السائق يستلم المبلغ من العميل ويسجله كـ cod_collected</span>
+          </div>
+          <div class="flow-s">
+            <div class="flow-s-num">2</div>
+            <span>الطلب يُوسَم كـ codPendingSettlement=true مع سجل pending</span>
+          </div>
+          <div class="flow-s">
+            <div class="flow-s-num">3</div>
+            <span>المؤسسة تسوّي → cod_settled يُنشأ ويُحتسب الفرق</span>
+          </div>
+          <div class="flow-s">
+            <div class="flow-s-num">4</div>
+            <span>محفظة المتجر تُضاف إليها: قيمة المنتج - رسوم الشحن</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-card">
+        <div class="flow-card-title">
+          <span class="flow-card-icon">🏷️</span>
+          هيكل التسعير
+        </div>
+        <div class="flow-steps">
+          <div class="flow-s">
+            <div class="flow-s-num">1</div>
+            <span>أسعار افتراضية على مستوى الأدمن (Admin Pricing)</span>
+          </div>
+          <div class="flow-s">
+            <div class="flow-s-num">2</div>
+            <span>أسعار مؤسسة قابلة للتخصيص (Institution Override)</span>
+          </div>
+          <div class="flow-s">
+            <div class="flow-s-num">3</div>
+            <span>أسعار خاصة بكل متجر (Store-specific Pricing)</span>
+          </div>
+          <div class="flow-s">
+            <div class="flow-s-num">4</div>
+            <span>توزيع تلقائي للعمولات بين جميع الأطراف</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-card">
+        <div class="flow-card-title">
+          <span class="flow-card-icon">🔒</span>
+          حماية مالية
+        </div>
+        <div class="flow-steps">
+          <div class="flow-s">
+            <div class="flow-s-num">1</div>
+            <span>حد ائتمان globalCreditLimit يمنع تجاوز الرصيد السلبي</span>
+          </div>
+          <div class="flow-s">
+            <div class="flow-s-num">2</div>
+            <span>نظام غرامات تلقائي للأوامر المفقودة أو التالفة</span>
+          </div>
+          <div class="flow-s">
+            <div class="flow-s-num">3</div>
+            <span>تجميد الحساب عند تجاوز الحد المسموح</span>
+          </div>
+          <div class="flow-s">
+            <div class="flow-s-num">4</div>
+            <span>سجل Audit Trail كامل لكل معاملة مالية</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== TECH STACK ===== -->
+<section class="stack-bg">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-tag">⚙️ المكدس التقني</div>
+      <h2 class="section-title">تقنيات حديثة ومجربة</h2>
+      <p class="section-sub">اختيار دقيق للأدوات والمكتبات يضمن الأداء والقابلية للتوسع والصيانة</p>
+    </div>
+    <div class="stack-categories">
+
+      <div class="stack-cat">
+        <div class="stack-cat-header">
+          <div class="stack-cat-icon" style="background:rgba(6,182,212,0.15)">🖥️</div>
+          <div>
+            <div class="stack-cat-name">Frontend Stack</div>
+            <div class="stack-cat-sub">واجهة المستخدم والتفاعل</div>
+          </div>
+        </div>
+        <div class="tech-items">
+          <div class="tech-item">
+            <div class="tech-name"><div class="tech-logo">⚛️</div> React 18</div>
+            <div class="tech-bar-wrap"><div class="tech-bar"><div class="tech-bar-fill" style="width:95%"></div></div><span class="tech-pct">95%</span></div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-name"><div class="tech-logo">🔷</div> TypeScript</div>
+            <div class="tech-bar-wrap"><div class="tech-bar"><div class="tech-bar-fill" style="width:100%"></div></div><span class="tech-pct">100%</span></div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-name"><div class="tech-logo">⚡</div> Vite</div>
+            <div class="tech-bar-wrap"><div class="tech-bar"><div class="tech-bar-fill" style="width:90%"></div></div><span class="tech-pct">90%</span></div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-name"><div class="tech-logo">🎨</div> Tailwind CSS v4</div>
+            <div class="tech-bar-wrap"><div class="tech-bar"><div class="tech-bar-fill" style="width:88%"></div></div><span class="tech-pct">88%</span></div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-name"><div class="tech-logo">🧩</div> shadcn/ui</div>
+            <div class="tech-bar-wrap"><div class="tech-bar"><div class="tech-bar-fill" style="width:85%"></div></div><span class="tech-pct">85%</span></div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-name"><div class="tech-logo">🔄</div> TanStack Query</div>
+            <div class="tech-bar-wrap"><div class="tech-bar"><div class="tech-bar-fill" style="width:92%"></div></div><span class="tech-pct">92%</span></div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-name"><div class="tech-logo">🗂️</div> Zustand</div>
+            <div class="tech-bar-wrap"><div class="tech-bar"><div class="tech-bar-fill" style="width:80%"></div></div><span class="tech-pct">80%</span></div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-name"><div class="tech-logo">🛣️</div> Wouter</div>
+            <div class="tech-bar-wrap"><div class="tech-bar"><div class="tech-bar-fill" style="width:75%"></div></div><span class="tech-pct">75%</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="stack-cat">
+        <div class="stack-cat-header">
+          <div class="stack-cat-icon" style="background:rgba(16,185,129,0.15)">⚙️</div>
+          <div>
+            <div class="stack-cat-name">Backend Stack</div>
+            <div class="stack-cat-sub">الخادم وقاعدة البيانات</div>
+          </div>
+        </div>
+        <div class="tech-items">
+          <div class="tech-item">
+            <div class="tech-name"><div class="tech-logo">🟢</div> Node.js + Express</div>
+            <div class="tech-bar-wrap"><div class="tech-bar"><div class="tech-bar-fill" style="width:95%"></div></div><span class="tech-pct">95%</span></div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-name"><div class="tech-logo">🐘</div> PostgreSQL</div>
+            <div class="tech-bar-wrap"><div class="tech-bar"><div class="tech-bar-fill" style="width:100%"></div></div><span class="tech-pct">100%</span></div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-name"><div class="tech-logo">🔧</div> Drizzle ORM</div>
+            <div class="tech-bar-wrap"><div class="tech-bar"><div class="tech-bar-fill" style="width:90%"></div></div><span class="tech-pct">90%</span></div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-name"><div class="tech-logo">✅</div> Zod Validation</div>
+            <div class="tech-bar-wrap"><div class="tech-bar"><div class="tech-bar-fill" style="width:95%"></div></div><span class="tech-pct">95%</span></div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-name"><div class="tech-logo">🔐</div> bcrypt + Sessions</div>
+            <div class="tech-bar-wrap"><div class="tech-bar"><div class="tech-bar-fill" style="width:88%"></div></div><span class="tech-pct">88%</span></div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-name"><div class="tech-logo">📡</div> Native WebSockets</div>
+            <div class="tech-bar-wrap"><div class="tech-bar"><div class="tech-bar-fill" style="width:85%"></div></div><span class="tech-pct">85%</span></div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-name"><div class="tech-logo">📱</div> Capacitor Mobile</div>
+            <div class="tech-bar-wrap"><div class="tech-bar"><div class="tech-bar-fill" style="width:80%"></div></div><span class="tech-pct">80%</span></div>
+          </div>
+          <div class="tech-item">
+            <div class="tech-name"><div class="tech-logo">🌏</div> Asia/Riyadh TZ</div>
+            <div class="tech-bar-wrap"><div class="tech-bar"><div class="tech-bar-fill" style="width:100%"></div></div><span class="tech-pct">100%</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== ARCHITECTURE ===== -->
+<section class="arch-bg" style="background:#0a0a0f">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-tag">🏗️ معمارية النظام</div>
+      <h2 class="section-title">بنية طبقية قابلة للتوسع</h2>
+      <p class="section-sub">تصميم معماري واضح يفصل المخاوف ويسهّل الصيانة والتوسع المستقبلي</p>
+    </div>
+    <div class="arch-diagram">
+      <div class="arch-layers">
+        <div class="arch-layer clients">
+          <div class="arch-layer-label">👤 Client Layer</div>
+          <div class="arch-items">
+            <span class="arch-item">Web Browser</span>
+            <span class="arch-item">iOS App (Capacitor)</span>
+            <span class="arch-item">Android App (Capacitor)</span>
+            <span class="arch-item">Customer Tracking Page</span>
+          </div>
+        </div>
+        <div class="arch-arrow">↕</div>
+        <div class="arch-layer frontend">
+          <div class="arch-layer-label">🖥️ Frontend Layer</div>
+          <div class="arch-items">
+            <span class="arch-item">React 18 + Vite</span>
+            <span class="arch-item">TanStack Query</span>
+            <span class="arch-item">Zustand State</span>
+            <span class="arch-item">Wouter Router</span>
+            <span class="arch-item">shadcn/ui + Tailwind</span>
+            <span class="arch-item">Custom i18n RTL</span>
+            <span class="arch-item">WebSocket Client</span>
+          </div>
+        </div>
+        <div class="arch-arrow">↕</div>
+        <div class="arch-layer backend">
+          <div class="arch-layer-label">⚙️ Backend Layer</div>
+          <div class="arch-items">
+            <span class="arch-item">Express.js API (150+ endpoints)</span>
+            <span class="arch-item">Session Auth + bcrypt</span>
+            <span class="arch-item">RBAC Middleware</span>
+            <span class="arch-item">WebSocket Server (ws)</span>
+            <span class="arch-item">Zod Validation</span>
+            <span class="arch-item">Financial Engine</span>
+          </div>
+        </div>
+        <div class="arch-arrow">↕</div>
+        <div class="arch-layer data">
+          <div class="arch-layer-label">🗄️ Data Layer</div>
+          <div class="arch-items">
+            <span class="arch-item">PostgreSQL (40+ tables)</span>
+            <span class="arch-item">Drizzle ORM</span>
+            <span class="arch-item">Session Store (DB)</span>
+            <span class="arch-item">JSONB Flexible Data</span>
+            <span class="arch-item">UUID Primary Keys</span>
+          </div>
+        </div>
+        <div class="arch-arrow">↕</div>
+        <div class="arch-layer external">
+          <div class="arch-layer-label">🌐 External Services</div>
+          <div class="arch-items">
+            <span class="arch-item">SMS 4jawaly</span>
+            <span class="arch-item">ClickPay Payment</span>
+            <span class="arch-item">Google Maps API</span>
+            <span class="arch-item">Salla Webhook</span>
+            <span class="arch-item">Nodemailer (Email)</span>
+            <span class="arch-item">Firebase FCM</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== INTEGRATIONS ===== -->
+<section class="integrations-bg">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-tag">🔌 التكاملات والخدمات</div>
+      <h2 class="section-title">ربط متكامل مع الأنظمة السعودية</h2>
+      <p class="section-sub">تكاملات مع أبرز الخدمات والبوابات في السوق السعودي</p>
+    </div>
+    <div class="integrations-grid">
+      <div class="integration-card">
+        <span class="int-icon">💳</span>
+        <div class="int-name">ClickPay</div>
+        <div class="int-desc">بوابة الدفع الإلكتروني السعودية لاستقبال المدفوعات وتسوية المحافظ</div>
+        <span class="int-status status-live">✓ مُفعَّل</span>
+      </div>
+      <div class="integration-card">
+        <span class="int-icon">📱</span>
+        <div class="int-name">4jawaly SMS</div>
+        <div class="int-desc">بوابة SMS لإرسال OTP وإشعارات الطلبات وتنبيهات العملاء</div>
+        <span class="int-status status-live">✓ مُفعَّل</span>
+      </div>
+      <div class="integration-card">
+        <span class="int-icon">🛍️</span>
+        <div class="int-name">Salla Plugin</div>
+        <div class="int-desc">تكامل Webhook مع منصة سلة لمزامنة الطلبات تلقائياً</div>
+        <span class="int-status status-live">✓ مُفعَّل</span>
+      </div>
+      <div class="integration-card">
+        <span class="int-icon">🗺️</span>
+        <div class="int-name">Google Maps</div>
+        <div class="int-desc">خرائط تفاعلية مع العنوان الوطني السعودي وتتبع السائقين</div>
+        <span class="int-status status-live">✓ مُفعَّل</span>
+      </div>
+      <div class="integration-card">
+        <span class="int-icon">📧</span>
+        <div class="int-name">Nodemailer</div>
+        <div class="int-desc">إرسال رسائل البريد الإلكتروني للتنبيهات والتقارير المالية</div>
+        <span class="int-status status-live">✓ مُفعَّل</span>
+      </div>
+      <div class="integration-card">
+        <span class="int-icon">🔔</span>
+        <div class="int-name">Firebase FCM</div>
+        <div class="int-desc">إشعارات Push للتطبيق المحمول على iOS و Android</div>
+        <span class="int-status status-plan">⌛ قريباً</span>
+      </div>
+      <div class="integration-card">
+        <span class="int-icon">💬</span>
+        <div class="int-name">WhatsApp API</div>
+        <div class="int-desc">تواصل مباشر مع العملاء عبر واتساب لإشعارات الطلبات</div>
+        <span class="int-status status-plan">⌛ قريباً</span>
+      </div>
+      <div class="integration-card">
+        <span class="int-icon">📦</span>
+        <div class="int-name">Capacitor Mobile</div>
+        <div class="int-desc">تطبيق موبايل هجين بنفس كود React للويب بتجربة أصيلة</div>
+        <span class="int-status status-live">✓ مُفعَّل</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== SCREENS ===== -->
+<section class="screens-bg">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-tag">🖼️ واجهات المنصة</div>
+      <h2 class="section-title">تصميم عصري لكل دور</h2>
+      <p class="section-sub">واجهات مصممة بعناية لتناسب احتياجات كل مستخدم مع دعم كامل للغة العربية</p>
+    </div>
+    <div class="screens-grid">
+
+      <!-- Admin Dashboard -->
+      <div class="screen-card">
+        <div class="screen-preview" style="background:linear-gradient(145deg,#0d0d1a,#12082b)">
+          <div class="screen-bar">
+            <div class="screen-dots">
+              <div class="screen-dot" style="background:#ff5f57"></div>
+              <div class="screen-dot" style="background:#febc2e"></div>
+              <div class="screen-dot" style="background:#28c840"></div>
+            </div>
+          </div>
+          <div class="screen-header-bar" style="background:rgba(124,58,237,0.2);border:1px solid rgba(124,58,237,0.25);color:#c4b5fd">
+            🛡️ &nbsp;لوحة تحكم الأدمن
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+            <div style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);border-radius:8px;padding:10px">
+              <div style="font-size:11px;color:#a78bfa">الطلبات</div>
+              <div style="font-size:18px;font-weight:800;color:#fff;font-family:Inter">2,847</div>
+            </div>
+            <div style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:10px">
+              <div style="font-size:11px;color:#6ee7b7">الإيرادات</div>
+              <div style="font-size:18px;font-weight:800;color:#fff;font-family:Inter">142K</div>
+            </div>
+            <div style="background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.2);border-radius:8px;padding:10px">
+              <div style="font-size:11px;color:#67e8f9">السائقون</div>
+              <div style="font-size:18px;font-weight:800;color:#fff;font-family:Inter">48</div>
+            </div>
+            <div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:10px">
+              <div style="font-size:11px;color:#fcd34d">المتاجر</div>
+              <div style="font-size:18px;font-weight:800;color:#fff;font-family:Inter">126</div>
+            </div>
+          </div>
+          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px;display:flex;gap:6px;align-items:center">
+            <div style="width:6px;height:6px;border-radius:50%;background:#10b981"></div>
+            <div style="font-size:10px;color:#94a3b8;flex:1">#ORD-00291 - متجر الأناقة</div>
+            <div style="font-size:10px;background:rgba(16,185,129,0.15);color:#10b981;padding:2px 6px;border-radius:4px">مُسلَّمة</div>
+          </div>
+        </div>
+        <div class="screen-info">
+          <div class="screen-title">لوحة تحكم الأدمن</div>
+          <div class="screen-desc">نظرة شاملة على الأداء الكلي مع إحصائيات فورية للطلبات والإيرادات والمستخدمين</div>
+          <div class="screen-pills">
+            <span class="screen-pill">Real-time Stats</span>
+            <span class="screen-pill">Financial Overview</span>
+            <span class="screen-pill">Multi-role Management</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Store Orders -->
+      <div class="screen-card">
+        <div class="screen-preview" style="background:linear-gradient(145deg,#0d1926,#091520)">
+          <div class="screen-bar">
+            <div class="screen-dots">
+              <div class="screen-dot" style="background:#ff5f57"></div>
+              <div class="screen-dot" style="background:#febc2e"></div>
+              <div class="screen-dot" style="background:#28c840"></div>
+            </div>
+          </div>
+          <div class="screen-header-bar" style="background:rgba(6,182,212,0.15);border:1px solid rgba(6,182,212,0.25);color:#67e8f9">
+            🏪 &nbsp;إدارة الطلبات
+          </div>
+          <div class="screen-row" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px">
+            <div class="screen-row-dot" style="background:#10b981"></div>
+            <div class="screen-row-lines">
+              <div class="screen-row-line" style="background:rgba(255,255,255,0.12);width:80%"></div>
+              <div class="screen-row-line" style="background:rgba(255,255,255,0.06);width:50%"></div>
+            </div>
+            <div class="screen-row-badge" style="background:rgba(16,185,129,0.15);border-radius:4px"></div>
+          </div>
+          <div class="screen-row" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px">
+            <div class="screen-row-dot" style="background:#f59e0b"></div>
+            <div class="screen-row-lines">
+              <div class="screen-row-line" style="background:rgba(255,255,255,0.12);width:70%"></div>
+              <div class="screen-row-line" style="background:rgba(255,255,255,0.06);width:40%"></div>
+            </div>
+            <div class="screen-row-badge" style="background:rgba(245,158,11,0.15);border-radius:4px"></div>
+          </div>
+          <div class="screen-row" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px">
+            <div class="screen-row-dot" style="background:#7c3aed"></div>
+            <div class="screen-row-lines">
+              <div class="screen-row-line" style="background:rgba(255,255,255,0.12);width:90%"></div>
+              <div class="screen-row-line" style="background:rgba(255,255,255,0.06);width:60%"></div>
+            </div>
+            <div class="screen-row-badge" style="background:rgba(124,58,237,0.15);border-radius:4px"></div>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:2px">
+            <div style="flex:1;height:28px;background:rgba(6,182,212,0.15);border:1px solid rgba(6,182,212,0.25);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#67e8f9">إنشاء طلب</div>
+            <div style="flex:1;height:28px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#64748b">تصفية</div>
+          </div>
+        </div>
+        <div class="screen-info">
+          <div class="screen-title">واجهة المتجر</div>
+          <div class="screen-desc">إنشاء وتتبع الطلبات مع إدارة المحفظة والتكامل مع منصة سلة وبوليصة الشحن</div>
+          <div class="screen-pills">
+            <span class="screen-pill">Order Management</span>
+            <span class="screen-pill">Wallet</span>
+            <span class="screen-pill">Salla Integration</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Driver App -->
+      <div class="screen-card">
+        <div class="screen-preview" style="background:linear-gradient(145deg,#0a1a0d,#091520)">
+          <div class="screen-bar">
+            <div class="screen-dots">
+              <div class="screen-dot" style="background:#ff5f57"></div>
+              <div class="screen-dot" style="background:#febc2e"></div>
+              <div class="screen-dot" style="background:#28c840"></div>
+            </div>
+          </div>
+          <div class="screen-header-bar" style="background:rgba(16,185,129,0.15);border:1px solid rgba(16,185,129,0.25);color:#6ee7b7">
+            🚗 &nbsp;تطبيق السائق
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:4px">
+            <div style="flex:1;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:8px;text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#fff;font-family:Inter">12</div>
+              <div style="font-size:9px;color:#6ee7b7">طلبات اليوم</div>
+            </div>
+            <div style="flex:1;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:8px;text-align:center">
+              <div style="font-size:16px;font-weight:800;color:#fff;font-family:Inter">340</div>
+              <div style="font-size:9px;color:#fcd34d">ريال</div>
+            </div>
+          </div>
+          <div style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);border-radius:8px;padding:10px;text-align:center">
+            <div style="font-size:11px;color:#6ee7b7;font-weight:600">وضع الرحلة نشط 🟢</div>
+            <div style="font-size:9px;color:#64748b;margin-top:2px">Route Mode Active</div>
+          </div>
+          <div class="screen-row" style="background:rgba(255,255,255,0.04);border:1px solid rgba(16,185,129,0.15);border-radius:8px">
+            <div class="screen-row-dot" style="background:#10b981"></div>
+            <div class="screen-row-lines">
+              <div class="screen-row-line" style="background:rgba(255,255,255,0.12);width:75%"></div>
+              <div class="screen-row-line" style="background:rgba(255,255,255,0.06);width:45%"></div>
+            </div>
+            <div style="font-size:10px;background:rgba(16,185,129,0.15);color:#10b981;padding:2px 6px;border-radius:4px;flex-shrink:0">استلام</div>
+          </div>
+        </div>
+        <div class="screen-info">
+          <div class="screen-title">تطبيق السائق</div>
+          <div class="screen-desc">وضع الرحلة، استلام الطلبات، تحصيل COD، وتتبع الأداء اليومي مع إدارة المحفظة</div>
+          <div class="screen-pills">
+            <span class="screen-pill">Route Mode</span>
+            <span class="screen-pill">COD Collection</span>
+            <span class="screen-pill">Live Tracking</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Financial Dashboard -->
+      <div class="screen-card">
+        <div class="screen-preview" style="background:linear-gradient(145deg,#1a0d0a,#12082b)">
+          <div class="screen-bar">
+            <div class="screen-dots">
+              <div class="screen-dot" style="background:#ff5f57"></div>
+              <div class="screen-dot" style="background:#febc2e"></div>
+              <div class="screen-dot" style="background:#28c840"></div>
+            </div>
+          </div>
+          <div class="screen-header-bar" style="background:rgba(245,158,11,0.15);border:1px solid rgba(245,158,11,0.25);color:#fcd34d">
+            💰 &nbsp;النظام المالي
+          </div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 10px">
+              <span style="font-size:10px;color:#94a3b8">محفظة طرد</span>
+              <span style="font-size:13px;font-weight:700;color:#a78bfa;font-family:Inter">45,280 ر.س</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 10px">
+              <span style="font-size:10px;color:#94a3b8">تسوية COD معلقة</span>
+              <span style="font-size:13px;font-weight:700;color:#f59e0b;font-family:Inter">12,440 ر.س</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,0.04);border-radius:8px;padding:8px 10px">
+              <span style="font-size:10px;color:#94a3b8">عمولات السائقين</span>
+              <span style="font-size:13px;font-weight:700;color:#6ee7b7;font-family:Inter">8,320 ر.س</span>
+            </div>
+          </div>
+          <div style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);border-radius:8px;padding:8px;display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:10px;color:#a78bfa">Audit Trail</span>
+            <span style="font-size:10px;color:#64748b">847 معاملة</span>
+          </div>
+        </div>
+        <div class="screen-info">
+          <div class="screen-title">لوحة التمويل</div>
+          <div class="screen-desc">نظرة شاملة على المحافظ والتسويات المالية مع سجل كامل لكل معاملة مالية</div>
+          <div class="screen-pills">
+            <span class="screen-pill">5 Wallets</span>
+            <span class="screen-pill">COD Settlement</span>
+            <span class="screen-pill">Audit Trail</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Institution -->
+      <div class="screen-card">
+        <div class="screen-preview" style="background:linear-gradient(145deg,#0d0a1a,#090d1a)">
+          <div class="screen-bar">
+            <div class="screen-dots">
+              <div class="screen-dot" style="background:#ff5f57"></div>
+              <div class="screen-dot" style="background:#febc2e"></div>
+              <div class="screen-dot" style="background:#28c840"></div>
+            </div>
+          </div>
+          <div class="screen-header-bar" style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.25);color:#fca5a5">
+            🏢 &nbsp;إدارة المؤسسة
+          </div>
+          <div style="display:flex;gap:6px;margin-bottom:6px">
+            <div style="flex:1;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);border-radius:8px;padding:8px;text-align:center">
+              <div style="font-size:15px;font-weight:800;color:#fff;font-family:Inter">24</div>
+              <div style="font-size:9px;color:#fca5a5">سائقين</div>
+            </div>
+            <div style="flex:1;background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);border-radius:8px;padding:8px;text-align:center">
+              <div style="font-size:15px;font-weight:800;color:#fff;font-family:Inter">8</div>
+              <div style="font-size:9px;color:#c4b5fd">رحلات</div>
+            </div>
+            <div style="flex:1;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:8px;text-align:center">
+              <div style="font-size:15px;font-weight:800;color:#fff;font-family:Inter">156</div>
+              <div style="font-size:9px;color:#6ee7b7">طلب</div>
+            </div>
+          </div>
+          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:8px;padding:8px;font-size:10px;color:#94a3b8">
+            تسوية COD: <span style="color:#f59e0b;font-family:Inter;font-weight:600">3,240 ر.س</span> معلقة
+          </div>
+          <div style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.15);border-radius:8px;padding:6px 10px;font-size:10px;color:#6ee7b7;text-align:center">
+            ✓ حد الائتمان: 50,000 ر.س
+          </div>
+        </div>
+        <div class="screen-info">
+          <div class="screen-title">واجهة المؤسسة</div>
+          <div class="screen-desc">إدارة السائقين والرحلات، تسوية COD، وإدارة الفواتير مع حد الائتمان</div>
+          <div class="screen-pills">
+            <span class="screen-pill">Driver Management</span>
+            <span class="screen-pill">Trip Management</span>
+            <span class="screen-pill">Credit Limit</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Customer Tracking -->
+      <div class="screen-card">
+        <div class="screen-preview" style="background:linear-gradient(145deg,#0a0f1a,#0d1520)">
+          <div class="screen-bar">
+            <div class="screen-dots">
+              <div class="screen-dot" style="background:#ff5f57"></div>
+              <div class="screen-dot" style="background:#febc2e"></div>
+              <div class="screen-dot" style="background:#28c840"></div>
+            </div>
+          </div>
+          <div class="screen-header-bar" style="background:rgba(6,182,212,0.12);border:1px solid rgba(6,182,212,0.25);color:#67e8f9">
+            📦 &nbsp;تتبع الطلب
+          </div>
+          <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.06);border-radius:10px;padding:12px;text-align:center;margin-bottom:6px">
+            <div style="font-size:11px;color:#64748b;margin-bottom:4px">رقم الطلب</div>
+            <div style="font-size:16px;font-weight:800;color:#fff;font-family:Inter">#ORD-00291</div>
+            <div style="margin-top:8px;font-size:12px;background:rgba(6,182,212,0.15);color:#67e8f9;padding:4px 12px;border-radius:4px;display:inline-block">في الطريق 🚚</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:4px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <div style="width:10px;height:10px;border-radius:50%;background:#10b981;flex-shrink:0"></div>
+              <div style="height:5px;border-radius:3px;background:linear-gradient(90deg,#10b981,#06b6d4);flex:1"></div>
+              <div style="width:10px;height:10px;border-radius:50%;background:#06b6d4;flex-shrink:0"></div>
+              <div style="height:5px;border-radius:3px;background:rgba(255,255,255,0.1);flex:1"></div>
+              <div style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.15);flex-shrink:0"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:9px;color:#64748b">
+              <span>تم الاستلام</span><span style="color:#06b6d4">في الطريق</span><span>تم التسليم</span>
+            </div>
+          </div>
+          <div style="background:rgba(255,255,255,0.04);border-radius:8px;padding:8px;font-size:10px;color:#94a3b8;text-align:center">
+            المبلغ عند الاستلام: <span style="color:#f59e0b;font-weight:700;font-family:Inter">150 ر.س</span>
+          </div>
+        </div>
+        <div class="screen-info">
+          <div class="screen-title">صفحة تتبع العميل</div>
+          <div class="screen-desc">صفحة عامة لتتبع الطلب دون تسجيل دخول مع حماية خصوصية بيانات العميل</div>
+          <div class="screen-pills">
+            <span class="screen-pill">Public Tracking</span>
+            <span class="screen-pill">Privacy Protected</span>
+            <span class="screen-pill">COD Display</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== NUMBERS ===== -->
+<section class="numbers-bg">
+  <div class="section">
+    <div class="section-header">
+      <div class="section-tag">📊 الأرقام التقنية</div>
+      <h2 class="section-title">منصة بحجم مؤسسي</h2>
+    </div>
+    <div class="numbers-grid">
+      <div class="number-item">
+        <span class="number-value">150+</span>
+        <div class="number-label">REST API Endpoint</div>
+        <div class="number-sub">يغطي كل سيناريوهات العمل</div>
+      </div>
+      <div class="number-item">
+        <span class="number-value">40+</span>
+        <div class="number-label">جدول قاعدة بيانات</div>
+        <div class="number-sub">PostgreSQL مع Drizzle ORM</div>
+      </div>
+      <div class="number-item">
+        <span class="number-value">80+</span>
+        <div class="number-label">مكوّن React</div>
+        <div class="number-sub">قابلة لإعادة الاستخدام</div>
+      </div>
+      <div class="number-item">
+        <span class="number-value">5</span>
+        <div class="number-label">أنواع محافظ مالية</div>
+        <div class="number-sub">نظام مالي معزول ودقيق</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+  <div class="footer-logo">TARD طرد</div>
+  <div class="footer-tagline">منصة لوجستية شاملة للسوق السعودي · Comprehensive Logistics Platform for Saudi Arabia</div>
+  <div class="footer-tech-line">
+    <span class="f-tech">React 18</span>
+    <span class="f-tech">TypeScript</span>
+    <span class="f-tech">Node.js</span>
+    <span class="f-tech">Express</span>
+    <span class="f-tech">PostgreSQL</span>
+    <span class="f-tech">Drizzle ORM</span>
+    <span class="f-tech">Tailwind CSS v4</span>
+    <span class="f-tech">shadcn/ui</span>
+    <span class="f-tech">TanStack Query</span>
+    <span class="f-tech">WebSockets</span>
+    <span class="f-tech">Capacitor</span>
+    <span class="f-tech">Google Maps</span>
+    <span class="f-tech">ClickPay</span>
+    <span class="f-tech">Salla</span>
+    <span class="f-tech">4jawaly SMS</span>
+  </div>
+  <div class="footer-bottom">
+    صُمِّمت وطُوِّرت بواسطة فريق البرمجة &nbsp;·&nbsp; جميع الحقوق محفوظة
+  </div>
+</footer>
+
+<script>
+  // Smooth reveal animation on scroll
+  const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.role-card, .feature-card, .wallet-card, .integration-card, .screen-card, .stack-cat, .flow-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    observer.observe(el);
+  });
+
+  // Counter animation for stats
+  function animateCounter(el, target, suffix) {
+    let start = 0;
+    const increment = target / 60;
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= target) {
+        el.textContent = target + suffix;
+        clearInterval(timer);
+      } else {
+        el.textContent = Math.floor(start) + suffix;
+      }
+    }, 16);
+  }
+
+  const statNums = document.querySelectorAll('.stat-num');
+  const statTargets = [5, 150, 40];
+  const statSuffixes = ['', '+', '+'];
+
+  const statsObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      statNums.forEach((el, i) => {
+        animateCounter(el, statTargets[i], statSuffixes[i]);
+      });
+      statsObserver.disconnect();
+    }
+  });
+
+  if (statNums[0]) statsObserver.observe(statNums[0]);
+
+  // Number counters
+  const numVals = document.querySelectorAll('.number-value');
+  const numTargets = [150, 40, 80, 5];
+  const numSuffixes = ['+', '+', '+', ''];
+
+  const numbersObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting) {
+      numVals.forEach((el, i) => {
+        animateCounter(el, numTargets[i], numSuffixes[i]);
+      });
+      numbersObserver.disconnect();
+    }
+  });
+
+  if (numVals[0]) numbersObserver.observe(numVals[0]);
+</script>
+
+</body>
+</html>
