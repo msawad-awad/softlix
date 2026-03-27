@@ -37,6 +37,7 @@ import {
   SlidersHorizontal,
   MapPin,
   UsersRound,
+  Phone,
 } from "lucide-react";
 import {
   Sidebar,
@@ -407,6 +408,17 @@ export function AppSidebar() {
                 <Link href="/settings/users" data-testid="nav-team-users">
                   <UsersRound className={isRTL ? "ml-2" : "mr-2"} />
                   <span>إدارة الفريق</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
+
+          {hasPermission("team") && (
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild isActive={isActive("/settings/phone")} tooltip="إدارة أرقام الهاتف">
+                <Link href="/settings/phone" data-testid="nav-phone-settings">
+                  <Phone className={isRTL ? "ml-2" : "mr-2"} />
+                  <span>أرقام الهاتف</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

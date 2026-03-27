@@ -1153,6 +1153,26 @@ export type Employee = typeof employees.$inferSelect;
 export type InsertEmployee = z.infer<typeof insertEmployeeSchema>;
 
 // ============================================================================
+// PHONE SETTINGS (Phone Numbers Management)
+// ============================================================================
+export const phoneSettings = pgTable("phone_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  category: text("category").notNull(), // default, programming, marketing, services, careers, etc
+  phoneNumber: text("phone_number").notNull(),
+  whatsappNumber: text("whatsapp_number"), // optional, can be same as phoneNumber
+  displayName: text("display_name"), // e.g., "Programming Inquiries", "Sales"
+  isDefault: boolean("is_default").default(false),
+  displayOrder: integer("display_order").default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertPhoneSettingSchema = createInsertSchema(phoneSettings).omit({ id: true, createdAt: true, updatedAt: true });
+export type PhoneSetting = typeof phoneSettings.$inferSelect;
+export type InsertPhoneSetting = z.infer<typeof insertPhoneSettingSchema>;
+
+// ============================================================================
 // API Response Types
 // ============================================================================
 export type UserWithoutPassword = Omit<User, "passwordHash">;

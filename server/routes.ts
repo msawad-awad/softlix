@@ -992,6 +992,84 @@ export async function registerRoutes(
   });
 
   // =========================================================================
+  // PHONE SETTINGS (Protected) - Contact form & WhatsApp numbers
+  // =========================================================================
+
+  app.get("/api/phone-settings", requireAuth, async (req, res) => {
+    try {
+      const settings = await storage.getPhoneSettings(req.user!.tenantId);
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.get("/api/phone-settings/category/:category", requireAuth, async (req, res) => {
+    try {
+      const setting = await storage.getPhoneSettingByCategory(req.user!.tenantId, req.params.category);
+      if (!setting) return res.status(404).json({ message: "Not found" });
+      res.json(setting);
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.post("/api/phone-settings", requireAuth, async (req, res) => {
+    try {
+      const schema = z.object({
+        category: z.string().min(1),
+        phoneNumber: z.string().min(1),
+        whatsappNumber: z.string().optional(),
+        displayName: z.string().optional(),
+        isDefault: z.boolean().optional(),
+        displayOrder: z.number().optional(),
+      });
+      const data = schema.parse(req.body);
+      const setting = await storage.createPhoneSetting(req.user!.tenantId, {
+        ...data,
+        tenantId: req.user!.tenantId,
+      } as any);
+      res.status(201).json(setting);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.patch("/api/phone-settings/:id", requireAuth, async (req, res) => {
+    try {
+      const schema = z.object({
+        category: z.string().optional(),
+        phoneNumber: z.string().optional(),
+        whatsappNumber: z.string().optional(),
+        displayName: z.string().optional(),
+        isDefault: z.boolean().optional(),
+        displayOrder: z.number().optional(),
+      });
+      const data = schema.parse(req.body);
+      const setting = await storage.updatePhoneSetting(req.params.id, req.user!.tenantId, data);
+      if (!setting) return res.status(404).json({ message: "Not found" });
+      res.json(setting);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid request data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  app.delete("/api/phone-settings/:id", requireAuth, async (req, res) => {
+    try {
+      await storage.deletePhoneSetting(req.params.id, req.user!.tenantId);
+      res.json({ message: "Deleted successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
+  // =========================================================================
   // CMS - BLOG (Protected)
   // =========================================================================
 

@@ -9,7 +9,7 @@ import {
   crmActivities, crmTasks, crmProposals, crmProposalItems,
   integrationSettings, crmAttachments, crmProposalTokens,
   proposalTemplates, googleImportBuffer, serviceLibrary, visitorLogs, analyticsEvents,
-  tickets, ticketMessages, employees, inventoryItems,
+  tickets, ticketMessages, employees, inventoryItems, phoneSettings,
   type ProposalTemplate, type InsertProposalTemplate,
   type GoogleImportBuffer, type InsertGoogleImportBuffer,
   type ServiceLibraryItem, type InsertServiceLibraryItem,
@@ -55,6 +55,7 @@ import {
   type TicketMessage, type InsertTicketMessage,
   type Employee, type InsertEmployee,
   type InventoryItem, type InsertInventoryItem,
+  type PhoneSetting, type InsertPhoneSetting,
   type AuthenticatedUser,
 } from "@shared/schema";
 import { db } from "./db";
@@ -322,6 +323,14 @@ export interface IStorage {
     leadsByStatus: Record<string, number>; leadsBySource: Record<string, number>;
     dealsByStage: Record<string, number>; recentLeads: CrmLead[];
   }>;
+
+  // Phone Settings
+  getPhoneSettings(tenantId: string): Promise<PhoneSetting[]>;
+  getPhoneSettingByCategory(tenantId: string, category: string): Promise<PhoneSetting | undefined>;
+  getDefaultPhoneSetting(tenantId: string): Promise<PhoneSetting | undefined>;
+  createPhoneSetting(tenantId: string, data: InsertPhoneSetting): Promise<PhoneSetting>;
+  updatePhoneSetting(id: string, tenantId: string, data: Partial<InsertPhoneSetting>): Promise<PhoneSetting | undefined>;
+  deletePhoneSetting(id: string, tenantId: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -2110,6 +2119,38 @@ export class DatabaseStorage implements IStorage {
 
   async deleteEmployee(id: string, tenantId: string): Promise<void> {
     await db.delete(employees).where(and(eq(employees.id, id), eq(employees.tenantId, tenantId)));
+  }
+
+  // Phone Settings
+  async getPhoneSettings(tenantId: string): Promise<PhoneSetting[]> {
+    return db.select().from(phoneSettings).where(eq(phoneSettings.tenantId, tenantId)).orderBy(asc(phoneSettings.displayOrder));
+  }
+
+  async getPhoneSettingByCategory(tenantId: string, category: string): Promise<PhoneSetting | undefined> {
+    const [row] = await db.select().from(phoneSettings)
+      .where(and(eq(phoneSettings.tenantId, tenantId), eq(phoneSettings.category, category)));
+    return row;
+  }
+
+  async getDefaultPhoneSetting(tenantId: string): Promise<PhoneSetting | undefined> {
+    const [row] = await db.select().from(phoneSettings)
+      .where(and(eq(phoneSettings.tenantId, tenantId), eq(phoneSettings.isDefault, true)));
+    return row;
+  }
+
+  async createPhoneSetting(tenantId: string, data: InsertPhoneSetting): Promise<PhoneSetting> {
+    const [row] = await db.insert(phoneSettings).values({ ...data, tenantId }).returning();
+    return row;
+  }
+
+  async updatePhoneSetting(id: string, tenantId: string, data: Partial<InsertPhoneSetting>): Promise<PhoneSetting | undefined> {
+    const [row] = await db.update(phoneSettings).set({ ...data, updatedAt: new Date() })
+      .where(and(eq(phoneSettings.id, id), eq(phoneSettings.tenantId, tenantId))).returning();
+    return row;
+  }
+
+  async deletePhoneSetting(id: string, tenantId: string): Promise<void> {
+    await db.delete(phoneSettings).where(and(eq(phoneSettings.id, id), eq(phoneSettings.tenantId, tenantId)));
   }
 }
 
