@@ -178,9 +178,9 @@ function ProjectDetail({ slug, lang = "ar", onLangChange }: { slug: string } & P
   const title = isAr ? proj.title : (proj.titleEn || proj.title);
   const desc = isAr ? proj.description : (proj.descriptionEn || proj.description);
   const badge = isAr ? (proj.badge || proj.category) : (proj.badgeEn || proj.badge || proj.category);
-  const tags: string[] = proj.tags || proj.technologies || [];
+  const tags: string[] = Array.isArray(proj.tags) ? proj.tags : (Array.isArray(proj.technologies) ? proj.technologies : []);
   const client = proj.clientName || proj.client || "";
-  const images: string[] = (proj.images || []).filter(Boolean);
+  const images: string[] = (Array.isArray(proj.images) ? proj.images : []).filter(Boolean);
 
   // Rich structured details from CMS
   const det = (proj.details || {}) as {
@@ -880,7 +880,7 @@ export default function PublicProjects({ lang = "ar", onLangChange, slug: slugPr
                 const title = isAr ? project.title : (project.titleEn || project.title);
                 const desc = isAr ? project.description : (project.descriptionEn || project.description);
                 const badge = isAr ? (project.badge || project.category) : (project.badgeEn || project.badge || project.category);
-                const tags: string[] = project.tags || project.technologies || [];
+                const tags: string[] = Array.isArray(project.tags) ? project.tags : (Array.isArray(project.technologies) ? project.technologies : []);
 
                 return (
                   <article

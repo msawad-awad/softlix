@@ -109,14 +109,12 @@ export function useMarketingTracking() {
       const pixelId = settings.metaPixelId.trim();
       injectInlineScript("fb-pixel", `
         (function(pixelId){
-          // If fbq already exists and this pixel was already inited (e.g. via GTM), skip
-          if(window.fbq && typeof window.fbq.getState === 'function') {
-            var state = window.fbq.getState();
-            if(state && state.pixels && state.pixels.some(function(p){ return p.id === pixelId; })) return;
-          }
-          if(window.__fbPixelIds && window.__fbPixelIds[pixelId]) return;
+          // Initialize Meta Pixel only once, then intercept fbq to block duplicate inits
+          // (GTM may also fire fbq('init') for the same pixel asynchronously)
           if(!window.__fbPixelIds) window.__fbPixelIds = {};
+          var alreadyInited = window.__fbPixelIds[pixelId];
           window.__fbPixelIds[pixelId] = true;
+
           !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
           n.callMethod.apply(n,arguments):n.queue.push(arguments)};
           if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
@@ -124,8 +122,25 @@ export function useMarketingTracking() {
           t.src=v;s=b.getElementsByTagName(e)[0];
           s.parentNode.insertBefore(t,s)}(window,document,'script',
           'https://connect.facebook.net/en_US/fbevents.js');
-          fbq('init', pixelId);
-          fbq('track', 'PageView');
+
+          if(!alreadyInited) {
+            fbq('init', pixelId);
+            fbq('track', 'PageView');
+
+            // Intercept future fbq calls to silently drop duplicate init for this pixel
+            var _origFbq = window.fbq;
+            window.fbq = function() {
+              var a = arguments;
+              if(a[0] === 'init' && a[1] === pixelId && window.__fbPixelIds[pixelId] > 1) return;
+              if(a[0] === 'init' && a[1] === pixelId) window.__fbPixelIds[pixelId]++;
+              return _origFbq.apply(this, a);
+            };
+            window.fbq.callMethod = _origFbq.callMethod;
+            window.fbq.queue = _origFbq.queue;
+            window.fbq.push = _origFbq.push;
+            window.fbq.loaded = _origFbq.loaded;
+            window.fbq.version = _origFbq.version;
+          }
         })('${pixelId}');
       `);
     }
