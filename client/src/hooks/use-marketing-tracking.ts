@@ -251,4 +251,63 @@ export function useMarketingTracking() {
       window.snaptr("track", "PAGE_VIEW");
     }
   }, [pathname]);
+
+  // ── WhatsApp Button Click Tracking ────────────────────────────────────
+  // Event delegation: listens to ALL wa.me / api.whatsapp.com clicks globally
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      try {
+        // Walk up the DOM from click target to find an anchor tag
+        let el = e.target as HTMLElement | null;
+        while (el && el.tagName !== "A") {
+          el = el.parentElement;
+        }
+        if (!el) return;
+
+        const href = (el as HTMLAnchorElement).href || "";
+        const isWhatsApp =
+          href.includes("wa.me") ||
+          href.includes("api.whatsapp.com") ||
+          href.includes("whatsapp.com/send");
+
+        if (!isWhatsApp) return;
+
+        // ── GA4 via gtag ──
+        if (typeof window.gtag === "function") {
+          window.gtag("event", "whatsapp_click", {
+            event_category: "contact",
+            event_label: "whatsapp_button",
+            value: 1,
+          });
+        }
+
+        // ── GTM via dataLayer ──
+        if (Array.isArray(window.dataLayer)) {
+          window.dataLayer.push({
+            event: "whatsapp_click",
+            event_category: "contact",
+            event_label: "whatsapp_button",
+            value: 1,
+          });
+        }
+
+        // ── Meta Pixel custom event ──
+        if (typeof window.fbq === "function") {
+          window.fbq("trackCustom", "WhatsAppClick", { source: "whatsapp_button" });
+        }
+
+        // ── TikTok Pixel ──
+        if (window.ttq) {
+          window.ttq.track("Contact");
+        }
+
+        console.log("[Tracking] ✅ whatsapp_click fired →", href);
+      } catch (err) {
+        // Silent fail — tracking should never break the page
+      }
+    };
+
+    document.addEventListener("click", handleClick, { capture: true });
+    return () => document.removeEventListener("click", handleClick, { capture: true });
+  }, []);
 }
