@@ -473,6 +473,9 @@ export const siteSettings = pgTable("site_settings", {
   footerDescEn: text("footer_desc_en"),
   copyrightAr: text("copyright_ar"),
   copyrightEn: text("copyright_en"),
+  announcementAr: text("announcement_ar"),
+  announcementEn: text("announcement_en"),
+  announcementEnabled: boolean("announcement_enabled").default(true),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 

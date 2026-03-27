@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { X, MessageCircle, Phone, Send, Calendar, ChevronDown, CheckCircle, Mail, Bell } from "lucide-react";
 import { SiWhatsapp } from "react-icons/si";
+import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import type { MarketingSettings } from "@shared/schema";
 
@@ -431,14 +432,23 @@ export function NewsletterSection({ lang = "ar", settings }: { lang?: "ar" | "en
 export function AnnouncementBar({ lang = "ar", onBookingClick }: { lang?: "ar" | "en"; onBookingClick?: () => void }) {
   const isAr = lang === "ar";
   const [visible, setVisible] = useState(true);
+  const { data: settings } = useQuery<any>({ queryKey: ["/api/public/site-settings"] });
 
+  // If announcementEnabled is explicitly false, hide
+  if (settings && settings.announcementEnabled === false) return null;
   if (!visible) return null;
+
+  const defaultAr = "استشارة مجانية لأول 5 مشاريع هذا الشهر — لا تفوّت الفرصة!";
+  const defaultEn = "Free consultation for the first 5 projects this month — Don't miss it!";
+  const text = isAr
+    ? (settings?.announcementAr || defaultAr)
+    : (settings?.announcementEn || defaultEn);
 
   return (
     <div style={{ background: "linear-gradient(90deg, #cb7147, #e59269)", color: "#fff", padding: "10px 16px", display: "flex", alignItems: "center", justifyContent: "center", gap: 16, flexWrap: "wrap", position: "relative", fontFamily: "'Cairo', system-ui, sans-serif", zIndex: 1000, textAlign: "center" }}
       dir={isAr ? "rtl" : "ltr"}>
       <span style={{ fontSize: 14, fontWeight: 700 }}>
-        🎉 {isAr ? "استشارة مجانية لأول 5 مشاريع هذا الشهر — لا تفوّت الفرصة!" : "Free consultation for the first 5 projects this month — Don't miss it!"}
+        🎉 {text}
       </span>
       {onBookingClick && (
         <button onClick={onBookingClick}

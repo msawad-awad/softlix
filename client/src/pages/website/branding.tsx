@@ -10,7 +10,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ImageUploader } from "@/components/ui/image-uploader";
-import { Palette, Globe, Phone, Share2, Type, Save, Eye, RefreshCw, ImageIcon } from "lucide-react";
+import { Palette, Globe, Phone, Share2, Type, Save, Eye, RefreshCw, ImageIcon, Megaphone } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import type { SiteSettings } from "@shared/schema";
 
 const FONTS = ["Cairo", "Tajawal", "IBM Plex Arabic", "Noto Kufi Arabic", "Almarai", "Rubik", "Inter", "Poppins"];
@@ -59,6 +60,9 @@ export default function BrandingPage() {
       socialX: "", socialInstagram: "", socialLinkedIn: "",
       socialWhatsapp: "", socialFacebook: "", socialYoutube: "",
       footerDescAr: "", footerDescEn: "",
+      copyrightAr: "", copyrightEn: "",
+      announcementAr: "", announcementEn: "",
+      announcementEnabled: true,
     }
   });
 
@@ -112,6 +116,7 @@ export default function BrandingPage() {
             <TabsTrigger value="typography"><Type className="w-4 h-4 me-1" />الخطوط</TabsTrigger>
             <TabsTrigger value="contact"><Phone className="w-4 h-4 me-1" />التواصل</TabsTrigger>
             <TabsTrigger value="social"><Share2 className="w-4 h-4 me-1" />السوشيال</TabsTrigger>
+            <TabsTrigger value="announcement"><Megaphone className="w-4 h-4 me-1" />الإعلان</TabsTrigger>
           </TabsList>
 
           {/* Identity */}
@@ -386,6 +391,92 @@ export default function BrandingPage() {
                 </p>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Announcement */}
+          <TabsContent value="announcement">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
+              <Card className="md:col-span-2">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-base flex items-center gap-2">
+                        <Megaphone className="w-4 h-4 text-orange-500" />
+                        شريط الإعلان العلوي
+                      </CardTitle>
+                      <CardDescription className="mt-1">الشريط البرتقالي الذي يظهر في أعلى الموقع لعرض العروض والإشعارات</CardDescription>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Label className="text-sm text-gray-600">تفعيل الشريط</Label>
+                      <Switch
+                        checked={watch("announcementEnabled") ?? true}
+                        onCheckedChange={v => setValue("announcementEnabled", v, { shouldDirty: true })}
+                        data-testid="switch-announcement-enabled"
+                      />
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <Label>نص الإعلان (عربي)</Label>
+                    <Input
+                      {...register("announcementAr")}
+                      className="mt-1 text-right"
+                      dir="rtl"
+                      placeholder="استشارة مجانية لأول 5 مشاريع هذا الشهر — لا تفوّت الفرصة!"
+                      data-testid="input-announcement-ar"
+                    />
+                    <p className="text-xs text-gray-400 mt-1">يظهر هذا النص عند تصفح الموقع باللغة العربية</p>
+                  </div>
+                  <div>
+                    <Label>نص الإعلان (إنجليزي)</Label>
+                    <Input
+                      {...register("announcementEn")}
+                      className="mt-1"
+                      placeholder="Free consultation for the first 5 projects this month — Don't miss it!"
+                      data-testid="input-announcement-en"
+                    />
+                    <p className="text-xs text-gray-400 mt-1">يظهر هذا النص عند تصفح الموقع باللغة الإنجليزية</p>
+                  </div>
+                  {watch("announcementAr") && (
+                    <div className="rounded-xl overflow-hidden border border-orange-200">
+                      <p className="text-xs text-gray-500 px-3 pt-2">معاينة:</p>
+                      <div style={{ background: "linear-gradient(90deg, #cb7147, #e59269)", color: "#fff", padding: "10px 16px", textAlign: "center", fontFamily: "'Cairo', sans-serif", fontSize: 14, fontWeight: 700 }} dir="rtl">
+                        🎉 {watch("announcementAr")}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card className="md:col-span-2">
+                <CardHeader>
+                  <CardTitle className="text-base">نص حقوق النشر (Copyright)</CardTitle>
+                  <CardDescription>يظهر في أسفل الفوتر</CardDescription>
+                </CardHeader>
+                <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <Label>نص الحقوق (عربي)</Label>
+                    <Input
+                      {...register("copyrightAr")}
+                      className="mt-1 text-right"
+                      dir="rtl"
+                      placeholder="© 2026 سوفتلكس. جميع الحقوق محفوظة."
+                      data-testid="input-copyright-ar"
+                    />
+                  </div>
+                  <div>
+                    <Label>نص الحقوق (إنجليزي)</Label>
+                    <Input
+                      {...register("copyrightEn")}
+                      className="mt-1"
+                      placeholder="© 2026 Softlix. All rights reserved."
+                      data-testid="input-copyright-en"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
       </form>
