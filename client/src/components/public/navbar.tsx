@@ -200,7 +200,7 @@ export function PublicNavbar({ lang = "ar", onLangChange }: NavbarProps) {
                   <ChevronDown style={{ width: 16, height: 16 }} />
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align={isAr ? "end" : "start"} style={{ width: 280, maxHeight: 420, overflowY: "auto", borderRadius: 16, border: "1px solid rgba(0,0,0,0.08)", boxShadow: "0 16px 40px rgba(0,0,0,0.12)", background: "#fff", padding: 10 }}>
+              <DropdownMenuContent align={isAr ? "end" : "start"} sideOffset={8} avoidCollisions={false} style={{ width: 280, zIndex: 9999, borderRadius: 16, border: "1px solid rgba(0,0,0,0.08)", boxShadow: "0 16px 40px rgba(0,0,0,0.15)", background: "#fff", padding: 10 }}>
                 {SERVICES.map(s => (
                   <DropdownMenuItem key={s.href} asChild>
                     <Link

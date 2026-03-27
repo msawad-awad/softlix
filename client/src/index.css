@@ -340,3 +340,8 @@ html[dir="rtl"] [class*="text-4xl"] {
   .logo-cloud-responsive,
   .grid-2-responsive { grid-template-columns: 1fr !important; }
 }
+
+/* ── Fix: ensure Radix UI dropdown/popover overlays appear above all page sections ── */
+[data-radix-popper-content-wrapper] {
+  z-index: 9999 !important;
+}
