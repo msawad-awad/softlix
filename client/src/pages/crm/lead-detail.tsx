@@ -377,7 +377,7 @@ export default function LeadDetail() {
                           </div>
                           <p className="text-sm text-gray-600 leading-relaxed">{activity.subject || activity.details}</p>
                           {activity.details && activity.details !== activity.subject && (
-                            <p className="text-xs text-gray-500 mt-1">{activity.details}</p>
+                            <pre className="text-xs text-gray-500 mt-1 whitespace-pre-wrap font-sans leading-relaxed">{activity.details}</pre>
                           )}
                         </div>
                       </div>
