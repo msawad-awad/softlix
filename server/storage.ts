@@ -709,9 +709,15 @@ export class DatabaseStorage implements IStorage {
       eq(visitorLogs.tenantId, tenantId)
     );
 
+    const totalInRange = dailyVisits.reduce((sum, d) => sum + d.count, 0) || 1;
+
     return {
       dailyVisits,
-      topPages: topPagesRaw.map(p => ({ pageUrl: p.pageUrl || "/", count: Number(p.count) })),
+      topPages: topPagesRaw.map(p => ({
+        pageUrl: p.pageUrl || "/",
+        count: Number(p.count),
+        percentage: Math.round((Number(p.count) / totalInRange) * 100),
+      })),
       kpi: {
         today: todayResult?.count || 0,
         week: weekResult?.count || 0,

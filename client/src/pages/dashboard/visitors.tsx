@@ -64,7 +64,7 @@ type Period = "7d" | "30d" | "90d" | "custom";
 
 interface AnalyticsData {
   dailyVisits: Array<{ date: string; count: number; mobile: number; desktop: number }>;
-  topPages: Array<{ pageUrl: string; count: number }>;
+  topPages: Array<{ pageUrl: string; count: number; percentage: number }>;
   kpi: { today: number; week: number; month: number; total: number };
 }
 
@@ -101,11 +101,11 @@ export default function VisitorsPage() {
   const dateRange = getDateRange();
 
   const { data: analytics, isLoading: analyticsLoading, refetch: refetchAnalytics } = useQuery<AnalyticsData>({
-    queryKey: ["/api/dashboard/visitor-analytics", dateRange.from, dateRange.to],
+    queryKey: ["/api/dashboard/visitor-analytics", period, dateRange.from, dateRange.to],
     queryFn: async () => {
-      const params = new URLSearchParams();
-      if (dateRange.from) params.set("from", dateRange.from);
-      if (dateRange.to) params.set("to", dateRange.to);
+      const params = new URLSearchParams({ period });
+      if (period === "custom" && dateRange.from) params.set("from", dateRange.from);
+      if (period === "custom" && dateRange.to) params.set("to", dateRange.to);
       const res = await fetch(`/api/dashboard/visitor-analytics?${params}`, { credentials: "include" });
       if (!res.ok) throw new Error("Failed");
       return res.json();
@@ -135,7 +135,6 @@ export default function VisitorsPage() {
     : logs;
 
   const maxDailyCount = Math.max(...(analytics?.dailyVisits || []).map(d => d.count), 1);
-  const topPageMax = Math.max(...(analytics?.topPages || []).map(p => p.count), 1);
 
   const handleExport = () => {
     if (!logs.length) return;
@@ -334,7 +333,6 @@ export default function VisitorsPage() {
               </CardHeader>
               <CardContent className="space-y-2">
                 {(analytics?.topPages || []).slice(0, 10).map((p, i) => {
-                  const pct = Math.round((p.count / topPageMax) * 100);
                   return (
                     <div key={p.pageUrl} className="flex items-center gap-3" data-testid={`top-page-${i}`}>
                       <span className="text-xs font-bold text-gray-400 w-5 text-center">{i + 1}</span>
@@ -342,9 +340,9 @@ export default function VisitorsPage() {
                         {formatPageName(p.pageUrl)}
                       </span>
                       <div className="flex-1 bg-gray-100 dark:bg-gray-800 rounded-full h-2 max-w-[120px]">
-                        <div className="bg-[#ff6a00] h-2 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                        <div className="bg-[#ff6a00] h-2 rounded-full transition-all" style={{ width: `${Math.max(p.percentage, 3)}%` }} />
                       </div>
-                      <span className="text-xs font-bold text-gray-500 w-14 text-left">{p.count.toLocaleString()}</span>
+                      <span className="text-xs font-bold text-gray-500 w-20 text-left">{p.count.toLocaleString()} ({p.percentage}%)</span>
                     </div>
                   );
                 })}

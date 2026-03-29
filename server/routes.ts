@@ -380,10 +380,28 @@ export async function registerRoutes(
 
   app.get("/api/dashboard/visitor-analytics", requireAuth, async (req, res) => {
     try {
-      const { from, to } = req.query;
+      const { from, to, period } = req.query;
+      const allowedPeriods = ["7d", "30d", "90d", "custom"];
+      const p = allowedPeriods.includes(period as string) ? (period as string) : "30d";
+
+      let dateFrom: Date;
+      let dateTo: Date;
+      const now = new Date();
+
+      if (p === "custom" && from && to) {
+        dateFrom = new Date(from as string);
+        const toDate = new Date(to as string);
+        toDate.setHours(23, 59, 59, 999);
+        dateTo = toDate;
+      } else {
+        const days = p === "7d" ? 7 : p === "90d" ? 90 : 30;
+        dateFrom = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+        dateTo = now;
+      }
+
       const result = await storage.getVisitorTimeSeries(req.user!.tenantId, {
-        from: from ? new Date(from as string) : undefined,
-        to: to ? new Date(to as string) : undefined,
+        from: dateFrom,
+        to: dateTo,
       });
       res.json(result);
     } catch (error: any) {
