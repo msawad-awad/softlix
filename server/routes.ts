@@ -1296,7 +1296,25 @@ export async function registerRoutes(
 
   app.put("/api/marketing/settings", requireAuth, async (req, res) => {
     try {
-      const ms = await storage.upsertMarketingSettings(req.user!.tenantId, req.body);
+      const b = req.body;
+      const cleanData: any = {};
+      const allowedFields = [
+        "gtmId", "metaPixelId", "googleAnalyticsId", "googleAdsId",
+        "tiktokPixelId", "snapchatPixelId", "linkedinInsightId",
+        "customHeadScript", "customBodyScript",
+        "whatsappEnabled", "whatsappNumber", "whatsappMessage", "whatsappPosition",
+        "contactPhone", "googleAdsWebhookKey",
+        "exitIntentEnabled", "exitIntentTitleAr", "exitIntentTitleEn",
+        "exitIntentSubtitleAr", "exitIntentSubtitleEn",
+        "exitIntentButtonAr", "exitIntentButtonEn",
+        "exitIntentButtonUrl", "exitIntentDelay",
+        "socialProofEnabled", "socialProofInterval",
+        "newsletterEnabled", "newsletterTitleAr", "newsletterTitleEn",
+      ];
+      for (const key of allowedFields) {
+        if (key in b) cleanData[key] = b[key];
+      }
+      const ms = await storage.upsertMarketingSettings(req.user!.tenantId, cleanData);
       invalidateTrackingCache();
       res.json(ms);
     } catch (error) {
