@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 interface NotificationPollData {
@@ -13,41 +13,101 @@ interface NotificationPollData {
 const POLL_INTERVAL = 15000;
 const STORAGE_KEY = "softlix_sound_alerts";
 const LAST_POLL_KEY = "softlix_last_poll";
+const SOUND_CHANGED_EVENT = "softlix_sound_changed";
+
+let sharedAudioCtx: AudioContext | null = null;
+
+function getAudioContext(): AudioContext | null {
+  try {
+    if (!sharedAudioCtx || sharedAudioCtx.state === "closed") {
+      sharedAudioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+    }
+    if (sharedAudioCtx.state === "suspended") {
+      sharedAudioCtx.resume().catch(() => {});
+    }
+    return sharedAudioCtx;
+  } catch {
+    return null;
+  }
+}
+
+export function unlockAudio() {
+  const ctx = getAudioContext();
+  if (ctx && ctx.state === "suspended") {
+    ctx.resume().catch(() => {});
+  }
+}
+
+export function playTestSound() {
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  
+  if (ctx.state === "suspended") {
+    ctx.resume().then(() => {
+      _playTestTone(ctx);
+    }).catch(() => {});
+  } else {
+    _playTestTone(ctx);
+  }
+}
+
+function _playTestTone(ctx: AudioContext) {
+  const now = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.connect(gain);
+  gain.connect(ctx.destination);
+  osc.type = "sine";
+  osc.frequency.value = 880;
+  gain.gain.setValueAtTime(0.4, now);
+  gain.gain.linearRampToValueAtTime(0, now + 0.4);
+  osc.start(now);
+  osc.stop(now + 0.45);
+}
 
 function playNotificationSound(type: "visitor" | "lead" | "crm") {
-  try {
-    const ctx = new AudioContext();
-    const now = ctx.currentTime;
+  const ctx = getAudioContext();
+  if (!ctx) return;
+  
+  if (ctx.state === "suspended") {
+    ctx.resume().then(() => _playSound(ctx, type)).catch(() => {});
+  } else {
+    _playSound(ctx, type);
+  }
+}
 
-    if (type === "lead" || type === "crm") {
-      const notes = [523.25, 659.25, 783.99, 1046.5];
-      notes.forEach((freq, i) => {
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.type = "sine";
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0, now + i * 0.12);
-        gain.gain.linearRampToValueAtTime(0.25, now + i * 0.12 + 0.03);
-        gain.gain.linearRampToValueAtTime(0, now + i * 0.12 + 0.25);
-        osc.start(now + i * 0.12);
-        osc.stop(now + i * 0.12 + 0.3);
-      });
-    } else {
+function _playSound(ctx: AudioContext, type: "visitor" | "lead" | "crm") {
+  const now = ctx.currentTime;
+
+  if (type === "lead" || type === "crm") {
+    const notes = [523.25, 659.25, 783.99, 1046.5];
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = "triangle";
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0, now + i * 0.15);
+      gain.gain.linearRampToValueAtTime(0.5, now + i * 0.15 + 0.03);
+      gain.gain.linearRampToValueAtTime(0, now + i * 0.15 + 0.35);
+      osc.start(now + i * 0.15);
+      osc.stop(now + i * 0.15 + 0.4);
+    });
+  } else {
+    [880, 1100].forEach((freq, i) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.connect(gain);
       gain.connect(ctx.destination);
       osc.type = "sine";
-      osc.frequency.value = 880;
-      gain.gain.setValueAtTime(0, now);
-      gain.gain.linearRampToValueAtTime(0.15, now + 0.02);
-      gain.gain.linearRampToValueAtTime(0, now + 0.2);
-      osc.start(now);
-      osc.stop(now + 0.25);
-    }
-  } catch {
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0, now + i * 0.12);
+      gain.gain.linearRampToValueAtTime(0.35, now + i * 0.12 + 0.02);
+      gain.gain.linearRampToValueAtTime(0, now + i * 0.12 + 0.25);
+      osc.start(now + i * 0.12);
+      osc.stop(now + i * 0.12 + 0.3);
+    });
   }
 }
 
@@ -62,6 +122,10 @@ export function getSoundAlertsEnabled(): boolean {
 export function setSoundAlertsEnabled(enabled: boolean) {
   try {
     localStorage.setItem(STORAGE_KEY, String(enabled));
+    if (enabled) {
+      unlockAudio();
+    }
+    window.dispatchEvent(new CustomEvent(SOUND_CHANGED_EVENT, { detail: enabled }));
   } catch {
   }
 }
@@ -72,6 +136,38 @@ export function useNotificationSound() {
     localStorage.getItem(LAST_POLL_KEY) || new Date().toISOString()
   );
   const initializedRef = useRef(false);
+  const [enabled, setEnabled] = useState(getSoundAlertsEnabled());
+
+  useEffect(() => {
+    const onSoundChanged = (e: Event) => {
+      const val = (e as CustomEvent).detail;
+      setEnabled(Boolean(val));
+    };
+    const onStorage = () => setEnabled(getSoundAlertsEnabled());
+    
+    window.addEventListener(SOUND_CHANGED_EVENT, onSoundChanged);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener(SOUND_CHANGED_EVENT, onSoundChanged);
+      window.removeEventListener("storage", onStorage);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!enabled) return;
+
+    const handleInteraction = () => {
+      unlockAudio();
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("keydown", handleInteraction);
+    };
+    document.addEventListener("click", handleInteraction);
+    document.addEventListener("keydown", handleInteraction);
+    return () => {
+      document.removeEventListener("click", handleInteraction);
+      document.removeEventListener("keydown", handleInteraction);
+    };
+  }, [enabled]);
 
   const poll = useCallback(async () => {
     if (!getSoundAlertsEnabled()) return;
@@ -132,8 +228,12 @@ export function useNotificationSound() {
   }, [toast]);
 
   useEffect(() => {
+    if (!enabled) {
+      initializedRef.current = false;
+      return;
+    }
     poll();
     const interval = setInterval(poll, POLL_INTERVAL);
     return () => clearInterval(interval);
-  }, [poll]);
+  }, [poll, enabled]);
 }

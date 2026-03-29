@@ -17,7 +17,7 @@ import { PageHeader } from "@/components/page-header";
 import { useTheme } from "@/lib/theme-provider";
 import { useLanguage } from "@/lib/language-provider";
 import { useAuth } from "@/lib/auth-context";
-import { getSoundAlertsEnabled, setSoundAlertsEnabled } from "@/hooks/use-notification-sound";
+import { getSoundAlertsEnabled, setSoundAlertsEnabled, playTestSound, unlockAudio } from "@/hooks/use-notification-sound";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Settings() {
@@ -162,20 +162,8 @@ export default function Settings() {
                     setSoundEnabled(checked);
                     setSoundAlertsEnabled(checked);
                     if (checked) {
-                      try {
-                        const ctx = new AudioContext();
-                        const osc = ctx.createOscillator();
-                        const gain = ctx.createGain();
-                        osc.connect(gain);
-                        gain.connect(ctx.destination);
-                        osc.type = "sine";
-                        osc.frequency.value = 880;
-                        gain.gain.setValueAtTime(0, ctx.currentTime);
-                        gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 0.02);
-                        gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15);
-                        osc.start(ctx.currentTime);
-                        osc.stop(ctx.currentTime + 0.2);
-                      } catch {}
+                      unlockAudio();
+                      setTimeout(() => playTestSound(), 100);
                       toast({ title: "✅ تم تفعيل التنبيهات الصوتية", description: "ستسمع صوت تنبيه عند وصول زائر أو عميل محتمل جديد", duration: 3000 });
                     } else {
                       toast({ title: "🔇 تم إيقاف التنبيهات الصوتية", duration: 2000 });
