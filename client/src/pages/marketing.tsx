@@ -33,6 +33,7 @@ type FormState = {
   tiktokPixelId: string; snapchatPixelId: string; linkedinInsightId: string;
   customHeadScript: string; customBodyScript: string;
   whatsappEnabled: boolean; whatsappNumber: string; whatsappMessage: string; whatsappPosition: string; contactPhone: string;
+  googleAdsWebhookKey: string;
   exitIntentEnabled: boolean; exitIntentTitleAr: string; exitIntentTitleEn: string;
   exitIntentSubtitleAr: string; exitIntentSubtitleEn: string;
   exitIntentButtonAr: string; exitIntentButtonEn: string;
@@ -46,6 +47,7 @@ const DEFAULT_FORM: FormState = {
   tiktokPixelId: "", snapchatPixelId: "", linkedinInsightId: "",
   customHeadScript: "", customBodyScript: "",
   whatsappEnabled: false, whatsappNumber: "", whatsappMessage: "مرحباً، أود الاستفسار عن خدماتكم", whatsappPosition: "bottom-right", contactPhone: "",
+  googleAdsWebhookKey: "",
   exitIntentEnabled: false, exitIntentTitleAr: "لا تغادر قبل أن تعرف هذا!", exitIntentTitleEn: "Don't leave before knowing this!",
   exitIntentSubtitleAr: "احصل على استشارة مجانية لمشروعك خلال 24 ساعة", exitIntentSubtitleEn: "Get a free consultation within 24 hours",
   exitIntentButtonAr: "احصل على استشارتك المجانية", exitIntentButtonEn: "Get Your Free Consultation",
@@ -77,6 +79,7 @@ export default function Marketing() {
         whatsappMessage: settings.whatsappMessage || "مرحباً، أود الاستفسار عن خدماتكم",
         whatsappPosition: settings.whatsappPosition || "bottom-right",
         contactPhone: (settings as any).contactPhone || "",
+        googleAdsWebhookKey: (settings as any).googleAdsWebhookKey || "",
         exitIntentEnabled: settings.exitIntentEnabled ?? false,
         exitIntentTitleAr: settings.exitIntentTitleAr || "لا تغادر قبل أن تعرف هذا!",
         exitIntentTitleEn: settings.exitIntentTitleEn || "Don't leave before knowing this!",
@@ -230,6 +233,58 @@ export default function Marketing() {
             </div>
           </CardContent>
         )}
+      </Card>
+
+      {/* === GOOGLE ADS WEBHOOK === */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="text-blue-500" size={20} />
+            ربط إعلانات جوجل (Google Ads Webhook)
+          </CardTitle>
+          <CardDescription>استقبال العملاء المحتملين من نماذج إعلانات جوجل مباشرة إلى نظام CRM</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
+            <p className="text-sm font-bold text-blue-900 dark:text-blue-100 mb-1">رابط ويب هوك (Webhook URL)</p>
+            <div className="flex items-center gap-2">
+              <code className="text-xs bg-white dark:bg-slate-800 border rounded px-2 py-1.5 flex-1 break-all select-all" dir="ltr" data-testid="text-webhook-url">
+                {window.location.origin}/api/webhook/google-ads-leads
+              </code>
+              <Button
+                variant="outline" size="sm"
+                onClick={() => {
+                  navigator.clipboard.writeText(`${window.location.origin}/api/webhook/google-ads-leads`);
+                  toast({ title: "تم النسخ!", description: "رابط الويب هوك تم نسخه" });
+                }}
+                data-testid="btn-copy-webhook-url"
+              >نسخ</Button>
+            </div>
+            <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">الصق هذا الرابط في إعدادات "نموذج العملاء المحتملين" في Google Ads</p>
+          </div>
+          <div className="space-y-1.5">
+            <Label>المفتاح (Key) — ضعه في حقل "المفتاح" بإعلانات جوجل</Label>
+            <Input
+              value={form.googleAdsWebhookKey}
+              onChange={e => F("googleAdsWebhookKey", e.target.value)}
+              placeholder="مثال: softlix-webhook-2024"
+              dir="ltr"
+              data-testid="input-google-ads-webhook-key"
+            />
+            <p className="text-xs text-slate-400">اختر مفتاحاً سرياً وضعه هنا وفي حقل "المفتاح" في Google Ads لحماية الـ Webhook</p>
+          </div>
+          <div className="p-3 bg-amber-50 dark:bg-amber-950/30 rounded-lg border border-amber-200 dark:border-amber-800">
+            <p className="text-sm font-bold text-amber-900 dark:text-amber-100 mb-1">خطوات الربط في Google Ads:</p>
+            <ol className="text-xs text-amber-700 dark:text-amber-300 space-y-1 list-decimal pr-4" dir="rtl">
+              <li>افتح حملتك → إضافات → نماذج العملاء المحتملين</li>
+              <li>اذهب إلى "الخيارات الأخرى لدمج البيانات"</li>
+              <li>فعّل "نمط ويب هوك (اختياري)"</li>
+              <li>الصق الرابط أعلاه في حقل "رابط ويب هوك"</li>
+              <li>الصق المفتاح في حقل "المفتاح"</li>
+              <li>اضغط "إرسال بيانات الاختبار" للتأكد</li>
+            </ol>
+          </div>
+        </CardContent>
       </Card>
 
       {/* === EXIT INTENT POPUP === */}

@@ -347,6 +347,8 @@ export const marketingSettings = pgTable("marketing_settings", {
   whatsappPosition: text("whatsapp_position").default("bottom-right"),
   // Contact Phone (for "Call Us" button)
   contactPhone: text("contact_phone"),
+  // Google Ads Webhook
+  googleAdsWebhookKey: text("google_ads_webhook_key"),
   // Exit Intent Popup
   exitIntentEnabled: boolean("exit_intent_enabled").default(false),
   exitIntentTitleAr: text("exit_intent_title_ar"),

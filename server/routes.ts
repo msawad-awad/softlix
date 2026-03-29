@@ -1862,6 +1862,111 @@ export async function registerRoutes(
     }
   });
 
+  // =========================================================================
+  // GOOGLE ADS LEAD FORM WEBHOOK
+  // =========================================================================
+  app.post("/api/webhook/google-ads-leads", async (req, res) => {
+    try {
+      const body = req.body;
+      const webhookKey = body.google_key || body.key || "";
+
+      // Find tenant with matching webhook key
+      let tenant = await storage.getTenantBySlug("softlix");
+      if (!tenant) {
+        const allTenants = await storage.getAllTenants();
+        tenant = allTenants[0];
+      }
+      if (!tenant) return res.status(404).json({ error: "Tenant not found" });
+
+      // Validate webhook key
+      const mktSettings = await storage.getMarketingSettings(tenant.id);
+      const expectedKey = (mktSettings as any)?.googleAdsWebhookKey;
+      if (expectedKey && webhookKey !== expectedKey) {
+        console.error("[google-ads-webhook] Invalid key");
+        return res.status(401).json({ error: "Invalid webhook key" });
+      }
+
+      // Parse Google Ads lead form data
+      const userData = body.user_column_data || [];
+      const getValue = (colId: string) => {
+        const col = userData.find((c: any) => c.column_id === colId);
+        return col?.string_value || "";
+      };
+
+      const fullName = getValue("FULL_NAME") || getValue("FIRST_NAME") + " " + getValue("LAST_NAME") || "Google Ads Lead";
+      const phone = getValue("PHONE_NUMBER") || "";
+      const email = getValue("EMAIL") || "";
+      const companyName = getValue("COMPANY_NAME") || "";
+      const city = getValue("CITY") || "";
+      const country = getValue("COUNTRY") || "";
+
+      if (!fullName.trim() && !phone && !email) {
+        return res.status(400).json({ error: "No lead data found" });
+      }
+
+      // Create form lead
+      const formLead = await storage.createFormLead({
+        tenantId: tenant.id,
+        formType: "google-ads",
+        name: fullName.trim(),
+        email: email || null,
+        phone: phone || null,
+        message: `Campaign: ${body.campaign_id || "N/A"} | Ad Group: ${body.adgroup_id || "N/A"} | Form: ${body.form_id || "N/A"} | GCL ID: ${body.gcl_id || "N/A"}`,
+        pageSource: "google-ads-lead-form",
+        ipAddress: req.ip || null,
+        status: "new",
+      });
+
+      // Create CRM lead
+      let lead = null;
+      try {
+        const sources = await storage.getCrmLeadSources(tenant.id);
+        const gAdsSource = sources.find(s =>
+          s.name.includes("Google") || s.name.includes("جوجل") || s.name.toLowerCase().includes("ads")
+        );
+        const websiteSource = sources.find(s => s.name.includes("موقع") || s.name.toLowerCase().includes("website"));
+
+        lead = await storage.createCrmLead({
+          tenantId: tenant.id,
+          fullName: fullName.trim(),
+          email: email || null,
+          mobile: phone || null,
+          companyName: companyName || null,
+          city: city || null,
+          country: country || null,
+          sourceId: gAdsSource?.id || websiteSource?.id || null,
+          sourceName: gAdsSource?.name || "إعلانات جوجل",
+          campaignName: body.campaign_id ? `Campaign ${body.campaign_id}` : null,
+          utmSource: "google",
+          utmMedium: "cpc",
+          utmCampaign: body.campaign_id || null,
+          pageSource: "google-ads-lead-form",
+          ipAddress: req.ip || null,
+          formLeadId: formLead.id,
+          status: "new",
+          priority: "high",
+        });
+
+        await storage.createCrmActivity({
+          tenantId: tenant.id,
+          entityType: "lead",
+          entityId: lead.id,
+          type: "note",
+          subject: "عميل محتمل من إعلانات جوجل",
+          details: `الاسم: ${fullName}\nالجوال: ${phone}\nالبريد: ${email}\nالشركة: ${companyName}\nGCL ID: ${body.gcl_id || "N/A"}`,
+        });
+      } catch (crmErr: any) {
+        console.error("[google-ads-webhook] CRM ops failed (non-fatal):", crmErr.message);
+      }
+
+      console.log(`[google-ads-webhook] ✅ Lead received: ${fullName} | ${phone} | ${email}`);
+      res.json({ success: true, leadId: lead?.id || formLead.id });
+    } catch (e: any) {
+      console.error("[google-ads-webhook] Error:", e.message);
+      res.status(500).json({ error: e.message });
+    }
+  });
+
   // Public booking - create consultation request (no auth)
   app.post("/api/public/bookings", async (req, res) => {
     try {
