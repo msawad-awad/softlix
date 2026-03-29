@@ -117,7 +117,7 @@ export function FloatingContactWidget({ lang = "ar", whatsappUrl, onBookingClick
               </div>
             ) : (
               <form onSubmit={handleQuickSubmit} style={{ padding: 16 }}>
-                <button type="button" onClick={() => setShowQuickForm(false)} style={{ background: "none", border: "none", cursor: "pointer", color: "#64748b", fontSize: 13, marginBottom: 12, display: "flex", alignItems: "center", gap: 6 }}>
+                <button type="button" onClick={() => setShowQuickForm(false)} style={{ background: "#f1f5f9", border: "none", cursor: "pointer", color: "#475569", fontSize: 13, marginBottom: 12, display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 10, fontFamily: "inherit", fontWeight: 600 }}>
                   <ChevronDown size={14} style={{ transform: isAr ? "rotate(90deg)" : "rotate(-90deg)" }} />
                   {isAr ? "رجوع" : "Back"}
                 </button>
