@@ -1,5 +1,6 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Settings as SettingsIcon, User, Globe, Palette, Bell, Shield, CreditCard } from "lucide-react";
+import { Settings as SettingsIcon, User, Globe, Palette, Bell, Shield, CreditCard, Volume2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -16,12 +17,16 @@ import { PageHeader } from "@/components/page-header";
 import { useTheme } from "@/lib/theme-provider";
 import { useLanguage } from "@/lib/language-provider";
 import { useAuth } from "@/lib/auth-context";
+import { getSoundAlertsEnabled, setSoundAlertsEnabled } from "@/hooks/use-notification-sound";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Settings() {
   const { t } = useTranslation();
   const { theme, setTheme } = useTheme();
   const { language, setLanguage } = useLanguage();
   const { user } = useAuth();
+  const { toast } = useToast();
+  const [soundEnabled, setSoundEnabled] = useState(getSoundAlertsEnabled());
 
   return (
     <div className="space-y-6">
@@ -143,12 +148,41 @@ export default function Settings() {
               <Separator />
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label>Sound Alerts</Label>
+                  <Label className="flex items-center gap-2">
+                    <Volume2 className="h-4 w-4" />
+                    التنبيهات الصوتية
+                  </Label>
                   <p className="text-sm text-muted-foreground">
-                    Play sounds for important notifications
+                    تشغيل صوت تنبيه عند وصول زائر جديد أو عميل محتمل
                   </p>
                 </div>
-                <Switch data-testid="switch-sound-alerts" />
+                <Switch
+                  checked={soundEnabled}
+                  onCheckedChange={(checked) => {
+                    setSoundEnabled(checked);
+                    setSoundAlertsEnabled(checked);
+                    if (checked) {
+                      try {
+                        const ctx = new AudioContext();
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.connect(gain);
+                        gain.connect(ctx.destination);
+                        osc.type = "sine";
+                        osc.frequency.value = 880;
+                        gain.gain.setValueAtTime(0, ctx.currentTime);
+                        gain.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 0.02);
+                        gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.15);
+                        osc.start(ctx.currentTime);
+                        osc.stop(ctx.currentTime + 0.2);
+                      } catch {}
+                      toast({ title: "✅ تم تفعيل التنبيهات الصوتية", description: "ستسمع صوت تنبيه عند وصول زائر أو عميل محتمل جديد", duration: 3000 });
+                    } else {
+                      toast({ title: "🔇 تم إيقاف التنبيهات الصوتية", duration: 2000 });
+                    }
+                  }}
+                  data-testid="switch-sound-alerts"
+                />
               </div>
             </CardContent>
           </Card>

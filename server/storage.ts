@@ -338,6 +338,16 @@ export interface IStorage {
     topPages: Array<{ pageUrl: string; count: number; percentage: number }>;
     kpi: { today: number; week: number; month: number; total: number };
   }>;
+
+  // Notifications Polling
+  getNotificationsPoll(tenantId: string, since: Date): Promise<{
+    newVisitors: number;
+    newLeads: number;
+    newCrmLeads: number;
+    recentVisitors: Array<{ country: string | null; city: string | null; pageUrl: string | null; deviceType: string | null }>;
+    recentLeads: Array<{ name: string | null; email: string | null; phone: string | null }>;
+    timestamp: string;
+  }>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -731,6 +741,52 @@ export class DatabaseStorage implements IStorage {
         month: monthResult?.count || 0,
         total: totalResult?.count || 0,
       },
+    };
+  }
+
+  // ── Notifications Polling ──────────────────────────────────────────────────
+  async getNotificationsPoll(tenantId: string, since: Date): Promise<{
+    newVisitors: number;
+    newLeads: number;
+    newCrmLeads: number;
+    recentVisitors: Array<{ country: string | null; city: string | null; pageUrl: string | null; deviceType: string | null }>;
+    recentLeads: Array<{ name: string | null; email: string | null; phone: string | null }>;
+    timestamp: string;
+  }> {
+    const [visitorsResult] = await db.select({ count: count() }).from(visitorLogs).where(
+      and(eq(visitorLogs.tenantId, tenantId), gte(visitorLogs.timestamp, since))
+    );
+    const [leadsResult] = await db.select({ count: count() }).from(formLeads).where(
+      and(eq(formLeads.tenantId, tenantId), gte(formLeads.createdAt, since))
+    );
+    const [crmLeadsResult] = await db.select({ count: count() }).from(crmLeads).where(
+      and(eq(crmLeads.tenantId, tenantId), gte(crmLeads.createdAt, since))
+    );
+
+    const recentVisitors = await db.select({
+      country: visitorLogs.country,
+      city: visitorLogs.city,
+      pageUrl: visitorLogs.pageUrl,
+      deviceType: visitorLogs.deviceType,
+    }).from(visitorLogs).where(
+      and(eq(visitorLogs.tenantId, tenantId), gte(visitorLogs.timestamp, since))
+    ).orderBy(desc(visitorLogs.timestamp)).limit(3);
+
+    const recentLeads = await db.select({
+      name: formLeads.name,
+      email: formLeads.email,
+      phone: formLeads.phone,
+    }).from(formLeads).where(
+      and(eq(formLeads.tenantId, tenantId), gte(formLeads.createdAt, since))
+    ).orderBy(desc(formLeads.createdAt)).limit(3);
+
+    return {
+      newVisitors: visitorsResult?.count || 0,
+      newLeads: leadsResult?.count || 0,
+      newCrmLeads: crmLeadsResult?.count || 0,
+      recentVisitors,
+      recentLeads,
+      timestamp: new Date().toISOString(),
     };
   }
 

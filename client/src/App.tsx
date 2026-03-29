@@ -13,6 +13,7 @@ import { AppSidebar } from "@/components/app-sidebar";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageToggle } from "@/components/language-toggle";
 import { LoadingPage } from "@/components/loading-spinner";
+import { useNotificationSound } from "@/hooks/use-notification-sound";
 import NotFound from "@/pages/not-found";
 import Login from "@/pages/login";
 import Register from "@/pages/register";
@@ -84,6 +85,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function DashboardLayoutContent({ children }: { children: React.ReactNode }) {
   const { isRTL } = useLanguage() ?? { isRTL: false };
+  useNotificationSound();
   const content = (
     <SidebarInset className="flex flex-col flex-1 min-w-0" {...(isRTL ? { dir: "rtl" } : {})}>
       <header className="flex h-14 items-center justify-between gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 sticky top-0 z-50">

@@ -378,6 +378,21 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/dashboard/notifications-poll", requireAuth, async (req, res) => {
+    try {
+      const { since } = req.query;
+      const sinceDate = since ? new Date(since as string) : new Date(Date.now() - 30000);
+      if (isNaN(sinceDate.getTime())) {
+        return res.status(400).json({ message: "Invalid since date" });
+      }
+      const result = await storage.getNotificationsPoll(req.user!.tenantId, sinceDate);
+      res.json(result);
+    } catch (error: any) {
+      console.error("Notifications poll error:", error?.message || error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   app.get("/api/dashboard/visitor-analytics", requireAuth, async (req, res) => {
     try {
       const { from, to, period } = req.query;
