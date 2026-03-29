@@ -12,12 +12,13 @@ interface WidgetsProps {
   whatsappUrl?: string;
   onBookingClick?: () => void;
   settings?: MarketingSettings | null;
+  contactPhone?: string;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
 /* FLOATING CONTACT WIDGET                                                     */
 /* ─────────────────────────────────────────────────────────────────────────── */
-export function FloatingContactWidget({ lang = "ar", whatsappUrl, onBookingClick, settings }: WidgetsProps) {
+export function FloatingContactWidget({ lang = "ar", whatsappUrl, onBookingClick, settings, contactPhone: contactPhoneProp }: WidgetsProps) {
   const isAr = lang === "ar";
   const [open, setOpen] = useState(false);
   const [showQuickForm, setShowQuickForm] = useState(false);
@@ -27,7 +28,7 @@ export function FloatingContactWidget({ lang = "ar", whatsappUrl, onBookingClick
   const { toast } = useToast();
 
   const waNumber = settings?.whatsappNumber || "966537861534";
-  const contactPhone = settings?.contactPhone || "966537861534";
+  const contactPhone = contactPhoneProp || (settings as any)?.contactPhone || waNumber;
   const waMessage = settings?.whatsappMessage || "مرحباً، أود الاستفسار عن خدماتكم";
   const wa = whatsappUrl || `https://wa.me/${waNumber.replace(/\D/g, "")}?text=${encodeURIComponent(waMessage)}`;
   const position = settings?.whatsappPosition || "bottom-right";

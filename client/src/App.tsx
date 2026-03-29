@@ -168,7 +168,7 @@ function PublicSite() {
       <Route component={NotFound} />
     </Switch>
 
-      <FloatingContactWidget lang={lang} whatsappUrl={waUrl} onBookingClick={() => setBookingOpen(true)} settings={mktSettings} />
+      <FloatingContactWidget lang={lang} whatsappUrl={waUrl} onBookingClick={() => setBookingOpen(true)} settings={mktSettings} contactPhone={siteSettings?.contactPhone || mktSettings?.contactPhone} />
       <ExitIntentPopup lang={lang} onBookingClick={() => setBookingOpen(true)} settings={mktSettings} />
       <SocialProofToast lang={lang} settings={mktSettings} />
       <BookingModal open={bookingOpen} onClose={() => setBookingOpen(false)} lang={lang} />
