@@ -93,7 +93,7 @@ export function FloatingContactWidget({ lang = "ar", whatsappUrl, onBookingClick
                   <Phone size={20} color="#ff6a00" />
                   <div>
                     <p style={{ margin: 0, fontWeight: 800, fontSize: 14 }}>{isAr ? "اتصل بنا" : "Call Us"}</p>
-                    <p style={{ margin: 0, fontSize: 12, color: "#ff6a00" }}>+{contactPhone.replace(/\D/g, "")}</p>
+                    <p style={{ margin: 0, fontSize: 12, color: "#ff6a00" }}>{contactPhone}</p>
                   </div>
                 </a>
                 <button onClick={() => setShowQuickForm(true)}
