@@ -362,6 +362,7 @@ export default function VisitorsPage() {
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-bold flex items-center gap-2">
                   <Smartphone size={16} className="text-[#ff6a00]" /> توزيع الأجهزة والمتصفحات
+                  <span className="text-[10px] text-gray-400 font-normal">(إجمالي السجل)</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">

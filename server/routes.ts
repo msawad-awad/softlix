@@ -403,7 +403,7 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Custom period requires both from and to dates" });
       } else {
         const days = p === "7d" ? 7 : p === "90d" ? 90 : 30;
-        dateFrom = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+        dateFrom = new Date(now.getFullYear(), now.getMonth(), now.getDate() - days);
         dateTo = now;
       }
 
