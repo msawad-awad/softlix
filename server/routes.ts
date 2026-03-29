@@ -391,8 +391,16 @@ export async function registerRoutes(
       if (p === "custom" && from && to) {
         dateFrom = new Date(from as string);
         const toDate = new Date(to as string);
+        if (isNaN(dateFrom.getTime()) || isNaN(toDate.getTime())) {
+          return res.status(400).json({ message: "Invalid date format" });
+        }
+        if (dateFrom > toDate) {
+          return res.status(400).json({ message: "from must be before to" });
+        }
         toDate.setHours(23, 59, 59, 999);
         dateTo = toDate;
+      } else if (p === "custom") {
+        return res.status(400).json({ message: "Custom period requires both from and to dates" });
       } else {
         const days = p === "7d" ? 7 : p === "90d" ? 90 : 30;
         dateFrom = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);

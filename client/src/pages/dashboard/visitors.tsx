@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
-  Globe, Smartphone, Monitor, Tablet, Chrome, MapPin, Clock,
+  Globe, Smartphone, Monitor, Tablet, Chrome, Clock,
   Filter, Download, RefreshCw, Users, TrendingUp, Eye, Wifi,
-  Link2, Search, Calendar, BarChart3, FileText, ArrowUp, ArrowDown,
+  Link2, Search, Calendar, BarChart3, FileText,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";

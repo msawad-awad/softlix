@@ -650,7 +650,7 @@ export class DatabaseStorage implements IStorage {
     to?: Date;
   }): Promise<{
     dailyVisits: Array<{ date: string; count: number; mobile: number; desktop: number }>;
-    topPages: Array<{ pageUrl: string; count: number }>;
+    topPages: Array<{ pageUrl: string; count: number; percentage: number }>;
     kpi: { today: number; week: number; month: number; total: number };
   }> {
     const now = new Date();
