@@ -644,6 +644,83 @@ export class DatabaseStorage implements IStorage {
     return { logs, total: totalResult?.count || 0, byDevice, byBrowser, byOS };
   }
 
+  // ── Visitor Time Series Analytics ─────────────────────────────────────────
+  async getVisitorTimeSeries(tenantId: string, opts?: {
+    from?: Date;
+    to?: Date;
+  }): Promise<{
+    dailyVisits: Array<{ date: string; count: number; mobile: number; desktop: number }>;
+    topPages: Array<{ pageUrl: string; count: number }>;
+    kpi: { today: number; week: number; month: number; total: number };
+  }> {
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const last7Days = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const last30Days = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+
+    const dateFrom = opts?.from || new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const dateTo = opts?.to || now;
+
+    const dailyRaw = await db.execute(sql`
+      SELECT
+        DATE_TRUNC('day', timestamp)::date AS day,
+        COUNT(*)::int AS total,
+        COUNT(*) FILTER (WHERE device_type = 'mobile')::int AS mobile,
+        COUNT(*) FILTER (WHERE device_type = 'desktop')::int AS desktop
+      FROM visitor_logs
+      WHERE tenant_id = ${tenantId}
+        AND timestamp >= ${dateFrom}
+        AND timestamp <= ${dateTo}
+      GROUP BY day
+      ORDER BY day ASC
+    `);
+
+    const dailyVisits = (dailyRaw.rows || []).map((r: any) => ({
+      date: new Date(r.day).toISOString().slice(0, 10),
+      count: Number(r.total) || 0,
+      mobile: Number(r.mobile) || 0,
+      desktop: Number(r.desktop) || 0,
+    }));
+
+    const topPagesRaw = await db.select({
+      pageUrl: visitorLogs.pageUrl,
+      count: count().as("count"),
+    })
+      .from(visitorLogs)
+      .where(and(
+        eq(visitorLogs.tenantId, tenantId),
+        gte(visitorLogs.timestamp, dateFrom),
+        lte(visitorLogs.timestamp, dateTo),
+      ))
+      .groupBy(visitorLogs.pageUrl)
+      .orderBy(desc(count()))
+      .limit(15);
+
+    const [todayResult] = await db.select({ count: count() }).from(visitorLogs).where(
+      and(eq(visitorLogs.tenantId, tenantId), gte(visitorLogs.timestamp, startOfToday))
+    );
+    const [weekResult] = await db.select({ count: count() }).from(visitorLogs).where(
+      and(eq(visitorLogs.tenantId, tenantId), gte(visitorLogs.timestamp, last7Days))
+    );
+    const [monthResult] = await db.select({ count: count() }).from(visitorLogs).where(
+      and(eq(visitorLogs.tenantId, tenantId), gte(visitorLogs.timestamp, last30Days))
+    );
+    const [totalResult] = await db.select({ count: count() }).from(visitorLogs).where(
+      eq(visitorLogs.tenantId, tenantId)
+    );
+
+    return {
+      dailyVisits,
+      topPages: topPagesRaw.map(p => ({ pageUrl: p.pageUrl || "/", count: Number(p.count) })),
+      kpi: {
+        today: todayResult?.count || 0,
+        week: weekResult?.count || 0,
+        month: monthResult?.count || 0,
+        total: totalResult?.count || 0,
+      },
+    };
+  }
+
   // ── Contact Interaction Analytics (GA4) ──────────────────────────────────
   async recordContactEvent(event: InsertAnalyticsEvent): Promise<AnalyticsEvent> {
     const [record] = await db.insert(analyticsEvents).values(event).returning();

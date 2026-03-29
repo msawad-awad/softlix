@@ -378,6 +378,20 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/dashboard/visitor-analytics", requireAuth, async (req, res) => {
+    try {
+      const { from, to } = req.query;
+      const result = await storage.getVisitorTimeSeries(req.user!.tenantId, {
+        from: from ? new Date(from as string) : undefined,
+        to: to ? new Date(to as string) : undefined,
+      });
+      res.json(result);
+    } catch (error: any) {
+      console.error("Visitor analytics error:", error?.message || error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+
   app.get("/api/dashboard/contact-analytics", requireAuth, async (req, res) => {
     try {
       const stats = await storage.getContactInteractionStats(req.user!.tenantId);
