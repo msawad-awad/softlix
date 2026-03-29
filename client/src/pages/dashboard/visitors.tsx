@@ -100,16 +100,21 @@ export default function VisitorsPage() {
 
   const dateRange = getDateRange();
 
+  const customReady = period !== "custom" || (!!customFrom && !!customTo);
+
   const { data: analytics, isLoading: analyticsLoading, refetch: refetchAnalytics } = useQuery<AnalyticsData>({
     queryKey: ["/api/dashboard/visitor-analytics", period, dateRange.from, dateRange.to],
     queryFn: async () => {
       const params = new URLSearchParams({ period });
-      if (period === "custom" && dateRange.from) params.set("from", dateRange.from);
-      if (period === "custom" && dateRange.to) params.set("to", dateRange.to);
+      if (period === "custom") {
+        params.set("from", customFrom);
+        params.set("to", customTo);
+      }
       const res = await fetch(`/api/dashboard/visitor-analytics?${params}`, { credentials: "include" });
       if (!res.ok) throw new Error("Failed");
       return res.json();
     },
+    enabled: customReady,
   });
 
   const { data: detailsData, isLoading: detailsLoading, refetch: refetchDetails } = useQuery<VisitorDetailsResponse>({

@@ -331,6 +331,13 @@ export interface IStorage {
   createPhoneSetting(tenantId: string, data: InsertPhoneSetting): Promise<PhoneSetting>;
   updatePhoneSetting(id: string, tenantId: string, data: Partial<InsertPhoneSetting>): Promise<PhoneSetting | undefined>;
   deletePhoneSetting(id: string, tenantId: string): Promise<void>;
+
+  // Visitor Time Series Analytics
+  getVisitorTimeSeries(tenantId: string, opts?: { from?: Date; to?: Date }): Promise<{
+    dailyVisits: Array<{ date: string; count: number; mobile: number; desktop: number }>;
+    topPages: Array<{ pageUrl: string; count: number; percentage: number }>;
+    kpi: { today: number; week: number; month: number; total: number };
+  }>;
 }
 
 export class DatabaseStorage implements IStorage {
