@@ -1289,7 +1289,8 @@ export async function registerRoutes(
     try {
       const ms = await storage.getMarketingSettings(req.user!.tenantId);
       res.json(ms || {});
-    } catch (error) {
+    } catch (error: any) {
+      console.error("Marketing settings GET error:", error?.message || error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
