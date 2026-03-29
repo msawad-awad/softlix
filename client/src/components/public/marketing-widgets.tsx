@@ -27,6 +27,7 @@ export function FloatingContactWidget({ lang = "ar", whatsappUrl, onBookingClick
   const { toast } = useToast();
 
   const waNumber = settings?.whatsappNumber || "966537861534";
+  const contactPhone = settings?.contactPhone || "966537861534";
   const waMessage = settings?.whatsappMessage || "مرحباً، أود الاستفسار عن خدماتكم";
   const wa = whatsappUrl || `https://wa.me/${waNumber.replace(/\D/g, "")}?text=${encodeURIComponent(waMessage)}`;
   const position = settings?.whatsappPosition || "bottom-right";
@@ -86,12 +87,12 @@ export function FloatingContactWidget({ lang = "ar", whatsappUrl, onBookingClick
                     <p style={{ margin: 0, fontSize: 12, color: "#16a34a" }}>{isAr ? "تحدث معنا الآن" : "Chat with us now"}</p>
                   </div>
                 </a>
-                <a href={`tel:+${waNumber.replace(/\D/g, "")}`}
+                <a href={`tel:+${contactPhone.replace(/\D/g, "")}`}
                   style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 16px", borderRadius: 16, background: "#fff7ed", border: "1px solid #fed7aa", textDecoration: "none", color: "#e05500" }}>
                   <Phone size={20} color="#ff6a00" />
                   <div>
                     <p style={{ margin: 0, fontWeight: 800, fontSize: 14 }}>{isAr ? "اتصل بنا" : "Call Us"}</p>
-                    <p style={{ margin: 0, fontSize: 12, color: "#ff6a00" }}>+{waNumber.replace(/\D/g, "")}</p>
+                    <p style={{ margin: 0, fontSize: 12, color: "#ff6a00" }}>+{contactPhone.replace(/\D/g, "")}</p>
                   </div>
                 </a>
                 <button onClick={() => setShowQuickForm(true)}

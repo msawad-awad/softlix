@@ -32,7 +32,7 @@ type FormState = {
   gtmId: string; metaPixelId: string; googleAnalyticsId: string; googleAdsId: string;
   tiktokPixelId: string; snapchatPixelId: string; linkedinInsightId: string;
   customHeadScript: string; customBodyScript: string;
-  whatsappEnabled: boolean; whatsappNumber: string; whatsappMessage: string; whatsappPosition: string;
+  whatsappEnabled: boolean; whatsappNumber: string; whatsappMessage: string; whatsappPosition: string; contactPhone: string;
   exitIntentEnabled: boolean; exitIntentTitleAr: string; exitIntentTitleEn: string;
   exitIntentSubtitleAr: string; exitIntentSubtitleEn: string;
   exitIntentButtonAr: string; exitIntentButtonEn: string;
@@ -45,7 +45,7 @@ const DEFAULT_FORM: FormState = {
   gtmId: "", metaPixelId: "", googleAnalyticsId: "", googleAdsId: "",
   tiktokPixelId: "", snapchatPixelId: "", linkedinInsightId: "",
   customHeadScript: "", customBodyScript: "",
-  whatsappEnabled: false, whatsappNumber: "", whatsappMessage: "مرحباً، أود الاستفسار عن خدماتكم", whatsappPosition: "bottom-right",
+  whatsappEnabled: false, whatsappNumber: "", whatsappMessage: "مرحباً، أود الاستفسار عن خدماتكم", whatsappPosition: "bottom-right", contactPhone: "",
   exitIntentEnabled: false, exitIntentTitleAr: "لا تغادر قبل أن تعرف هذا!", exitIntentTitleEn: "Don't leave before knowing this!",
   exitIntentSubtitleAr: "احصل على استشارة مجانية لمشروعك خلال 24 ساعة", exitIntentSubtitleEn: "Get a free consultation within 24 hours",
   exitIntentButtonAr: "احصل على استشارتك المجانية", exitIntentButtonEn: "Get Your Free Consultation",
@@ -76,6 +76,7 @@ export default function Marketing() {
         whatsappNumber: settings.whatsappNumber || "",
         whatsappMessage: settings.whatsappMessage || "مرحباً، أود الاستفسار عن خدماتكم",
         whatsappPosition: settings.whatsappPosition || "bottom-right",
+        contactPhone: (settings as any).contactPhone || "",
         exitIntentEnabled: settings.exitIntentEnabled ?? false,
         exitIntentTitleAr: settings.exitIntentTitleAr || "لا تغادر قبل أن تعرف هذا!",
         exitIntentTitleEn: settings.exitIntentTitleEn || "Don't leave before knowing this!",
@@ -191,6 +192,19 @@ export default function Marketing() {
                 />
                 <p className="text-xs text-slate-400">مثال: 966537861534</p>
               </div>
+              <div className="space-y-1.5">
+                <Label>رقم الاتصال العادي (للزر "اتصل بنا")</Label>
+                <Input
+                  value={form.contactPhone}
+                  onChange={e => F("contactPhone", e.target.value)}
+                  placeholder="966537861534"
+                  dir="ltr"
+                  data-testid="input-contact-phone"
+                />
+                <p className="text-xs text-slate-400">هذا الرقم يظهر عند الضغط على "اتصل بنا"</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <Label>موضع الزر</Label>
                 <Select value={form.whatsappPosition} onValueChange={v => F("whatsappPosition", v)}>
