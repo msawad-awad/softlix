@@ -1384,15 +1384,14 @@ export class DatabaseStorage implements IStorage {
 
   // ── CRM Leads ─────────────────────────────────────────────────────────────
   async getCrmLeads(tenantId: string, filters?: { status?: string; sourceId?: string; assignedToId?: string; search?: string }): Promise<CrmLead[]> {
-    let q = db.select().from(crmLeads).where(eq(crmLeads.tenantId, tenantId)).$dynamic();
-    if (filters?.status) q = q.where(and(eq(crmLeads.tenantId, tenantId), eq(crmLeads.status, filters.status)));
-    if (filters?.sourceId) q = q.where(and(eq(crmLeads.tenantId, tenantId), eq(crmLeads.sourceId, filters.sourceId)));
-    if (filters?.assignedToId) q = q.where(and(eq(crmLeads.tenantId, tenantId), eq(crmLeads.assignedToId, filters.assignedToId)));
-    return (await q.orderBy(desc(crmLeads.createdAt))).filter(r => {
-      if (!filters?.search) return true;
-      const s = filters.search.toLowerCase();
-      return (r.fullName?.toLowerCase().includes(s) || r.email?.toLowerCase().includes(s) || r.mobile?.includes(s) || r.companyName?.toLowerCase().includes(s));
-    });
+    const conditions: any[] = [eq(crmLeads.tenantId, tenantId)];
+    if (filters?.status) conditions.push(eq(crmLeads.status, filters.status));
+    if (filters?.sourceId) conditions.push(eq(crmLeads.sourceId, filters.sourceId));
+    if (filters?.assignedToId) conditions.push(eq(crmLeads.assignedToId, filters.assignedToId));
+    const rows = await db.select().from(crmLeads).where(and(...conditions)).orderBy(desc(crmLeads.createdAt));
+    if (!filters?.search) return rows;
+    const s = filters.search.toLowerCase();
+    return rows.filter(r => r.fullName?.toLowerCase().includes(s) || r.email?.toLowerCase().includes(s) || r.mobile?.includes(s) || r.companyName?.toLowerCase().includes(s));
   }
   async getCrmLead(id: string, tenantId: string): Promise<CrmLead | undefined> {
     const [row] = await db.select().from(crmLeads).where(and(eq(crmLeads.id, id), eq(crmLeads.tenantId, tenantId)));

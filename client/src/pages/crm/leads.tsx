@@ -35,22 +35,22 @@ const PRIORITIES = [
 ];
 
 const STATUS_COLORS: Record<string, string> = {
-  new: "bg-orange-100 text-[#ff6a00] border-orange-200",
-  attempting_contact: "bg-yellow-100 text-yellow-700 border-yellow-200",
-  contacted: "bg-indigo-100 text-indigo-700 border-indigo-200",
-  qualified: "bg-green-100 text-green-700 border-green-200",
-  unqualified: "bg-gray-100 text-gray-600 border-gray-200",
-  proposal_sent: "bg-orange-100 text-orange-700 border-orange-200",
-  negotiation: "bg-purple-100 text-purple-700 border-purple-200",
-  converted: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  lost: "bg-red-100 text-red-700 border-red-200",
+  new: "bg-orange-100 dark:bg-orange-900/30 text-[#ff6a00] border-orange-200 dark:border-orange-800",
+  attempting_contact: "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800",
+  contacted: "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800",
+  qualified: "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800",
+  unqualified: "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700",
+  proposal_sent: "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800",
+  negotiation: "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800",
+  converted: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800",
+  lost: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800",
 };
 
 const PRIORITY_COLORS: Record<string, string> = {
-  low: "bg-slate-100 text-slate-600",
-  medium: "bg-amber-100 text-amber-700",
-  high: "bg-orange-100 text-orange-700",
-  urgent: "bg-red-100 text-red-700",
+  low: "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400",
+  medium: "bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300",
+  high: "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300",
+  urgent: "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300",
 };
 
 export default function CrmLeads() {
@@ -136,19 +136,14 @@ export default function CrmLeads() {
     }
   };
 
-  const filteredLeads = leads.filter(l => {
-    if (!search) return true;
-    const s = search.toLowerCase();
-    return l.fullName?.toLowerCase().includes(s) || l.email?.toLowerCase().includes(s) || l.mobile?.includes(s) || l.companyName?.toLowerCase().includes(s);
-  });
+  const filteredLeads = leads;
 
   return (
     <div className="space-y-4" dir="rtl">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">العملاء المحتملون</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{filteredLeads.length} عميل محتمل</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white" data-testid="text-leads-title">العملاء المحتملون</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5" data-testid="text-leads-count">{filteredLeads.length} عميل محتمل</p>
         </div>
         <Button onClick={() => { setEditingLead(null); resetForm(); setShowForm(true); }} data-testid="button-new-lead">
           <Plus className="h-4 w-4 ml-2" />
@@ -156,7 +151,6 @@ export default function CrmLeads() {
         </Button>
       </div>
 
-      {/* Filters */}
       <div className="flex gap-3 flex-wrap">
         <div className="relative flex-1 min-w-48">
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -173,102 +167,102 @@ export default function CrmLeads() {
         </Select>
       </div>
 
-      {/* Status Pills */}
       <div className="flex gap-2 flex-wrap">
         {STATUSES.map(s => (
           <button key={s.value} onClick={() => setStatusFilter(s.value)}
-            className={`text-xs px-3 py-1 rounded-full border transition-all ${statusFilter === s.value ? "bg-[#ff6a00] text-white border-[#ff6a00]" : "bg-white text-gray-600 border-gray-200 hover:border-orange-300"}`}>
+            className={`text-xs px-3 py-1 rounded-full border transition-all ${statusFilter === s.value ? "bg-[#ff6a00] text-white border-[#ff6a00]" : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-orange-300"}`}
+            data-testid={`filter-status-${s.value}`}>
             {s.label}
           </button>
         ))}
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 overflow-hidden">
         {isLoading ? (
           <div className="p-8 text-center text-gray-400">جاري التحميل...</div>
         ) : filteredLeads.length === 0 ? (
           <div className="p-12 text-center">
-            <UserCheck className="h-12 w-12 mx-auto mb-3 text-gray-200" />
-            <p className="text-gray-500">لا يوجد عملاء محتملون</p>
+            <UserCheck className="h-12 w-12 mx-auto mb-3 text-gray-200 dark:text-gray-600" />
+            <p className="text-gray-500 dark:text-gray-400">لا يوجد عملاء محتملون</p>
             <Button className="mt-4" onClick={() => { setEditingLead(null); resetForm(); setShowForm(true); }}>
               <Plus className="h-4 w-4 ml-2" />
               إضافة أول عميل
             </Button>
           </div>
         ) : (
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-100">
-              <tr>
-                <th className="text-right py-3 px-4 font-medium text-gray-600">العميل</th>
-                <th className="text-right py-3 px-4 font-medium text-gray-600">الشركة / الخدمة</th>
-                <th className="text-right py-3 px-4 font-medium text-gray-600">المصدر</th>
-                <th className="text-right py-3 px-4 font-medium text-gray-600">الأولوية</th>
-                <th className="text-right py-3 px-4 font-medium text-gray-600">الحالة</th>
-                <th className="text-right py-3 px-4 font-medium text-gray-600">التاريخ</th>
-                <th className="py-3 px-4"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-50">
-              {filteredLeads.map((lead) => (
-                <tr key={lead.id} className="hover:bg-gray-50/50 transition-colors" data-testid={`lead-row-${lead.id}`}>
-                  <td className="py-3 px-4">
-                    <div className="flex items-center gap-3">
-                      <div className="h-9 w-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                        {lead.fullName?.[0] || "؟"}
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">{lead.fullName}</p>
-                        <div className="flex items-center gap-2 mt-0.5">
-                          {lead.mobile && <span className="text-xs text-gray-400 flex items-center gap-1"><Phone className="h-3 w-3" />{lead.mobile}</span>}
-                          {lead.email && <span className="text-xs text-gray-400 flex items-center gap-1"><Mail className="h-3 w-3" />{lead.email}</span>}
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 dark:bg-gray-800/50 border-b border-gray-100 dark:border-gray-800">
+                <tr>
+                  <th className="text-right py-3 px-4 font-medium text-gray-600 dark:text-gray-400">العميل</th>
+                  <th className="text-right py-3 px-4 font-medium text-gray-600 dark:text-gray-400">الشركة / الخدمة</th>
+                  <th className="text-right py-3 px-4 font-medium text-gray-600 dark:text-gray-400">المصدر</th>
+                  <th className="text-right py-3 px-4 font-medium text-gray-600 dark:text-gray-400">الأولوية</th>
+                  <th className="text-right py-3 px-4 font-medium text-gray-600 dark:text-gray-400">الحالة</th>
+                  <th className="text-right py-3 px-4 font-medium text-gray-600 dark:text-gray-400">التاريخ</th>
+                  <th className="py-3 px-4"></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
+                {filteredLeads.map((lead) => (
+                  <tr key={lead.id} className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors" data-testid={`lead-row-${lead.id}`}>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#ff6a00] to-[#ff8c00] flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                          {lead.fullName?.[0] || "؟"}
+                        </div>
+                        <div>
+                          <p className="font-medium text-gray-900 dark:text-white">{lead.fullName}</p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            {lead.mobile && <span className="text-xs text-gray-400 flex items-center gap-1"><Phone className="h-3 w-3" />{lead.mobile}</span>}
+                            {lead.email && <span className="text-xs text-gray-400 flex items-center gap-1"><Mail className="h-3 w-3" />{lead.email}</span>}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="py-3 px-4">
-                    <div>
-                      {lead.companyName && <p className="text-gray-700 flex items-center gap-1"><Building2 className="h-3 w-3 text-gray-400" />{lead.companyName}</p>}
-                      {lead.serviceInterested && <p className="text-xs text-gray-400 mt-0.5">{lead.serviceInterested}</p>}
-                    </div>
-                  </td>
-                  <td className="py-3 px-4">
-                    <span className="text-xs text-gray-600">{lead.sourceName || "—"}</span>
-                  </td>
-                  <td className="py-3 px-4">
-                    <Badge variant="outline" className={`text-xs ${PRIORITY_COLORS[lead.priority] || ""}`}>
-                      {PRIORITIES.find(p => p.value === lead.priority)?.label || lead.priority}
-                    </Badge>
-                  </td>
-                  <td className="py-3 px-4">
-                    <Badge variant="outline" className={`text-xs ${STATUS_COLORS[lead.status] || ""}`}>
-                      {STATUSES.find(s => s.value === lead.status)?.label || lead.status}
-                    </Badge>
-                  </td>
-                  <td className="py-3 px-4 text-xs text-gray-400">
-                    {new Date(lead.createdAt).toLocaleDateString("ar-SA")}
-                  </td>
-                  <td className="py-3 px-4">
-                    <div className="flex items-center gap-1 justify-end">
-                      <Button variant="ghost" size="sm" asChild data-testid={`button-view-lead-${lead.id}`}>
-                        <Link href={`/crm/leads/${lead.id}`}><Eye className="h-4 w-4" /></Link>
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => openEdit(lead)} data-testid={`button-edit-lead-${lead.id}`}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700" onClick={() => { if (confirm("هل أنت متأكد من الحذف؟")) deleteMutation.mutate(lead.id); }} data-testid={`button-delete-lead-${lead.id}`}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div>
+                        {lead.companyName && <p className="text-gray-700 dark:text-gray-300 flex items-center gap-1"><Building2 className="h-3 w-3 text-gray-400" />{lead.companyName}</p>}
+                        {lead.serviceInterested && <p className="text-xs text-gray-400 mt-0.5">{lead.serviceInterested}</p>}
+                      </div>
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className="text-xs text-gray-600 dark:text-gray-400">{lead.sourceName || "—"}</span>
+                    </td>
+                    <td className="py-3 px-4">
+                      <Badge variant="outline" className={`text-xs ${PRIORITY_COLORS[lead.priority] || ""}`}>
+                        {PRIORITIES.find(p => p.value === lead.priority)?.label || lead.priority}
+                      </Badge>
+                    </td>
+                    <td className="py-3 px-4">
+                      <Badge variant="outline" className={`text-xs ${STATUS_COLORS[lead.status] || ""}`}>
+                        {STATUSES.find(s => s.value === lead.status)?.label || lead.status}
+                      </Badge>
+                    </td>
+                    <td className="py-3 px-4 text-xs text-gray-400">
+                      {new Date(lead.createdAt).toLocaleDateString("ar-SA")}
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-1 justify-end">
+                        <Button variant="ghost" size="sm" asChild data-testid={`button-view-lead-${lead.id}`}>
+                          <Link href={`/crm/leads/${lead.id}`}><Eye className="h-4 w-4" /></Link>
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => openEdit(lead)} data-testid={`button-edit-lead-${lead.id}`}>
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700" onClick={() => { if (confirm("هل أنت متأكد من الحذف؟")) deleteMutation.mutate(lead.id); }} data-testid={`button-delete-lead-${lead.id}`}>
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
 
-      {/* Create/Edit Dialog */}
       <Dialog open={showForm} onOpenChange={o => { setShowForm(o); if (!o) { setEditingLead(null); resetForm(); } }}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto" dir="rtl">
           <DialogHeader>
