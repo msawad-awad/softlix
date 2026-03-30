@@ -1906,9 +1906,12 @@ export async function registerRoutes(
       // Create CRM lead + activity (secondary — non-fatal)
       let lead = null;
       try {
+        console.log("[lead-capture] Creating CRM lead for formLead:", formLead.id);
         const sources = await storage.getCrmLeadSources(tenant.id);
+        console.log("[lead-capture] Found", sources.length, "lead sources");
         const websiteSource = sources.find(s => s.name.includes('موقع') || s.name.toLowerCase().includes('website'));
-        lead = await storage.createCrmLead({
+        console.log("[lead-capture] Website source:", websiteSource?.id, websiteSource?.name);
+        const crmLeadData = {
           tenantId: tenant.id, fullName: name,
           email: email || null, mobile: phone || null,
           message: message || null,
@@ -1919,14 +1922,17 @@ export async function registerRoutes(
           utmCampaign: utmCampaign || null, pageSource: pageSource || null,
           ipAddress: req.ip || null,
           formLeadId: formLead.id, status: 'new', priority: 'medium',
-        });
+        };
+        lead = await storage.createCrmLead(crmLeadData);
+        console.log("[lead-capture] CRM lead created:", lead.id, lead.leadNumber);
         await storage.createCrmActivity({
           tenantId: tenant.id, entityType: 'lead', entityId: lead.id,
           type: 'note', subject: 'تم استقبال الطلب من الموقع',
           details: message || name,
         });
+        console.log("[lead-capture] CRM activity created for lead:", lead.id);
       } catch (crmErr: any) {
-        console.error("[lead-capture] CRM ops failed (non-fatal):", crmErr.message);
+        console.error("[lead-capture] CRM ops failed (non-fatal):", crmErr.message, crmErr.stack);
       }
 
       res.json({ success: true, lead: lead || formLead });
