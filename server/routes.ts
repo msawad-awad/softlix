@@ -850,7 +850,6 @@ export async function registerRoutes(
   app.post("/api/public/leads", async (req, res) => {
     try {
       let tenantId = req.query.tenantId as string || req.body.tenantId || "";
-      // If no tenantId provided, use the first available tenant
       if (!tenantId) {
         try {
           const tenants = await storage.getAllTenants();
@@ -858,9 +857,9 @@ export async function registerRoutes(
         } catch {}
       }
       if (!tenantId) return res.status(400).json({ message: "No tenant available" });
-      const { name, email, phone, budget, message, formType, pageSource } = req.body;
+      const { name, email, phone, budget, message, formType, pageSource, source } = req.body;
       if (!name) return res.status(400).json({ message: "Name is required" });
-      const lead = await storage.createFormLead({
+      const formLead = await storage.createFormLead({
         tenantId,
         name,
         email: email || null,
@@ -872,7 +871,34 @@ export async function registerRoutes(
         ipAddress: req.ip || null,
         status: "new",
       });
-      res.status(201).json(lead);
+
+      let crmLead = null;
+      try {
+        console.log("[public/leads] Creating CRM lead for formLead:", formLead.id);
+        const sources = await storage.getCrmLeadSources(tenantId);
+        const websiteSource = sources.find(s => s.name.includes('موقع') || s.name.toLowerCase().includes('website'));
+        crmLead = await storage.createCrmLead({
+          tenantId, fullName: name,
+          email: email || null, mobile: phone || null,
+          message: message || null,
+          estimatedBudget: budget || null,
+          sourceId: websiteSource?.id || null,
+          sourceName: websiteSource?.name || 'الموقع الإلكتروني',
+          pageSource: pageSource || source || null,
+          ipAddress: req.ip || null,
+          formLeadId: formLead.id, status: 'new', priority: 'medium',
+        });
+        console.log("[public/leads] CRM lead created:", crmLead.id, crmLead.leadNumber);
+        await storage.createCrmActivity({
+          tenantId, entityType: 'lead', entityId: crmLead.id,
+          type: 'note', subject: 'تم استقبال الطلب من الموقع',
+          details: message || name,
+        });
+      } catch (crmErr: any) {
+        console.error("[public/leads] CRM ops failed (non-fatal):", crmErr.message, crmErr.stack);
+      }
+
+      res.status(201).json(crmLead || formLead);
     } catch (error) {
       console.error("Lead submission error:", error);
       res.status(500).json({ message: "Internal server error" });
