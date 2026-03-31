@@ -5,6 +5,21 @@ import { createServer } from "http";
 import cookieParser from "cookie-parser";
 import path from "path";
 import fs from "fs";
+import { pool } from "./db";
+
+async function runStartupMigrations() {
+  const client = await pool.connect();
+  try {
+    await client.query(`
+      ALTER TABLE tenants ADD COLUMN IF NOT EXISTS proposal_settings jsonb DEFAULT '{}';
+    `);
+    console.log("[startup] DB migrations applied successfully.");
+  } catch (err: any) {
+    console.error("[startup] Migration warning:", err.message);
+  } finally {
+    client.release();
+  }
+}
 
 const app = express();
 const httpServer = createServer(app);
@@ -70,6 +85,7 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  await runStartupMigrations();
   await registerRoutes(httpServer, app);
 
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
