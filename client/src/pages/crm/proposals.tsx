@@ -291,8 +291,26 @@ export default function CrmProposals() {
     if (tpl.targetAudience?.length) setTargetAudience(tpl.targetAudience);
     if (tpl.deliverables?.length) setDeliverables(tpl.deliverables);
     if (tpl.technologies?.length) setSelectedTechnologies((tpl.technologies || []).map((t: any) => t.name || t));
-    setPaymentSchedule([]);
-    toast({ title: `✅ تم تطبيق قالب: ${tpl.name}`, description: `${(tpl.items||[]).length} بند · ${(tpl.targetAudience||[]).length} مجموعة مستهدفة · ${(tpl.deliverables||[]).length} مخرج` });
+    // ── New rich doc fields from template ──────────────────────────────────
+    if (tpl.defaultIntroText || tpl.defaultRequirements || tpl.defaultTimelineDays) {
+      setRichForm(f => ({
+        ...f,
+        ...(tpl.defaultIntroText ? { introText: applyTemplateVariables(tpl.defaultIntroText, vars) } : {}),
+        ...(tpl.defaultRequirements ? { requirements: applyTemplateVariables(tpl.defaultRequirements, vars) } : {}),
+        ...(tpl.defaultTimelineDays ? { timelineDays: String(tpl.defaultTimelineDays) } : {}),
+      }));
+    }
+    if (tpl.defaultTeamMembers?.length) setTeamMembers(tpl.defaultTeamMembers);
+    if (tpl.defaultPaymentSchedule?.length) {
+      setPaymentSchedule(tpl.defaultPaymentSchedule.map((m: any, i: number) => ({
+        id: `tpl-${i}`, milestone: m.milestone || "", percent: m.percent || 0,
+        amount: 0, status: "pending", notes: m.notes || "",
+      })));
+    } else {
+      setPaymentSchedule([]);
+    }
+    const richCount = [tpl.defaultIntroText, tpl.defaultRequirements, tpl.defaultPaymentSchedule?.length, tpl.defaultTeamMembers?.length].filter(Boolean).length;
+    toast({ title: `✅ تم تطبيق قالب: ${tpl.name}`, description: `${(tpl.items||[]).length} بند · ${(tpl.targetAudience||[]).length} مجموعة مستهدفة · ${(tpl.deliverables||[]).length} مخرج${richCount ? ` · ${richCount} حقل إضافي` : ""}` });
   };
 
   const addFromLibrary = (libItem: any) => {

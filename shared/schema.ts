@@ -945,6 +945,11 @@ export const proposalTemplates = pgTable("proposal_templates", {
   targetAudience: jsonb("target_audience").default([]), // array of { group, role, language, system }
   deliverables: jsonb("deliverables").default([]), // array of { name, description }
   technologies: jsonb("technologies").default([]), // array of { name, category, description }
+  defaultIntroText: text("default_intro_text"),         // نص المقدمة / الملخص التنفيذي
+  defaultRequirements: text("default_requirements"),    // متطلبات العميل المفصلة
+  defaultPaymentSchedule: jsonb("default_payment_schedule").default([]), // جدول الدفعات [{ milestone, percent, amount, dueDate }]
+  defaultTimelineDays: integer("default_timeline_days"), // مدة التنفيذ بالأيام
+  defaultTeamMembers: jsonb("default_team_members").default([]), // [{ role, name, title, experience }]
   isDefault: boolean("is_default").default(false),
   displayOrder: integer("display_order").default(0),
   createdAt: timestamp("created_at").defaultNow().notNull(),
