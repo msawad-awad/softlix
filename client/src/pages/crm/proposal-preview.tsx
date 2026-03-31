@@ -1057,6 +1057,7 @@ export function ProposalPreviewById() {
   const [, params] = useRoute("/crm/proposals/:id/preview");
   const id = params?.id!;
   const autoPrint = new URLSearchParams(window.location.search).get("autoprint") === "1";
+  const autoPdf = new URLSearchParams(window.location.search).get("pdf") === "1";
 
   const { data: proposal, isLoading } = useQuery<any>({
     queryKey: [`/api/crm/proposals/${id}`],
@@ -1073,6 +1074,37 @@ export function ProposalPreviewById() {
       return () => clearTimeout(timer);
     }
   }, [autoPrint, proposal, isLoading]);
+
+  useEffect(() => {
+    if (autoPdf && proposal && !isLoading) {
+      const timer = setTimeout(() => {
+        const element = document.getElementById("proposal-doc");
+        if (!element) return;
+        const opt = {
+          margin: 5,
+          filename: `${proposal.proposalNumber || "proposal"}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2 },
+          jsPDF: { orientation: "portrait", unit: "mm", format: "a4" }
+        };
+        const html2pdf = (window as any).html2pdf;
+        if (html2pdf) {
+          html2pdf().set(opt).from(element).save();
+          setTimeout(() => window.close(), 500);
+        } else {
+          const script = document.createElement("script");
+          script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+          script.onload = () => {
+            const lib = (window as any).html2pdf;
+            lib().set(opt).from(element).save();
+            setTimeout(() => window.close(), 500);
+          };
+          document.head.appendChild(script);
+        }
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [autoPdf, proposal, isLoading]);
 
   if (isLoading) return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -1122,7 +1154,27 @@ export function ProposalPreviewById() {
               <Printer className="h-4 w-4" /> طباعة
             </Button>
             <Button size="sm" onClick={() => {
-              const printWin = window.open(`/crm/proposals/${id}/preview?autoprint=1`, "_blank");
+              const element = document.getElementById("proposal-doc");
+              if (!element) return;
+              const opt = {
+                margin: 5,
+                filename: `${proposal.proposalNumber || "proposal"}.pdf`,
+                image: { type: "jpeg", quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { orientation: "portrait", unit: "mm", format: "a4" }
+              };
+              const html2pdf = (window as any).html2pdf;
+              if (html2pdf) {
+                html2pdf().set(opt).from(element).save();
+              } else {
+                const script = document.createElement("script");
+                script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+                script.onload = () => {
+                  const lib = (window as any).html2pdf;
+                  lib().set(opt).from(element).save();
+                };
+                document.head.appendChild(script);
+              }
             }} className="gap-2 bg-[#ff6a00] hover:bg-[#ff8c00] text-white" data-testid="btn-download-pdf">
               <FileDown className="h-4 w-4" /> تحميل PDF
             </Button>
@@ -1146,16 +1198,20 @@ export function ProposalPreviewById() {
       <ProposalDocument proposal={proposal} proposalSettings={proposalSettings} />
 
       <style>{`
+        #proposal-doc { page-break-inside: avoid; break-inside: avoid; }
+        #proposal-doc .cover-page { page-break-inside: avoid; break-inside: avoid; margin-bottom: 0; padding-bottom: 0; }
         @media print {
-          @page { size: A4; margin: 8mm 10mm; }
+          @page { size: A4; margin: 8mm 10mm; orphans: 0; widows: 0; }
           body { margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .print\\:hidden { display: none !important; }
           * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-          img { max-width: 100% !important; page-break-inside: avoid; }
+          #proposal-doc .cover-page { page-break-after: always; break-after: page; }
           .page-break { page-break-before: always; break-before: page; }
           .no-page-break { page-break-inside: avoid; break-inside: avoid; }
+          img { max-width: 100% !important; page-break-inside: avoid; }
           table { page-break-inside: avoid; }
           tr { page-break-inside: avoid; }
+          h1, h2, h3 { orphans: 3; widows: 3; page-break-after: avoid; }
         }
       `}</style>
     </div>
