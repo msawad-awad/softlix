@@ -90,9 +90,10 @@ const TEAM_BIOS: Record<string, { title: string; bio: string; exp: number }> = {
 const PROPOSAL_CSS = `
   .prop-wrap * { margin: 0; padding: 0; box-sizing: border-box; }
   .prop-wrap { font-family: "Segoe UI", Tahoma, Arial, sans-serif; line-height: 1.7; color: #1a1a1a; background: #f3f4f6; direction: rtl; }
-  .prop-page { width: 210mm; min-height: 297mm; margin: 16px auto; padding: 18mm 16mm 22mm; background: #ffffff; box-shadow: 0 4px 24px rgba(0,0,0,0.08); position: relative; page-break-after: always; overflow: hidden; }
-  .prop-page:last-child { page-break-after: auto; }
-  .cover-page { padding: 0; background: radial-gradient(circle at top right, rgba(255,106,0,0.12), transparent 30%), linear-gradient(160deg, #0f172a 0%, #151515 60%, #2a1200 100%); color: #ffffff; display: flex; flex-direction: column; justify-content: space-between; }
+  .prop-page { width: 210mm; height: 297mm; margin: 16px auto; padding: 18mm 16mm 14mm; background: #ffffff; box-shadow: 0 4px 24px rgba(0,0,0,0.08); position: relative; page-break-after: always; break-after: page; overflow: hidden; display: flex; flex-direction: column; }
+  .prop-page:last-child { page-break-after: auto; break-after: auto; }
+  .p-spacer { flex: 1; min-height: 8px; }
+  .cover-page { padding: 0; background: radial-gradient(circle at top right, rgba(255,106,0,0.12), transparent 30%), linear-gradient(160deg, #0f172a 0%, #151515 60%, #2a1200 100%); color: #ffffff; display: flex; flex-direction: column; justify-content: space-between; height: 297mm; }
   .cover-top-ribbon, .cover-bottom-ribbon { height: 12px; background: linear-gradient(to right, #ff8c00, #ff6a00, #e55c00); }
   .cover-bottom-ribbon { background: linear-gradient(to right, #e55c00, #ff6a00, #ff8c00); }
   .cover-header { padding: 28px 36px 18px; border-bottom: 1px solid rgba(255,255,255,0.12); }
@@ -182,7 +183,7 @@ const PROPOSAL_CSS = `
   .p-signature-subtitle { font-size: 11px; color: #6b7280; margin-bottom: 12px; }
   .p-signature-line { height: 74px; border: 1px dashed #d1d5db; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 12px; margin-bottom: 12px; }
   .p-signature-details p { margin-bottom: 6px; font-size: 13px; }
-  .p-footer { position: absolute; left: 16mm; right: 16mm; bottom: 10mm; border-top: 1px solid #e5e7eb; padding-top: 8px; display: flex; justify-content: space-between; gap: 12px; font-size: 11px; color: #9ca3af; }
+  .p-footer { border-top: 1px solid #e5e7eb; padding-top: 8px; display: flex; justify-content: space-between; gap: 12px; font-size: 11px; color: #9ca3af; flex-shrink: 0; }
   .p-closing-card { background: linear-gradient(135deg, #0f172a 0%, #1a1a1a 55%, #2a1200 100%); color: #fff; border-radius: 16px; padding: 22px; text-align: center; margin-top: 24px; border-top: 4px solid #ff6a00; }
   .p-closing-card h3 { font-size: 20px; margin-bottom: 10px; font-weight: 900; }
   .p-closing-card .p-sub { color: #ffb067; margin-bottom: 12px; }
@@ -216,10 +217,13 @@ function PHeader({ num, date }: { num: string; date: string }) {
 
 function PFooter({ label, page, total }: { label: string; page: number; total: number }) {
   return (
-    <div className="p-footer">
-      <span>{label}</span>
-      <span>{page} / {total}</span>
-    </div>
+    <>
+      <div className="p-spacer" />
+      <div className="p-footer">
+        <span>{label}</span>
+        <span>{page} / {total}</span>
+      </div>
+    </>
   );
 }
 
@@ -1081,24 +1085,21 @@ export function ProposalPreviewById() {
         const element = document.getElementById("proposal-doc");
         if (!element) return;
         const opt = {
-          margin: 5,
+          margin: 0,
           filename: `${proposal.proposalNumber || "proposal"}.pdf`,
           image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2 },
-          jsPDF: { orientation: "portrait", unit: "mm", format: "a4" }
+          html2canvas: { scale: 2, useCORS: true, logging: false, allowTaint: true, letterRendering: true },
+          jsPDF: { orientation: "portrait", unit: "mm", format: "a4" },
+          pagebreak: { mode: ["css", "legacy"], before: ".prop-page" }
         };
+        const doSave = (lib: any) => { lib().set(opt).from(element).save(); setTimeout(() => window.close(), 1000); };
         const html2pdf = (window as any).html2pdf;
         if (html2pdf) {
-          html2pdf().set(opt).from(element).save();
-          setTimeout(() => window.close(), 500);
+          doSave(html2pdf);
         } else {
           const script = document.createElement("script");
           script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
-          script.onload = () => {
-            const lib = (window as any).html2pdf;
-            lib().set(opt).from(element).save();
-            setTimeout(() => window.close(), 500);
-          };
+          script.onload = () => doSave((window as any).html2pdf);
           document.head.appendChild(script);
         }
       }, 800);
@@ -1157,22 +1158,21 @@ export function ProposalPreviewById() {
               const element = document.getElementById("proposal-doc");
               if (!element) return;
               const opt = {
-                margin: 5,
+                margin: 0,
                 filename: `${proposal.proposalNumber || "proposal"}.pdf`,
                 image: { type: "jpeg", quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { orientation: "portrait", unit: "mm", format: "a4" }
+                html2canvas: { scale: 2, useCORS: true, logging: false, allowTaint: true, letterRendering: true },
+                jsPDF: { orientation: "portrait", unit: "mm", format: "a4" },
+                pagebreak: { mode: ["css", "legacy"], before: ".prop-page" }
               };
+              const doDownload = (lib: any) => lib().set(opt).from(element).save();
               const html2pdf = (window as any).html2pdf;
               if (html2pdf) {
-                html2pdf().set(opt).from(element).save();
+                doDownload(html2pdf);
               } else {
                 const script = document.createElement("script");
                 script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
-                script.onload = () => {
-                  const lib = (window as any).html2pdf;
-                  lib().set(opt).from(element).save();
-                };
+                script.onload = () => doDownload((window as any).html2pdf);
                 document.head.appendChild(script);
               }
             }} className="gap-2 bg-[#ff6a00] hover:bg-[#ff8c00] text-white" data-testid="btn-download-pdf">
@@ -1198,20 +1198,14 @@ export function ProposalPreviewById() {
       <ProposalDocument proposal={proposal} proposalSettings={proposalSettings} />
 
       <style>{`
-        #proposal-doc { page-break-inside: avoid; break-inside: avoid; }
-        #proposal-doc .cover-page { page-break-inside: avoid; break-inside: avoid; margin-bottom: 0; padding-bottom: 0; }
         @media print {
-          @page { size: A4; margin: 8mm 10mm; orphans: 0; widows: 0; }
+          @page { size: A4; margin: 0; }
           body { margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .print\\:hidden { display: none !important; }
           * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-          #proposal-doc .cover-page { page-break-after: always; break-after: page; }
-          .page-break { page-break-before: always; break-before: page; }
-          .no-page-break { page-break-inside: avoid; break-inside: avoid; }
-          img { max-width: 100% !important; page-break-inside: avoid; }
-          table { page-break-inside: avoid; }
-          tr { page-break-inside: avoid; }
-          h1, h2, h3 { orphans: 3; widows: 3; page-break-after: avoid; }
+          #proposal-doc { margin: 0; padding: 0; background: transparent; }
+          .prop-page { box-shadow: none; margin: 0; height: 297mm; width: 210mm; overflow: hidden; page-break-after: always; break-after: page; }
+          .prop-page:last-child { page-break-after: auto; break-after: auto; }
         }
       `}</style>
     </div>
@@ -1384,15 +1378,13 @@ export function ProposalPublicView() {
 
       <style>{`
         @media print {
-          @page { size: A4; margin: 8mm 10mm; }
+          @page { size: A4; margin: 0; }
           body { margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .print\\:hidden { display: none !important; }
           * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-          img { max-width: 100% !important; page-break-inside: avoid; }
-          .page-break { page-break-before: always; break-before: page; }
-          .no-page-break { page-break-inside: avoid; break-inside: avoid; }
-          table { page-break-inside: avoid; }
-          tr { page-break-inside: avoid; }
+          #proposal-doc { margin: 0; padding: 0; background: transparent; }
+          .prop-page { box-shadow: none; margin: 0; height: 297mm; width: 210mm; overflow: hidden; page-break-after: always; break-after: page; }
+          .prop-page:last-child { page-break-after: auto; break-after: auto; }
         }
       `}</style>
     </div>
