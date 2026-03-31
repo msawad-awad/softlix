@@ -1128,37 +1128,122 @@ export default function CrmProposals() {
 
       {/* ═══════════════════ TEMPLATE PREVIEW ═══════════════════ */}
       <Dialog open={!!templatePreview} onOpenChange={open => !open && setTemplatePreview(null)}>
-        <DialogContent dir="rtl" className="max-w-lg">
-          <DialogHeader><DialogTitle className="text-right">معاينة القالب: {templatePreview?.name}</DialogTitle><DialogDescription className="sr-only">معاينة تفاصيل القالب</DialogDescription></DialogHeader>
+        <DialogContent dir="rtl" className="max-w-2xl max-h-[85vh] flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="text-right text-base">{templatePreview?.name}</DialogTitle>
+            {templatePreview?.nameEn && <p className="text-xs text-gray-400 text-right">{templatePreview.nameEn}</p>}
+            <DialogDescription className="sr-only">معاينة تفاصيل القالب</DialogDescription>
+          </DialogHeader>
           {templatePreview && (
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <div className="bg-gray-50 rounded-lg p-3"><p className="text-xs text-gray-500 mb-0.5">الفئة</p><p className="font-medium">{CATEGORY_LABELS[templatePreview.category] || templatePreview.category}</p></div>
-                <div className="bg-gray-50 rounded-lg p-3"><p className="text-xs text-gray-500 mb-0.5">صلاحية افتراضية</p><p className="font-medium">{templatePreview.defaultValidity} يوم</p></div>
-                <div className="bg-gray-50 rounded-lg p-3"><p className="text-xs text-gray-500 mb-0.5">الضريبة</p><p className="font-medium">{templatePreview.defaultTaxPercent}%</p></div>
-                <div className="bg-gray-50 rounded-lg p-3"><p className="text-xs text-gray-500 mb-0.5">عدد البنود</p><p className="font-medium">{(templatePreview.items || []).length} بنود</p></div>
+            <div className="flex-1 overflow-y-auto space-y-4 pb-2">
+              {/* ── Stats Bar ── */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-sm">
+                <div className="bg-orange-50 border border-orange-100 rounded-lg p-2.5 text-center">
+                  <p className="text-[10px] text-orange-500 font-medium">البنود</p>
+                  <p className="font-bold text-orange-700">{(templatePreview.items || []).length}</p>
+                </div>
+                <div className="bg-blue-50 border border-blue-100 rounded-lg p-2.5 text-center">
+                  <p className="text-[10px] text-blue-500 font-medium">المستخدمون</p>
+                  <p className="font-bold text-blue-700">{(templatePreview.targetAudience || []).length}</p>
+                </div>
+                <div className="bg-green-50 border border-green-100 rounded-lg p-2.5 text-center">
+                  <p className="text-[10px] text-green-500 font-medium">المخرجات</p>
+                  <p className="font-bold text-green-700">{(templatePreview.deliverables || []).length}</p>
+                </div>
+                <div className="bg-purple-50 border border-purple-100 rounded-lg p-2.5 text-center">
+                  <p className="text-[10px] text-purple-500 font-medium">المدة</p>
+                  <p className="font-bold text-purple-700">{templatePreview.defaultTimelineDays ? `${templatePreview.defaultTimelineDays} يوم` : `${templatePreview.defaultValidity} يوم`}</p>
+                </div>
               </div>
+
+              {/* ── Intro Text ── */}
+              {templatePreview.defaultIntroText && (
+                <div>
+                  <p className="text-xs font-semibold text-gray-700 mb-1.5">الملخص التنفيذي:</p>
+                  <p className="text-xs text-gray-600 bg-gray-50 rounded-xl p-3 leading-relaxed line-clamp-4">{templatePreview.defaultIntroText}</p>
+                </div>
+              )}
+
+              {/* ── Requirements ── */}
+              {templatePreview.defaultRequirements && (
+                <div>
+                  <p className="text-xs font-semibold text-gray-700 mb-1.5">متطلبات العميل:</p>
+                  <p className="text-xs text-gray-600 bg-gray-50 rounded-xl p-3 leading-relaxed whitespace-pre-wrap line-clamp-6">{templatePreview.defaultRequirements}</p>
+                </div>
+              )}
+
+              {/* ── Target Audience ── */}
+              {(templatePreview.targetAudience || []).length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-gray-700 mb-1.5">الجمهور المستهدف ({(templatePreview.targetAudience || []).length} فئة):</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {(templatePreview.targetAudience || []).map((a: any, i: number) => (
+                      <span key={i} className="text-xs bg-blue-50 text-blue-700 border border-blue-100 rounded-full px-2.5 py-0.5">{a.group}</span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ── Team Members ── */}
+              {(templatePreview.defaultTeamMembers || []).length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-gray-700 mb-1.5">فريق العمل ({(templatePreview.defaultTeamMembers || []).length} أعضاء):</p>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {(templatePreview.defaultTeamMembers || []).map((m: any, i: number) => (
+                      <div key={i} className="bg-gray-50 rounded-lg px-2.5 py-1.5">
+                        <p className="text-xs font-medium text-gray-800">{m.role}</p>
+                        <p className="text-[10px] text-gray-400">{m.experience}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ── Payment Schedule ── */}
+              {(templatePreview.defaultPaymentSchedule || []).length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold text-gray-700 mb-1.5">جدول الدفعات ({(templatePreview.defaultPaymentSchedule || []).length} مراحل):</p>
+                  <div className="bg-gray-50 rounded-xl divide-y divide-gray-100 overflow-hidden">
+                    {(templatePreview.defaultPaymentSchedule || []).map((m: any, i: number) => (
+                      <div key={i} className="flex justify-between items-center px-3 py-1.5">
+                        <p className="text-xs text-gray-700">{m.milestone}</p>
+                        <span className="text-xs font-bold text-[#ff6a00] bg-orange-50 rounded-full px-2 py-0.5">{m.percent}%</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ── Items ── */}
               <div>
-                <p className="text-xs font-semibold text-gray-700 mb-2">البنود الجاهزة:</p>
-                <div className="bg-gray-50 rounded-xl divide-y divide-gray-100 overflow-hidden">
+                <p className="text-xs font-semibold text-gray-700 mb-1.5">بنود العرض:</p>
+                <div className="bg-gray-50 rounded-xl divide-y divide-gray-100 overflow-hidden max-h-48 overflow-y-auto">
                   {(templatePreview.items || []).map((item: any, idx: number) => (
-                    <div key={idx} className="flex justify-between px-3 py-2">
-                      <div><p className="text-sm font-medium text-gray-900">{item.title}</p>{item.description && <p className="text-xs text-gray-400">{item.description}</p>}</div>
-                      <p className="text-sm font-semibold text-gray-900">{parseFloat(item.unitPrice || "0").toLocaleString()} ريال</p>
+                    <div key={idx} className={`flex justify-between px-3 py-2 ${item.isOptional ? 'opacity-60' : ''}`}>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium text-gray-900 truncate">{item.title}{item.isOptional && <span className="text-[10px] text-gray-400 mr-1">(اختياري)</span>}</p>
+                        {item.sectionName && <p className="text-[10px] text-gray-400">{item.sectionName}</p>}
+                      </div>
+                      <p className="text-xs font-semibold text-gray-900 mr-2 shrink-0">{parseFloat(item.unitPrice || "0").toLocaleString()} ريال</p>
                     </div>
                   ))}
                 </div>
-                <p className="text-xs text-gray-500 mt-2 font-bold">الإجمالي التقريبي: {(templatePreview.items || []).reduce((s: number, i: any) => s + parseFloat(i.unitPrice || "0") * parseFloat(i.quantity || "1"), 0).toLocaleString()} ريال (قبل الضريبة)</p>
+                <div className="flex justify-between items-center mt-2 px-1">
+                  <p className="text-xs text-gray-500">الإجمالي قبل الضريبة:</p>
+                  <p className="text-sm font-bold text-gray-800">{(templatePreview.items || []).filter((i: any) => !i.isOptional).reduce((s: number, i: any) => s + parseFloat(i.unitPrice || "0") * parseFloat(i.quantity || "1"), 0).toLocaleString()} ريال</p>
+                </div>
               </div>
+
+              {/* ── Terms ── */}
               {templatePreview.defaultTerms && (
                 <div>
-                  <p className="text-xs font-semibold text-gray-700 mb-1.5">الشروط الافتراضية:</p>
+                  <p className="text-xs font-semibold text-gray-700 mb-1.5">الشروط والأحكام:</p>
                   <p className="text-xs text-gray-600 bg-gray-50 rounded-xl p-3 whitespace-pre-wrap leading-relaxed">{templatePreview.defaultTerms}</p>
                 </div>
               )}
             </div>
           )}
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 border-t pt-3 shrink-0">
             <Button variant="outline" onClick={() => setTemplatePreview(null)}>إلغاء</Button>
             <Button onClick={() => applyTemplate(templatePreview, true)} className="bg-[#ff6a00] hover:bg-[#ff8c00] text-white gap-2">
               <CheckCircle className="h-4 w-4" /> تطبيق هذا القالب

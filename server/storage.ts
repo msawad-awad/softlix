@@ -9,7 +9,7 @@ import {
   crmActivities, crmTasks, crmProposals, crmProposalItems,
   integrationSettings, crmAttachments, crmProposalTokens,
   proposalTemplates, googleImportBuffer, serviceLibrary, visitorLogs, analyticsEvents,
-  tickets, ticketMessages, employees, inventoryItems, phoneSettings,
+  tickets, ticketMessages, employees, inventoryItems, phoneSettings, invoices,
   type ProposalTemplate, type InsertProposalTemplate,
   type GoogleImportBuffer, type InsertGoogleImportBuffer,
   type ServiceLibraryItem, type InsertServiceLibraryItem,
@@ -56,6 +56,7 @@ import {
   type Employee, type InsertEmployee,
   type InventoryItem, type InsertInventoryItem,
   type PhoneSetting, type InsertPhoneSetting,
+  type Invoice, type InsertInvoice,
   type AuthenticatedUser,
 } from "@shared/schema";
 import { db } from "./db";
@@ -348,6 +349,15 @@ export interface IStorage {
     recentLeads: Array<{ name: string | null; email: string | null; phone: string | null }>;
     timestamp: string;
   }>;
+
+  // ── Invoices ─────────────────────────────────────────────────────────────
+  getInvoices(tenantId: string, opts?: { status?: string; search?: string }): Promise<Invoice[]>;
+  getInvoice(id: string, tenantId: string): Promise<Invoice | undefined>;
+  getInvoiceByToken(token: string): Promise<Invoice | undefined>;
+  createInvoice(tenantId: string, data: Partial<Invoice>): Promise<Invoice>;
+  updateInvoice(id: string, tenantId: string, data: Partial<Invoice>): Promise<Invoice | undefined>;
+  deleteInvoice(id: string, tenantId: string): Promise<void>;
+  getNextInvoiceNumber(tenantId: string): Promise<string>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -2481,6 +2491,52 @@ export class DatabaseStorage implements IStorage {
 
   async deletePhoneSetting(id: string, tenantId: string): Promise<void> {
     await db.delete(phoneSettings).where(and(eq(phoneSettings.id, id), eq(phoneSettings.tenantId, tenantId)));
+  }
+
+  // ── Invoices ────────────────────────────────────────────────────────────
+  async getInvoices(tenantId: string, opts?: { status?: string; search?: string }): Promise<Invoice[]> {
+    const conditions = [eq(invoices.tenantId, tenantId)];
+    if (opts?.status && opts.status !== "all") conditions.push(eq(invoices.status, opts.status));
+    if (opts?.search) conditions.push(ilike(invoices.clientName, `%${opts.search}%`));
+    return db.select().from(invoices).where(and(...conditions)).orderBy(desc(invoices.createdAt));
+  }
+
+  async getInvoice(id: string, tenantId: string): Promise<Invoice | undefined> {
+    const [row] = await db.select().from(invoices).where(and(eq(invoices.id, id), eq(invoices.tenantId, tenantId)));
+    return row;
+  }
+
+  async getInvoiceByToken(token: string): Promise<Invoice | undefined> {
+    const [row] = await db.select().from(invoices).where(eq(invoices.shareToken, token));
+    return row;
+  }
+
+  async createInvoice(tenantId: string, data: Partial<Invoice>): Promise<Invoice> {
+    const [row] = await db.insert(invoices).values({
+      ...data as any,
+      tenantId,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as any).returning();
+    return row;
+  }
+
+  async updateInvoice(id: string, tenantId: string, data: Partial<Invoice>): Promise<Invoice | undefined> {
+    const [row] = await db.update(invoices).set({ ...data, updatedAt: new Date() } as any)
+      .where(and(eq(invoices.id, id), eq(invoices.tenantId, tenantId))).returning();
+    return row;
+  }
+
+  async deleteInvoice(id: string, tenantId: string): Promise<void> {
+    await db.delete(invoices).where(and(eq(invoices.id, id), eq(invoices.tenantId, tenantId)));
+  }
+
+  async getNextInvoiceNumber(tenantId: string): Promise<string> {
+    const year = new Date().getFullYear();
+    const [result] = await db.select({ cnt: count() }).from(invoices)
+      .where(and(eq(invoices.tenantId, tenantId), like(invoices.invoiceNumber, `INV-${year}-%`)));
+    const next = (Number(result?.cnt || 0) + 1).toString().padStart(3, "0");
+    return `INV-${year}-${next}`;
   }
 }
 

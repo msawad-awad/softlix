@@ -1185,6 +1185,47 @@ export type PhoneSetting = typeof phoneSettings.$inferSelect;
 export type InsertPhoneSetting = z.infer<typeof insertPhoneSettingSchema>;
 
 // ============================================================================
+// INVOICES (فواتير)
+// ============================================================================
+export const invoices = pgTable("invoices", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tenantId: varchar("tenant_id").references(() => tenants.id).notNull(),
+  invoiceNumber: varchar("invoice_number").notNull(), // INV-2024-001
+  leadId: varchar("lead_id").references(() => crmLeads.id),
+  companyId: varchar("company_id").references(() => companies.id),
+  contactId: varchar("contact_id").references(() => contacts.id),
+  proposalId: varchar("proposal_id").references(() => crmProposals.id),
+  clientName: varchar("client_name").notNull(),
+  clientEmail: varchar("client_email"),
+  clientPhone: varchar("client_phone"),
+  clientAddress: text("client_address"),
+  status: varchar("status").notNull().default("draft"), // draft | sent | viewed | paid | overdue | cancelled
+  issueDate: varchar("issue_date").notNull(), // YYYY-MM-DD
+  dueDate: varchar("due_date").notNull(), // YYYY-MM-DD
+  items: jsonb("items").notNull().default([]),
+  subtotal: decimal("subtotal").notNull().default("0"),
+  taxPercent: decimal("tax_percent").notNull().default("15"),
+  taxAmount: decimal("tax_amount").notNull().default("0"),
+  discountAmount: decimal("discount_amount").notNull().default("0"),
+  total: decimal("total").notNull().default("0"),
+  notes: text("notes"),
+  terms: text("terms"),
+  paidAmount: decimal("paid_amount").notNull().default("0"),
+  paidAt: timestamp("paid_at"),
+  currency: varchar("currency").notNull().default("SAR"),
+  shareToken: varchar("share_token").unique(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const insertInvoiceSchema = createInsertSchema(invoices).omit({
+  id: true, createdAt: true, updatedAt: true, shareToken: true,
+  subtotal: true, taxAmount: true, total: true,
+});
+export type Invoice = typeof invoices.$inferSelect;
+export type InsertInvoice = z.infer<typeof insertInvoiceSchema>;
+
+// ============================================================================
 // API Response Types
 // ============================================================================
 export type UserWithoutPassword = Omit<User, "passwordHash">;

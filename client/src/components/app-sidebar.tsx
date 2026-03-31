@@ -38,6 +38,7 @@ import {
   MapPin,
   UsersRound,
   Phone,
+  Receipt,
 } from "lucide-react";
 import {
   Sidebar,
@@ -94,6 +95,7 @@ export function AppSidebar() {
     { title: "العملاء المحتملون", url: "/crm/leads", icon: Inbox },
     { title: "الصفقات", url: "/crm/deals", icon: TrendingUp },
     { title: "عروض الأسعار", url: "/crm/proposals", icon: FileText, perm: "proposals" },
+    { title: "الفواتير", url: "/crm/invoices", icon: Receipt },
     { title: "سجل الأنشطة", url: "/crm/activities", icon: Activity },
     { title: "استيراد من جوجل", url: "/crm/google-import", icon: MapPin, perm: "google_import" },
     { title: t("nav.companies"), url: "/companies", icon: Building2 },

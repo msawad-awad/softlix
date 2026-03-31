@@ -3130,6 +3130,94 @@ export async function registerRoutes(
   });
 
   // ============================================================================
+  // INVOICES (فواتير)
+  // ============================================================================
+  app.get("/api/crm/invoices", requireAuth, async (req, res) => {
+    try {
+      const { status, search } = req.query as Record<string, string>;
+      const list = await storage.getInvoices(req.user!.tenantId, { status, search });
+      res.json(list);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.get("/api/crm/invoices/next-number", requireAuth, async (req, res) => {
+    try {
+      const num = await storage.getNextInvoiceNumber(req.user!.tenantId);
+      res.json({ invoiceNumber: num });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.get("/api/crm/invoices/:id", requireAuth, async (req, res) => {
+    try {
+      const inv = await storage.getInvoice(req.params.id, req.user!.tenantId);
+      if (!inv) return res.status(404).json({ error: "Not found" });
+      res.json(inv);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.post("/api/crm/invoices", requireAuth, async (req, res) => {
+    try {
+      const data = req.body;
+      const items = data.items || [];
+      const subtotal = items.reduce((s: number, i: any) => s + parseFloat(i.unitPrice || "0") * parseFloat(i.quantity || "1"), 0);
+      const taxAmount = (subtotal * parseFloat(data.taxPercent || "15")) / 100;
+      const discountAmount = parseFloat(data.discountAmount || "0");
+      const total = subtotal + taxAmount - discountAmount;
+      const inv = await storage.createInvoice(req.user!.tenantId, {
+        ...data,
+        subtotal: subtotal.toFixed(2),
+        taxAmount: taxAmount.toFixed(2),
+        total: total.toFixed(2),
+      });
+      res.json(inv);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.patch("/api/crm/invoices/:id", requireAuth, async (req, res) => {
+    try {
+      const data = req.body;
+      if (data.items !== undefined) {
+        const items = data.items || [];
+        const subtotal = items.reduce((s: number, i: any) => s + parseFloat(i.unitPrice || "0") * parseFloat(i.quantity || "1"), 0);
+        const taxAmount = (subtotal * parseFloat(data.taxPercent || "15")) / 100;
+        const discountAmount = parseFloat(data.discountAmount || "0");
+        const total = subtotal + taxAmount - discountAmount;
+        data.subtotal = subtotal.toFixed(2);
+        data.taxAmount = taxAmount.toFixed(2);
+        data.total = total.toFixed(2);
+      }
+      const inv = await storage.updateInvoice(req.params.id, req.user!.tenantId, data);
+      if (!inv) return res.status(404).json({ error: "Not found" });
+      res.json(inv);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.delete("/api/crm/invoices/:id", requireAuth, async (req, res) => {
+    try {
+      await storage.deleteInvoice(req.params.id, req.user!.tenantId);
+      res.json({ ok: true });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.post("/api/crm/invoices/:id/share-token", requireAuth, async (req, res) => {
+    try {
+      const { randomBytes } = await import("crypto");
+      const token = randomBytes(20).toString("hex");
+      const inv = await storage.updateInvoice(req.params.id, req.user!.tenantId, { shareToken: token });
+      if (!inv) return res.status(404).json({ error: "Not found" });
+      res.json({ token, url: `/invoice/${token}` });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.get("/api/public/invoice/:token", async (req, res) => {
+    try {
+      const inv = await storage.getInvoiceByToken(req.params.token);
+      if (!inv) return res.status(404).json({ error: "Not found" });
+      res.json(inv);
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // ============================================================================
   // DB-driven redirect middleware (runs before SPA fallback)
   // ============================================================================
   app.use(async (req, res, next) => {
