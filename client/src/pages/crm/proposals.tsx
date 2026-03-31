@@ -513,7 +513,7 @@ export default function CrmProposals() {
                     <Link href={`/crm/proposals/${p.id}/preview`}><Eye className="h-3.5 w-3.5 text-gray-400" /></Link>
                   </Button>
                   <Button variant="ghost" size="icon" className="h-7 w-7" title="تحميل PDF" data-testid={`btn-pdf-${p.id}`}
-                    onClick={() => { setLocation(`/crm/proposals/${p.id}/preview?pdf=1`); }}>
+                    onClick={() => window.open(`/crm/proposals/${p.id}/preview`, "_blank")}>
                     <FileDown className="h-3.5 w-3.5 text-gray-400" />
                   </Button>
                   <Button variant="ghost" size="icon" className="h-7 w-7" title="إرسال بريد" onClick={() => { setEmailProposal(p); setEmailForm({ to: "", subject: `عرض سعر: ${p.title}`, message: "" }); setShowEmailDialog(true); }}>

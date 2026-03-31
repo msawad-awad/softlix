@@ -1061,7 +1061,6 @@ export function ProposalPreviewById() {
   const [, params] = useRoute("/crm/proposals/:id/preview");
   const id = params?.id!;
   const autoPrint = new URLSearchParams(window.location.search).get("autoprint") === "1";
-  const autoPdf = new URLSearchParams(window.location.search).get("pdf") === "1";
 
   const { data: proposal, isLoading } = useQuery<any>({
     queryKey: [`/api/crm/proposals/${id}`],
@@ -1079,33 +1078,62 @@ export function ProposalPreviewById() {
     }
   }, [autoPrint, proposal, isLoading]);
 
-  useEffect(() => {
-    if (autoPdf && proposal && !isLoading) {
-      const timer = setTimeout(() => {
-        const element = document.getElementById("proposal-doc");
-        if (!element) return;
-        const opt = {
-          margin: 0,
-          filename: `${proposal.proposalNumber || "proposal"}.pdf`,
-          image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true, logging: false, allowTaint: true, letterRendering: true },
-          jsPDF: { orientation: "portrait", unit: "mm", format: "a4" },
-          pagebreak: { mode: ["css", "legacy"], before: ".prop-page" }
-        };
-        const doSave = (lib: any) => { lib().set(opt).from(element).save(); setTimeout(() => window.close(), 1000); };
-        const html2pdf = (window as any).html2pdf;
-        if (html2pdf) {
-          doSave(html2pdf);
-        } else {
-          const script = document.createElement("script");
-          script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
-          script.onload = () => doSave((window as any).html2pdf);
-          document.head.appendChild(script);
-        }
-      }, 800);
-      return () => clearTimeout(timer);
-    }
-  }, [autoPdf, proposal, isLoading]);
+  const handlePdfDownload = (_filename?: string) => {
+    const doc = document.getElementById("proposal-doc");
+    if (!doc) return;
+
+    const base = window.location.origin;
+
+    const styleLinks = Array.from(document.querySelectorAll("link[rel='stylesheet']"))
+      .map(l => {
+        const href = (l as HTMLLinkElement).href;
+        return `<link rel="stylesheet" href="${href}">`;
+      }).join("\n");
+
+    const inlineStyles = Array.from(document.querySelectorAll("style"))
+      .map(s => `<style>${s.innerHTML}</style>`)
+      .join("\n");
+
+    const iframe = document.createElement("iframe");
+    iframe.style.cssText = "position:fixed;top:-9999px;left:-9999px;width:210mm;height:1px;border:0;visibility:hidden;";
+    document.body.appendChild(iframe);
+
+    const iDoc = iframe.contentDocument || iframe.contentWindow?.document;
+    if (!iDoc) return;
+
+    iDoc.open();
+    iDoc.write(`<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <base href="${base}/">
+  ${styleLinks}
+  ${inlineStyles}
+  <style>
+    @page { size: A4 portrait; margin: 0; }
+    html, body { margin: 0; padding: 0; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; box-sizing: border-box; }
+    #proposal-doc { background: transparent !important; padding: 0 !important; margin: 0 !important; }
+    .prop-page { box-shadow: none !important; margin: 0 !important; page-break-after: always; break-after: page; }
+    .prop-page:last-child { page-break-after: auto !important; break-after: auto !important; }
+    .p-footer { position: static !important; }
+  </style>
+</head>
+<body>${doc.outerHTML}</body>
+</html>`);
+    iDoc.close();
+
+    const win = iframe.contentWindow!;
+    win.onafterprint = () => {
+      try { document.body.removeChild(iframe); } catch (_) {}
+    };
+    // انتظر تحميل الـ stylesheets ثم اطبع
+    iframe.onload = () => {
+      setTimeout(() => { win.focus(); win.print(); }, 400);
+    };
+    // fallback إذا لم يُطلق onload
+    setTimeout(() => { win.focus(); win.print(); }, 1200);
+  };
 
   if (isLoading) return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -1151,31 +1179,7 @@ export function ProposalPreviewById() {
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={() => window.history.back()}>رجوع</Button>
-            <Button variant="outline" size="sm" onClick={() => window.print()} className="gap-2" data-testid="btn-print-proposal">
-              <Printer className="h-4 w-4" /> طباعة
-            </Button>
-            <Button size="sm" onClick={() => {
-              const element = document.getElementById("proposal-doc");
-              if (!element) return;
-              const opt = {
-                margin: 0,
-                filename: `${proposal.proposalNumber || "proposal"}.pdf`,
-                image: { type: "jpeg", quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, logging: false, allowTaint: true, letterRendering: true },
-                jsPDF: { orientation: "portrait", unit: "mm", format: "a4" },
-                pagebreak: { mode: ["css", "legacy"], before: ".prop-page" }
-              };
-              const doDownload = (lib: any) => lib().set(opt).from(element).save();
-              const html2pdf = (window as any).html2pdf;
-              if (html2pdf) {
-                doDownload(html2pdf);
-              } else {
-                const script = document.createElement("script");
-                script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
-                script.onload = () => doDownload((window as any).html2pdf);
-                document.head.appendChild(script);
-              }
-            }} className="gap-2 bg-[#ff6a00] hover:bg-[#ff8c00] text-white" data-testid="btn-download-pdf">
+            <Button size="sm" onClick={() => handlePdfDownload(proposal.proposalNumber)} className="gap-2 bg-[#ff6a00] hover:bg-[#ff8c00] text-white" data-testid="btn-download-pdf">
               <FileDown className="h-4 w-4" /> تحميل PDF
             </Button>
           </div>
