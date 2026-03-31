@@ -261,12 +261,21 @@ export default function ProposalSettingsPage() {
             style={{ direction: "rtl" }}
           >
             <p className="text-base font-black text-gray-900 mb-1">ختم وتوقيع شركة سوفت لكس</p>
-            <p className="text-xs text-gray-400 mb-3">Softlix Information Technology</p>
+            <p className="text-xs text-gray-400 mb-2">Softlix Information Technology</p>
 
-            {/* Signature image */}
-            <div
-              className="h-20 border border-dashed border-gray-300 rounded-lg flex items-center justify-center mb-3 bg-orange-50/30 overflow-hidden"
-            >
+            {/* الختم — فوق وأكبر */}
+            <div className="flex justify-center mb-2">
+              {stampUrl ? (
+                <img src={stampUrl} alt="الختم" className="w-24 h-24 object-contain opacity-90" />
+              ) : (
+                <div className="w-24 h-24 border border-dashed border-gray-300 rounded-lg flex items-center justify-center">
+                  <p className="text-xs text-gray-400">الختم</p>
+                </div>
+              )}
+            </div>
+
+            {/* التوقيع — تحت الختم */}
+            <div className="h-16 border border-dashed border-gray-300 rounded-lg flex items-center justify-center mb-3 bg-orange-50/30 overflow-hidden">
               {signatureUrl ? (
                 <img src={signatureUrl} alt="توقيع" className="max-h-full max-w-full object-contain" />
               ) : (
@@ -274,19 +283,10 @@ export default function ProposalSettingsPage() {
               )}
             </div>
 
-            {/* Stamp + details */}
-            <div className="flex items-end gap-3">
-              <div className="flex-1 text-sm space-y-1">
-                <p><strong>الاسم:</strong> {signatoryName || "فرج سالم بن عبيد"}</p>
-                <p><strong>المسمى:</strong> {authorTitle || "المدير التنفيذي"}</p>
-              </div>
-              {stampUrl && (
-                <img
-                  src={stampUrl}
-                  alt="الختم"
-                  className="w-16 h-16 object-contain opacity-80"
-                />
-              )}
+            {/* بيانات المسؤول */}
+            <div className="text-sm space-y-1">
+              <p><strong>الاسم:</strong> {signatoryName || "فرج سالم بن عبيد"}</p>
+              <p><strong>المسمى:</strong> {authorTitle || "المدير التنفيذي"}</p>
             </div>
           </div>
         </CardContent>

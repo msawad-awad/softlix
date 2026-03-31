@@ -932,28 +932,32 @@ export function ProposalDocument({ proposal, showOptional = true, proposalSettin
             <div className="p-signature-box" style={{ borderColor: "#fed7aa" }}>
               <div className="p-signature-title">ختم وتوقيع شركة سوفت لكس</div>
               <div className="p-signature-subtitle">Softlix Information Technology</div>
-              {/* Signature image */}
-              <div className="p-signature-line" style={{ background: "rgba(255,106,0,0.03)", padding: "4px", overflow: "hidden" }}>
-                <img
-                  src={sigSignatureUrl}
-                  alt="توقيع الشركة"
-                  style={{ maxHeight: "60px", maxWidth: "100%", objectFit: "contain", margin: "0 auto", display: "block" }}
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; (e.target as HTMLImageElement).parentElement!.innerHTML += '<span style="color:#9ca3af;font-size:12px">توقيع الشركة</span>'; }}
-                />
-              </div>
-              <div className="p-signature-details" style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "8px" }}>
-                <div>
-                  <p><strong>الاسم:</strong> {authorName}</p>
-                  <p><strong>المسمى:</strong> {authorTitle}</p>
-                  <p><strong>التاريخ:</strong> {issueDateStr}</p>
-                </div>
-                {/* Company Stamp */}
+
+              {/* الختم — فوق وأكبر */}
+              <div style={{ display: "flex", justifyContent: "center", margin: "8px 0 6px" }}>
                 <img
                   src={sigStampUrl}
                   alt="ختم الشركة"
-                  style={{ width: "72px", height: "72px", objectFit: "contain", opacity: 0.85, flexShrink: 0 }}
+                  style={{ width: "110px", height: "110px", objectFit: "contain", opacity: 0.88 }}
                   onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
                 />
+              </div>
+
+              {/* التوقيع — تحت الختم */}
+              <div className="p-signature-line" style={{ background: "rgba(255,106,0,0.03)", padding: "4px", overflow: "hidden", marginBottom: "10px" }}>
+                <img
+                  src={sigSignatureUrl}
+                  alt="توقيع الشركة"
+                  style={{ maxHeight: "56px", maxWidth: "100%", objectFit: "contain", margin: "0 auto", display: "block" }}
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; (e.target as HTMLImageElement).parentElement!.innerHTML += '<span style="color:#9ca3af;font-size:12px">توقيع الشركة</span>'; }}
+                />
+              </div>
+
+              {/* بيانات المسؤول */}
+              <div className="p-signature-details">
+                <p><strong>الاسم:</strong> {authorName}</p>
+                <p><strong>المسمى:</strong> {authorTitle}</p>
+                <p><strong>التاريخ:</strong> {issueDateStr}</p>
               </div>
             </div>
 

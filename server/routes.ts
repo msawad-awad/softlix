@@ -11,6 +11,8 @@ import { sendEmail, sendSms } from "./email";
 import { invalidateTrackingCache } from "./inject-tracking";
 import { r2ImageUpload, r2DocUpload, handleFileUploadToR2, deleteFromR2, isR2Configured } from "./r2-storage";
 import { google } from "googleapis";
+import { db, pool } from "./db";
+import { sql } from "drizzle-orm";
 
 // Secret masking helpers - يخفي كلمات السر عند الإرجاع
 const SECRET_KEYS = ["pass", "password", "secret", "authToken", "apiKey", "accessToken", "appSid"];

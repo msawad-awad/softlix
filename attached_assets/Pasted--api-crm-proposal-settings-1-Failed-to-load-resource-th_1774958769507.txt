@@ -1,0 +1,34 @@
+/api/crm/proposal-settings:1  Failed to load resource: the server responded with a status of 500 ()
+/api/crm/proposal-settings:1  Failed to load resource: the server responded with a status of 500 ()
+/api/crm/proposal-settings:1  Failed to load resource: the server responded with a status of 500 ()
+/api/crm/proposal-settings:1  Failed to load resource: the server responded with a status of 500 ()
+proposal:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+proposal:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+proposal:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+proposal:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+proposal:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+proposal:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+proposal:1 Uncaught (in promise) Error: A listener indicated an asynchronous response by returning true, but the message channel closed before a response was received
+/api/crm/proposal-settings:1  Failed to load resource: the server responded with a status of 500 ()
+index-DIJF3Dzk.js:8  PATCH https://softlixagency.com/api/crm/proposal-settings 500 (Internal Server Error)
+le @ index-DIJF3Dzk.js:8
+mutationFn @ index-DIJF3Dzk.js:431
+fn @ index-DIJF3Dzk.js:8
+j @ index-DIJF3Dzk.js:8
+start @ index-DIJF3Dzk.js:8
+execute @ index-DIJF3Dzk.js:8
+await in execute
+mutate @ index-DIJF3Dzk.js:8
+(anonymous) @ index-DIJF3Dzk.js:8
+onClick @ index-DIJF3Dzk.js:431
+Tk @ index-DIJF3Dzk.js:5
+Pk @ index-DIJF3Dzk.js:5
+Rk @ index-DIJF3Dzk.js:5
+H0 @ index-DIJF3Dzk.js:5
+K0 @ index-DIJF3Dzk.js:5
+(anonymous) @ index-DIJF3Dzk.js:5
+Dm @ index-DIJF3Dzk.js:8
+Vc @ index-DIJF3Dzk.js:5
+Dp @ index-DIJF3Dzk.js:5
+xp @ index-DIJF3Dzk.js:5
+Kk @ index-DIJF3Dzk.js:5
