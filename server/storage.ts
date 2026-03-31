@@ -1730,7 +1730,15 @@ export class DatabaseStorage implements IStorage {
     const existing = await this.getProposalTemplates(tenantId);
     // Only reseed if no templates exist, or if existing ones are old format (no targetAudience)
     const hasNewFormat = existing.some((t: any) => t.targetAudience && Array.isArray(t.targetAudience) && t.targetAudience.length > 0);
-    if (existing.length > 0 && hasNewFormat) return;
+    const existingNames = new Set(existing.map((t: any) => t.name));
+    if (existing.length > 0 && hasNewFormat) {
+      // Additive mode: only add templates that don't exist yet by name
+      const newDefaults = await this._buildDefaultTemplates(tenantId);
+      for (const t of newDefaults) {
+        if (!existingNames.has(t.name)) await this.createProposalTemplate(t as any);
+      }
+      return;
+    }
     // Delete old default templates to replace with new comprehensive ones
     if (existing.length > 0) {
       for (const t of existing.filter((t: any) => t.isDefault)) {
@@ -1738,6 +1746,11 @@ export class DatabaseStorage implements IStorage {
       }
     }
 
+    const defaults = await this._buildDefaultTemplates(tenantId);
+    for (const t of defaults) await this.createProposalTemplate(t as any);
+  }
+
+  private async _buildDefaultTemplates(tenantId: string): Promise<any[]> {
     const TERMS_WEB = `• صلاحية العرض 14 يوماً من تاريخ الإصدار
 • الدفع: 40% مقدم عند توقيع العقد، 40% عند اعتماد التصميم، 20% عند التسليم النهائي
 • مدة التنفيذ المقدرة: 45-60 يوم عمل من تاريخ توقيع العقد وسداد الدفعة الأولى
@@ -1759,7 +1772,17 @@ export class DatabaseStorage implements IStorage {
 • صيانة مجانية 6 أشهر بعد الإطلاق
 • حسابات App Store و Google Play وGoogle Maps API على حساب العميل`;
 
-    const defaults = [
+    const TERMS_ERP = `• صلاحية العرض 30 يوماً من تاريخ الإصدار
+• الدفع: 20% عند توقيع العقد وبدء المشروع، 15% عند تسليم وثيقة SRS، 20% عند اعتماد التصميم المعماري، 15% عند تسليم النسخة الأولية، 10% عند النسخة التجريبية Beta، 10% عند التسليم النهائي، 10% عند تدريب الموظفين وتوثيق النظام
+• مدة التنفيذ المقدرة: 180 يوم عمل من تاريخ توقيع العقد وسداد الدفعة الأولى (+ 10 أيام تعبئة بعد التوقيع)
+• يشمل العرض ضمان كامل على الكود لمدة 12 شهر من تاريخ التسليم
+• يشمل العرض نظام النسخ الاحتياطي التلقائي وإدارة الخادم وتعزيز الأمان
+• أي متطلبات خارج نطاق هذا العرض تستلزم تحليلاً وتقدير كلفة وزمن إضافي
+• جميع الأسعار المعروضة شاملة ضريبة القيمة المضافة 15%
+• يتم نقل كامل الملكية الفكرية (أكواد، تصاميم، قواعد بيانات) للعميل عند اكتمال السداد
+• تكون المدفوعات مستحقة في غضون 5 أيام عمل من تسليم فاتورة سوفت لكس`;
+
+    return [
       // ─── 1. موقع ويب تعريفي ──────────────────────────────────────────────
       {
         tenantId, name: "موقع ويب تعريفي", nameEn: "Informational Website", category: "web-platform",
@@ -2041,8 +2064,77 @@ export class DatabaseStorage implements IStorage {
           { title: "تدريب ودعم 6 أشهر", description: "تدريب الوسطاء والإدارة + دعم فني لمدة 6 أشهر", quantity: "1", unitPrice: "8000", sectionName: "مرحلة الإطلاق" },
         ],
       },
+      // ─── 8. نظام ERP لنادي رياضي (وقت الحركات) ───────────────────────────
+      {
+        tenantId, name: "نظام ERP لنادي رياضي", nameEn: "Sports Club ERP System", category: "erp",
+        defaultValidity: 30, defaultTaxPercent: "15", isDefault: true, displayOrder: 7,
+        defaultTerms: TERMS_ERP,
+        targetAudience: [
+          { group: "مدير النادي / الإدارة العليا", role: "الإشراف الكامل على جميع عمليات النادي، التقارير المالية، ومؤشرات الأداء KPIs", language: "عربي", system: "Web (لوحة الإدارة)" },
+          { group: "موظف الاستقبال / المبيعات", role: "تسجيل الأعضاء، إدارة الاشتراكات، نقطة البيع POS، استقبال المدفوعات", language: "عربي", system: "Web (لوحة الاستقبال)" },
+          { group: "المدرب / الفني", role: "إدارة الحصص والجداول، متابعة الأعضاء المسجلين، تسجيل الحضور", language: "عربي", system: "Web / تطبيق جوال" },
+          { group: "موظف الموارد البشرية", role: "إدارة ملفات الموظفين، الحضور والانصراف، الرواتب والتقييم", language: "عربي", system: "Web" },
+          { group: "العضو في النادي", role: "عرض الاشتراك، حجز الحصص، دخول النادي QR، متابعة الجلسات والإشعارات", language: "عربي", system: "iOS / Android" },
+          { group: "موظف الأمن / البوابة", role: "مراقبة دخول الأعضاء عبر بصمة أو QR والتحقق من صلاحية الاشتراك", language: "عربي", system: "جهاز البوابة / تطبيق" },
+        ],
+        deliverables: [
+          { name: "لوحة تحكم مركزية (Web)", description: "لوحة إدارة شاملة لجميع عمليات النادي مع Dashboard لحظي ومؤشرات الأداء" },
+          { name: "موديول إدارة الأعضاء والاشتراكات", description: "نظام متكامل لتسجيل الأعضاء وإدارة الباقات والاشتراكات (نشط/مجمد/منتهي) مع التجديد التلقائي" },
+          { name: "موديول الدخول والحضور (QR + بصمة)", description: "نظام دخول ذكي عبر QR Code أو بصمة الإصبع مع ربط البوابات الإلكترونية وتقارير الحضور" },
+          { name: "موديول إدارة الموارد البشرية والرواتب", description: "ملفات الموظفين والمدربين، تتبع الحضور والانصراف، كشوف الرواتب والعمولات" },
+          { name: "موديول الإدارة المالية والمحاسبة", description: "إدارة الإيرادات والمصروفات، الصندوق (نقدي/POS/أونلاين)، تقارير مالية متقدمة" },
+          { name: "موديول نقطة البيع (POS)", description: "نظام مبيعات لحظي للاشتراكات والمنتجات مع ربط الطابعات وإدارة الفواتير" },
+          { name: "موديول الحصص والبرامج التدريبية", description: "جدولة الحصص الجماعية والتدريب الشخصي، تسجيل الأعضاء، إدارة سعة القاعات" },
+          { name: "موديول CRM والتسويق", description: "إدارة العملاء المحتملين، حملات تسويقية، تتبع التحويلات، تذكيرات التجديد التلقائية" },
+          { name: "موديول التقارير والتحليلات", description: "Dashboard شامل: تقارير الاشتراكات والإيرادات والحضور والمدربين مع مؤشرات KPIs" },
+          { name: "موديول المنتجات والمخزون", description: "إدارة مخزون المكملات الغذائية والمنتجات، تتبع الكميات، ربط المبيعات بالمخزون" },
+          { name: "موديول الصيانة والأصول", description: "تسجيل أجهزة وأصول النادي، جداول الصيانة الدورية، تتبع الأعطال وحالة الأجهزة" },
+          { name: "موديول الصلاحيات والأمان", description: "نظام Roles & Permissions متكامل، سجل العمليات Audit Logs، حماية شاملة للبيانات" },
+          { name: "تطبيق الأعضاء والموظفين (iOS + Android)", description: "تطبيق جوال للأعضاء (اشتراك/حجز/QR/إشعارات) وللموظفين (حضور/جداول)" },
+          { name: "وثيقة SRS وتحليل المتطلبات", description: "توثيق شامل لكافة المتطلبات الوظيفية وغير الوظيفية لجميع الموديولات الـ 12" },
+          { name: "دعم وصيانة 12 شهر", description: "ضمان كامل على الكود، دعم فني، تحديثات أمنية لمدة 12 شهر بعد التسليم" },
+        ],
+        technologies: [
+          { name: "React.js / Vite", category: "واجهة الويب", description: "لوحة تحكم سريعة وتفاعلية لجميع مستخدمي الويب" },
+          { name: "Node.js / NestJS", category: "الخادم", description: "Backend قابل للتوسع مع هيكلة Modular للموديولات الـ 12" },
+          { name: "PostgreSQL", category: "قاعدة البيانات", description: "قاعدة بيانات علائقية موثوقة مع دعم Multi-tenant" },
+          { name: "React Native / Capacitor", category: "تطبيق جوال", description: "تطبيق iOS وAndroid للأعضاء والموظفين" },
+          { name: "Railway", category: "الخدمات السحابية", description: "استضافة سحابية للخادم وقاعدة البيانات" },
+          { name: "Cloudflare R2", category: "الخدمات السحابية", description: "تخزين الملفات والصور بتكلفة منخفضة وأداء عالٍ" },
+          { name: "Firebase", category: "الخدمات السحابية", description: "إشعارات Push الفورية للتطبيق وReal-time updates" },
+          { name: "Redis", category: "قاعدة البيانات", description: "تخزين مؤقت للجلسات وتحسين الأداء" },
+        ],
+        items: [
+          // مرحلة التخطيط والتحليل
+          { title: "جمع المتطلبات وإعداد وثيقة SRS", description: "تحليل شامل لجميع عمليات النادي وإعداد وثيقة المواصفات التقنية الكاملة (SRS) للموديولات الـ 12", quantity: "1", unitPrice: "12000", sectionName: "مرحلة التخطيط والتحليل" },
+          { title: "إعداد بيئة التطوير والتحكم في الكود", description: "إعداد Repository، Docker، CI/CD Pipeline، وبنية المشروع المعمارية (Architecture Design)", quantity: "1", unitPrice: "5000", sectionName: "مرحلة التخطيط والتحليل" },
+          { title: "تصميم UI/UX (لوحة الويب + تطبيق الجوال)", description: "تصميم احترافي على Figma لجميع شاشات لوحة الإدارة وتطبيق الجوال مع Prototype تفاعلي", quantity: "1", unitPrice: "10000", sectionName: "مرحلة التخطيط والتحليل" },
+          // مرحلة التطوير - الموديولات الأساسية
+          { title: "موديول إدارة الأعضاء والاشتراكات", description: "تسجيل الأعضاء، إدارة الباقات، حالات الاشتراك (نشط/مجمد/منتهي)، تجديد تلقائي، صور الأعضاء", quantity: "1", unitPrice: "16000", sectionName: "مرحلة التطوير - الموديولات" },
+          { title: "موديول الدخول والحضور (QR + بصمة)", description: "ربط البوابات الإلكترونية، دخول عبر QR Code أو بصمة، منع الدخول عند انتهاء الاشتراك، تقارير الحضور", quantity: "1", unitPrice: "14000", sectionName: "مرحلة التطوير - الموديولات" },
+          { title: "موديول الإدارة المالية والمحاسبة", description: "إدارة الإيرادات والمصروفات، الصندوق (نقدي/POS/أونلاين)، الفواتير، التقارير المالية المتقدمة", quantity: "1", unitPrice: "13000", sectionName: "مرحلة التطوير - الموديولات" },
+          { title: "موديول إدارة المبيعات ونقطة البيع (POS)", description: "نظام POS متكامل لبيع الاشتراكات والمنتجات، ربط الطابعات، إدارة الكاشير والفواتير", quantity: "1", unitPrice: "11000", sectionName: "مرحلة التطوير - الموديولات" },
+          { title: "موديول إدارة الموارد البشرية والرواتب", description: "ملفات الموظفين والمدربين، حضور وانصراف عبر التطبيق، كشوف الرواتب، العمولات، التقييم", quantity: "1", unitPrice: "12000", sectionName: "مرحلة التطوير - الموديولات" },
+          { title: "موديول إدارة الحصص والبرامج التدريبية", description: "جدولة الحصص الجماعية، التدريب الشخصي، تسجيل الأعضاء، إدارة سعة القاعات، تقارير الحضور", quantity: "1", unitPrice: "10000", sectionName: "مرحلة التطوير - الموديولات" },
+          { title: "موديول CRM والتسويق الرقمي", description: "إدارة العملاء المحتملين، حملات SMS/WhatsApp، تتبع التحويلات، تذكيرات تجديد الاشتراكات التلقائية", quantity: "1", unitPrice: "8000", sectionName: "مرحلة التطوير - الموديولات" },
+          { title: "موديول التقارير والتحليلات (Dashboard)", description: "Dashboard لحظي للإدارة، تقارير الاشتراكات والإيرادات والحضور والمدربين، مؤشرات KPIs متقدمة", quantity: "1", unitPrice: "10000", sectionName: "مرحلة التطوير - الموديولات" },
+          { title: "موديول إدارة المنتجات والمخزون", description: "إدارة مخزون المكملات والمنتجات، تتبع الكميات، ربط المبيعات بالمخزون، تنبيهات النقص", quantity: "1", unitPrice: "7000", sectionName: "مرحلة التطوير - الموديولات" },
+          { title: "موديول إدارة الصيانة والأصول", description: "تسجيل أجهزة النادي، جداول الصيانة الدورية، تتبع الأعطال، تقارير حالة الأجهزة", quantity: "1", unitPrice: "6000", sectionName: "مرحلة التطوير - الموديولات" },
+          { title: "موديول الصلاحيات والأمان (Roles & Permissions)", description: "نظام صلاحيات متعدد المستويات، سجل العمليات Audit Logs، حماية بيانات متقدمة، 2FA", quantity: "1", unitPrice: "6000", sectionName: "مرحلة التطوير - الموديولات" },
+          // التطبيق والبنية التحتية
+          { title: "تطبيق الأعضاء والموظفين (iOS + Android)", description: "تطبيق جوال: عرض الاشتراك، حجز الحصص، دخول QR، الإشعارات، حضور الموظفين وجداولهم", quantity: "1", unitPrice: "16000", sectionName: "مرحلة التطوير - التطبيق" },
+          { title: "نظام النسخ الاحتياطي وإدارة الخادم", description: "إعداد خوادم Railway، نسخ احتياطي تلقائي، Cloudflare R2، Redis، إدارة البيئة الإنتاجية", quantity: "1", unitPrice: "5000", sectionName: "مرحلة الإطلاق" },
+          { title: "تعزيز الأمان وتحسين الأداء", description: "SSL، جدار الحماية، تحسين استعلامات DB، تحسين الأداء العام، اختبار الأمان والثغرات", quantity: "1", unitPrice: "4000", sectionName: "مرحلة الإطلاق" },
+          { title: "اختبار الجودة الشامل وإصدار Beta", description: "اختبار وظيفي وأداء وأمان لجميع الموديولات على بيئة تجريبية مع العميل، إصلاح الملاحظات", quantity: "1", unitPrice: "7000", sectionName: "مرحلة الإطلاق" },
+          { title: "النشر الإنتاجي والإطلاق الرسمي", description: "نشر النسخة النهائية على خوادم الإنتاج، ترحيل البيانات، إطلاق رسمي مع مراقبة", quantity: "1", unitPrice: "4000", sectionName: "مرحلة الإطلاق" },
+          { title: "تدريب الموظفين وتوثيق النظام الكامل", description: "جلسات تدريبية للإدارة والمدربين والموظفين، دليل المستخدم الكامل، وثائق API ودليل التشغيل", quantity: "1", unitPrice: "5000", sectionName: "مرحلة الإطلاق" },
+          { title: "دعم وصيانة ما بعد التسليم (12 شهر)", description: "ضمان شامل على الكود لمدة 12 شهر: إصلاح الأخطاء، تحديثات أمنية، دعم فني متواصل", quantity: "1", unitPrice: "8000", sectionName: "مرحلة الإطلاق" },
+          // إضافي اختياري
+          { title: "تكامل بوابة الدفع الإلكتروني", description: "ربط مع بوابة دفع (PayTabs / Moyasar / مدى) للاشتراكات والمدفوعات الأونلاين", quantity: "1", unitPrice: "5000", sectionName: "إضافات اختيارية", isOptional: true },
+          { title: "نظام الولاء والمكافآت للأعضاء", description: "برنامج نقاط للأعضاء المميزين مع مكافآت التجديد المبكر والإحالة", quantity: "1", unitPrice: "4000", sectionName: "إضافات اختيارية", isOptional: true },
+        ],
+      },
     ];
-    for (const t of defaults) await this.createProposalTemplate(t as any);
   }
 
   // ── Google Import Buffer ──────────────────────────────────────────────────
