@@ -2587,7 +2587,7 @@ export async function registerRoutes(
   app.post("/api/crm/proposals/:id/send-email", requireAuth, async (req: Request, res: Response) => {
     try {
       const { to, subject, message } = req.body;
-      const proposal = await storage.getCrmProposal(req.user!.tenantId, req.params.id);
+      const proposal = await storage.getCrmProposal(req.params.id, req.user!.tenantId);
       if (!proposal) return res.status(404).json({ message: "العرض غير موجود" });
       const token = await storage.createProposalToken(proposal.id, req.user!.tenantId);
       const host = `${req.protocol}://${req.get("host")}`;
@@ -2604,7 +2604,7 @@ export async function registerRoutes(
         </div>
       `;
       await sendEmail(req.user!.tenantId, { to, subject: subject || `عرض سعر: ${proposal.title}`, html });
-      await storage.updateCrmProposal(req.user!.tenantId, req.params.id, { status: "sent", sentAt: new Date() });
+      await storage.updateCrmProposal(req.params.id, req.user!.tenantId, { status: "sent", sentAt: new Date() });
       res.json({ ok: true, link });
     } catch (e: any) {
       res.status(500).json({ message: e.message });
@@ -2613,7 +2613,7 @@ export async function registerRoutes(
 
   // Generate shareable proposal token
   app.post("/api/crm/proposals/:id/share-token", requireAuth, async (req: Request, res: Response) => {
-    const proposal = await storage.getCrmProposal(req.user!.tenantId, req.params.id);
+    const proposal = await storage.getCrmProposal(req.params.id, req.user!.tenantId);
     if (!proposal) return res.status(404).json({ message: "العرض غير موجود" });
     const token = await storage.createProposalToken(proposal.id, req.user!.tenantId);
     const host = `${req.protocol}://${req.get("host")}`;
