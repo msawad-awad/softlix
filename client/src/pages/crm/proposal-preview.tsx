@@ -172,9 +172,11 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
   const issueDateStr = issueDate.toLocaleDateString("ar-SA", { year: "numeric", month: "long", day: "numeric" });
   const issueDateShort = issueDate.toLocaleDateString("ar-SA");
   const proposalNumber = proposal.proposalNumber || "—";
-  const clientName = proposal.company?.name || proposal.contact
-    ? `${proposal.contact?.firstName || ""} ${proposal.contact?.lastName || ""}`.trim()
-    : "العميل الكريم";
+  const clientName = proposal.company?.name
+    ? proposal.company.name
+    : proposal.contact
+      ? `${proposal.contact?.firstName || ""} ${proposal.contact?.lastName || ""}`.trim() || "العميل الكريم"
+      : "العميل الكريم";
 
   const authorName = proposal.authorName || "مهند العشري";
   const authorTitle = proposal.authorTitle || "مدير تطوير الأعمال";
@@ -184,7 +186,15 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
   const introText = proposal.introText || DEFAULT_INTRO_TEXT;
   const requirements = proposal.requirements || "";
   const termsAndNotes = proposal.termsAndNotes || DEFAULT_TERMS;
-  const validityDays = proposal.validityDays || 10;
+  // Calculate validityDays from expiryDate if available, else default to 14
+  const validityDays = (() => {
+    if (proposal.expiryDate) {
+      const expiry = new Date(proposal.expiryDate);
+      const diff = Math.round((expiry.getTime() - issueDate.getTime()) / (1000 * 60 * 60 * 24));
+      return diff > 0 ? diff : 14;
+    }
+    return 14;
+  })();
 
   // Group required items by section
   const sections = requiredItems.reduce((acc: Record<string, any[]>, item: any) => {

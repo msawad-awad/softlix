@@ -302,9 +302,10 @@ export default function CrmProposals() {
     }
     if (tpl.defaultTeamMembers?.length) setTeamMembers(tpl.defaultTeamMembers);
     if (tpl.defaultPaymentSchedule?.length) {
-      setPaymentSchedule(tpl.defaultPaymentSchedule.map((m: any, i: number) => ({
-        id: `tpl-${i}`, milestone: m.milestone || "", percent: m.percent || 0,
-        amount: 0, status: "pending", notes: m.notes || "",
+      setPaymentSchedule(tpl.defaultPaymentSchedule.map((m: any) => ({
+        label: m.milestone || m.label || "",
+        percent: String(m.percent || "0"),
+        dueDate: m.dueDate || "",
       })));
     } else {
       setPaymentSchedule([]);
