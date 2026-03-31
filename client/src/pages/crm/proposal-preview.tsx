@@ -238,13 +238,38 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
   const requiredItems = items.filter((i: any) => !i.isOptional);
   const optionalItems = items.filter((i: any) => i.isOptional);
   const paymentSchedule: any[] = proposal.paymentSchedule || [];
-  const teamMembers: string[] = proposal.teamMembers || Object.keys(TEAM_BIOS).slice(0, 4);
+  // teamMembers can be [{role, name, title, experience, bio}] or string[]
+  const rawTeamMembers: any[] = proposal.teamMembers || [];
+  const teamMembers: { name: string; title: string; exp: number; bio: string; initials: string }[] =
+    rawTeamMembers.length > 0
+      ? rawTeamMembers.map((m: any) => {
+          if (typeof m === "string") {
+            const info = TEAM_BIOS[m] || { title: m, exp: 5, bio: m };
+            return { name: m, title: info.title, exp: info.exp, bio: info.bio, initials: m.split(" ").map((w: string) => w[0] || "").join("").slice(0, 2) };
+          }
+          const roleName = m.role || m.name || "عضو الفريق";
+          const fallback = TEAM_BIOS[roleName] || { title: roleName, exp: m.experience || 5, bio: m.bio || roleName };
+          return {
+            name: m.name || roleName,
+            title: m.title || fallback.title,
+            exp: parseInt(m.experience || fallback.exp) || 5,
+            bio: m.bio || fallback.bio,
+            initials: (m.name || roleName).split(" ").map((w: string) => w[0] || "").join("").slice(0, 2),
+          };
+        })
+      : Object.entries(TEAM_BIOS).slice(0, 4).map(([name, info]) => ({
+          name,
+          title: info.title,
+          exp: info.exp,
+          bio: info.bio,
+          initials: name.split(" ").map((w: string) => w[0] || "").join("").slice(0, 2),
+        }));
 
-  const subtotal = parseFloat(proposal.subtotal || "0");
-  const discount = parseFloat(proposal.discountValue || "0");
-  const tax = parseFloat(proposal.taxAmount || "0");
-  const total = parseFloat(proposal.total || "0");
-  const currency = proposal.currency || "SAR";
+  const subtotal = parseFloat(String(proposal.subtotal || "0"));
+  const discount = parseFloat(String(proposal.discountValue || "0"));
+  const tax = parseFloat(String(proposal.taxAmount || "0"));
+  const total = parseFloat(String(proposal.total || "0"));
+  const currency = String(proposal.currency || "SAR");
 
   const issueDate = new Date(proposal.issueDate || proposal.createdAt);
   const issueDateStr = issueDate.toLocaleDateString("ar-SA", { year: "numeric", month: "long", day: "numeric" });
@@ -707,25 +732,21 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
             </p>
           </div>
 
-          {teamMembers.map((memberName: string, i: number) => {
-            const bio = TEAM_BIOS[memberName] || { title: memberName, exp: 5, bio: memberName };
-            const initials = memberName.split(" ").map((w: string) => w[0]).join("").slice(0, 2);
-            return (
-              <div className="p-member-card" key={i}>
-                <div className="p-member-card-head">
-                  <div className="p-member-card-head-left">
-                    <div className="p-member-avatar">{initials}</div>
-                    <div>
-                      <h3>{memberName}</h3>
-                      <div className="p-member-role">{bio.title}</div>
-                    </div>
+          {teamMembers.map((member, i) => (
+            <div className="p-member-card" key={i}>
+              <div className="p-member-card-head">
+                <div className="p-member-card-head-left">
+                  <div className="p-member-avatar">{member.initials}</div>
+                  <div>
+                    <h3>{member.name}</h3>
+                    <div className="p-member-role">{member.title}</div>
                   </div>
-                  <div className="p-member-exp">خبرة: <strong>{bio.exp} سنوات</strong></div>
                 </div>
-                <div className="p-member-card-body">{bio.bio}</div>
+                <div className="p-member-exp">خبرة: <strong>{member.exp} سنوات</strong></div>
               </div>
-            );
-          })}
+              <div className="p-member-card-body">{member.bio}</div>
+            </div>
+          ))}
         </div>
 
         <PFooter label="الفريق المقترح للمشروع" page={9} total={TOTAL_PAGES} />
