@@ -16,7 +16,7 @@ import {
   ChevronRight, ChevronLeft, CheckCircle, Building2, Package,
   CreditCard, ClipboardCheck, Copy, X, BookOpen, Copy as CopyIcon,
   AlertTriangle, Bell, Star, Library, Search, SlidersHorizontal,
-  CalendarClock, Layers, Info, Users, FileCode,
+  CalendarClock, Layers, Info, Users, FileCode, FileDown,
 } from "lucide-react";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -511,6 +511,10 @@ export default function CrmProposals() {
                 <div className="flex items-center gap-0.5">
                   <Button variant="ghost" size="icon" className="h-7 w-7" asChild title="معاينة">
                     <Link href={`/crm/proposals/${p.id}/preview`}><Eye className="h-3.5 w-3.5 text-gray-400" /></Link>
+                  </Button>
+                  <Button variant="ghost" size="icon" className="h-7 w-7" title="تحميل PDF" data-testid={`btn-pdf-${p.id}`}
+                    onClick={() => { const w = window.open(`/crm/proposals/${p.id}/preview?autoprint=1`, "_blank"); }}>
+                    <FileDown className="h-3.5 w-3.5 text-gray-400" />
                   </Button>
                   <Button variant="ghost" size="icon" className="h-7 w-7" title="إرسال بريد" onClick={() => { setEmailProposal(p); setEmailForm({ to: "", subject: `عرض سعر: ${p.title}`, message: "" }); setShowEmailDialog(true); }}>
                     <Send className="h-3.5 w-3.5 text-gray-400" />

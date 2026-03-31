@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRoute } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import {
-  Loader2, Printer, CheckCircle, XCircle, Eye, AlertTriangle, Shield,
+  Loader2, Printer, CheckCircle, XCircle, Eye, AlertTriangle, Shield, FileDown,
 } from "lucide-react";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -1056,6 +1056,8 @@ export function ProposalDocument({ proposal, showOptional = true, proposalSettin
 export function ProposalPreviewById() {
   const [, params] = useRoute("/crm/proposals/:id/preview");
   const id = params?.id!;
+  const autoPrint = new URLSearchParams(window.location.search).get("autoprint") === "1";
+
   const { data: proposal, isLoading } = useQuery<any>({
     queryKey: [`/api/crm/proposals/${id}`],
     queryFn: () => apiRequest("GET", `/api/crm/proposals/${id}`).then(r => r.json()),
@@ -1064,6 +1066,13 @@ export function ProposalPreviewById() {
     queryKey: ["/api/crm/proposal-settings"],
     queryFn: () => apiRequest("GET", "/api/crm/proposal-settings").then(r => r.json()),
   });
+
+  useEffect(() => {
+    if (autoPrint && proposal && !isLoading) {
+      const timer = setTimeout(() => window.print(), 1200);
+      return () => clearTimeout(timer);
+    }
+  }, [autoPrint, proposal, isLoading]);
 
   if (isLoading) return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -1109,8 +1118,13 @@ export function ProposalPreviewById() {
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={() => window.history.back()}>رجوع</Button>
-            <Button size="sm" onClick={() => window.print()} className="gap-2 bg-[#ff6a00] hover:bg-[#ff8c00] text-white">
-              <Printer className="h-4 w-4" /> طباعة / PDF
+            <Button variant="outline" size="sm" onClick={() => window.print()} className="gap-2" data-testid="btn-print-proposal">
+              <Printer className="h-4 w-4" /> طباعة
+            </Button>
+            <Button size="sm" onClick={() => {
+              const printWin = window.open(`/crm/proposals/${id}/preview?autoprint=1`, "_blank");
+            }} className="gap-2 bg-[#ff6a00] hover:bg-[#ff8c00] text-white" data-testid="btn-download-pdf">
+              <FileDown className="h-4 w-4" /> تحميل PDF
             </Button>
           </div>
         </div>
@@ -1133,9 +1147,15 @@ export function ProposalPreviewById() {
 
       <style>{`
         @media print {
-          @page { size: A4; margin: 0; }
-          body { margin: 0; }
+          @page { size: A4; margin: 8mm 10mm; }
+          body { margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .print\\:hidden { display: none !important; }
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+          img { max-width: 100% !important; page-break-inside: avoid; }
+          .page-break { page-break-before: always; break-before: page; }
+          .no-page-break { page-break-inside: avoid; break-inside: avoid; }
+          table { page-break-inside: avoid; }
+          tr { page-break-inside: avoid; }
         }
       `}</style>
     </div>
@@ -1308,9 +1328,15 @@ export function ProposalPublicView() {
 
       <style>{`
         @media print {
-          @page { size: A4; margin: 0; }
-          body { margin: 0; }
+          @page { size: A4; margin: 8mm 10mm; }
+          body { margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
           .print\\:hidden { display: none !important; }
+          * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+          img { max-width: 100% !important; page-break-inside: avoid; }
+          .page-break { page-break-before: always; break-before: page; }
+          .no-page-break { page-break-inside: avoid; break-inside: avoid; }
+          table { page-break-inside: avoid; }
+          tr { page-break-inside: avoid; }
         }
       `}</style>
     </div>
