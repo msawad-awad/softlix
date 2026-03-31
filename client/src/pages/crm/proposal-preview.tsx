@@ -8,11 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import {
-  Loader2, Printer, CheckCircle, XCircle, Eye, AlertTriangle,
-  Shield,
+  Loader2, Printer, CheckCircle, XCircle, Eye, AlertTriangle, Shield,
 } from "lucide-react";
 
-// ─── Constants ───────────────────────────────────────────────────────────────
+// ─── Constants ────────────────────────────────────────────────────────────────
 const STATUS_LABELS: Record<string, string> = {
   draft: "مسودة", pending_approval: "بانتظار الموافقة", approved: "معتمد",
   sent: "مرسل", viewed: "تمت المشاهدة", accepted: "مقبول", rejected: "مرفوض",
@@ -53,114 +52,193 @@ const DEFAULT_TERMS = `1. جميع الأسعار المعروضة بموجب ه
 
 8. تحتفظ سوفت لكس بالحق في تغيير أي جزء من عرض الأسعار إذا كان يحتوي على أخطاء أو سهو قبل التوقيع من قبل العميل.`;
 
-const TEAM_BIOS: Record<string, { title: string; bio: string }> = {
+const IP_TEXT = `تحتفظ شركة سوفت لكس بحقوق الملكية الفكرية الكاملة لجميع الأعمال المقدمة حتى استلام الدفعة الكاملة والنهائية. بعد اكتمال السداد تنتقل ملكية المخرجات النهائية بالكامل إلى العميل.
+
+تشمل الملكية الفكرية المحتفظ بها: الكود المصدري، التصاميم، وثائق المشروع، والبنية التقنية المطورة خلال فترة المشروع.`;
+
+const DEFAULT_PAYMENT_INTRO = `يتم تقسيم المدفوعات على مراحل المشروع بما يضمن تقدماً منتظماً للعمل ويوفر ضماناً متبادلاً للطرفين. يبدأ العمل رسمياً بعد استلام الدفعة الأولى.`;
+
+const TEAM_BIOS: Record<string, { title: string; bio: string; exp: number }> = {
   "مدير المشروع": {
     title: "Project Manager",
-    bio: "يتمتع مدير المشروع بخبرة 5 سنوات في المتوسط في مجال تطوير البرمجيات الرشيقة، وهو حاصل على شهادة محترف إدارة المشاريع (PMP). مسؤول عن تخطيط مشروع الحلول البرمجية المعقدة مع فهم متعمق لتبعيات العميل وتبعيات البرامج، ويدير أنشطة المشروع عبر جميع مراحله بما في ذلك البدء والتخطيط والتصميم والتطوير ومراقبة الجودة والإطلاق والصيانة.",
+    exp: 5,
+    bio: "يتمتع مدير المشروع بخبرة 5 سنوات في المتوسط في مجال تطوير البرمجيات الرشيقة، وهو حاصل على شهادة محترف إدارة المشاريع (PMP). مسؤول عن تخطيط مشروع الحلول البرمجية المعقدة مع فهم متعمق لتبعيات العميل وتبعيات البرامج.",
   },
   "محلل الأعمال": {
     title: "Business Analyst",
-    bio: "محلل الأعمال لديه متوسط 6 سنوات من الخبرة في تحليل الأعمال لمنتجات البرمجيات. يتمتع بمهارات تحليلية قوية تؤهله لتقديم استكشاف تكراري ومنهجي لبيانات المنظمة مع التركيز على التحليل الإحصائي. يُستخدم تحليل الأعمال من قبل الشركات الملتزمة باتخاذ القرارات القائمة على البيانات.",
+    exp: 6,
+    bio: "محلل الأعمال لديه متوسط 6 سنوات من الخبرة في تحليل الأعمال لمنتجات البرمجيات. يتمتع بمهارات تحليلية قوية تؤهله لتقديم استكشاف تكراري ومنهجي لبيانات المنظمة مع التركيز على التحليل الإحصائي.",
   },
   "مصمم UX": {
     title: "UX/UI Designer",
-    bio: "يتمتع مدير تجربة المستخدم بمتوسط 9 سنوات من الخبرة المهنية في إدارة المنتجات وتصميم تجربة المستخدم. تتمثل مهمته الرئيسية في إجراء بحث المستخدم ومقابلات واستطلاعات، ثم استخدام المعلومات المجمعة لإنشاء خرائط المواقع والإطارات السلكية والنماذج الأولية.",
+    exp: 9,
+    bio: "يتمتع مدير تجربة المستخدم بمتوسط 9 سنوات من الخبرة المهنية في إدارة المنتجات وتصميم تجربة المستخدم. مهمته الرئيسية إجراء بحث المستخدم ومقابلات واستطلاعات ثم إنشاء الإطارات السلكية والنماذج الأولية.",
   },
   "مطور كبير": {
     title: "Senior Developer",
+    exp: 6,
     bio: "مطور كبير لديه متوسط 6 سنوات من الخبرة المهنية في تطوير البرمجيات. يمتلك فهماً عميقاً لأهداف التكنولوجيا والأعمال لإنشاء حلول من خلال تطوير وتنفيذ وصيانة برامج الهاتف المحمول وخدمات الويب بأعلى معايير الجودة.",
   },
   "مهندس QA": {
     title: "QA Engineer",
+    exp: 3,
     bio: "يتمتع مهندس مراقبة الجودة بمتوسط 3 سنوات من الخبرة المهنية في اختبار منتجات البرمجيات. يطبق حالات الاختبار الشاملة على منتج البرنامج لضمان أعلى مستويات الجودة قبل الإطلاق.",
   },
 };
 
-// ─── Page wrapper ─────────────────────────────────────────────────────────────
-function DocPage({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return (
-    <div
-      className={`bg-white relative ${className}`}
-      style={{
-        width: "210mm",
-        minHeight: "297mm",
-        margin: "0 auto 20px",
-        padding: "20mm 18mm",
-        boxSizing: "border-box",
-        boxShadow: "0 4px 24px rgba(0,0,0,0.12)",
-        breakAfter: "page",
-        pageBreakAfter: "always",
-      }}
-    >
-      {children}
-    </div>
-  );
-}
+// ─── CSS Styles (from new template) ──────────────────────────────────────────
+const PROPOSAL_CSS = `
+  .prop-wrap * { margin: 0; padding: 0; box-sizing: border-box; }
+  .prop-wrap { font-family: "Segoe UI", Tahoma, Arial, sans-serif; line-height: 1.7; color: #1a1a1a; background: #f3f4f6; direction: rtl; }
+  .prop-page { width: 210mm; min-height: 297mm; margin: 16px auto; padding: 18mm 16mm 22mm; background: #ffffff; box-shadow: 0 4px 24px rgba(0,0,0,0.08); position: relative; page-break-after: always; overflow: hidden; }
+  .prop-page:last-child { page-break-after: auto; }
+  .cover-page { padding: 0; background: radial-gradient(circle at top right, rgba(255,106,0,0.12), transparent 30%), linear-gradient(160deg, #0f172a 0%, #151515 60%, #2a1200 100%); color: #ffffff; display: flex; flex-direction: column; justify-content: space-between; }
+  .cover-top-ribbon, .cover-bottom-ribbon { height: 12px; background: linear-gradient(to right, #ff8c00, #ff6a00, #e55c00); }
+  .cover-bottom-ribbon { background: linear-gradient(to right, #e55c00, #ff6a00, #ff8c00); }
+  .cover-header { padding: 28px 36px 18px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+  .cover-brand { display: flex; align-items: center; gap: 14px; }
+  .brand-logo { width: 58px; height: 58px; border-radius: 12px; background: rgba(255,106,0,0.12); border: 1px solid rgba(255,106,0,0.35); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 900; font-size: 22px; }
+  .cover-brand-text p:first-child { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+  .cover-brand-text p:last-child { font-size: 13px; color: #ffb067; }
+  .cover-main { flex: 1; padding: 32px 36px; display: flex; flex-direction: column; justify-content: center; }
+  .p-badge { display: inline-block; background: rgba(255,106,0,0.14); border: 1px solid rgba(255,106,0,0.35); color: #ffb067; padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 800; margin-bottom: 18px; }
+  .cover-title { font-size: 34px; font-weight: 900; line-height: 1.4; margin-bottom: 16px; }
+  .cover-divider { display: flex; align-items: center; gap: 8px; margin-bottom: 18px; }
+  .cover-divider .line1 { width: 92px; height: 4px; border-radius: 999px; background: #ff6a00; }
+  .cover-divider .line2 { width: 42px; height: 2px; border-radius: 999px; background: rgba(255,255,255,0.25); }
+  .cover-subtitle { font-size: 16px; color: rgba(255,255,255,0.75); max-width: 520px; margin-bottom: 24px; }
+  .cover-client-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12); border-radius: 18px; padding: 18px; max-width: 420px; margin-bottom: 28px; }
+  .cover-client-box .c-label { font-size: 12px; color: #ffb067; margin-bottom: 8px; }
+  .cover-client-box .c-value { font-size: 24px; font-weight: 900; }
+  .cover-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; max-width: 620px; }
+  .cover-stat { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 14px; text-align: center; }
+  .cover-stat .c-label { font-size: 11px; color: #ffb067; margin-bottom: 8px; }
+  .cover-stat .c-value { font-size: 14px; font-weight: 800; }
+  .cover-bottom { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 16px 36px; border-top: 1px solid rgba(255,255,255,0.08); background: rgba(0,0,0,0.18); font-size: 12px; }
+  .cover-bottom-item { display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.72); }
+  .p-header { display: flex; justify-content: space-between; align-items: center; gap: 12px; border-bottom: 2px solid #ff6a00; padding-bottom: 12px; margin-bottom: 22px; }
+  .p-logo { display: flex; align-items: center; gap: 12px; }
+  .p-logo-box { width: 44px; height: 44px; background: linear-gradient(135deg, #1a1a1a, #ff6a00); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 13px; }
+  .p-logo-text p:first-child { font-weight: 800; font-size: 14px; margin-bottom: 2px; }
+  .p-logo-text p:last-child { font-size: 11px; color: #ff6a00; }
+  .p-header-info { text-align: left; font-size: 12px; color: #666; }
+  .p-header-info p { margin-bottom: 4px; }
+  .p-section { margin-bottom: 24px; }
+  .p-section-title { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .p-section-title .p-bar { width: 6px; height: 28px; border-radius: 999px; background: linear-gradient(to bottom, #ff6a00, #ff8c00); flex-shrink: 0; }
+  .p-section-title h2 { font-size: 22px; font-weight: 900; color: #1a1a1a; line-height: 1.4; }
+  .p-section-subtitle { font-size: 15px; font-weight: 800; margin-bottom: 10px; color: #111827; }
+  .prop-wrap p { margin-bottom: 10px; font-size: 14px; }
+  .p-lead { font-size: 15px; line-height: 1.9; color: #374151; }
+  .p-info-box { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+  .p-highlight-box { background: linear-gradient(135deg, #fff7ed, #ffedd5); border: 1px solid #fed7aa; border-radius: 12px; padding: 16px; margin-bottom: 14px; }
+  .p-notice-box { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e3a8a; border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; }
+  .p-danger-box { background: #fff1f2; border: 1px solid #fecdd3; color: #9f1239; border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; }
+  .p-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .p-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .prop-wrap table { width: 100%; border-collapse: collapse; margin: 14px 0; overflow: hidden; border-radius: 12px; }
+  .prop-wrap thead { background: linear-gradient(135deg, #1a1a1a, #ff6a00); color: white; }
+  .prop-wrap th { padding: 11px 10px; text-align: right; font-size: 13px; font-weight: 800; border: 1px solid rgba(255,255,255,0.06); }
+  .prop-wrap td { padding: 11px 10px; border: 1px solid #e5e7eb; font-size: 13px; vertical-align: top; }
+  .prop-wrap tbody tr:nth-child(even) { background: #fafafa; }
+  .p-muted { color: #6b7280; font-size: 12px; }
+  .p-check-list { list-style: none; padding-right: 0; }
+  .p-check-list li { position: relative; padding-right: 24px; margin-bottom: 8px; line-height: 1.8; font-size: 14px; }
+  .p-check-list li::before { content: "✓"; position: absolute; right: 0; top: 0; color: #059669; font-weight: 900; }
+  .p-dash-list { list-style: none; padding-right: 0; }
+  .p-dash-list li { position: relative; padding-right: 18px; margin-bottom: 8px; line-height: 1.8; font-size: 14px; }
+  .p-dash-list li::before { content: "—"; position: absolute; right: 0; top: 0; color: #ff6a00; font-weight: 900; }
+  .p-module-number { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #1a1a1a, #ff6a00); color: #fff; font-size: 13px; font-weight: 900; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .p-module-card { border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden; margin-bottom: 14px; background: #fff; }
+  .p-module-card-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: linear-gradient(135deg, #fff7ed, #ffedd5); border-bottom: 1px solid #fed7aa; }
+  .p-module-card-header h3 { font-size: 16px; font-weight: 900; margin: 0; }
+  .p-module-card-body { padding: 16px; }
+  .p-module-card-body p { margin-bottom: 10px; }
+  .p-timeline-item { margin-bottom: 18px; }
+  .p-timeline-row { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 8px; font-size: 13px; font-weight: 700; }
+  .p-timeline-bar { width: 100%; height: 28px; border-radius: 999px; overflow: hidden; background: #e5e7eb; }
+  .p-timeline-fill { height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #1a1a1a, #ff6a00); color: #fff; font-size: 11px; font-weight: 800; }
+  .p-totals-box { width: 100%; max-width: 420px; margin-right: auto; border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden; }
+  .p-total-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+  .p-total-row.t-header { background: linear-gradient(135deg, #1a1a1a, #ff6a00); color: #fff; font-weight: 900; border: none; }
+  .p-total-row.t-final { background: linear-gradient(135deg, #fff7ed, #ffedd5); color: #ff6a00; font-size: 16px; font-weight: 900; }
+  .p-payment-bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .p-payment-bar-label { width: 180px; font-size: 12px; color: #4b5563; }
+  .p-payment-bar-wrap { flex: 1; background: #ecfdf5; border-radius: 999px; overflow: hidden; height: 24px; }
+  .p-payment-bar-fill { height: 100%; background: linear-gradient(135deg, #059669, #10b981); color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+  .p-payment-bar-amount { width: 120px; font-size: 12px; font-weight: 800; color: #059669; text-align: left; }
+  .p-member-card { border: 1px solid #e5e7eb; border-radius: 14px; overflow: hidden; margin-bottom: 14px; }
+  .p-member-card-head { background: linear-gradient(135deg, #fff7ed, #ffedd5); padding: 14px 16px; display: flex; justify-content: space-between; gap: 10px; border-bottom: 1px solid #fed7aa; }
+  .p-member-card-head-left { display: flex; gap: 12px; }
+  .p-member-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #1a1a1a, #ff6a00); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; flex-shrink: 0; }
+  .p-member-card-head h3 { font-size: 15px; margin-bottom: 4px; font-weight: 900; }
+  .p-member-role { font-size: 12px; color: #ff6a00; font-weight: 700; }
+  .p-member-exp { font-size: 12px; color: #374151; text-align: left; }
+  .p-member-exp strong { color: #ff6a00; }
+  .p-member-card-body { padding: 16px; font-size: 13px; line-height: 1.8; color: #4b5563; }
+  .p-signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 26px; }
+  .p-signature-box { border: 2px solid #e5e7eb; border-radius: 16px; padding: 18px; }
+  .p-signature-title { font-size: 16px; font-weight: 900; margin-bottom: 6px; }
+  .p-signature-subtitle { font-size: 11px; color: #6b7280; margin-bottom: 12px; }
+  .p-signature-line { height: 74px; border: 1px dashed #d1d5db; border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 12px; margin-bottom: 12px; }
+  .p-signature-details p { margin-bottom: 6px; font-size: 13px; }
+  .p-footer { position: absolute; left: 16mm; right: 16mm; bottom: 10mm; border-top: 1px solid #e5e7eb; padding-top: 8px; display: flex; justify-content: space-between; gap: 12px; font-size: 11px; color: #9ca3af; }
+  .p-closing-card { background: linear-gradient(135deg, #0f172a 0%, #1a1a1a 55%, #2a1200 100%); color: #fff; border-radius: 16px; padding: 22px; text-align: center; margin-top: 24px; border-top: 4px solid #ff6a00; }
+  .p-closing-card h3 { font-size: 20px; margin-bottom: 10px; font-weight: 900; }
+  .p-closing-card .p-sub { color: #ffb067; margin-bottom: 12px; }
+  .p-closing-card hr { border: none; border-top: 1px solid rgba(255,255,255,0.14); margin: 14px 0; }
+  .p-item-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: rgba(255,106,0,0.1); border: 1px solid rgba(255,106,0,0.22); color: #ff6a00; font-size: 11px; font-weight: 800; white-space: nowrap; }
+  .pre-line { white-space: pre-line; }
+  @media print {
+    body { background: #fff; }
+    .prop-page { margin: 0; box-shadow: none; }
+  }
+`;
 
-// ─── Header bar reused across pages ──────────────────────────────────────────
-function PageHeader({ proposalNumber, date }: { proposalNumber: string; date: string }) {
+// ─── Helper components ────────────────────────────────────────────────────────
+function PHeader({ num, date }: { num: string; date: string }) {
   return (
-    <div
-      className="flex items-center justify-between mb-8 pb-4 border-b-2"
-      style={{ borderColor: "#ff6a00" }}
-    >
-      <div className="flex items-center gap-3">
-        <div
-          className="w-8 h-8 rounded flex items-center justify-center text-white font-bold text-xs"
-          style={{ background: "linear-gradient(135deg,#1a1a1a,#ff6a00)" }}
-        >
-          SX
-        </div>
-        <div>
-          <p className="text-xs font-bold text-gray-800">شركة سوفت لكس لتقنية المعلومات</p>
-          <p className="text-xs" style={{ color: "#ff6a00" }}>Softlix Information Technology</p>
+    <div className="p-header">
+      <div className="p-logo">
+        <div className="p-logo-box">SX</div>
+        <div className="p-logo-text">
+          <p>شركة سوفت لكس</p>
+          <p>Softlix Agency</p>
         </div>
       </div>
-      <div className="text-left text-xs text-gray-400">
-        <p>{proposalNumber}</p>
+      <div className="p-header-info">
+        <p>{num}</p>
         <p>{date}</p>
       </div>
     </div>
   );
 }
 
-function PageFooter({ page, total }: { page: number; total: number }) {
+function PFooter({ label, page, total }: { label: string; page: number; total: number }) {
   return (
-    <div
-      className="absolute bottom-6 left-0 right-0 px-18 flex items-center justify-between text-xs text-gray-400"
-      style={{ padding: "0 18mm" }}
-    >
-      <p>شكراً لاختياركم سوفت لكس</p>
-      <p>{page} / {total}</p>
+    <div className="p-footer">
+      <span>{label}</span>
+      <span>{page} / {total}</span>
     </div>
   );
 }
 
-function SectionTitle({ ar, en }: { ar: string; en?: string }) {
+function PSectionTitle({ title }: { title: string }) {
   return (
-    <div className="mb-5">
-      <div className="flex items-center gap-3">
-        <div className="w-1.5 h-7 rounded-full" style={{ background: "linear-gradient(to bottom,#ff6a00,#ff8c00)" }} />
-        <div>
-          <h2 className="text-lg font-bold" style={{ color: "#1a1a1a" }}>{ar}</h2>
-          {en && <p className="text-xs" style={{ color: "#ff6a00" }}>{en}</p>}
-        </div>
-      </div>
-      <div className="h-px mt-3" style={{ background: "linear-gradient(to left,transparent,#ff8c00,transparent)" }} />
+    <div className="p-section-title">
+      <div className="p-bar" />
+      <h2>{title}</h2>
     </div>
   );
 }
 
-// ─── ProposalDocument ─────────────────────────────────────────────────────────
+// ─── ProposalDocument ──────────────────────────────────────────────────────────
 export function ProposalDocument({ proposal, showOptional = true }: { proposal: any; showOptional?: boolean }) {
   const items: any[] = proposal.items || [];
   const requiredItems = items.filter((i: any) => !i.isOptional);
   const optionalItems = items.filter((i: any) => i.isOptional);
   const paymentSchedule: any[] = proposal.paymentSchedule || [];
-  const teamMembers: any[] = proposal.teamMembers || [];
-  const selectedTechnologies: any[] = proposal.selectedTechnologies || [];
-  const targetAudience: any[] = proposal.targetAudience || [];
-  const deliverables: any[] = proposal.deliverables || [];
+  const teamMembers: string[] = proposal.teamMembers || Object.keys(TEAM_BIOS).slice(0, 4);
 
   const subtotal = parseFloat(proposal.subtotal || "0");
   const discount = parseFloat(proposal.discountValue || "0");
@@ -186,7 +264,7 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
   const introText = proposal.introText || DEFAULT_INTRO_TEXT;
   const requirements = proposal.requirements || "";
   const termsAndNotes = proposal.termsAndNotes || DEFAULT_TERMS;
-  // Calculate validityDays from expiryDate if available, else default to 14
+
   const validityDays = (() => {
     if (proposal.expiryDate) {
       const expiry = new Date(proposal.expiryDate);
@@ -205,818 +283,729 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
   }, {});
   const hasSections = Object.keys(sections).some(k => k !== "__default__");
 
-  const TOTAL_PAGES = 12;
-  const H = ({ p }: { p: number }) => <PageHeader proposalNumber={proposalNumber} date={issueDateShort} />;
-  const F = ({ p }: { p: number }) => <PageFooter page={p} total={TOTAL_PAGES} />;
+  const TOTAL_PAGES = 14;
 
-  // ── Tech grouped by category ────────────────────────────────────────────────
-  const techByCategory = selectedTechnologies.reduce((acc: Record<string, any[]>, t: any) => {
-    const cat = t.category || "عام";
-    if (!acc[cat]) acc[cat] = [];
-    acc[cat].push(t);
-    return acc;
-  }, {});
+  const fmt = (n: number) => n.toLocaleString("ar-SA", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+  // Scope modules from sections or items
+  const scopeModules: { title: string; subtitle: string; items: string[] }[] = hasSections
+    ? Object.entries(sections).map(([name, its], i) => ({
+        title: name,
+        subtitle: its[0]?.description?.slice(0, 60) || "",
+        items: its.map((it: any) => `${it.name || it.title}${it.description ? ` — ${it.description}` : ""}`),
+      }))
+    : requiredItems.length > 0
+      ? [{ title: "نطاق العمل الرئيسي", subtitle: "الخدمات والبنود المتفق عليها", items: requiredItems.map((i: any) => i.name || i.title) }]
+      : [{ title: "نطاق العمل الرئيسي", subtitle: "الخدمات والبنود المتفق عليها", items: ["تحليل المتطلبات والتصميم", "التطوير والبرمجة", "الاختبار وضمان الجودة", "النشر والتسليم"] }];
+
+  // Timeline phases
+  const timelinePhases = paymentSchedule.length > 0
+    ? paymentSchedule.map((p: any) => ({
+        name: p.label || p.milestone,
+        days: Math.round((parseFloat(p.percent) / 100) * timelineDays),
+        pct: Math.round(parseFloat(p.percent)),
+      }))
+    : [
+        { name: "التحليل والتصميم", days: Math.round(timelineDays * 0.2), pct: 20 },
+        { name: "التطوير", days: Math.round(timelineDays * 0.5), pct: 50 },
+        { name: "الاختبار والإطلاق", days: Math.round(timelineDays * 0.3), pct: 30 },
+      ];
 
   return (
-    <div
-      dir="rtl"
-      style={{ fontFamily: "'Segoe UI', 'Arial', sans-serif" }}
-      id="proposal-doc"
-    >
-      {/* ── PAGE 1: COVER ────────────────────────────────────────────────── */}
-      <div
-        className="relative text-white flex flex-col"
-        style={{
-          width: "210mm",
-          minHeight: "297mm",
-          margin: "0 auto 20px",
-          background: "linear-gradient(160deg,#0f172a 0%,#1a1a1a 60%,#2a1200 100%)",
-          boxSizing: "border-box",
-          boxShadow: "0 4px 24px rgba(0,0,0,0.3)",
-          pageBreakAfter: "always",
-        }}
-      >
-        {/* Top ribbon - orange */}
-        <div className="h-3" style={{ background: "linear-gradient(to right,#ff8c00,#ff6a00,#e55c00)" }} />
+    <div className="prop-wrap" id="proposal-doc">
+      <style>{PROPOSAL_CSS}</style>
 
-        {/* Logo area */}
-        <div className="px-16 pt-10 pb-8 border-b" style={{ borderColor: "rgba(255,106,0,0.3)" }}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div
-                className="w-14 h-14 rounded-xl flex items-center justify-center border"
-                style={{ background: "rgba(255,106,0,0.15)", borderColor: "rgba(255,106,0,0.4)" }}
-              >
-                <span className="text-2xl font-black text-white">SX</span>
-              </div>
-              <div>
-                <p className="text-xl font-bold">سوفت لكس</p>
-                <p className="text-sm" style={{ color: "#ff8c00" }}>Softlix Information Technology</p>
-              </div>
-            </div>
-            <div className="text-left text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>
-              <p>www.softlixagency.com</p>
-              <p>info@softlix.net</p>
+      {/* ═══════════════════════════════════════════════════════════════════════
+          PAGE 1: COVER
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="prop-page cover-page">
+        <div className="cover-top-ribbon" />
+
+        <div className="cover-header">
+          <div className="cover-brand">
+            <div className="brand-logo">SX</div>
+            <div className="cover-brand-text">
+              <p>شركة سوفت لكس لتقنية المعلومات</p>
+              <p>Softlix Information Technology</p>
             </div>
           </div>
         </div>
 
-        {/* Main content */}
-        <div className="flex-1 flex flex-col justify-center px-16 py-10" style={{ direction: "rtl" }}>
-          {/* Badge */}
-          <div className="mb-8">
-            <span
-              className="text-xs font-bold px-4 py-1.5 rounded-full"
-              style={{ background: "rgba(255,106,0,0.2)", border: "1px solid rgba(255,106,0,0.5)", color: "#ff8c00" }}
-            >
-              العرض التقني والمالي &nbsp;·&nbsp; Technical & Financial Proposal
-            </span>
+        <div className="cover-main">
+          <span className="p-badge">عرض تقني ومالي · Technical & Financial Proposal</span>
+          <h1 className="cover-title">{proposal.title || "العرض التقني والمالي"}</h1>
+          <div className="cover-divider">
+            <div className="line1" />
+            <div className="line2" />
+          </div>
+          <p className="cover-subtitle">حل تقني متكامل مُصمَّم خصيصاً لتلبية متطلباتكم وتحقيق أهدافكم الاستراتيجية</p>
+
+          <div className="cover-client-box">
+            <div className="c-label">مُقدَّم إلى</div>
+            <div className="c-value">{clientName}</div>
           </div>
 
-          {/* Project title */}
-          <h1
-            className="text-4xl font-black mb-3 leading-tight"
-            style={{ color: "#ffffff", textShadow: "0 2px 20px rgba(0,0,0,0.5)" }}
-          >
-            {proposal.title || "العرض التقني والمالي"}
-          </h1>
+          <div className="cover-stats">
+            <div className="cover-stat">
+              <div className="c-label">رقم العرض</div>
+              <div className="c-value">{proposalNumber}</div>
+            </div>
+            <div className="cover-stat">
+              <div className="c-label">تاريخ الإصدار</div>
+              <div className="c-value">{issueDateStr}</div>
+            </div>
+            <div className="cover-stat">
+              <div className="c-label">صالح لمدة</div>
+              <div className="c-value">{validityDays} يوم</div>
+            </div>
+          </div>
+        </div>
 
-          {/* Orange divider */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="h-1 w-20 rounded-full" style={{ background: "#ff6a00" }} />
-            <div className="h-0.5 w-10 rounded-full" style={{ background: "rgba(255,106,0,0.3)" }} />
+        <div className="cover-bottom">
+          <div className="cover-bottom-item"><span>⚡</span><span>تسليم في الوقت المحدد</span></div>
+          <div className="cover-bottom-item"><span>🏆</span><span>جودة عالية المستوى</span></div>
+          <div className="cover-bottom-item"><span>🤝</span><span>شراكة استراتيجية</span></div>
+        </div>
+
+        <div className="cover-bottom-ribbon" />
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          PAGE 2: CONFIDENTIALITY & DOCUMENT CONTROL
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="prop-page">
+        <PHeader num={proposalNumber} date={issueDateShort} />
+
+        <div className="p-section">
+          <PSectionTitle title="بيان السرية" />
+          <div className="p-info-box pre-line">{CONFIDENTIALITY_TEXT}</div>
+        </div>
+
+        <div className="p-section">
+          <PSectionTitle title="مراقبة الوثيقة" />
+          <table>
+            <tbody>
+              {[
+                ["اسم الوثيقة", `عرض سعر رقم ${proposalNumber}`],
+                ["تاريخ الإنشاء", issueDateStr],
+                ["آخر تحديث", issueDateStr],
+                ["متلقي الوثيقة", clientName],
+                ["الكاتب", authorName],
+                ["المسمى الوظيفي", authorTitle],
+                ["الموافقون", `${approverName} — ${approverTitle}`],
+                ["فترة صلاحية العرض", `${validityDays} يوم من تاريخ الإصدار`],
+              ].map(([k, v]) => (
+                <tr key={k}>
+                  <td><strong>{k}</strong></td>
+                  <td>{v}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div className="p-danger-box">
+            تحذير: أي تعديل على هذه الوثيقة أو بنود العرض المالي بدون موافقة كتابية مسبقة من سوفت لكس يُعدّ باطلاً ولا يُعتدّ به.
+          </div>
+        </div>
+
+        <PFooter label="وثيقة سرية ومملوكة لشركة سوفت لكس" page={2} total={TOTAL_PAGES} />
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          PAGE 3: EXECUTIVE SUMMARY & INITIAL REQUIREMENTS
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="prop-page">
+        <PHeader num={proposalNumber} date={issueDateShort} />
+
+        <div className="p-section">
+          <PSectionTitle title="ملخص تنفيذي" />
+          <div className="p-highlight-box">
+            <p className="p-lead" style={{ marginBottom: 0 }}>{introText}</p>
+          </div>
+        </div>
+
+        {requirements && (
+          <div className="p-section">
+            <PSectionTitle title="متطلبات العميل للمشروع الأولية" />
+            <div className="p-info-box pre-line">{requirements}</div>
+          </div>
+        )}
+
+        <PFooter label="ملخص تنفيذي ومتطلبات أولية" page={3} total={TOTAL_PAGES} />
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          PAGE 4: SCOPE OF WORK
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="prop-page">
+        <PHeader num={proposalNumber} date={issueDateShort} />
+
+        <div className="p-section">
+          <PSectionTitle title="نطاق العمل (Scope of Work)" />
+          <div className="p-info-box">
+            <p className="p-lead" style={{ marginBottom: 0 }}>
+              يشمل العرض المقدم من سوفت لكس جميع الخدمات والبنود التفصيلية الموضحة أدناه، وذلك ضمن المدة الزمنية والميزانية المتفق عليها.
+            </p>
           </div>
 
-          {/* Subtitle */}
-          <p className="text-lg mb-8" style={{ color: "rgba(255,255,255,0.7)", maxWidth: "480px", lineHeight: "1.8" }}>
-            حل تقني متكامل مُصمَّم خصيصاً لتلبية متطلباتكم وتحقيق أهدافكم الاستراتيجية
-          </p>
+          {scopeModules.map((mod, i) => (
+            <div className="p-module-card" key={i}>
+              <div className="p-module-card-header">
+                <div className="p-module-number">{i + 1}</div>
+                <div>
+                  <h3>{mod.title}</h3>
+                  {mod.subtitle && <p className="p-muted" style={{ marginBottom: 0 }}>{mod.subtitle}</p>}
+                </div>
+              </div>
+              <div className="p-module-card-body">
+                <ul className="p-check-list">
+                  {mod.items.map((it, j) => <li key={j}>{it}</li>)}
+                </ul>
+              </div>
+            </div>
+          ))}
 
-          {/* Client box */}
-          {(proposal.company || proposal.contact) && (
-            <div
-              className="inline-block px-6 py-4 rounded-2xl mb-8"
-              style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", maxWidth: "360px" }}
-            >
-              <p className="text-xs mb-1.5 font-medium" style={{ color: "#ff8c00" }}>مُقدَّم إلى</p>
-              <p className="text-xl font-bold text-white">{clientName}</p>
+          {showOptional && optionalItems.length > 0 && (
+            <div className="p-notice-box">
+              <strong>البنود الاختيارية ({optionalItems.length} بند):</strong>{" "}
+              {optionalItems.map((i: any) => i.name || i.title).join(" — ")}
             </div>
           )}
+        </div>
 
-          {/* Stats row */}
-          <div className="grid grid-cols-3 gap-4" style={{ maxWidth: "480px" }}>
+        <PFooter label="نطاق العمل التفصيلي" page={4} total={TOTAL_PAGES} />
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          PAGE 5: SOLUTION OVERVIEW & OBJECTIVES
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="prop-page">
+        <PHeader num={proposalNumber} date={issueDateShort} />
+
+        <div className="p-section">
+          <PSectionTitle title="نظرة عامة على الحل" />
+          <div className="p-info-box">
+            <p className="p-lead" style={{ marginBottom: 0 }}>
+              تقدم سوفت لكس حلاً تقنياً متكاملاً يجمع بين تصميم تجربة مستخدم استثنائية، وبنية تقنية متينة وقابلة للتطوير، مع ضمان الجودة والأداء العالي في كل مرحلة من مراحل التطوير.
+            </p>
+          </div>
+        </div>
+
+        <div className="p-section">
+          <PSectionTitle title="الأهداف الرئيسية للمشروع" />
+          <div className="p-grid-2">
             {[
-              { label: "رقم العرض", value: proposalNumber },
-              { label: "تاريخ الإصدار", value: issueDateStr },
-              { label: "صالح لمدة", value: `${validityDays} يوم` },
-            ].map(item => (
-              <div key={item.label} className="rounded-xl p-3 text-center" style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)" }}>
-                <p className="text-xs mb-1" style={{ color: "#ff8c00" }}>{item.label}</p>
-                <p className="font-bold text-sm text-white">{item.value}</p>
+              { title: "تحقيق الكفاءة التشغيلية", desc: "تحسين وتسريع العمليات الداخلية من خلال أتمتة المهام وتقليل الجهد اليدوي." },
+              { title: "تجربة مستخدم استثنائية", desc: "تصميم واجهات سهلة الاستخدام تضمن تجربة سلسة وممتعة لجميع المستخدمين." },
+              { title: "قابلية التطوير والتوسع", desc: "بنية تقنية مرنة تدعم النمو المستقبلي دون الحاجة لإعادة البناء." },
+              { title: "الأمان وحماية البيانات", desc: "معايير أمان عالية المستوى لحماية بيانات المستخدمين والمعلومات الحساسة." },
+            ].map((obj, i) => (
+              <div className="p-highlight-box" key={i} style={{ marginBottom: 0 }}>
+                <p className="p-section-subtitle">{obj.title}</p>
+                <p style={{ marginBottom: 0 }}>{obj.desc}</p>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Bottom info strip */}
-        <div
-          className="px-16 py-5 grid grid-cols-3 gap-6 text-sm border-t"
-          style={{ borderColor: "rgba(255,106,0,0.2)", background: "rgba(0,0,0,0.2)" }}
-        >
-          {[
-            { icon: "⚡", text: "تسليم في الوقت المحدد" },
-            { icon: "🏆", text: "جودة عالية المستوى" },
-            { icon: "🤝", text: "شراكة استراتيجية" },
-          ].map(item => (
-            <div key={item.text} className="flex items-center gap-2">
-              <span className="text-base">{item.icon}</span>
-              <span className="text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>{item.text}</span>
-            </div>
-          ))}
+        <div className="p-section">
+          <PSectionTitle title="الميزات الرئيسية للنظام" />
+          <div className="p-grid-2">
+            {[
+              { title: "لوحة تحكم تفاعلية", items: ["إحصائيات ومؤشرات أداء لحظية", "تقارير قابلة للتخصيص", "تنبيهات وإشعارات ذكية"] },
+              { title: "إدارة المحتوى والبيانات", items: ["واجهة إدارة سهلة الاستخدام", "استيراد وتصدير البيانات", "بحث وفلترة متقدمة"] },
+              { title: "التكامل والربط", items: ["ربط مع أنظمة خارجية", "واجهة برمجية REST API", "تكامل مع خدمات الدفع"] },
+              { title: "الأداء والأمان", items: ["أداء عالي وسرعة استجابة", "تشفير البيانات", "نسخ احتياطي تلقائي"] },
+            ].map((cap, i) => (
+              <div className="p-info-box" key={i} style={{ marginBottom: 0 }}>
+                <p className="p-section-subtitle">{cap.title}</p>
+                <ul className="p-dash-list">
+                  {cap.items.map((it, j) => <li key={j}>{it}</li>)}
+                </ul>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Bottom ribbon */}
-        <div className="h-3" style={{ background: "linear-gradient(to right,#e55c00,#ff6a00,#ff8c00)" }} />
+        <PFooter label="نظرة عامة على الحل والأهداف" page={5} total={TOTAL_PAGES} />
       </div>
 
-      {/* ── PAGE 2: CONFIDENTIALITY ─────────────────────────────────────── */}
-      <DocPage>
-        <H p={1} />
-        <SectionTitle ar="بيان السرية" en="Confidentiality Statement" />
-        <div
-          className="rounded-xl p-6 mb-6"
-          style={{ background: "linear-gradient(135deg,#fff7ed,#ffedd5)", border: "1px solid #fed7aa" }}
-        >
-          <div className="flex items-start gap-4 mb-4">
-            <div
-              className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-              style={{ background: "linear-gradient(135deg,#1a1a1a,#ff6a00)" }}
-            >
-              <Shield className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <h3 className="font-bold text-gray-900 mb-1">معلومات سرية وخاصة</h3>
-              <p className="text-sm" style={{ color: "#ff6a00" }}>Confidential & Proprietary Information</p>
-            </div>
-          </div>
-          <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{CONFIDENTIALITY_TEXT}</p>
-        </div>
+      {/* ═══════════════════════════════════════════════════════════════════════
+          PAGE 6: ARCHITECTURE & TECHNOLOGY
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="prop-page">
+        <PHeader num={proposalNumber} date={issueDateShort} />
 
-        {/* Copyright note */}
-        <div className="rounded-xl p-4 mt-4" style={{ background: "#f8fafc", border: "1px solid #e2e8f0" }}>
-          <p className="text-xs text-gray-500 text-center">
-            © {new Date().getFullYear()} شركة سوفت لكس لتقنية المعلومات — جميع الحقوق محفوظة
-          </p>
-        </div>
-        <F p={2} />
-      </DocPage>
-
-      {/* ── PAGE 3: DOCUMENT CONTROL ────────────────────────────────────── */}
-      <DocPage>
-        <H p={2} />
-        <SectionTitle ar="مراقبة الوثيقة" en="Document Control" />
-
-        <div className="grid grid-cols-2 gap-5 mb-6">
-          {/* الوثيقة */}
-          <div className="rounded-xl overflow-hidden border border-gray-200">
-            <div className="px-4 py-2" style={{ background: "linear-gradient(135deg,#1a1a1a,#ff6a00)" }}>
-              <p className="text-white text-sm font-bold">الوثيقة</p>
-            </div>
-            <table className="w-full text-sm">
-              <tbody>
-                {[
-                  ["اسم الوثيقة", "عرض السعر الخاص لدى شركة سوفت لكس"],
-                  ["تاريخ الإنشاء", issueDateStr],
-                  ["رقم العرض", proposalNumber],
-                  ["متلقي الوثيقة", clientName],
-                  ["صلاحية العرض", `${validityDays} يوم`],
-                ].map(([k, v]) => (
-                  <tr key={k} className="border-t border-gray-100">
-                    <td className="px-4 py-2.5 text-gray-500 text-xs w-32">{k}</td>
-                    <td className="px-4 py-2.5 text-gray-900 font-medium text-xs">{v}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {/* الكتّاب والموافقون */}
-          <div className="space-y-4">
-            <div className="rounded-xl overflow-hidden border border-gray-200">
-              <div className="px-4 py-2" style={{ background: "linear-gradient(135deg,#065f46,#059669)" }}>
-                <p className="text-white text-sm font-bold">الكاتب</p>
-              </div>
-              <table className="w-full text-sm">
-                <tbody>
-                  {[
-                    ["الاسم", authorName],
-                    ["المسمى الوظيفي", authorTitle],
-                    ["آخر تحديث", issueDateStr],
-                  ].map(([k, v]) => (
-                    <tr key={k} className="border-t border-gray-100">
-                      <td className="px-4 py-2.5 text-gray-500 text-xs w-28">{k}</td>
-                      <td className="px-4 py-2.5 text-gray-900 font-medium text-xs">{v}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="rounded-xl overflow-hidden border border-gray-200">
-              <div className="px-4 py-2" style={{ background: "linear-gradient(135deg,#7c3aed,#a78bfa)" }}>
-                <p className="text-white text-sm font-bold">الموافقون</p>
-              </div>
-              <table className="w-full text-sm">
-                <tbody>
-                  {[
-                    ["الاسم", approverName],
-                    ["المسمى الوظيفي", approverTitle],
-                    ["آخر تحديث", issueDateStr],
-                  ].map(([k, v]) => (
-                    <tr key={k} className="border-t border-gray-100">
-                      <td className="px-4 py-2.5 text-gray-500 text-xs w-28">{k}</td>
-                      <td className="px-4 py-2.5 text-gray-900 font-medium text-xs">{v}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        {/* Validity notice */}
-        <div
-          className="rounded-xl p-4 text-sm text-gray-700 leading-relaxed"
-          style={{ background: "#fffbeb", border: "1px solid #fde68a" }}
-        >
-          <p className="font-bold text-amber-800 mb-1">تنبيه هام:</p>
-          <p>
-            الاقتباس الوارد في الاقتراح صالح لمدة <strong>{validityDays}</strong> أيام تبدأ من تاريخ هذه الوثيقة.
-            بعد فترة انتهاء الصلاحية، وقبل قبول العرض يتم التوقيع عليه ويُعدّ عقداً رسمياً لبدء العمل.
-            وقد تخضع الأسعار للتغيير بناءً على إشعار مسبق للعميل. تحتفظ سوفت لكس بالحق في تغيير أي جزء
-            من عرض الأسعار إذا كان يحتوي على أخطاء أو سهو قبل التوقيع من قبل العميل.
-          </p>
-        </div>
-        <F p={3} />
-      </DocPage>
-
-      {/* ── PAGE 4: INTRODUCTION ───────────────────────────────────────── */}
-      <DocPage>
-        <H p={3} />
-        <SectionTitle ar="نحن متحمسون للعمل معاً!" en="We're Excited to Work Together!" />
-        <div
-          className="rounded-xl p-6 mb-6 text-sm text-gray-700 leading-relaxed whitespace-pre-line"
-          style={{ background: "#f8fafc", border: "1px solid #e2e8f0", lineHeight: "2" }}
-        >
-          {introText}
-        </div>
-
-        {/* Values grid */}
-        <div className="grid grid-cols-3 gap-4 mt-6">
-          {[
-            { icon: "⚡", title: "سرعة التنفيذ", desc: "نلتزم بالجداول الزمنية المتفق عليها" },
-            { icon: "🎯", title: "جودة عالية", desc: "معايير برمجة وتصميم بأعلى المستويات" },
-            { icon: "🤝", title: "شراكة حقيقية", desc: "نعمل كجزء من فريقكم لا مجرد مورد" },
-          ].map((v) => (
-            <div
-              key={v.title}
-              className="rounded-xl p-4 text-center"
-              style={{ background: "linear-gradient(135deg,#fff7ed,#ffedd5)", border: "1px solid #fed7aa" }}
-            >
-              <div className="text-3xl mb-2">{v.icon}</div>
-              <p className="font-bold text-gray-900 text-sm mb-1">{v.title}</p>
-              <p className="text-xs text-gray-600">{v.desc}</p>
-            </div>
-          ))}
-        </div>
-        <F p={4} />
-      </DocPage>
-
-      {/* ── PAGE 5: CLIENT REQUIREMENTS ────────────────────────────────── */}
-      <DocPage>
-        <H p={4} />
-        <SectionTitle ar="متطلبات العميل للمشروع" en="Project Requirements" />
-        {requirements ? (
-          <div
-            className="rounded-xl p-6 text-sm text-gray-700 leading-relaxed whitespace-pre-line"
-            style={{ background: "#f8fafc", border: "1px solid #e2e8f0", lineHeight: "2", minHeight: "120px" }}
-          >
-            {requirements}
-          </div>
-        ) : (
-          <div className="rounded-xl p-6 text-center text-gray-400 border border-dashed border-gray-200">
-            <p>لم يتم إضافة متطلبات العميل التفصيلية</p>
-          </div>
-        )}
-
-        {/* Target audience table */}
-        {targetAudience.length > 0 && (
-          <div className="mt-8">
-            <SectionTitle ar="المجموعة المستهدفة من المستخدمين" en="Target User Groups" />
-            <p className="text-sm text-gray-600 mb-4">
-              يستهدف حل سوفت لكس المقترح للمستخدمين بأدوار مختلفة، لاستخدام التطبيق وفقاً لاحتياجاتهم ومسؤولياتهم.
+        <div className="p-section">
+          <PSectionTitle title="البنية التقنية للنظام" />
+          <div className="p-highlight-box">
+            <p className="p-lead" style={{ marginBottom: 0 }}>
+              يُبنى النظام على معمارية حديثة قائمة على الخدمات المصغّرة (Microservices) مع فصل واضح بين الواجهة الأمامية والخلفية، مما يضمن قابلية التوسع والصيانة السهلة.
             </p>
-            <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #e2e8f0" }}>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr style={{ background: "linear-gradient(135deg,#1a1a1a,#ff6a00)" }}>
-                    <th className="text-right py-3 px-4 text-white font-semibold">المجموعة المستهدفة</th>
-                    <th className="text-right py-3 px-4 text-white font-semibold">الدور والصلاحيات</th>
-                    <th className="text-right py-3 px-4 text-white font-semibold">لغة / منصة التشغيل</th>
-                    <th className="text-right py-3 px-4 text-white font-semibold">النظام / المنصة</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {targetAudience.map((row: any, i: number) => (
-                    <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-gray-50"}>
-                      <td className="py-3 px-4 font-semibold text-gray-900">{row.group || "—"}</td>
-                      <td className="py-3 px-4 text-gray-600 text-xs leading-relaxed">{row.role || "—"}</td>
-                      <td className="py-3 px-4 text-gray-700 font-medium">{row.language || "—"}</td>
-                      <td className="py-3 px-4 text-gray-700">{row.system || "—"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
           </div>
-        )}
-        <F p={5} />
-      </DocPage>
-
-      {/* ── PAGE 6: DELIVERABLES ────────────────────────────────────────── */}
-      {(deliverables.length > 0 || selectedTechnologies.length > 0) && (
-        <DocPage>
-          <H p={5} />
-
-          {deliverables.length > 0 && (
-            <>
-              <SectionTitle ar="مخرجات المشروع" en="Project Deliverables" />
-              <div className="rounded-xl overflow-hidden mb-8" style={{ border: "1px solid #e2e8f0" }}>
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr style={{ background: "linear-gradient(135deg,#065f46,#059669)" }}>
-                      <th className="text-right py-3 px-4 text-white font-semibold">المخرج</th>
-                      <th className="text-right py-3 px-4 text-white font-semibold">الوصف</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {deliverables.map((d: any, i: number) => (
-                      <tr key={i} className={i % 2 === 0 ? "bg-white" : "bg-green-50/30"}>
-                        <td className="py-3 px-4 font-semibold text-gray-900 w-48">{d.name || "—"}</td>
-                        <td className="py-3 px-4 text-gray-600 text-xs leading-relaxed">{d.description || "—"}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+          <div className="p-grid-2">
+            {[
+              { num: "1", name: "الواجهة الأمامية", sub: "Frontend", tech: "React / Next.js / TypeScript", role: "واجهة المستخدم التفاعلية", value: "تجربة مستخدم سلسة وسريعة" },
+              { num: "2", name: "الواجهة الخلفية", sub: "Backend API", tech: "Node.js / Express / REST API", role: "منطق الأعمال والخدمات", value: "أداء عالي وقابلية تطوير" },
+              { num: "3", name: "قاعدة البيانات", sub: "Database", tech: "PostgreSQL / Redis", role: "تخزين البيانات وإدارتها", value: "موثوقية وأمان عالي" },
+              { num: "4", name: "البنية التحتية", sub: "Infrastructure", tech: "Cloud / Docker / CI/CD", role: "نشر وإدارة النظام", value: "استمرارية الخدمة وتوافريتها" },
+            ].map((cat, i) => (
+              <div className="p-module-card" key={i} style={{ marginBottom: 0 }}>
+                <div className="p-module-card-header">
+                  <div className="p-module-number">{cat.num}</div>
+                  <div>
+                    <h3>{cat.name}</h3>
+                    <p className="p-muted" style={{ marginBottom: 0 }}>{cat.sub}</p>
+                  </div>
+                </div>
+                <div className="p-module-card-body">
+                  <p><strong>التقنيات:</strong> {cat.tech}</p>
+                  <p><strong>الدور:</strong> {cat.role}</p>
+                  <p style={{ marginBottom: 0 }}><strong>القيمة:</strong> {cat.value}</p>
+                </div>
               </div>
-            </>
-          )}
+            ))}
+          </div>
+          <div className="p-notice-box" style={{ marginTop: 14 }}>
+            تعمل جميع مكونات النظام بتكامل تام مع بعضها لضمان أعلى مستويات الأداء والموثوقية. يتم تحديث البنية التقنية باستمرار لمواكبة أحدث المعايير العالمية.
+          </div>
+        </div>
 
-          {selectedTechnologies.length > 0 && (
-            <>
-              <SectionTitle ar="التقنيات المستخدمة" en="Technologies Stack" />
-              <div className="grid grid-cols-2 gap-4">
-                {Object.entries(techByCategory).map(([cat, techs]) => (
-                  <div key={cat} className="rounded-xl overflow-hidden" style={{ border: "1px solid #e2e8f0" }}>
-                    <div className="px-4 py-2" style={{ background: "linear-gradient(135deg,#1a1a1a,#ff6a00)" }}>
-                      <p className="text-white text-xs font-bold">{cat}</p>
-                    </div>
-                    <div className="p-3 space-y-1.5">
-                      {(techs as any[]).map((t: any, i: number) => (
-                        <div key={i} className="flex items-center gap-2">
-                          <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "#ff6a00" }} />
-                          <div>
-                            <span className="text-sm font-medium text-gray-900">{t.name}</span>
-                            {t.description && <span className="text-xs text-gray-500 mr-2">— {t.description}</span>}
-                          </div>
-                        </div>
-                      ))}
+        <PFooter label="البنية التقنية والتقنيات المقترحة" page={6} total={TOTAL_PAGES} />
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          PAGE 7: DELIVERABLES & TIMELINE
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="prop-page">
+        <PHeader num={proposalNumber} date={issueDateShort} />
+
+        <div className="p-section">
+          <PSectionTitle title="مخرجات المشروع" />
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>المخرج</th>
+                <th>الوصف</th>
+                <th>مرحلة التسليم</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ["وثيقة المتطلبات", "توثيق كامل لجميع متطلبات المشروع", "المرحلة الأولى"],
+                ["نماذج التصميم", "تصاميم الواجهات بصيغة Figma", "المرحلة الأولى"],
+                ["الكود المصدري", "الكود الكامل موثقاً على GitHub", "المرحلة الثانية"],
+                ["بيئة الاختبار", "نسخة تجريبية للاختبار والمراجعة", "المرحلة الثالثة"],
+                ["النسخة الإنتاجية", "النظام مُطلق ومُشغّل على السيرفر", "التسليم النهائي"],
+                ["دليل الاستخدام", "وثائق المستخدم والمشرف", "التسليم النهائي"],
+              ].map(([name, desc, stage], i) => (
+                <tr key={i}>
+                  <td>{i + 1}</td>
+                  <td><strong>{name}</strong></td>
+                  <td>{desc}</td>
+                  <td>{stage}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="p-section">
+          <PSectionTitle title="الجدول الزمني للمشروع" />
+          <div className="p-highlight-box">
+            <p style={{ marginBottom: 4 }}><strong>المدة الإجمالية المتوقعة:</strong> {timelineDays} يوم عمل</p>
+            <p style={{ marginBottom: 0 }}><strong>فترة التهيئة وبدء المشروع:</strong> 10 أيام عمل بعد توقيع العقد</p>
+          </div>
+          <div>
+            {timelinePhases.map((ph, i) => (
+              <div className="p-timeline-item" key={i}>
+                <div className="p-timeline-row">
+                  <span>{ph.name}</span>
+                  <span>{ph.days} يوم</span>
+                </div>
+                <div className="p-timeline-bar">
+                  <div className="p-timeline-fill" style={{ width: `${ph.pct}%` }}>
+                    {ph.pct}%
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="p-info-box" style={{ marginTop: 14 }}>
+            الجدول الزمني تقديري ويبدأ رسمياً بعد توقيع العقد واستلام الدفعة الأولى. قد تتأثر المدة في حال تأخر تسليم المواد والمستلزمات من قِبل العميل.
+          </div>
+        </div>
+
+        <PFooter label="مخرجات المشروع والجدول الزمني" page={7} total={TOTAL_PAGES} />
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          PAGE 8: METHODOLOGY & SUPPORT
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="prop-page">
+        <PHeader num={proposalNumber} date={issueDateShort} />
+
+        <div className="p-section">
+          <PSectionTitle title="منهجية العمل — Agile Methodology" />
+          <div className="p-highlight-box">
+            <p className="p-lead" style={{ marginBottom: 0 }}>
+              نعتمد منهجية Agile في تطوير المشاريع، مما يضمن المرونة في التكيف مع المتطلبات المتغيرة وتسليم نتائج ملموسة في كل مرحلة بشكل منتظم ومستمر.
+            </p>
+          </div>
+          <div className="p-grid-2">
+            {[
+              { num: "1", title: "التحليل والتخطيط", en: "Analysis & Planning", points: ["جمع وتحليل المتطلبات", "رسم خرائط العمليات", "تحديد الأولويات والجدول الزمني"] },
+              { num: "2", title: "التصميم", en: "Design", points: ["تصميم تجربة المستخدم UX", "تصميم الواجهات UI", "مراجعة وموافقة العميل"] },
+              { num: "3", title: "التطوير", en: "Development", points: ["تطوير تكراري بدورات Sprint", "مراجعة يومية للتقدم", "اختبار وحدات مستمر"] },
+              { num: "4", title: "الاختبار والإطلاق", en: "Testing & Launch", points: ["اختبار شامل للجودة QA", "اختبار قبول المستخدم UAT", "النشر والإطلاق الرسمي"] },
+            ].map((step, i) => (
+              <div className="p-module-card" key={i} style={{ marginBottom: 0 }}>
+                <div className="p-module-card-header">
+                  <div className="p-module-number">{step.num}</div>
+                  <div>
+                    <h3>{step.title}</h3>
+                    <p className="p-muted" style={{ marginBottom: 0 }}>{step.en}</p>
+                  </div>
+                </div>
+                <div className="p-module-card-body">
+                  <ul className="p-dash-list">
+                    {step.points.map((pt, j) => <li key={j}>{pt}</li>)}
+                  </ul>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="p-section">
+          <PSectionTitle title="الدعم والضمان بعد التسليم" />
+          <div className="p-highlight-box">
+            <p style={{ marginBottom: 4 }}><strong>مدة ضمان الكود وتشغيله:</strong> 3 أشهر من تاريخ التسليم النهائي</p>
+            <p style={{ marginBottom: 0 }}><strong>نوع التغطية:</strong> إصلاح الأخطاء البرمجية وضمان الاستقرار</p>
+          </div>
+          <ul className="p-check-list">
+            {["إصلاح الأخطاء البرمجية خلال مدة الضمان بدون رسوم إضافية", "دعم تقني عبر البريد الإلكتروني والهاتف", "توفير التوثيق الكامل للمشروع", "نقل المعرفة وتدريب فريق العميل"].map((item, i) => (
+              <li key={i}>{item}</li>
+            ))}
+          </ul>
+        </div>
+
+        <PFooter label="منهجية التنفيذ والدعم" page={8} total={TOTAL_PAGES} />
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          PAGE 9: TEAM
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="prop-page">
+        <PHeader num={proposalNumber} date={issueDateShort} />
+
+        <div className="p-section">
+          <PSectionTitle title="الفريق المقترح للمشروع" />
+          <div className="p-info-box">
+            <p className="p-lead" style={{ marginBottom: 0 }}>
+              يضم فريقنا المتخصص خبراء في مجالات متعددة، يعملون معاً بتناسق تام لضمان تسليم مشروع عالي الجودة يفوق توقعاتكم.
+            </p>
+          </div>
+
+          {teamMembers.map((memberName: string, i: number) => {
+            const bio = TEAM_BIOS[memberName] || { title: memberName, exp: 5, bio: memberName };
+            const initials = memberName.split(" ").map((w: string) => w[0]).join("").slice(0, 2);
+            return (
+              <div className="p-member-card" key={i}>
+                <div className="p-member-card-head">
+                  <div className="p-member-card-head-left">
+                    <div className="p-member-avatar">{initials}</div>
+                    <div>
+                      <h3>{memberName}</h3>
+                      <div className="p-member-role">{bio.title}</div>
                     </div>
                   </div>
-                ))}
-              </div>
-            </>
-          )}
-          <F p={6} />
-        </DocPage>
-      )}
-
-      {/* ── PAGE 7: TIMELINE ────────────────────────────────────────────── */}
-      <DocPage>
-        <H p={6} />
-        <SectionTitle ar="الجدول الزمني للمشروع" en="Project Timeline" />
-
-        <div
-          className="rounded-xl p-6 mb-6 text-sm text-gray-700 leading-relaxed"
-          style={{ background: "#fff7ed", border: "1px solid #fed7aa" }}
-        >
-          <p>
-            الجدول الزمني للمشروع: من المقدر أن يستغرق تسليم المشروع كاملاً{" "}
-            <strong style={{ color: "#e55c00" }}>{timelineDays} يوم عمل</strong>.
-            سيتم تحديد المدة الدقيقة عند إنشاء خطة المشروع التفصيلية.
-            بالإضافة إلى ذلك، فترة تعبئة <strong style={{ color: "#e55c00" }}>10 أيام عمل</strong>{" "}
-            بعد إصدار أوامر الشراء أو توقيع العقد.
-          </p>
-        </div>
-
-        {/* Visual timeline */}
-        <div className="space-y-3">
-          {[
-            { phase: "التخطيط وتحليل المتطلبات", days: Math.ceil(timelineDays * 0.1), color: "#7c3aed" },
-            { phase: "تصميم تجربة المستخدم (UX/UI)", days: Math.ceil(timelineDays * 0.2), color: "#0891b2" },
-            { phase: "التطوير الأساسي (Backend & APIs)", days: Math.ceil(timelineDays * 0.3), color: "#1a1a1a" },
-            { phase: "تطوير الواجهة الأمامية (Frontend)", days: Math.ceil(timelineDays * 0.25), color: "#ff6a00" },
-            { phase: "مراقبة الجودة والاختبار (QA)", days: Math.ceil(timelineDays * 0.1), color: "#059669" },
-            { phase: "الإطلاق والنشر", days: Math.ceil(timelineDays * 0.05), color: "#f59e0b" },
-          ].map((p, i) => (
-            <div key={i} className="flex items-center gap-3">
-              <div className="w-36 text-xs text-right text-gray-600 flex-shrink-0">{p.phase}</div>
-              <div
-                className="h-7 rounded-lg flex items-center pr-3 text-white text-xs font-bold transition-all"
-                style={{ width: `${(p.days / timelineDays) * 60}%`, minWidth: "80px", background: p.color }}
-              >
-                {p.days} يوم
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div
-          className="mt-6 rounded-xl p-4 flex items-center gap-3 text-sm"
-          style={{ background: "#fff7ed", border: "1px solid #fed7aa" }}
-        >
-          <span className="text-2xl">⏱️</span>
-          <p className="text-gray-700">
-            إجمالي مدة المشروع: <strong className="text-amber-800">{timelineDays} يوم عمل</strong> +{" "}
-            10 أيام تعبئة = إجمالي <strong className="text-amber-800">{timelineDays + 10} يوم</strong>
-          </p>
-        </div>
-        <F p={7} />
-      </DocPage>
-
-      {/* ── PAGE 8: FINANCIAL OFFER ─────────────────────────────────────── */}
-      <DocPage>
-        <H p={7} />
-        <SectionTitle ar="العرض المالي" en="Financial Proposal" />
-        <p className="text-sm text-gray-600 mb-4 leading-relaxed">
-          يعرض هذا التفصيل تكلفة أداء العمل المحدد وفقاً لطلبكم وعرضنا. حيث نقدم بموجب هذا التفصيل
-          التكلفة الكاملة لكل مرحلة من مراحل المشروع.
-        </p>
-
-        {/* Items table */}
-        {hasSections ? (
-          Object.entries(sections).map(([sectionKey, sectionItems]) => (
-            <div key={sectionKey} className="mb-5">
-              {sectionKey !== "__default__" && (
-                <div
-                  className="px-4 py-2 rounded-t-xl flex items-center gap-2"
-                  style={{ background: "linear-gradient(135deg,#1a1a1a,#ff6a00)" }}
-                >
-                  <p className="text-sm font-bold text-white">{sectionKey}</p>
+                  <div className="p-member-exp">خبرة: <strong>{bio.exp} سنوات</strong></div>
                 </div>
-              )}
-              <div className={`rounded-xl overflow-hidden ${sectionKey !== "__default__" ? "rounded-t-none" : ""}`} style={{ border: "1px solid #e2e8f0" }}>
-                <table className="w-full text-sm">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="text-right py-2.5 px-4 font-semibold text-gray-600 w-8">#</th>
-                      <th className="text-right py-2.5 px-4 font-semibold text-gray-600">البند</th>
-                      <th className="text-right py-2.5 px-4 font-semibold text-gray-600 w-20">الكمية</th>
-                      <th className="text-right py-2.5 px-4 font-semibold text-gray-600 w-28">سعر الوحدة</th>
-                      <th className="text-right py-2.5 px-4 font-semibold text-gray-600 w-28">الإجمالي</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-50">
-                    {(sectionItems as any[]).map((item: any, i: number) => (
-                      <tr key={i} className="hover:bg-gray-50/60">
-                        <td className="py-3 px-4 text-gray-400 font-mono text-xs">{i + 1}</td>
-                        <td className="py-3 px-4">
-                          <p className="font-medium text-gray-900">{item.title}</p>
-                          {item.description && <p className="text-xs text-gray-500 mt-0.5">{item.description}</p>}
-                        </td>
-                        <td className="py-3 px-4 text-gray-600">{parseFloat(item.quantity || "1").toLocaleString()}</td>
-                        <td className="py-3 px-4 text-gray-600">{parseFloat(item.unitPrice || "0").toLocaleString("ar-SA")} {currency}</td>
-                        <td className="py-3 px-4 font-semibold text-gray-900">{parseFloat(item.lineTotal || "0").toLocaleString("ar-SA")} {currency}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                <div className="p-member-card-body">{bio.bio}</div>
               </div>
-            </div>
-          ))
-        ) : (
-          <div className="rounded-xl overflow-hidden mb-5" style={{ border: "1px solid #e2e8f0" }}>
-            <table className="w-full text-sm">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="text-right py-3 px-4 font-semibold text-gray-600 w-8">#</th>
-                  <th className="text-right py-3 px-4 font-semibold text-gray-600">البند</th>
-                  <th className="text-right py-3 px-4 font-semibold text-gray-600 w-20">الكمية</th>
-                  <th className="text-right py-3 px-4 font-semibold text-gray-600 w-28">سعر الوحدة</th>
-                  <th className="text-right py-3 px-4 font-semibold text-gray-600 w-28">الإجمالي</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-50">
-                {requiredItems.map((item: any, i: number) => (
-                  <tr key={i} className="hover:bg-gray-50/60">
-                    <td className="py-3 px-4 text-gray-400 font-mono text-xs">{i + 1}</td>
-                    <td className="py-3 px-4">
-                      <p className="font-medium text-gray-900">{item.title}</p>
-                      {item.description && <p className="text-xs text-gray-500 mt-0.5">{item.description}</p>}
-                    </td>
-                    <td className="py-3 px-4 text-gray-600">{parseFloat(item.quantity || "1").toLocaleString()}</td>
-                    <td className="py-3 px-4 text-gray-600">{parseFloat(item.unitPrice || "0").toLocaleString("ar-SA")} {currency}</td>
-                    <td className="py-3 px-4 font-semibold text-gray-900">{parseFloat(item.lineTotal || "0").toLocaleString("ar-SA")} {currency}</td>
+            );
+          })}
+        </div>
+
+        <PFooter label="الفريق المقترح للمشروع" page={9} total={TOTAL_PAGES} />
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          PAGE 10: FINANCIAL OFFER
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="prop-page">
+        <PHeader num={proposalNumber} date={issueDateShort} />
+
+        <div className="p-section">
+          <PSectionTitle title="العرض المالي" />
+          <div className="p-info-box pre-line">
+            يسعدنا تقديم العرض المالي التالي الذي يعكس قيمة الخدمات المقدمة ومستوى الجودة المضمونة. جميع الأسعار بالعملة المحددة وغير شاملة لضريبة القيمة المضافة ما لم يُذكر خلاف ذلك.
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>الخدمة / البند</th>
+                <th>الوصف</th>
+                <th>الكمية</th>
+                <th>سعر الوحدة</th>
+                <th>الإجمالي</th>
+              </tr>
+            </thead>
+            <tbody>
+              {requiredItems.map((item: any, i: number) => {
+                const qty = parseFloat(item.quantity || "1");
+                const price = parseFloat(item.unitPrice || item.price || "0");
+                const lineTotal = parseFloat(item.total || String(qty * price));
+                return (
+                  <tr key={i}>
+                    <td>{i + 1}</td>
+                    <td><strong>{item.name || item.title}</strong></td>
+                    <td className="p-muted">{item.description || "—"}</td>
+                    <td>{qty}</td>
+                    <td>{fmt(price)} {currency}</td>
+                    <td><strong>{fmt(lineTotal)} {currency}</strong></td>
                   </tr>
-                ))}
-                {requiredItems.length === 0 && (
-                  <tr><td colSpan={5} className="py-6 text-center text-gray-400 text-sm">لا توجد بنود في هذا العرض</td></tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        )}
+                );
+              })}
+            </tbody>
+          </table>
 
-        {/* Optional items */}
-        {showOptional && optionalItems.length > 0 && (
-          <div className="mb-5">
-            <p className="text-sm font-bold text-amber-700 mb-2 flex items-center gap-2">
-              <span className="inline-block w-3 h-3 rounded-full bg-amber-400" />
-              البنود الاختيارية (خيارات إضافية غير محتسبة في الإجمالي)
-            </p>
-            <div className="rounded-xl overflow-hidden border border-amber-200 border-dashed">
-              <table className="w-full text-sm">
-                <tbody className="divide-y divide-amber-100">
-                  {optionalItems.map((item: any, i: number) => (
-                    <tr key={i} className="bg-amber-50/30">
-                      <td className="py-2.5 px-4 text-amber-400 font-mono text-xs w-8">{i + 1}</td>
-                      <td className="py-2.5 px-4">
-                        <p className="font-medium text-gray-900">{item.title}</p>
-                        {item.description && <p className="text-xs text-gray-500">{item.description}</p>}
-                      </td>
-                      <td className="py-2.5 px-4 text-gray-600 w-20">{parseFloat(item.quantity || "1").toLocaleString()}</td>
-                      <td className="py-2.5 px-4 text-gray-600 w-28">{parseFloat(item.unitPrice || "0").toLocaleString("ar-SA")} {currency}</td>
-                      <td className="py-2.5 px-4 font-semibold text-amber-700 w-28">{parseFloat(item.lineTotal || "0").toLocaleString("ar-SA")} {currency}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <div className="p-totals-box">
+            <div className="p-total-row t-header">
+              <span>ملخص الأسعار</span>
+              <span>{currency}</span>
             </div>
-          </div>
-        )}
-
-        {/* Totals box */}
-        <div className="flex justify-end mt-4">
-          <div className="w-80 rounded-xl overflow-hidden" style={{ border: "1px solid #e2e8f0" }}>
-            <div className="px-4 py-2" style={{ background: "linear-gradient(135deg,#1a1a1a,#ff6a00)" }}>
-              <p className="text-white font-bold text-sm">ملخص الأسعار</p>
+            <div className="p-total-row">
+              <span>التكلفة الفرعية</span>
+              <span>{fmt(subtotal)} {currency}</span>
             </div>
-            <div className="divide-y divide-gray-100">
-              <div className="flex justify-between px-4 py-2.5 text-sm text-gray-600">
-                <span>المجموع الفرعي</span>
-                <span>{subtotal.toLocaleString("ar-SA")} {currency}</span>
+            {discount > 0 && (
+              <div className="p-total-row">
+                <span>الخصم</span>
+                <span>- {fmt(discount)} {currency}</span>
               </div>
-              {discount > 0 && (
-                <div className="flex justify-between px-4 py-2.5 text-sm text-red-600">
-                  <span>الخصم</span>
-                  <span>- {discount.toLocaleString("ar-SA")} {currency}</span>
-                </div>
-              )}
-              <div className="flex justify-between px-4 py-2.5 text-sm text-gray-600">
-                <span>ضريبة القيمة المضافة ({proposal.taxPercent || 15}%)</span>
-                <span>{tax.toLocaleString("ar-SA")} {currency}</span>
+            )}
+            {tax > 0 && (
+              <div className="p-total-row">
+                <span>ضريبة القيمة المضافة</span>
+                <span>{fmt(tax)} {currency}</span>
               </div>
-              <div
-                className="flex justify-between px-4 py-4 font-bold text-lg"
-                style={{ background: "linear-gradient(135deg,#fff7ed,#ffedd5)" }}
-              >
-                <span style={{ color: "#e55c00" }}>الإجمالي النهائي</span>
-                <span style={{ color: "#e55c00" }}>{total.toLocaleString("ar-SA")} {currency}</span>
-              </div>
+            )}
+            <div className="p-total-row t-final">
+              <span>الإجمالي النهائي</span>
+              <span>{fmt(total)} {currency}</span>
             </div>
           </div>
         </div>
-        <F p={8} />
-      </DocPage>
 
-      {/* ── PAGE 9: PAYMENT SCHEDULE ────────────────────────────────────── */}
-      <DocPage>
-        <H p={8} />
-        <SectionTitle ar="شروط الدفع" en="Payment Terms" />
-        <p className="text-sm text-gray-600 mb-5 leading-relaxed">
-          يعرض هذا التفصيل تكلفة أداء العمل المحدد وفقاً لطلبكم وعرضنا. حيث نقدم بموجب هذا التفصيل لكل نظام يتم تطبيقه على حسب الأولوية بما يتوافق مع أساس النظام العام.
-        </p>
+        <PFooter label="العرض المالي وتفصيل التكلفة" page={10} total={TOTAL_PAGES} />
+      </div>
 
-        {paymentSchedule.filter((m: any) => m.label).length > 0 ? (
-          <>
-            <div className="rounded-xl overflow-hidden mb-6" style={{ border: "1px solid #e2e8f0" }}>
-              <table className="w-full text-sm">
+      {/* ═══════════════════════════════════════════════════════════════════════
+          PAGE 11: PAYMENT SCHEDULE
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="prop-page">
+        <PHeader num={proposalNumber} date={issueDateShort} />
+
+        <div className="p-section">
+          <PSectionTitle title="شروط وجدول الدفعات" />
+          <div className="p-info-box pre-line">{DEFAULT_PAYMENT_INTRO}</div>
+
+          {paymentSchedule.length > 0 ? (
+            <>
+              <table>
                 <thead>
-                  <tr style={{ background: "linear-gradient(135deg,#065f46,#059669)" }}>
-                    <th className="text-right py-3 px-4 text-white font-semibold">المرحلة</th>
-                    <th className="text-right py-3 px-4 text-white font-semibold w-24">نسبة الدفع</th>
-                    <th className="text-right py-3 px-4 text-white font-semibold w-36">المبلغ</th>
-                    <th className="text-right py-3 px-4 text-white font-semibold w-36">تاريخ الاستحقاق</th>
+                  <tr>
+                    <th>المرحلة</th>
+                    <th>الوصف</th>
+                    <th>نسبة الدفعة</th>
+                    <th>المبلغ</th>
+                    <th>تاريخ الاستحقاق</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {paymentSchedule.filter((m: any) => m.label).map((m: any, idx: number) => {
-                    const amount = ((parseFloat(m.percent) || 0) * total / 100);
+                  {paymentSchedule.map((p: any, i: number) => {
+                    const pct = parseFloat(p.percent || "0");
+                    const amt = (pct / 100) * total;
                     return (
-                      <tr key={idx} className={idx % 2 === 0 ? "bg-white" : "bg-green-50/30"}>
-                        <td className="py-3 px-4 font-medium text-gray-900">{m.label}</td>
-                        <td className="py-3 px-4 text-center">
-                          <span
-                            className="px-3 py-1 rounded-full text-white text-xs font-bold"
-                            style={{ background: "linear-gradient(135deg,#059669,#10b981)" }}
-                          >
-                            {m.percent}%
-                          </span>
-                        </td>
-                        <td className="py-3 px-4 font-bold text-green-700">
-                          {amount.toLocaleString("ar-SA")} {currency}
-                        </td>
-                        <td className="py-3 px-4 text-gray-500">
-                          {m.dueDate ? new Date(m.dueDate).toLocaleDateString("ar-SA") : "—"}
-                        </td>
+                      <tr key={i}>
+                        <td><strong>{p.label || p.milestone}</strong></td>
+                        <td>{p.notes || "—"}</td>
+                        <td>{pct}%</td>
+                        <td><strong>{fmt(amt)} {currency}</strong></td>
+                        <td>{p.dueDate || "—"}</td>
                       </tr>
                     );
                   })}
                 </tbody>
               </table>
-            </div>
 
-            {/* Visual bars */}
-            <div className="space-y-2">
-              {paymentSchedule.filter((m: any) => m.label).map((m: any, i: number) => (
-                <div key={i} className="flex items-center gap-3">
-                  <div className="text-xs text-gray-600 w-40 flex-shrink-0 text-right">{m.label}</div>
-                  <div className="flex-1 bg-gray-100 rounded-full h-6 overflow-hidden">
-                    <div
-                      className="h-full rounded-full flex items-center pr-3 text-white text-xs font-bold"
-                      style={{
-                        width: `${Math.min(parseFloat(m.percent) || 0, 100)}%`,
-                        background: "linear-gradient(135deg,#059669,#10b981)",
-                        transition: "width 0.5s ease",
-                      }}
-                    >
-                      {m.percent}%
+              <div style={{ marginTop: 18 }}>
+                {paymentSchedule.map((p: any, i: number) => {
+                  const pct = parseFloat(p.percent || "0");
+                  const amt = (pct / 100) * total;
+                  return (
+                    <div className="p-payment-bar-row" key={i}>
+                      <div className="p-payment-bar-label">{p.label || p.milestone}</div>
+                      <div className="p-payment-bar-wrap">
+                        <div className="p-payment-bar-fill" style={{ width: `${pct}%` }}>
+                          {pct}%
+                        </div>
+                      </div>
+                      <div className="p-payment-bar-amount">{fmt(amt)} {currency}</div>
                     </div>
-                  </div>
-                  <div className="text-xs font-bold text-green-700 w-28 flex-shrink-0">
-                    {((parseFloat(m.percent) || 0) * total / 100).toLocaleString("ar-SA")} {currency}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
-        ) : (
-          <div className="rounded-xl p-6 text-center text-gray-400 border border-dashed border-gray-200">
-            <p>لم يتم تحديد جدول دفعات</p>
-          </div>
-        )}
-        <F p={9} />
-      </DocPage>
-
-      {/* ── PAGE 10: TEAM ────────────────────────────────────────────────── */}
-      <DocPage>
-        <H p={9} />
-        <SectionTitle ar="فريقنا" en="Our Team" />
-        <p className="text-sm text-gray-600 mb-5 leading-relaxed">
-          يضم فريق سوفت لكس نخبة من الخبراء والمتخصصين في مجالات تطوير البرمجيات وتصميم تجربة المستخدم وإدارة المشاريع.
-        </p>
-
-        <div className="space-y-4">
-          {(teamMembers.length > 0 ? teamMembers : [
-            { role: "مدير المشروع", name: authorName, title: "Project Manager", experience: 5 },
-            { role: "مصمم UX", name: "فريق التصميم", title: "UX/UI Designer", experience: 9 },
-            { role: "مطور كبير", name: "فريق التطوير", title: "Senior Developer", experience: 6 },
-            { role: "مهندس QA", name: "فريق الجودة", title: "QA Engineer", experience: 3 },
-          ]).map((member: any, i: number) => {
-            const defaultBio = TEAM_BIOS[member.role];
-            const bio = member.bio || defaultBio?.bio || "";
-            return (
-              <div
-                key={i}
-                className="rounded-xl overflow-hidden"
-                style={{ border: "1px solid #e2e8f0" }}
-              >
-                <div
-                  className="px-5 py-3 flex items-center justify-between"
-                  style={{ background: "linear-gradient(135deg,#fff7ed,#ffedd5)" }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
-                      style={{ background: "linear-gradient(135deg,#1a1a1a,#ff6a00)" }}
-                    >
-                      {String.fromCharCode(0x623 + i)}
-                    </div>
-                    <div>
-                      <p className="font-bold text-gray-900 text-sm">{member.name || member.role}</p>
-                      <p className="text-xs" style={{ color: "#ff6a00" }}>{member.title || defaultBio?.title || member.role}</p>
-                    </div>
-                  </div>
-                  <div className="text-left">
-                    <p className="text-xs text-gray-500">خبرة</p>
-                    <p className="font-bold text-sm" style={{ color: "#e55c00" }}>{member.experience || "—"} سنوات</p>
-                  </div>
-                </div>
-                {bio && (
-                  <div className="px-5 py-3 text-xs text-gray-600 leading-relaxed">{bio}</div>
-                )}
+                  );
+                })}
               </div>
-            );
-          })}
-        </div>
-        <F p={10} />
-      </DocPage>
-
-      {/* ── PAGE 11: TERMS & CONDITIONS ─────────────────────────────────── */}
-      <DocPage>
-        <H p={10} />
-        <SectionTitle ar="الشروط والأحكام" en="Terms & Conditions" />
-        <div
-          className="rounded-xl p-6 text-sm text-gray-700 whitespace-pre-line leading-relaxed"
-          style={{ background: "#f8fafc", border: "1px solid #e2e8f0", lineHeight: "2.2" }}
-        >
-          {termsAndNotes}
-        </div>
-        <F p={11} />
-      </DocPage>
-
-      {/* ── PAGE 12: SIGNATURE ───────────────────────────────────────────── */}
-      <DocPage>
-        <H p={11} />
-        <SectionTitle ar="التوقيع والموافقة" en="Approval & Signature" />
-
-        <div className="grid grid-cols-2 gap-8 mb-8">
-          {/* Company signature */}
-          <div className="rounded-xl p-5" style={{ border: "2px solid #fed7aa" }}>
-            <p className="font-bold text-gray-900 mb-1 text-sm">ختم وتوقيع سوفت لكس</p>
-            <p className="text-xs text-gray-500 mb-4">Softlix Information Technology</p>
-            <div className="h-20 rounded-lg border border-dashed mb-3 flex items-center justify-center" style={{ borderColor: "#fed7aa", background: "rgba(255,106,0,0.03)" }}>
-              <p className="text-xs" style={{ color: "#ff8c00" }}>توقيع الشركة</p>
+            </>
+          ) : (
+            <div className="p-notice-box">
+              سيتم الاتفاق على جدول الدفعات التفصيلي خلال مرحلة توقيع العقد. المعتاد لدى سوفت لكس تقسيم المدفوعات على 3 مراحل رئيسية.
             </div>
-            <div className="space-y-1.5 text-xs text-gray-600">
-              <p><span className="font-semibold">الاسم:</span> {approverName}</p>
-              <p><span className="font-semibold">المسمى:</span> {approverTitle}</p>
-              <p><span className="font-semibold">التاريخ:</span> {issueDateStr}</p>
-            </div>
+          )}
+        </div>
+
+        <PFooter label="شروط الدفع والمراحل المالية" page={11} total={TOTAL_PAGES} />
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          PAGE 12: TERMS & CONDITIONS
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="prop-page">
+        <PHeader num={proposalNumber} date={issueDateShort} />
+
+        <div className="p-section">
+          <PSectionTitle title="الشروط والأحكام" />
+          <div className="p-info-box pre-line">{termsAndNotes}</div>
+        </div>
+
+        <div className="p-section">
+          <PSectionTitle title="الملكية الفكرية والسرية" />
+          <div className="p-highlight-box pre-line">{IP_TEXT}</div>
+        </div>
+
+        <PFooter label="الشروط والأحكام والملكية الفكرية" page={12} total={TOTAL_PAGES} />
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          PAGE 13: SIGNATURE PAGE
+      ═══════════════════════════════════════════════════════════════════════ */}
+      <div className="prop-page">
+        <PHeader num={proposalNumber} date={issueDateShort} />
+
+        <div className="p-section">
+          <PSectionTitle title="التوقيع والموافقة" />
+
+          <div className="p-info-box">
+            <p style={{ marginBottom: 0 }}>
+              بالتوقيع على هذا العرض، يُقرّ الطرفان بموافقتهما الكاملة على جميع الشروط والأحكام والعرض المالي المذكور في هذه الوثيقة، ويُعدّ هذا التوقيع عقداً رسمياً ملزماً للطرفين.
+            </p>
           </div>
 
-          {/* Client signature */}
-          <div className="rounded-xl p-5" style={{ border: "2px solid #d1fae5" }}>
-            <p className="font-bold text-gray-900 mb-1 text-sm">ختم وتوقيع العميل</p>
-            <p className="text-xs text-gray-500 mb-4">{clientName}</p>
-            {proposal.clientSignature ? (
-              <div className="h-20 rounded-lg border border-solid border-green-300 mb-3 flex items-center justify-center bg-green-50">
-                <div className="text-center">
-                  <CheckCircle className="h-6 w-6 text-green-500 mx-auto mb-1" />
-                  <p className="text-sm font-bold text-green-700">{proposal.clientSignature}</p>
-                </div>
+          <div className="p-signatures">
+            <div className="p-signature-box" style={{ borderColor: "#fed7aa" }}>
+              <div className="p-signature-title">ختم وتوقيع شركة سوفت لكس</div>
+              <div className="p-signature-subtitle">Softlix Information Technology</div>
+              <div className="p-signature-line" style={{ background: "rgba(255,106,0,0.03)" }}>
+                توقيع الشركة
               </div>
-            ) : (
-              <div className="h-20 rounded-lg border border-dashed border-green-200 mb-3 flex items-center justify-center bg-green-50/30">
-                <p className="text-xs text-green-300">توقيع العميل</p>
+              <div className="p-signature-details">
+                <p><strong>الاسم:</strong> {authorName}</p>
+                <p><strong>المسمى:</strong> {authorTitle}</p>
+                <p><strong>التاريخ:</strong> {issueDateStr}</p>
               </div>
-            )}
-            <div className="space-y-1.5 text-xs text-gray-600">
-              <p><span className="font-semibold">الاسم:</span> {proposal.clientSignature || "___________"}</p>
-              <p><span className="font-semibold">المسمى:</span> ___________</p>
-              <p><span className="font-semibold">التاريخ:</span> {proposal.signedAt ? new Date(proposal.signedAt).toLocaleDateString("ar-SA") : "___________"}</p>
+            </div>
+
+            <div className="p-signature-box" style={{ borderColor: "#d1fae5" }}>
+              <div className="p-signature-title">ختم وتوقيع العميل</div>
+              <div className="p-signature-subtitle">{clientName}</div>
+              <div className="p-signature-line" style={{ background: "rgba(16,185,137,0.05)" }}>
+                {proposal.clientSignature ? (
+                  <span style={{ color: "#059669", fontWeight: 900, fontSize: 16 }}>
+                    ✓ {proposal.clientSignature}
+                  </span>
+                ) : "توقيع العميل"}
+              </div>
+              <div className="p-signature-details">
+                <p><strong>الاسم:</strong> {proposal.clientSignature || "___________________"}</p>
+                <p><strong>المسمى:</strong> ___________________</p>
+                <p><strong>التاريخ:</strong> {proposal.signedAt ? new Date(proposal.signedAt).toLocaleDateString("ar-SA") : "___________________"}</p>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Closing message */}
-        <div
-          className="rounded-xl p-8 text-center relative overflow-hidden"
-          style={{ background: "linear-gradient(135deg,#0f172a 0%,#1a1a1a 50%,#2a1200 100%)", color: "white" }}
-        >
-          <div className="absolute top-0 left-0 right-0 h-1" style={{ background: "linear-gradient(to right,#ff8c00,#ff6a00,#e55c00)" }} />
-          <p className="text-2xl font-black mb-2">شكراً لاختياركم سوفت لكس</p>
-          <p className="text-sm mb-4" style={{ color: "#ff8c00" }}>Thank you for choosing Softlix Information Technology</p>
-          <div className="h-px my-4" style={{ background: "rgba(255,106,0,0.3)" }} />
-          <p className="text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>نتطلع إلى شراكة ناجحة ومستدامة معكم</p>
-          <div className="mt-3 text-xs font-medium" style={{ color: "#ff8c00" }}>
-            <p>info@softlix.net &nbsp;|&nbsp; www.softlixagency.com</p>
-          </div>
-          <div className="absolute bottom-0 left-0 right-0 h-1" style={{ background: "linear-gradient(to right,#e55c00,#ff6a00,#ff8c00)" }} />
-        </div>
-
-        {proposal.clientSignature && (
-          <div className="mt-4 rounded-xl p-4 flex items-start gap-3" style={{ background: "#d1fae5", border: "1px solid #6ee7b7" }}>
-            <Shield className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="font-bold text-green-800 text-sm">تم التوقيع رقمياً</p>
-              <p className="text-sm text-green-700 mt-0.5">وقّع العميل: <strong>{proposal.clientSignature}</strong></p>
-              {proposal.signedAt && <p className="text-xs text-green-600 mt-0.5">بتاريخ: {new Date(proposal.signedAt).toLocaleString("ar-SA")}</p>}
+          {proposal.clientSignature && (
+            <div className="p-notice-box" style={{ marginTop: 14 }}>
+              <Shield style={{ display: "inline", marginLeft: 6, width: 14, height: 14 }} />
+              <strong>تم التوقيع رقمياً</strong> — وقّع العميل: <strong>{proposal.clientSignature}</strong>
+              {proposal.signedAt && <span> بتاريخ: {new Date(proposal.signedAt).toLocaleString("ar-SA")}</span>}
             </div>
+          )}
+        </div>
+
+        <div className="p-closing-card">
+          <h3>شكراً لاختياركم سوفت لكس</h3>
+          <div className="p-sub">Thank you for choosing Softlix Agency</div>
+          <hr />
+          <p>نتطلع إلى شراكة ناجحة ومستدامة معكم. فريقنا جاهز للبدء فور تأكيد الموافقة.</p>
+          <p style={{ marginTop: 14, fontSize: 12 }}>info@softlix.net | www.softlixagency.com</p>
+        </div>
+
+        <PFooter label="التوقيع والاعتماد النهائي" page={13} total={TOTAL_PAGES} />
+      </div>
+
+      {/* ═══════════════════════════════════════════════════════════════════════
+          PAGE 14: OPTIONAL ITEMS (only if exist)
+      ═══════════════════════════════════════════════════════════════════════ */}
+      {showOptional && optionalItems.length > 0 && (
+        <div className="prop-page">
+          <PHeader num={proposalNumber} date={issueDateShort} />
+
+          <div className="p-section">
+            <PSectionTitle title="البنود الاختيارية الإضافية" />
+            <div className="p-notice-box">
+              البنود التالية غير مشمولة في العرض المالي الرئيسي ويمكن إضافتها بحسب الحاجة.
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>البند</th>
+                  <th>الوصف</th>
+                  <th>الكمية</th>
+                  <th>سعر الوحدة</th>
+                  <th>الإجمالي</th>
+                </tr>
+              </thead>
+              <tbody>
+                {optionalItems.map((item: any, i: number) => {
+                  const qty = parseFloat(item.quantity || "1");
+                  const price = parseFloat(item.unitPrice || item.price || "0");
+                  const lineTotal = parseFloat(item.total || String(qty * price));
+                  return (
+                    <tr key={i}>
+                      <td>{i + 1}</td>
+                      <td>
+                        <strong>{item.name || item.title}</strong>
+                        <span className="p-item-badge" style={{ marginRight: 8 }}>اختياري</span>
+                      </td>
+                      <td className="p-muted">{item.description || "—"}</td>
+                      <td>{qty}</td>
+                      <td>{fmt(price)} {currency}</td>
+                      <td><strong>{fmt(lineTotal)} {currency}</strong></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
-        )}
-        <F p={12} />
-      </DocPage>
+
+          <PFooter label="البنود الاختيارية الإضافية" page={14} total={TOTAL_PAGES} />
+        </div>
+      )}
     </div>
   );
 }
@@ -1074,7 +1063,7 @@ export function ProposalPreviewById() {
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={() => window.history.back()}>رجوع</Button>
-            <Button size="sm" onClick={() => window.print()} className="gap-2">
+            <Button size="sm" onClick={() => window.print()} className="gap-2 bg-[#ff6a00] hover:bg-[#ff8c00] text-white">
               <Printer className="h-4 w-4" /> طباعة / PDF
             </Button>
           </div>
@@ -1096,7 +1085,6 @@ export function ProposalPreviewById() {
 
       <ProposalDocument proposal={proposal} />
 
-      {/* Print styles */}
       <style>{`
         @media print {
           @page { size: A4; margin: 0; }
@@ -1203,8 +1191,7 @@ export function ProposalPublicView() {
             </div>
             <div className="flex gap-2">
               <Button
-                variant="outline"
-                size="sm"
+                variant="outline" size="sm"
                 onClick={() => respondMutation.mutate("rejected")}
                 disabled={respondMutation.isPending}
                 className="text-red-600 border-red-200 hover:bg-red-50"
@@ -1252,9 +1239,7 @@ export function ProposalPublicView() {
               data-testid="input-signature"
             />
             <div className="flex gap-2">
-              <Button variant="outline" className="flex-1" onClick={() => setShowSignature(false)}>
-                إلغاء
-              </Button>
+              <Button variant="outline" className="flex-1" onClick={() => setShowSignature(false)}>إلغاء</Button>
               <Button
                 className="flex-1 bg-green-600 hover:bg-green-700"
                 onClick={() => signMutation.mutate()}

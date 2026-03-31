@@ -37,7 +37,8 @@
 - ✅ **Leads**: Full CRUD, status pipeline, search/filter, lead numbers (LEAD-0001), create from website forms
 - ✅ **Lead Detail**: Activity timeline, note/call/meeting/email/WhatsApp logging, convert to deal
 - ✅ **Deals**: Kanban view + Table view, multi-pipeline support, stage drag (via select), deal value tracking
-- ✅ **Proposals**: Enterprise proposal builder with 12 features:
+- ✅ **Proposals**: Enterprise proposal builder with 13-page professional print template:
+  - **NEW (Mar 2026): Full new HTML template adopted** — 13 beautiful A4 pages with brand CSS, cover page with gradient, section bar titles, module cards, payment bars, member cards, totals box, signature page with closing card
   - Auto-save to localStorage every 2s with draft restore
   - 4-step wizard: client info → template+items → pricing+terms → review
   - Template preview dialog before applying (with full details + items list)
