@@ -75,6 +75,7 @@ import GoogleImport from "@/pages/crm/google-import";
 import IntegrationsSettings from "@/pages/settings/integrations";
 import TeamUsersPage from "@/pages/settings/users";
 import PhoneSettingsPage from "@/pages/settings/phone-settings";
+import ProposalSettingsPage from "@/pages/settings/proposal-settings";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, isLoading } = useAuth();
@@ -221,6 +222,9 @@ function Router() {
 
       {/* Phone Settings Management */}
       <Route path="/settings/phone"><AdminRoute><PhoneSettingsPage /></AdminRoute></Route>
+
+      {/* Proposal Signature Settings */}
+      <Route path="/settings/proposal"><AdminRoute><ProposalSettingsPage /></AdminRoute></Route>
 
       {/* Public proposal view (no auth required) */}
       <Route path="/proposal/:token"><ProposalPublicView /></Route>

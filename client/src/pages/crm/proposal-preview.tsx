@@ -233,7 +233,7 @@ function PSectionTitle({ title }: { title: string }) {
 }
 
 // ─── ProposalDocument ──────────────────────────────────────────────────────────
-export function ProposalDocument({ proposal, showOptional = true }: { proposal: any; showOptional?: boolean }) {
+export function ProposalDocument({ proposal, showOptional = true, proposalSettings }: { proposal: any; showOptional?: boolean; proposalSettings?: any }) {
   const items: any[] = proposal.items || [];
   const requiredItems = items.filter((i: any) => !i.isOptional);
   const optionalItems = items.filter((i: any) => i.isOptional);
@@ -281,8 +281,10 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
       ? `${proposal.contact?.firstName || ""} ${proposal.contact?.lastName || ""}`.trim() || "العميل الكريم"
       : "العميل الكريم";
 
-  const authorName = proposal.authorName || "مهند العشري";
-  const authorTitle = proposal.authorTitle || "مدير تطوير الأعمال";
+  const authorName = proposalSettings?.signatoryName || proposal.authorName || "فرج سالم بن عبيد";
+  const authorTitle = proposalSettings?.authorTitle || proposal.authorTitle || "المدير التنفيذي";
+  const sigStampUrl = proposalSettings?.stampUrl || "/company-stamp.png";
+  const sigSignatureUrl = proposalSettings?.signatureUrl || "/company-signature.png";
   const approverName = proposal.approverName || "علاء الصبحي";
   const approverTitle = proposal.approverTitle || "م/ البرمجيات";
   const timelineDays = proposal.timelineDays || 65;
@@ -930,13 +932,28 @@ export function ProposalDocument({ proposal, showOptional = true }: { proposal: 
             <div className="p-signature-box" style={{ borderColor: "#fed7aa" }}>
               <div className="p-signature-title">ختم وتوقيع شركة سوفت لكس</div>
               <div className="p-signature-subtitle">Softlix Information Technology</div>
-              <div className="p-signature-line" style={{ background: "rgba(255,106,0,0.03)" }}>
-                توقيع الشركة
+              {/* Signature image */}
+              <div className="p-signature-line" style={{ background: "rgba(255,106,0,0.03)", padding: "4px", overflow: "hidden" }}>
+                <img
+                  src={sigSignatureUrl}
+                  alt="توقيع الشركة"
+                  style={{ maxHeight: "60px", maxWidth: "100%", objectFit: "contain", margin: "0 auto", display: "block" }}
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; (e.target as HTMLImageElement).parentElement!.innerHTML += '<span style="color:#9ca3af;font-size:12px">توقيع الشركة</span>'; }}
+                />
               </div>
-              <div className="p-signature-details">
-                <p><strong>الاسم:</strong> {authorName}</p>
-                <p><strong>المسمى:</strong> {authorTitle}</p>
-                <p><strong>التاريخ:</strong> {issueDateStr}</p>
+              <div className="p-signature-details" style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: "8px" }}>
+                <div>
+                  <p><strong>الاسم:</strong> {authorName}</p>
+                  <p><strong>المسمى:</strong> {authorTitle}</p>
+                  <p><strong>التاريخ:</strong> {issueDateStr}</p>
+                </div>
+                {/* Company Stamp */}
+                <img
+                  src={sigStampUrl}
+                  alt="ختم الشركة"
+                  style={{ width: "72px", height: "72px", objectFit: "contain", opacity: 0.85, flexShrink: 0 }}
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                />
               </div>
             </div>
 
@@ -1039,6 +1056,10 @@ export function ProposalPreviewById() {
     queryKey: [`/api/crm/proposals/${id}`],
     queryFn: () => apiRequest("GET", `/api/crm/proposals/${id}`).then(r => r.json()),
   });
+  const { data: proposalSettings } = useQuery<any>({
+    queryKey: ["/api/crm/proposal-settings"],
+    queryFn: () => apiRequest("GET", "/api/crm/proposal-settings").then(r => r.json()),
+  });
 
   if (isLoading) return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -1104,7 +1125,7 @@ export function ProposalPreviewById() {
         )}
       </div>
 
-      <ProposalDocument proposal={proposal} />
+      <ProposalDocument proposal={proposal} proposalSettings={proposalSettings} />
 
       <style>{`
         @media print {
@@ -1130,6 +1151,14 @@ export function ProposalPublicView() {
   const { data: proposal, isLoading, error } = useQuery<any>({
     queryKey: ["/api/public/proposal", token],
     queryFn: () => fetch(`/api/public/proposal/${token}`).then(r => r.ok ? r.json() : Promise.reject("not-found")),
+  });
+
+  const { data: proposalSettings } = useQuery<any>({
+    queryKey: ["/api/public/proposal-settings", proposal?.tenantId],
+    queryFn: () => proposal?.tenantId
+      ? fetch(`/api/public/proposal-settings/${proposal.tenantId}`).then(r => r.json())
+      : Promise.resolve({}),
+    enabled: !!proposal?.tenantId,
   });
 
   const respondMutation = useMutation({
@@ -1242,7 +1271,7 @@ export function ProposalPublicView() {
       )}
 
       <div className="py-8 px-4">
-        <ProposalDocument proposal={proposal} showOptional={true} />
+        <ProposalDocument proposal={proposal} showOptional={true} proposalSettings={proposalSettings} />
       </div>
 
       {/* Signature dialog */}

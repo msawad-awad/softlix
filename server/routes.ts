@@ -2697,6 +2697,48 @@ export async function registerRoutes(
     } catch (e: any) { res.status(500).json({ error: e.message }); }
   });
 
+  // ── Proposal Settings (stamp, signature, signatory) ──────────────────────────
+  app.get("/api/crm/proposal-settings", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const result = await db.execute(
+        sql`SELECT proposal_settings FROM tenants WHERE id = ${req.user!.tenantId} LIMIT 1`
+      );
+      const settings = (result.rows[0] as any)?.proposal_settings || {};
+      res.json({
+        signatoryName: settings.signatoryName || "فرج سالم بن عبيد",
+        signatureUrl: settings.signatureUrl || "/company-signature.png",
+        stampUrl: settings.stampUrl || "/company-stamp.png",
+        authorTitle: settings.authorTitle || "المدير التنفيذي",
+      });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  app.patch("/api/crm/proposal-settings", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { signatoryName, signatureUrl, stampUrl, authorTitle } = req.body;
+      await db.execute(
+        sql`UPDATE tenants SET proposal_settings = ${JSON.stringify({ signatoryName, signatureUrl, stampUrl, authorTitle })}::jsonb WHERE id = ${req.user!.tenantId}`
+      );
+      res.json({ ok: true });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
+  // ── Public proposal settings (for token-based view) ──────────────────────────
+  app.get("/api/public/proposal-settings/:tenantId", async (req: Request, res: Response) => {
+    try {
+      const result = await db.execute(
+        sql`SELECT proposal_settings FROM tenants WHERE id = ${req.params.tenantId} LIMIT 1`
+      );
+      const settings = (result.rows[0] as any)?.proposal_settings || {};
+      res.json({
+        signatoryName: settings.signatoryName || "فرج سالم بن عبيد",
+        signatureUrl: settings.signatureUrl || "/company-signature.png",
+        stampUrl: settings.stampUrl || "/company-stamp.png",
+        authorTitle: settings.authorTitle || "المدير التنفيذي",
+      });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
   // ============================================================================
   // PROPOSAL TEMPLATES ROUTES
   // ============================================================================

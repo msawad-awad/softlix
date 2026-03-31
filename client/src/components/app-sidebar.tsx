@@ -39,6 +39,7 @@ import {
   UsersRound,
   Phone,
   Receipt,
+  PenLine,
 } from "lucide-react";
 import {
   Sidebar,
@@ -421,6 +422,17 @@ export function AppSidebar() {
                 <Link href="/settings/phone" data-testid="nav-phone-settings">
                   <Phone className={isRTL ? "ml-2" : "mr-2"} />
                   <span>أرقام الهاتف</span>
+                </Link>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
+
+          {hasPermission("settings") && (
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild isActive={isActive("/settings/proposal")} tooltip="إعدادات التوقيع والختم">
+                <Link href="/settings/proposal" data-testid="nav-proposal-settings">
+                  <PenLine className={isRTL ? "ml-2" : "mr-2"} />
+                  <span>التوقيع والختم</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
