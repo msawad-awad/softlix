@@ -90,10 +90,10 @@ const TEAM_BIOS: Record<string, { title: string; bio: string; exp: number }> = {
 const PROPOSAL_CSS = `
   .prop-wrap * { margin: 0; padding: 0; box-sizing: border-box; }
   .prop-wrap { font-family: "Segoe UI", Tahoma, Arial, sans-serif; line-height: 1.7; color: #1a1a1a; background: #f3f4f6; direction: rtl; }
-  .prop-page { width: 210mm; height: 297mm; margin: 16px auto; padding: 18mm 16mm 14mm; background: #ffffff; box-shadow: 0 4px 24px rgba(0,0,0,0.08); position: relative; page-break-after: always; break-after: page; overflow: hidden; display: flex; flex-direction: column; }
+  .prop-page { width: 210mm; min-height: 297mm; margin: 16px auto; padding: 18mm 16mm 14mm; background: #ffffff; box-shadow: 0 4px 24px rgba(0,0,0,0.08); position: relative; page-break-after: always; break-after: page; display: flex; flex-direction: column; }
   .prop-page:last-child { page-break-after: auto; break-after: auto; }
-  .p-spacer { flex: 1; min-height: 8px; }
-  .cover-page { padding: 0; background: radial-gradient(circle at top right, rgba(255,106,0,0.12), transparent 30%), linear-gradient(160deg, #0f172a 0%, #151515 60%, #2a1200 100%); color: #ffffff; display: flex; flex-direction: column; justify-content: space-between; height: 297mm; }
+  .p-spacer { flex: 1; }
+  .cover-page { padding: 0; background: radial-gradient(circle at top right, rgba(255,106,0,0.12), transparent 30%), linear-gradient(160deg, #0f172a 0%, #151515 60%, #2a1200 100%); color: #ffffff; display: flex; flex-direction: column; justify-content: space-between; min-height: 297mm; }
   .cover-top-ribbon, .cover-bottom-ribbon { height: 12px; background: linear-gradient(to right, #ff8c00, #ff6a00, #e55c00); }
   .cover-bottom-ribbon { background: linear-gradient(to right, #e55c00, #ff6a00, #ff8c00); }
   .cover-header { padding: 28px 36px 18px; border-bottom: 1px solid rgba(255,255,255,0.12); }
@@ -1204,7 +1204,7 @@ export function ProposalPreviewById() {
           .print\\:hidden { display: none !important; }
           * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
           #proposal-doc { margin: 0; padding: 0; background: transparent; }
-          .prop-page { box-shadow: none; margin: 0; height: 297mm; width: 210mm; overflow: hidden; page-break-after: always; break-after: page; }
+          .prop-page { box-shadow: none; margin: 0; page-break-after: always; break-after: page; }
           .prop-page:last-child { page-break-after: auto; break-after: auto; }
         }
       `}</style>
@@ -1383,7 +1383,7 @@ export function ProposalPublicView() {
           .print\\:hidden { display: none !important; }
           * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
           #proposal-doc { margin: 0; padding: 0; background: transparent; }
-          .prop-page { box-shadow: none; margin: 0; height: 297mm; width: 210mm; overflow: hidden; page-break-after: always; break-after: page; }
+          .prop-page { box-shadow: none; margin: 0; page-break-after: always; break-after: page; }
           .prop-page:last-child { page-break-after: auto; break-after: auto; }
         }
       `}</style>
