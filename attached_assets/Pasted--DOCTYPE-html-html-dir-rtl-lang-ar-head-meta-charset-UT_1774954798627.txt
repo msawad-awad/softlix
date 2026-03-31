@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{proposal_number}} - {{proposal_title}}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+            line-height: 1.7;
+            color: #1a1a1a;
+            background: #f3f4f6;
+            direction: rtl;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 16px auto;
+            padding: 18mm 16mm 22mm;
+            background: #ffffff;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            position: relative;
+            page-break-after: always;
+            overflow: hidden;
+        }
+
+        .page:last-child {
+            page-break-after: auto;
+        }
+
+        .cover-page {
+            padding: 0;
+            background:
+                radial-gradient(circle at top right, rgba(255,106,0,0.12), transparent 30%),
+                linear-gradient(160deg, #0f172a 0%, #151515 60%, #2a1200 100%);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .cover-top-ribbon,
+        .cover-bottom-ribbon {
+            height: 12px;
+            background: linear-gradient(to right, #ff8c00, #ff6a00, #e55c00);
+        }
+
+        .cover-bottom-ribbon {
+            background: linear-gradient(to right, #e55c00, #ff6a00, #ff8c00);
+        }
+
+        .cover-header {
+            padding: 28px 36px 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.12);
+        }
+
+        .cover-brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-logo {
+            width: 58px;
+            height: 58px;
+            border-radius: 12px;
+            background: rgba(255,106,0,0.12);
+            border: 1px solid rgba(255,106,0,0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 900;
+            font-size: 22px;
+        }
+
+        .cover-brand-text p:first-child {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .cover-brand-text p:last-child {
+            font-size: 13px;
+            color: #ffb067;
+        }
+
+        .cover-main {
+            flex: 1;
+            padding: 32px 36px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255,106,0,0.14);
+            border: 1px solid rgba(255,106,0,0.35);
+            color: #ffb067;
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+            margin-bottom: 18px;
+        }
+
+        .cover-title {
+            font-size: 34px;
+            font-weight: 900;
+            line-height: 1.4;
+            margin-bottom: 16px;
+        }
+
+        .cover-divider {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+
+        .cover-divider .line1 {
+            width: 92px;
+            height: 4px;
+            border-radius: 999px;
+            background: #ff6a00;
+        }
+
+        .cover-divider .line2 {
+            width: 42px;
+            height: 2px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.25);
+        }
+
+        .cover-subtitle {
+            font-size: 16px;
+            color: rgba(255,255,255,0.75);
+            max-width: 520px;
+            margin-bottom: 24px;
+        }
+
+        .cover-client-box {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 18px;
+            padding: 18px;
+            max-width: 420px;
+            margin-bottom: 28px;
+        }
+
+        .cover-client-box .label {
+            font-size: 12px;
+            color: #ffb067;
+            margin-bottom: 8px;
+        }
+
+        .cover-client-box .value {
+            font-size: 24px;
+            font-weight: 900;
+        }
+
+        .cover-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            max-width: 620px;
+        }
+
+        .cover-stat {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .cover-stat .label {
+            font-size: 11px;
+            color: #ffb067;
+            margin-bottom: 8px;
+        }
+
+        .cover-stat .value {
+            font-size: 14px;
+            font-weight: 800;
+        }
+
+        .cover-bottom {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            padding: 16px 36px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            background: rgba(0,0,0,0.18);
+            font-size: 12px;
+        }
+
+        .cover-bottom-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255,255,255,0.72);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 2px solid #ff6a00;
+            padding-bottom: 12px;
+            margin-bottom: 22px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-box {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #1a1a1a, #ff6a00);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 900;
+            font-size: 13px;
+        }
+
+        .logo-text p:first-child {
+            font-weight: 800;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .logo-text p:last-child {
+            font-size: 11px;
+            color: #ff6a00;
+        }
+
+        .header-info {
+            text-align: left;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .header-info p {
+            margin-bottom: 4px;
+        }
+
+        .section {
+            margin-bottom: 24px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .section-title .bar {
+            width: 6px;
+            height: 28px;
+            border-radius: 999px;
+            background: linear-gradient(to bottom, #ff6a00, #ff8c00);
+            flex-shrink: 0;
+        }
+
+        .section-title h2 {
+            font-size: 22px;
+            font-weight: 900;
+            color: #1a1a1a;
+            line-height: 1.4;
+        }
+
+        .section-subtitle {
+            font-size: 15px;
+            font-weight: 800;
+            margin-bottom: 10px;
+            color: #111827;
+        }
+
+        p {
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .lead {
+            font-size: 15px;
+            line-height: 1.9;
+            color: #374151;
+        }
+
+        .info-box {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 14px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #fff7ed, #ffedd5);
+            border: 1px solid #fed7aa;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 14px;
+        }
+
+        .notice-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1e3a8a;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+        }
+
+        .danger-box {
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            color: #9f1239;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 14px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 14px 0;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #1a1a1a, #ff6a00);
+            color: white;
+        }
+
+        th {
+            padding: 11px 10px;
+            text-align: right;
+            font-size: 13px;
+            font-weight: 800;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        td {
+            padding: 11px 10px;
+            border: 1px solid #e5e7eb;
+            font-size: 13px;
+            vertical-align: top;
+        }
+
+        tbody tr:nth-child(even) {
+            background: #fafafa;
+        }
+
+        .muted {
+            color: #6b7280;
+            font-size: 12px;
+        }
+
+        .small {
+            font-size: 12px;
+        }
+
+        .list {
+            padding-right: 18px;
+            margin: 8px 0 0;
+        }
+
+        .list li {
+            margin-bottom: 7px;
+            font-size: 14px;
+            line-height: 1.8;
+        }
+
+        .check-list {
+            list-style: none;
+            padding-right: 0;
+        }
+
+        .check-list li {
+            position: relative;
+            padding-right: 24px;
+            margin-bottom: 8px;
+            line-height: 1.8;
+        }
+
+        .check-list li::before {
+            content: "✓";
+            position: absolute;
+            right: 0;
+            top: 0;
+            color: #059669;
+            font-weight: 900;
+        }
+
+        .dash-list {
+            list-style: none;
+            padding-right: 0;
+        }
+
+        .dash-list li {
+            position: relative;
+            padding-right: 18px;
+            margin-bottom: 8px;
+            line-height: 1.8;
+        }
+
+        .dash-list li::before {
+            content: "—";
+            position: absolute;
+            right: 0;
+            top: 0;
+            color: #ff6a00;
+            font-weight: 900;
+        }
+
+        .item-row {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .item-title {
+            font-size: 16px;
+            font-weight: 900;
+            color: #111827;
+        }
+
+        .item-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            background: rgba(255,106,0,0.1);
+            border: 1px solid rgba(255,106,0,0.22);
+            color: #ff6a00;
+            font-size: 11px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .module-number {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a1a1a, #ff6a00);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 900;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .module-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 14px;
+            background: #fff;
+        }
+
+        .module-card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: linear-gradient(135deg, #fff7ed, #ffedd5);
+            border-bottom: 1px solid #fed7aa;
+        }
+
+        .module-card-header h3 {
+            font-size: 16px;
+            font-weight: 900;
+            margin: 0;
+        }
+
+        .module-card-body {
+            padding: 16px;
+        }
+
+        .module-card-body p {
+            margin-bottom: 10px;
+        }
+
+        .timeline {
+            margin-top: 18px;
+        }
+
+        .timeline-item {
+            margin-bottom: 18px;
+        }
+
+        .timeline-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 8px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .timeline-bar {
+            width: 100%;
+            height: 28px;
+            border-radius: 999px;
+            overflow: hidden;
+            background: #e5e7eb;
+        }
+
+        .timeline-fill {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a1a1a, #ff6a00);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .totals-box {
+            width: 100%;
+            max-width: 380px;
+            margin-right: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 14px;
+        }
+
+        .total-row.header {
+            background: linear-gradient(135deg, #1a1a1a, #ff6a00);
+            color: #fff;
+            font-weight: 900;
+        }
+
+        .total-row.final {
+            background: linear-gradient(135deg, #fff7ed, #ffedd5);
+            color: #ff6a00;
+            font-size: 16px;
+            font-weight: 900;
+        }
+
+        .payment-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .payment-bar-label {
+            width: 180px;
+            font-size: 12px;
+            color: #4b5563;
+        }
+
+        .payment-bar-wrap {
+            flex: 1;
+            background: #ecfdf5;
+            border-radius: 999px;
+            overflow: hidden;
+            height: 24px;
+        }
+
+        .payment-bar-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: #fff;
+            font-size: 11px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .payment-bar-amount {
+            width: 120px;
+            font-size: 12px;
+            font-weight: 800;
+            color: #059669;
+            text-align: left;
+        }
+
+        .member-card {
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            overflow: hidden;
+            margin-bottom: 14px;
+        }
+
+        .member-card-head {
+            background: linear-gradient(135deg, #fff7ed, #ffedd5);
+            padding: 14px 16px;
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            border-bottom: 1px solid #fed7aa;
+        }
+
+        .member-card-head-left {
+            display: flex;
+            gap: 12px;
+        }
+
+        .member-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1a1a1a, #ff6a00);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 900;
+            flex-shrink: 0;
+        }
+
+        .member-card-head h3 {
+            font-size: 15px;
+            margin-bottom: 4px;
+            font-weight: 900;
+        }
+
+        .member-card-head .role {
+            font-size: 12px;
+            color: #ff6a00;
+            font-weight: 700;
+        }
+
+        .member-exp {
+            font-size: 12px;
+            color: #374151;
+            text-align: left;
+        }
+
+        .member-exp strong {
+            color: #ff6a00;
+        }
+
+        .member-card-body {
+            padding: 16px;
+            font-size: 13px;
+            line-height: 1.8;
+            color: #4b5563;
+        }
+
+        .signatures {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-top: 26px;
+        }
+
+        .signature-box {
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 18px;
+        }
+
+        .signature-title {
+            font-size: 16px;
+            font-weight: 900;
+            margin-bottom: 6px;
+        }
+
+        .signature-subtitle {
+            font-size: 11px;
+            color: #6b7280;
+            margin-bottom: 12px;
+        }
+
+        .signature-line {
+            height: 74px;
+            border: 1px dashed #d1d5db;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        .signature-details p {
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .footer {
+            position: absolute;
+            left: 16mm;
+            right: 16mm;
+            bottom: 10mm;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 11px;
+            color: #9ca3af;
+        }
+
+        .closing-card {
+            background: linear-gradient(135deg, #0f172a 0%, #1a1a1a 55%, #2a1200 100%);
+            color: #fff;
+            border-radius: 16px;
+            padding: 22px;
+            text-align: center;
+            margin-top: 24px;
+            border-top: 4px solid #ff6a00;
+        }
+
+        .closing-card h3 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            font-weight: 900;
+        }
+
+        .closing-card .sub {
+            color: #ffb067;
+            margin-bottom: 12px;
+        }
+
+        .closing-card hr {
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.14);
+            margin: 14px 0;
+        }
+
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+        .mb-0 { margin-bottom: 0 !important; }
+        .mb-6 { margin-bottom: 6px !important; }
+        .mb-8 { margin-bottom: 8px !important; }
+        .mb-10 { margin-bottom: 10px !important; }
+        .mb-12 { margin-bottom: 12px !important; }
+        .mb-14 { margin-bottom: 14px !important; }
+        .mb-16 { margin-bottom: 16px !important; }
+        .mb-20 { margin-bottom: 20px !important; }
+        .mb-24 { margin-bottom: 24px !important; }
+        .mt-10 { margin-top: 10px !important; }
+        .mt-14 { margin-top: 14px !important; }
+        .mt-18 { margin-top: 18px !important; }
+        .mt-24 { margin-top: 24px !important; }
+        .pre-line { white-space: pre-line; }
+
+        .page-break {
+            page-break-after: always;
+        }
+
+        @media print {
+            body {
+                background: #fff;
+            }
+
+            .page {
+                margin: 0;
+                box-shadow: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===================== PAGE 1: COVER ===================== -->
+    <div class="page cover-page">
+        <div class="cover-top-ribbon"></div>
+
+        <div class="cover-header">
+            <div class="cover-brand">
+                <div class="brand-logo">{{company_short_name}}</div>
+                <div class="cover-brand-text">
+                    <p>{{company_name}}</p>
+                    <p>{{company_name_en}}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="cover-main">
+            <span class="badge">عرض تقني ومالي · Technical & Financial Proposal</span>
+
+            <h1 class="cover-title">{{proposal_title}}</h1>
+
+            <div class="cover-divider">
+                <div class="line1"></div>
+                <div class="line2"></div>
+            </div>
+
+            <p class="cover-subtitle">{{cover_subtitle}}</p>
+
+            <div class="cover-client-box">
+                <div class="label">مُقدَّم إلى</div>
+                <div class="value">{{client_name}}</div>
+            </div>
+
+            <div class="cover-stats">
+                <div class="cover-stat">
+                    <div class="label">رقم العرض</div>
+                    <div class="value">{{proposal_number}}</div>
+                </div>
+                <div class="cover-stat">
+                    <div class="label">تاريخ الإصدار</div>
+                    <div class="value">{{issue_date}}</div>
+                </div>
+                <div class="cover-stat">
+                    <div class="label">صالح لمدة</div>
+                    <div class="value">{{validity_days}} يوم</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cover-bottom">
+            <div class="cover-bottom-item">
+                <span>⚡</span>
+                <span>تسليم في الوقت المحدد</span>
+            </div>
+            <div class="cover-bottom-item">
+                <span>🏆</span>
+                <span>جودة عالية المستوى</span>
+            </div>
+            <div class="cover-bottom-item">
+                <span>🤝</span>
+                <span>شراكة استراتيجية</span>
+            </div>
+        </div>
+
+        <div class="cover-bottom-ribbon"></div>
+    </div>
+
+    <!-- ===================== PAGE 2: CONFIDENTIALITY ===================== -->
+    <div class="page">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">{{company_short_name}}</div>
+                <div class="logo-text">
+                    <p>{{company_name}}</p>
+                    <p>{{company_name_en}}</p>
+                </div>
+            </div>
+            <div class="header-info">
+                <p>{{proposal_number}}</p>
+                <p>{{issue_date}}</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>بيان السرية</h2>
+            </div>
+            <div class="info-box pre-line">
+                {{confidentiality_statement}}
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>مراقبة الوثيقة</h2>
+            </div>
+
+            <table>
+                <tbody>
+                    <tr>
+                        <td><strong>اسم الوثيقة</strong></td>
+                        <td>{{document_name}}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>تاريخ الإنشاء</strong></td>
+                        <td>{{created_at}}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>آخر تحديث</strong></td>
+                        <td>{{updated_at}}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>متلقي الوثيقة</strong></td>
+                        <td>{{client_name}}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>الكاتب</strong></td>
+                        <td>{{author_name}}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>المسمى الوظيفي</strong></td>
+                        <td>{{author_title}}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>الموافقون</strong></td>
+                        <td>{{approvers_summary}}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>فترة صلاحية العرض</strong></td>
+                        <td>{{validity_text}}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="danger-box pre-line">
+                {{quotation_change_notice}}
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>وثيقة سرية ومملوكة لشركة {{company_name}}</span>
+            <span>{{page_number_2}} / {{total_pages}}</span>
+        </div>
+    </div>
+
+    <!-- ===================== PAGE 3: EXECUTIVE SUMMARY ===================== -->
+    <div class="page">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">{{company_short_name}}</div>
+                <div class="logo-text">
+                    <p>{{company_name}}</p>
+                    <p>{{company_name_en}}</p>
+                </div>
+            </div>
+            <div class="header-info">
+                <p>{{proposal_number}}</p>
+                <p>{{issue_date}}</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>ملخص تنفيذي</h2>
+            </div>
+
+            <div class="highlight-box">
+                <p class="lead mb-0">{{executive_summary_intro}}</p>
+            </div>
+
+            <div class="info-box pre-line">
+                {{executive_summary_body}}
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>متطلبات العميل للمشروع الأولية</h2>
+            </div>
+
+            <div class="info-box pre-line">
+                {{initial_requirements_summary}}
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>ملخص تنفيذي ومتطلبات أولية</span>
+            <span>{{page_number_3}} / {{total_pages}}</span>
+        </div>
+    </div>
+
+    <!-- ===================== PAGE 4: SCOPE OF WORK ===================== -->
+    <div class="page">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">{{company_short_name}}</div>
+                <div class="logo-text">
+                    <p>{{company_name}}</p>
+                    <p>{{company_name_en}}</p>
+                </div>
+            </div>
+            <div class="header-info">
+                <p>{{proposal_number}}</p>
+                <p>{{issue_date}}</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>نطاق العمل (Scope of Work)</h2>
+            </div>
+
+            <div class="info-box">
+                <p class="lead">{{scope_intro}}</p>
+            </div>
+
+            {{#each scope_sections}}
+            <div class="module-card">
+                <div class="module-card-header">
+                    <div class="module-number">{{number}}</div>
+                    <div>
+                        <h3>{{title}}</h3>
+                        <p class="muted mb-0">{{subtitle}}</p>
+                    </div>
+                </div>
+                <div class="module-card-body">
+                    <ul class="check-list">
+                        {{#each items}}
+                        <li>{{this}}</li>
+                        {{/each}}
+                    </ul>
+                </div>
+            </div>
+            {{/each}}
+        </div>
+
+        <div class="footer">
+            <span>نطاق العمل التفصيلي</span>
+            <span>{{page_number_4}} / {{total_pages}}</span>
+        </div>
+    </div>
+
+    <!-- ===================== PAGE 5: TARGET USERS ===================== -->
+    <div class="page">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">{{company_short_name}}</div>
+                <div class="logo-text">
+                    <p>{{company_name}}</p>
+                    <p>{{company_name_en}}</p>
+                </div>
+            </div>
+            <div class="header-info">
+                <p>{{proposal_number}}</p>
+                <p>{{issue_date}}</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>المجموعة المستهدفة من المستخدمين</h2>
+            </div>
+
+            <div class="info-box pre-line">
+                {{target_users_intro}}
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>الفئة</th>
+                        <th>الدور</th>
+                        <th>ما يوفره النظام</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each user_groups}}
+                    <tr>
+                        <td><strong>{{name}}</strong></td>
+                        <td>{{role}}</td>
+                        <td>
+                            <ul class="dash-list">
+                                {{#each benefits}}
+                                <li>{{this}}</li>
+                                {{/each}}
+                            </ul>
+                        </td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+
+            <div class="notice-box pre-line">
+                {{rbac_note}}
+            </div>
+
+            <div class="highlight-box pre-line">
+                {{user_groups_value_note}}
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>الفئات المستهدفة والصلاحيات</span>
+            <span>{{page_number_5}} / {{total_pages}}</span>
+        </div>
+    </div>
+
+    <!-- ===================== PAGE 6: ARCHITECTURE ===================== -->
+    <div class="page">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">{{company_short_name}}</div>
+                <div class="logo-text">
+                    <p>{{company_name}}</p>
+                    <p>{{company_name_en}}</p>
+                </div>
+            </div>
+            <div class="header-info">
+                <p>{{proposal_number}}</p>
+                <p>{{issue_date}}</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>البنية التقنية للنظام</h2>
+            </div>
+
+            <div class="highlight-box">
+                <p class="lead mb-0">{{architecture_overview}}</p>
+            </div>
+
+            <div class="grid-2">
+                {{#each technology_categories}}
+                <div class="module-card">
+                    <div class="module-card-header">
+                        <div class="module-number">{{index}}</div>
+                        <div>
+                            <h3>{{category_name}}</h3>
+                            <p class="muted mb-0">{{category_subtitle}}</p>
+                        </div>
+                    </div>
+                    <div class="module-card-body">
+                        <p><strong>التقنيات:</strong> {{technologies}}</p>
+                        <p><strong>الدور:</strong> {{role}}</p>
+                        <p class="mb-0"><strong>القيمة:</strong> {{value}}</p>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+
+            <div class="notice-box pre-line">
+                {{architecture_conclusion}}
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>البنية التقنية والتقنيات المقترحة</span>
+            <span>{{page_number_6}} / {{total_pages}}</span>
+        </div>
+    </div>
+
+    <!-- ===================== PAGE 7: SYSTEM MODULES ===================== -->
+    <div class="page">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">{{company_short_name}}</div>
+                <div class="logo-text">
+                    <p>{{company_name}}</p>
+                    <p>{{company_name_en}}</p>
+                </div>
+            </div>
+            <div class="header-info">
+                <p>{{proposal_number}}</p>
+                <p>{{issue_date}}</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>الموديولات الرئيسية للنظام</h2>
+            </div>
+
+            <div class="info-box">
+                <p class="lead mb-0">{{modules_intro}}</p>
+            </div>
+
+            {{#each modules}}
+            <div class="module-card">
+                <div class="module-card-header">
+                    <div class="module-number">{{number}}</div>
+                    <div>
+                        <h3>{{title}}</h3>
+                        <p class="muted mb-0">{{short_description}}</p>
+                    </div>
+                </div>
+                <div class="module-card-body">
+                    <p><strong>الوصف:</strong> {{description}}</p>
+                    <ul class="check-list">
+                        {{#each features}}
+                        <li>{{this}}</li>
+                        {{/each}}
+                    </ul>
+                </div>
+            </div>
+            {{/each}}
+
+            <div class="highlight-box pre-line">
+                {{modules_integration_note}}
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>الموديولات الرئيسية والتكامل بينها</span>
+            <span>{{page_number_7}} / {{total_pages}}</span>
+        </div>
+    </div>
+
+    <!-- ===================== PAGE 8: SOLUTION OVERVIEW ===================== -->
+    <div class="page">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">{{company_short_name}}</div>
+                <div class="logo-text">
+                    <p>{{company_name}}</p>
+                    <p>{{company_name_en}}</p>
+                </div>
+            </div>
+            <div class="header-info">
+                <p>{{proposal_number}}</p>
+                <p>{{issue_date}}</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>نظرة عامة على الحل</h2>
+            </div>
+
+            <div class="info-box pre-line">
+                {{solution_overview}}
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>الأهداف الرئيسية للنظام</h2>
+            </div>
+
+            <div class="grid-2">
+                {{#each business_objectives}}
+                <div class="highlight-box">
+                    <p class="section-subtitle">{{title}}</p>
+                    <p class="mb-0">{{description}}</p>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>الميزات الرئيسية للنظام</h2>
+            </div>
+
+            <div class="grid-2">
+                {{#each key_capabilities}}
+                <div class="info-box">
+                    <p class="section-subtitle">{{title}}</p>
+                    <ul class="dash-list">
+                        {{#each items}}
+                        <li>{{this}}</li>
+                        {{/each}}
+                    </ul>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>نظرة عامة على الحل والأهداف</span>
+            <span>{{page_number_8}} / {{total_pages}}</span>
+        </div>
+    </div>
+
+    <!-- ===================== PAGE 9: WORKFLOW & APPROVALS ===================== -->
+    <div class="page">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">{{company_short_name}}</div>
+                <div class="logo-text">
+                    <p>{{company_name}}</p>
+                    <p>{{company_name_en}}</p>
+                </div>
+            </div>
+            <div class="header-info">
+                <p>{{proposal_number}}</p>
+                <p>{{issue_date}}</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>نظام سير العمل والموافقات</h2>
+            </div>
+
+            <div class="info-box pre-line">
+                {{workflow_intro}}
+            </div>
+
+            <div class="grid-2">
+                {{#each workflow_components}}
+                <div class="module-card">
+                    <div class="module-card-header">
+                        <div class="module-number">{{number}}</div>
+                        <div>
+                            <h3>{{title}}</h3>
+                            <p class="muted mb-0">{{subtitle}}</p>
+                        </div>
+                    </div>
+                    <div class="module-card-body">
+                        <p class="mb-0">{{description}}</p>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+
+            <div class="section-title mt-18">
+                <div class="bar"></div>
+                <h2>أنواع الموافقات المدعومة</h2>
+            </div>
+
+            <ul class="check-list">
+                {{#each approval_types}}
+                <li>{{this}}</li>
+                {{/each}}
+            </ul>
+
+            <div class="highlight-box pre-line">
+                {{workflow_value}}
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>سير العمل والموافقات</span>
+            <span>{{page_number_9}} / {{total_pages}}</span>
+        </div>
+    </div>
+
+    <!-- ===================== PAGE 10: DELIVERABLES ===================== -->
+    <div class="page">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">{{company_short_name}}</div>
+                <div class="logo-text">
+                    <p>{{company_name}}</p>
+                    <p>{{company_name_en}}</p>
+                </div>
+            </div>
+            <div class="header-info">
+                <p>{{proposal_number}}</p>
+                <p>{{issue_date}}</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>مخرجات المشروع</h2>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>المخرج</th>
+                        <th>الوصف</th>
+                        <th>مرحلة التسليم</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each deliverables}}
+                    <tr>
+                        <td>{{index}}</td>
+                        <td><strong>{{name}}</strong></td>
+                        <td>{{description}}</td>
+                        <td>{{delivery_stage}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+
+            <div class="notice-box pre-line">
+                {{deliverables_note}}
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>مخرجات المشروع والتسليمات</span>
+            <span>{{page_number_10}} / {{total_pages}}</span>
+        </div>
+    </div>
+
+    <!-- ===================== PAGE 11: TIMELINE ===================== -->
+    <div class="page">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">{{company_short_name}}</div>
+                <div class="logo-text">
+                    <p>{{company_name}}</p>
+                    <p>{{company_name_en}}</p>
+                </div>
+            </div>
+            <div class="header-info">
+                <p>{{proposal_number}}</p>
+                <p>{{issue_date}}</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>الجدول الزمني للمشروع</h2>
+            </div>
+
+            <div class="highlight-box">
+                <p class="mb-8"><strong>المدة الإجمالية المتوقعة:</strong> {{timeline_total_days}} يوم عمل</p>
+                <p class="mb-0"><strong>فترة التهيئة وبدء المشروع:</strong> {{kickoff_buffer_days}} أيام عمل</p>
+            </div>
+
+            <div class="timeline">
+                {{#each timeline_phases}}
+                <div class="timeline-item">
+                    <div class="timeline-row">
+                        <span>{{phase_name}}</span>
+                        <span>{{phase_days}} يوم</span>
+                    </div>
+                    <div class="timeline-bar">
+                        <div class="timeline-fill" style="width: {{phase_percentage}}%;">
+                            {{phase_percentage}}%
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+
+            <div class="info-box pre-line">
+                {{timeline_note}}
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>الخطة الزمنية للمشروع</span>
+            <span>{{page_number_11}} / {{total_pages}}</span>
+        </div>
+    </div>
+
+    <!-- ===================== PAGE 12: SUPPORT & WARRANTY ===================== -->
+    <div class="page">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">{{company_short_name}}</div>
+                <div class="logo-text">
+                    <p>{{company_name}}</p>
+                    <p>{{company_name_en}}</p>
+                </div>
+            </div>
+            <div class="header-info">
+                <p>{{proposal_number}}</p>
+                <p>{{issue_date}}</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>الدعم والمتابعة</h2>
+            </div>
+
+            <div class="highlight-box">
+                <p class="mb-8"><strong>مدة ضمان الكود وتشغيله:</strong> {{warranty_period}}</p>
+                <p class="mb-0"><strong>نوع التغطية:</strong> {{warranty_scope}}</p>
+            </div>
+
+            <ul class="check-list">
+                {{#each warranty_items}}
+                <li>{{this}}</li>
+                {{/each}}
+            </ul>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>الالتزامات</h2>
+            </div>
+
+            <ul class="check-list">
+                {{#each commitments}}
+                <li>{{this}}</li>
+                {{/each}}
+            </ul>
+        </div>
+
+        <div class="footer">
+            <span>الدعم والضمان والالتزامات</span>
+            <span>{{page_number_12}} / {{total_pages}}</span>
+        </div>
+    </div>
+
+    <!-- ===================== PAGE 13: FINANCIAL OFFER ===================== -->
+    <div class="page">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">{{company_short_name}}</div>
+                <div class="logo-text">
+                    <p>{{company_name}}</p>
+                    <p>{{company_name_en}}</p>
+                </div>
+            </div>
+            <div class="header-info">
+                <p>{{proposal_number}}</p>
+                <p>{{issue_date}}</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>العرض المالي</h2>
+            </div>
+
+            <div class="info-box pre-line">
+                {{financial_intro}}
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>الخدمة / البند</th>
+                        <th>الوصف</th>
+                        <th>التسليم</th>
+                        <th>الكمية</th>
+                        <th>سعر الوحدة</th>
+                        <th>الإجمالي</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each financial_items}}
+                    <tr>
+                        <td>{{index}}</td>
+                        <td><strong>{{title}}</strong></td>
+                        <td>{{description}}</td>
+                        <td>{{delivery}}</td>
+                        <td>{{quantity}}</td>
+                        <td>{{unit_price}} {{currency}}</td>
+                        <td>{{total}} {{currency}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+
+            <div class="totals-box">
+                <div class="total-row header">
+                    <span>ملخص الأسعار</span>
+                    <span>{{currency}}</span>
+                </div>
+                <div class="total-row">
+                    <span>التكلفة الفرعية</span>
+                    <span>{{subtotal}} {{currency}}</span>
+                </div>
+                {{#if discount}}
+                <div class="total-row">
+                    <span>الخصم</span>
+                    <span>- {{discount}} {{currency}}</span>
+                </div>
+                {{/if}}
+                <div class="total-row">
+                    <span>ضريبة القيمة المضافة ({{tax_percent}}%)</span>
+                    <span>{{tax_amount}} {{currency}}</span>
+                </div>
+                <div class="total-row final">
+                    <span>الإجمالي النهائي</span>
+                    <span>{{grand_total}} {{currency}}</span>
+                </div>
+            </div>
+
+            <div class="highlight-box mt-18 pre-line">
+                {{total_in_words}}
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>العرض المالي وتفصيل التكلفة</span>
+            <span>{{page_number_13}} / {{total_pages}}</span>
+        </div>
+    </div>
+
+    <!-- ===================== PAGE 14: PAYMENT TERMS ===================== -->
+    <div class="page">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">{{company_short_name}}</div>
+                <div class="logo-text">
+                    <p>{{company_name}}</p>
+                    <p>{{company_name_en}}</p>
+                </div>
+            </div>
+            <div class="header-info">
+                <p>{{proposal_number}}</p>
+                <p>{{issue_date}}</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>شروط وجدول الدفعات</h2>
+            </div>
+
+            <div class="info-box pre-line">
+                {{payment_intro}}
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>المرحلة</th>
+                        <th>الوصف</th>
+                        <th>نسبة الدفعة</th>
+                        <th>المبلغ</th>
+                        <th>تاريخ الاستحقاق</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each payment_milestones}}
+                    <tr>
+                        <td><strong>{{title}}</strong></td>
+                        <td>{{description}}</td>
+                        <td>{{percent}}%</td>
+                        <td>{{amount}} {{currency}}</td>
+                        <td>{{due_date}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+
+            <div class="mt-18">
+                {{#each payment_milestones}}
+                <div class="payment-bar-row">
+                    <div class="payment-bar-label">{{title}}</div>
+                    <div class="payment-bar-wrap">
+                        <div class="payment-bar-fill" style="width: {{percent}}%;">
+                            {{percent}}%
+                        </div>
+                    </div>
+                    <div class="payment-bar-amount">{{amount}} {{currency}}</div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>شروط الدفع والمراحل المالية</span>
+            <span>{{page_number_14}} / {{total_pages}}</span>
+        </div>
+    </div>
+
+    <!-- ===================== PAGE 15: METHODOLOGY ===================== -->
+    <div class="page">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">{{company_short_name}}</div>
+                <div class="logo-text">
+                    <p>{{company_name}}</p>
+                    <p>{{company_name_en}}</p>
+                </div>
+            </div>
+            <div class="header-info">
+                <p>{{proposal_number}}</p>
+                <p>{{issue_date}}</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>منهجية العمل</h2>
+            </div>
+
+            <div class="highlight-box pre-line">
+                {{methodology_intro}}
+            </div>
+
+            <div class="grid-2">
+                {{#each methodology_steps}}
+                <div class="module-card">
+                    <div class="module-card-header">
+                        <div class="module-number">{{step_number}}</div>
+                        <div>
+                            <h3>{{title}}</h3>
+                            <p class="muted mb-0">{{english_title}}</p>
+                        </div>
+                    </div>
+                    <div class="module-card-body">
+                        <ul class="dash-list">
+                            {{#each points}}
+                            <li>{{this}}</li>
+                            {{/each}}
+                        </ul>
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>منهجية التنفيذ Agile</span>
+            <span>{{page_number_15}} / {{total_pages}}</span>
+        </div>
+    </div>
+
+    <!-- ===================== PAGE 16: TEAM ===================== -->
+    <div class="page">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">{{company_short_name}}</div>
+                <div class="logo-text">
+                    <p>{{company_name}}</p>
+                    <p>{{company_name_en}}</p>
+                </div>
+            </div>
+            <div class="header-info">
+                <p>{{proposal_number}}</p>
+                <p>{{issue_date}}</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>فريقنا</h2>
+            </div>
+
+            <div class="info-box">
+                <p class="lead mb-0">{{team_intro}}</p>
+            </div>
+
+            {{#each team_members}}
+            <div class="member-card">
+                <div class="member-card-head">
+                    <div class="member-card-head-left">
+                        <div class="member-avatar">{{avatar_text}}</div>
+                        <div>
+                            <h3>{{name}}</h3>
+                            <div class="role">{{title}}</div>
+                        </div>
+                    </div>
+                    <div class="member-exp">
+                        خبرة: <strong>{{experience_years}} سنوات</strong>
+                    </div>
+                </div>
+                <div class="member-card-body">
+                    {{bio}}
+                </div>
+            </div>
+            {{/each}}
+        </div>
+
+        <div class="footer">
+            <span>الفريق المقترح للمشروع</span>
+            <span>{{page_number_16}} / {{total_pages}}</span>
+        </div>
+    </div>
+
+    <!-- ===================== PAGE 17: TERMS ===================== -->
+    <div class="page">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">{{company_short_name}}</div>
+                <div class="logo-text">
+                    <p>{{company_name}}</p>
+                    <p>{{company_name_en}}</p>
+                </div>
+            </div>
+            <div class="header-info">
+                <p>{{proposal_number}}</p>
+                <p>{{issue_date}}</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>الشروط والأحكام</h2>
+            </div>
+
+            <div class="info-box pre-line">
+                {{terms_and_conditions}}
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>الملكية الفكرية والسرية</h2>
+            </div>
+
+            <div class="highlight-box pre-line">
+                {{ownership_and_ip}}
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>الشروط والأحكام والملكية الفكرية</span>
+            <span>{{page_number_17}} / {{total_pages}}</span>
+        </div>
+    </div>
+
+    <!-- ===================== PAGE 18: SIGNATURE ===================== -->
+    <div class="page">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-box">{{company_short_name}}</div>
+                <div class="logo-text">
+                    <p>{{company_name}}</p>
+                    <p>{{company_name_en}}</p>
+                </div>
+            </div>
+            <div class="header-info">
+                <p>{{proposal_number}}</p>
+                <p>{{issue_date}}</p>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">
+                <div class="bar"></div>
+                <h2>التوقيع والموافقة</h2>
+            </div>
+
+            <div class="signatures">
+                <div class="signature-box" style="border-color:#fed7aa;">
+                    <div class="signature-title">ختم وتوقيع {{company_name}}</div>
+                    <div class="signature-subtitle">{{company_name_en}}</div>
+                    <div class="signature-line" style="background: rgba(255,106,0,0.03);">
+                        توقيع الشركة
+                    </div>
+                    <div class="signature-details">
+                        <p><strong>الاسم:</strong> {{company_signatory_name}}</p>
+                        <p><strong>المسمى:</strong> {{company_signatory_title}}</p>
+                        <p><strong>التاريخ:</strong> {{issue_date}}</p>
+                    </div>
+                </div>
+
+                <div class="signature-box" style="border-color:#d1fae5;">
+                    <div class="signature-title">ختم وتوقيع العميل</div>
+                    <div class="signature-subtitle">{{client_name}}</div>
+                    <div class="signature-line" style="background: rgba(16,185,137,0.05);">
+                        توقيع العميل
+                    </div>
+                    <div class="signature-details">
+                        <p><strong>الاسم:</strong> ___________________</p>
+                        <p><strong>المسمى:</strong> ___________________</p>
+                        <p><strong>التاريخ:</strong> ___________________</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="closing-card">
+                <h3>شكراً لاختياركم {{company_name}}</h3>
+                <div class="sub">Thank you for choosing {{company_name_en}}</div>
+                <hr />
+                <p>{{closing_message}}</p>
+                <p class="mt-14 small">{{company_email}} | {{company_website}}</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <span>التوقيع والاعتماد النهائي</span>
+            <span>{{page_number_18}} / {{total_pages}}</span>
+        </div>
+    </div>
+
+</body>
+</html>
