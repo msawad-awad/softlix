@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRoute } from "wouter";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -1170,6 +1170,16 @@ export function ProposalPreviewById() {
     queryFn: () => apiRequest("GET", "/api/crm/proposal-settings").then(r => r.json()),
   });
 
+  const { toast } = useToast();
+  const clearResponseMutation = useMutation({
+    mutationFn: () => apiRequest("POST", `/api/crm/proposals/${id}/clear-response`),
+    onSuccess: () => {
+      toast({ description: "تم مسح الموافقة بنجاح" });
+      queryClient.invalidateQueries({ queryKey: [`/api/crm/proposals/${id}`] });
+    },
+    onError: () => toast({ description: "فشل مسح الموافقة", variant: "destructive" }),
+  });
+
   useEffect(() => {
     if (autoPrint && proposal && !isLoading) {
       const timer = setTimeout(() => window.print(), 1200);
@@ -1278,6 +1288,18 @@ export function ProposalPreviewById() {
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={() => window.history.back()}>رجوع</Button>
+            {["accepted", "rejected"].includes(proposal.status) && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => clearResponseMutation.mutate()}
+                disabled={clearResponseMutation.isPending}
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                data-testid="btn-clear-response"
+              >
+                مسح الموافقة
+              </Button>
+            )}
             <Button size="sm" onClick={() => handlePdfDownload(proposal.proposalNumber)} className="gap-2 bg-[#ff6a00] hover:bg-[#ff8c00] text-white" data-testid="btn-download-pdf">
               <FileDown className="h-4 w-4" /> تحميل PDF
             </Button>

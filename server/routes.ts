@@ -2646,6 +2646,18 @@ export async function registerRoutes(
     } catch (e: any) { res.status(500).json({ error: e.message }); }
   });
 
+  // Clear test approval/rejection from proposal
+  app.post("/api/crm/proposals/:id/clear-response", requireAuth, async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const tenantId = req.user!.tenantId;
+      const proposal = await storage.getCrmProposal(id, tenantId);
+      if (!proposal) return res.status(404).json({ message: "العرض غير موجود" });
+      await storage.updateCrmProposal(id, tenantId, { status: "sent", acceptedAt: null, rejectedAt: null });
+      res.json({ ok: true });
+    } catch (e: any) { res.status(500).json({ error: e.message }); }
+  });
+
   // Digital signature on public view
   app.post("/api/public/proposal/:token/sign", async (req: Request, res: Response) => {
     try {
