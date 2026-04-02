@@ -190,11 +190,110 @@ const PROPOSAL_CSS = `
   .p-closing-card hr { border: none; border-top: 1px solid rgba(255,255,255,0.14); margin: 14px 0; }
   .p-item-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: rgba(255,106,0,0.1); border: 1px solid rgba(255,106,0,0.22); color: #ff6a00; font-size: 11px; font-weight: 800; white-space: nowrap; }
   .pre-line { white-space: pre-line; }
+  /* ── Requirements Renderer ── */
+  .req-wrap { display: flex; flex-direction: column; gap: 10px; }
+  .req-header-line { font-size: 14px; font-weight: 900; color: #1a1a1a; padding: 8px 12px; background: linear-gradient(135deg, #fff7ed, #ffedd5); border-radius: 8px; border-right: 4px solid #ff6a00; }
+  .req-section { border: 1px solid #e5e7eb; border-radius: 12px; overflow: hidden; break-inside: avoid; }
+  .req-section-head { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: linear-gradient(135deg, #1a1a1a 0%, #2d1a00 100%); color: #fff; }
+  .req-section-num { width: 28px; height: 28px; border-radius: 50%; background: #ff6a00; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; flex-shrink: 0; }
+  .req-section-title { font-size: 13px; font-weight: 800; flex: 1; line-height: 1.4; }
+  .req-section-body { display: grid; grid-template-columns: 1fr 1fr; gap: 0; }
+  .req-bullet { display: flex; align-items: flex-start; gap: 8px; padding: 7px 14px; font-size: 12px; color: #374151; border-bottom: 1px solid #f3f4f6; line-height: 1.5; }
+  .req-bullet:last-child { border-bottom: none; }
+  .req-bullet-dot { width: 6px; height: 6px; border-radius: 50%; background: #ff6a00; flex-shrink: 0; margin-top: 5px; }
+  .req-plain { font-size: 13px; color: #4b5563; padding: 6px 12px; line-height: 1.7; }
   @media print {
     body { background: #fff; }
     .prop-page { margin: 0; box-shadow: none; }
+    .req-section { break-inside: avoid; }
   }
 `;
+
+// ─── Requirements Smart Renderer ─────────────────────────────────────────────
+function RequirementsRenderer({ text }: { text: string }) {
+  // يحلل النص ويحوله إلى أقسام منظمة
+  const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+
+  type Block =
+    | { type: "header"; text: string }
+    | { type: "section"; num: string; title: string; bullets: string[] }
+    | { type: "plain"; text: string };
+
+  const blocks: Block[] = [];
+  let current: Block | null = null;
+
+  // regex للتعرف على الأقسام المرقمة مثل: "1 -" أو "1-" أو "١-" أو "1."
+  const sectionRe = /^(\d+|[١-٩][٠-٩]?)\s*[-–.]\s+(.+)/;
+  // regex للتعرف على النقاط مثل: "• نص" أو "- نص" أو "– نص"
+  const bulletRe = /^[•\-–*]\s+(.+)/;
+
+  for (const line of lines) {
+    const secMatch = line.match(sectionRe);
+    const bulMatch = line.match(bulletRe);
+
+    if (secMatch) {
+      if (current) blocks.push(current);
+      current = { type: "section", num: secMatch[1], title: secMatch[2], bullets: [] };
+    } else if (bulMatch && current?.type === "section") {
+      current.bullets.push(bulMatch[1]);
+    } else if (bulMatch) {
+      // نقطة خارج قسم — أنشئ قسماً مجهولاً
+      if (!current || current.type !== "section") {
+        if (current) blocks.push(current);
+        current = { type: "section", num: "", title: "", bullets: [] };
+      }
+      (current as any).bullets.push(bulMatch[1]);
+    } else if (line.endsWith(":") || line.endsWith("؟") || (!sectionRe.test(line) && !bulletRe.test(line) && !current)) {
+      if (current) blocks.push(current);
+      current = { type: "header", text: line };
+      blocks.push(current);
+      current = null;
+    } else {
+      if (current && current.type === "section") {
+        // سطر عادي تابع لقسم — أضفه كنقطة
+        current.bullets.push(line);
+      } else {
+        if (current) blocks.push(current);
+        current = { type: "plain", text: line };
+      }
+    }
+  }
+  if (current) blocks.push(current);
+
+  return (
+    <div className="req-wrap">
+      {blocks.map((block, i) => {
+        if (block.type === "header") {
+          return <div key={i} className="req-header-line">{block.text}</div>;
+        }
+        if (block.type === "plain") {
+          return <div key={i} className="req-plain">{block.text}</div>;
+        }
+        // section
+        return (
+          <div key={i} className="req-section">
+            {(block.num || block.title) && (
+              <div className="req-section-head">
+                {block.num && <div className="req-section-num">{block.num}</div>}
+                <div className="req-section-title">{block.title}</div>
+              </div>
+            )}
+            {block.bullets.length > 0 && (
+              <div className="req-section-body">
+                {block.bullets.map((b, j) => (
+                  <div key={j} className="req-bullet">
+                    <div className="req-bullet-dot" />
+                    <span>{b}</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 // ─── Helper components ────────────────────────────────────────────────────────
 function PHeader({ num, date }: { num: string; date: string }) {
@@ -457,7 +556,7 @@ export function ProposalDocument({ proposal, showOptional = true, proposalSettin
         {requirements && (
           <div className="p-section">
             <PSectionTitle title="متطلبات العميل للمشروع الأولية" />
-            <div className="p-info-box pre-line">{requirements}</div>
+            <RequirementsRenderer text={requirements} />
           </div>
         )}
 
