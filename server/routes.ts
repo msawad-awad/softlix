@@ -2653,7 +2653,14 @@ export async function registerRoutes(
       const tenantId = req.user!.tenantId;
       const proposal = await storage.getCrmProposal(id, tenantId);
       if (!proposal) return res.status(404).json({ message: "العرض غير موجود" });
-      await storage.updateCrmProposal(id, tenantId, { status: "sent", acceptedAt: null, rejectedAt: null });
+      await storage.updateCrmProposal(id, tenantId, { 
+        status: "sent", 
+        acceptedAt: null, 
+        rejectedAt: null,
+        clientSignature: null,
+        clientName: null,
+        signedAt: null
+      });
       res.json({ ok: true });
     } catch (e: any) { res.status(500).json({ error: e.message }); }
   });
